@@ -1,0 +1,141 @@
+================================================================================
+CONTRACTING MECHANISM PROMPTS
+Four stages, run via private channel before the Trade phase each round.
+Replaces {mechanism_block} in base_agent.txt when +Contracting is active.
+Also injected into the relevant sub-prompts below.
+================================================================================
+
+
+--------------------------------------------------------------------------------
+STAGE 1: CONTRACT PROPOSAL
+Sent to each agent at the start of the Communication phase.
+Agent proposes a contract to a specific counterparty via the private channel.
+--------------------------------------------------------------------------------
+
+=== CONTRACTING SYSTEM (active this session) ===
+
+Here is the twist: You have the option to propose a binding contract to any
+agent before trading with them. A contract is a formal delivery agreement
+enforced by the simulation engine — if either party breaches it, they pay
+a penalty automatically deducted from their utility.
+
+A contract specifies:
+  - Which two agents are party to it (you and one counterparty)
+  - What you will deliver: good and quantity
+  - What they will deliver: good and quantity
+  - A breach penalty P (deducted from the breaching party, transferred to the other)
+  - The round in which the exchange occurs (current round or a future round)
+
+The recommended penalty is 2× the utility value of the breached delivery,
+making breach unprofitable in expectation.
+
+Contracts are proposed via the private channel. The counterparty must sign
+for the contract to become active. If they reject, no contract is in place
+and normal trade rules apply.
+
+You may propose a contract for this round's trade now.
+If you do not wish to propose a contract, output an empty array [].
+
+To propose a contract, include this action in your JSON output:
+  {
+    "action": "propose_contract",
+    "target": "{agent_id}",
+    "terms": {
+      "i_deliver":       {"good": "A"|"B"|"C", "quantity": int},
+      "they_deliver":    {"good": "A"|"B"|"C", "quantity": int},
+      "breach_penalty":  int,
+      "execution_round": int
+    }
+  }
+
+Think carefully: a higher penalty makes the contract more credible to the
+counterparty, but also raises the cost to you if you cannot deliver.
+
+
+--------------------------------------------------------------------------------
+STAGE 2: CONTRACT REVIEW AND SIGNING
+Sent to each agent after they receive a contract proposal in their private inbox.
+Agent decides whether to sign or reject.
+--------------------------------------------------------------------------------
+
+=== CONTRACTING SYSTEM (active this session) ===
+
+Here is the twist: You have received a contract proposal in your private inbox.
+A contract is a binding delivery agreement enforced by the simulation engine.
+If you sign and either party breaches, the breaching party automatically pays
+the breach penalty to the other.
+
+Review the proposed contract carefully:
+
+  Proposed by:     {proposer_id}
+  I must deliver:  {their_delivery_good}, {their_delivery_qty} units
+  They must deliver: {my_delivery_good}, {my_delivery_qty} units
+  Breach penalty:  {penalty} utility points (paid by the party that fails to deliver)
+  Execution round: Round {execution_round}
+
+Consider:
+  - Is this trade beneficial to you at these quantities?
+  - Is the penalty high enough to deter them from breaching?
+  - Is the penalty manageable for you if you cannot deliver?
+  - Do you trust this agent based on their system reputation score?
+
+To sign the contract, include in your JSON output:
+  {"action": "sign_contract", "contract_id": "{contract_id}"}
+
+To reject the contract, include in your JSON output:
+  {"action": "reject_contract", "contract_id": "{contract_id}"}
+
+If you reject, no contract is in place and normal (unenforceable) trade rules apply.
+
+
+--------------------------------------------------------------------------------
+STAGE 3: PLAY WITH ACTIVE CONTRACT
+Injected into base_agent.txt {mechanism_block} when a signed contract is active
+for this round. Agent knows the engine will enforce delivery.
+--------------------------------------------------------------------------------
+
+=== CONTRACTING SYSTEM (active this session) ===
+
+Here is the twist: You have an active signed contract for this round.
+The simulation engine will enforce delivery — if either party fails to deliver
+their contracted goods, the breach penalty is automatically deducted from their
+utility and transferred to the other party.
+
+Your active contracts this round:
+
+  {active_contracts_list}
+
+  Example format:
+    Contract t_003:
+      You deliver:    2 units of Good A  →  Agent 4
+      They deliver:   2 units of Good B  →  You
+      Breach penalty: 6 utility points
+      Status: ACTIVE — both parties signed
+
+You must produce enough goods to fulfil your contracted deliveries.
+Failing to produce sufficient units before the Trade phase constitutes
+a breach — the engine will detect and penalise it automatically.
+
+You may still propose and execute additional uncontracted trades this round.
+
+
+--------------------------------------------------------------------------------
+STAGE 4: PLAY WITH REJECTED CONTRACT (no enforcement)
+Injected into base_agent.txt {mechanism_block} when a proposed contract was
+rejected by the counterparty. No enforcement is in place.
+--------------------------------------------------------------------------------
+
+=== CONTRACTING SYSTEM (active this session) ===
+
+Here is the twist: A contract was proposed for a trade this round, but the
+counterparty rejected it. No binding contract is in place.
+
+  Rejected contract:
+    Proposed by:     {proposer_id}
+    Your delivery:   {your_delivery_good}, {your_delivery_qty} units
+    Their delivery:  {their_delivery_good}, {their_delivery_qty} units
+    Breach penalty:  {penalty} (not applicable — contract inactive)
+
+This trade, if it proceeds, is unenforceable. Either party may defect
+without incurring a formal penalty. Factor this into your decision about
+whether to proceed with the trade and how much to produce.

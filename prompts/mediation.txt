@@ -1,0 +1,148 @@
+================================================================================
+MEDIATION MECHANISM PROMPTS
+Three stages: session-start design/vote (once per session), then per-trade
+delegation decisions each round.
+Replaces {mechanism_block} in base_agent.txt when +Mediation is active.
+================================================================================
+
+
+--------------------------------------------------------------------------------
+STAGE 1: MEDIATOR DESIGN
+Sent to each agent once at the start of the session, before Round 1.
+Each agent proposes a mediator design. Most approvals wins.
+--------------------------------------------------------------------------------
+
+=== MEDIATION SYSTEM (active this session) ===
+
+Here is the twist: This session uses a mediator — a neutral engine-controlled
+party that can execute trades on behalf of agents who choose to delegate.
+
+Before the session begins, each agent proposes a mediator design.
+The design specifies how the mediator should handle trades depending on how
+many agents delegate a given trade to it.
+
+A mediator design is a mapping:
+  {number of delegating parties} → {mediator action}
+
+Mediator actions:
+  "execute_fair"    — mediator executes the trade at the proposed terms
+                      (both sides deliver exactly what was offered/requested)
+  "execute_split"   — mediator splits the difference if terms are asymmetric
+  "cancel"          — mediator cancels the trade (no goods exchanged)
+
+If both parties in a trade delegate to the mediator, the mediator's action
+is applied and neither party can defect — simultaneous exchange is guaranteed.
+If only one party delegates, that party's action is governed by the mediator
+but the other party acts freely (and could defect).
+
+A small mediation fee of {mediation_fee} utility points is charged to each
+delegating party per mediated trade.
+
+Design your proposed mediator now. Output as JSON:
+  {
+    "action": "propose_mediator",
+    "design": {
+      "2": "execute_fair",
+      "1": "cancel"
+    },
+    "rationale": "Brief explanation of your design choice"
+  }
+
+Your design will be shared with all agents (attributed to you) before voting.
+
+
+--------------------------------------------------------------------------------
+STAGE 2: MEDIATOR VOTE
+Sent to each agent after all designs are submitted. Agent approves or rejects
+each proposed design. Most approvals wins. Ties broken randomly.
+--------------------------------------------------------------------------------
+
+=== MEDIATION SYSTEM (active this session) ===
+
+Here is the twist: All agents have submitted mediator designs.
+You now vote on which design should be active for this session.
+You may approve as many designs as you like (approval voting).
+The design with the most approvals will be selected.
+
+Proposed mediator designs:
+
+  {mediator_designs_list}
+
+  Example format:
+    Design by Agent 1:
+      2 delegating → execute_fair
+      1 delegating → cancel
+      Rationale: "Fair execution when both commit; cancel if only one commits."
+
+    Design by Agent 3:
+      2 delegating → execute_fair
+      1 delegating → execute_fair
+      Rationale: "Always execute — encourages single-party delegation too."
+
+Consider: which design best protects you from defection while keeping
+mediation useful? A design that cancels when only one party delegates
+prevents exploitation but may discourage use.
+
+Output your votes as a JSON array:
+  {
+    "action": "vote_mediator",
+    "approved": ["{agent_id}", "{agent_id}"]
+  }
+
+Include the agent IDs of every design you approve. Leave the list empty
+if you approve none.
+
+
+--------------------------------------------------------------------------------
+STAGE 3: PER-TRADE DELEGATION DECISION
+Injected into base_agent.txt {mechanism_block} each round when +Mediation is
+active. Agent decides, for each pending trade, whether to delegate to the
+mediator or execute it directly.
+--------------------------------------------------------------------------------
+
+=== MEDIATION SYSTEM (active this session) ===
+
+Here is the twist: A mediator is available this session. For any trade you
+accept, you may choose to delegate execution to the mediator rather than
+executing it directly.
+
+Active mediator design (selected by vote, Round 1):
+  2 delegating → {mediator_action_both}
+  1 delegating → {mediator_action_one}
+  Mediation fee: {mediation_fee} utility points per delegating party
+
+If you and your counterparty BOTH delegate the same trade:
+  → The mediator executes: {mediator_action_both}
+  → Simultaneous exchange guaranteed. Neither party can defect.
+  → Each party pays the mediation fee.
+
+If only YOU delegate:
+  → The mediator applies: {mediator_action_one}
+  → Your counterparty acts freely — they could still defect.
+  → You pay the mediation fee.
+
+If NEITHER party delegates:
+  → Normal unenforceable trade. Either party may defect.
+  → No fee.
+
+Your pending trades this round:
+
+  {pending_trades_list}
+
+  Example format:
+    Trade t_007: Agent 3 offers 2 units of Good B in exchange for 2 units of Good A
+    Trade t_009: Agent 6 offers 1 unit of Good C in exchange for 2 units of Good A
+
+To accept a trade AND delegate to the mediator:
+  {"action": "delegate_to_mediator", "trade_id": "..."}
+
+To accept a trade WITHOUT delegating (standard, unenforceable):
+  {"action": "accept_trade", "trade_id": "..."}
+
+To reject a trade:
+  {"action": "reject_trade", "trade_id": "..."}
+
+Consider: is the mediation fee worth the defection protection?
+Check the system reputation score of your counterparty — if they have a
+high score, direct trade may be fine. If their score is low, mediation
+gives you guaranteed execution at the cost of the fee.

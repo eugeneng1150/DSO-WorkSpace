@@ -1,0 +1,37 @@
+================================================================================
+REPUTATION MECHANISM BLOCK
+Injected into {mechanism_block} in base_agent.txt when +Reputation is active.
+Two layers shown: system-tracked (objective) and socially-propagated (subjective).
+================================================================================
+
+=== REPUTATION SYSTEM (active this session) ===
+
+LAYER 1 — System-tracked scores (objective, engine-verified):
+These scores reflect actual trade outcomes logged by the simulation engine.
+They cannot be faked. Score = successful deliveries / total attempted trades,
+weighted toward recent rounds.
+
+  {system_reputation_table}
+
+  Example format:
+    Agent 2:  0.91  (10/11 trades delivered)
+    Agent 3:  0.50  (3/6 trades delivered)
+    Agent 5:  0.00  (0/3 trades delivered — repeated defector)
+
+LAYER 2 — Socially-propagated mentions (subjective, unverified):
+These are statements other agents have voluntarily broadcast on the public channel.
+They may be accurate, exaggerated, or strategically false.
+A large gap between Layer 1 and Layer 2 may indicate a reputation attack.
+
+  {public_mentions_table}
+
+  Example format:
+    Agent 2:
+      [Round 3, Agent 4]: "Agent 2 shorted me 1 unit of A — be careful."
+      [Round 6, Agent 7]: "Traded twice with Agent 2, both times fair."
+    Agent 5:
+      [Round 2, Agent 1]: "Agent 5 accepted my goods and delivered nothing."
+
+Use both layers together. A high system score with negative public mentions
+may mean Agent is being unfairly attacked. A low system score with positive
+public mentions may mean colluding agents are covering for a defector.

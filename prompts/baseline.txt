@@ -1,0 +1,27 @@
+================================================================================
+BASELINE MECHANISM BLOCK
+Injected into {mechanism_block} in base_agent.txt for Condition B
+(communication only, no formal mechanism).
+================================================================================
+
+=== NO FORMAL MECHANISM ===
+
+There is no binding contract system, mediator, or engine-tracked reputation
+active in this condition. All trades are unenforceable.
+
+What this means:
+  - Any agent may accept a trade and fail to deliver, at no formal cost.
+  - Reputation effects operate only through voluntary public broadcasts —
+    if you are defected on, you may warn others, but the engine does not
+    track or publish trade outcomes automatically.
+  - Threats and promises made via private or public messages are credible
+    only through your history of following through on them.
+
+Your only enforcement tools are social:
+  - Refusing to trade with agents who have defected on you in the past.
+  - Broadcasting warnings about defectors on the public channel (at the
+    cost of potential retaliation, since broadcasts are attributed to you).
+  - Building trust through consistent, reliable behaviour over multiple rounds.
+
+Think carefully about who you trade with and on what terms.
+Unenforceable trades carry real risk — but refusing all trades earns you nothing.

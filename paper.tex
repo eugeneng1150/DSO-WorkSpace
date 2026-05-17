@@ -1,0 +1,505 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{microtype}
+
+\onehalfspacing
+
+% --- Placeholder command ---
+% Usage: \placeholder{Description of figure/table to insert here}
+\newcommand{\placeholder}[1]{%
+  \begin{figure}[H]
+    \centering
+    \fbox{%
+      \begin{minipage}{0.85\textwidth}
+        \centering\vspace{1.5cm}
+        \textcolor{gray}{\textit{[PLACEHOLDER: #1]}}
+        \vspace{1.5cm}
+      \end{minipage}%
+    }
+  \end{figure}%
+}
+
+% --- Title block ---
+\title{\textbf{Formal Mechanisms for Market Stability in Self-Interested Agent Societies:\\
+A Marketplace Simulation Study}}
+
+\author{
+  Author Name\thanks{Affiliation. \texttt{email@institution.edu}}
+}
+
+\date{\today}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+\maketitle
+
+\begin{abstract}
+Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms — layered on top of unrestricted communication — are sufficient for a society of such agents to maintain market stability. We instantiate the research question as a multi-agent marketplace simulation where agents with complementary production specialties must trade to obtain utility. Cooperation yields a positive-sum surplus; without mechanisms, rational anticipation of defection suppresses trade and drives the society toward autarky. We test three formal mechanisms — Reputation, Contracting, and Mediation — individually and in combination across seven experimental conditions, measuring market stability through four social metrics: Efficiency, Equality, Sustainability, and Peace. Our results suggest that \ldots\ [to be completed after experiments].
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Introduction}
+\label{sec:introduction}
+% ============================================================
+
+The stability of cooperative societies is among the oldest problems in social science and, increasingly, in artificial intelligence. As multi-agent systems grow more capable and more autonomous, the question is no longer merely theoretical: what formal structures allow a population of self-interested agents to maintain collective welfare over time?
+
+Prior work in game theory identifies the core tension through \textit{sequential social dilemmas} — situations in which individually rational choices produce collectively suboptimal outcomes \citep{coopeval}. In the canonical Prisoner's Dilemma, two agents each defect because defection dominates cooperation regardless of the other's action, yet mutual defection leaves both worse off than mutual cooperation. Scaling this logic to multi-agent systems produces an analogous result: without intervention, populations converge toward all-defection equilibria.
+
+Recent empirical work confirms that modern large language models (LLMs), despite their social reasoning capabilities, exhibit this same failure mode. \citet{coopeval} show that all tested LLMs defect in every social dilemma without formal mechanisms in place. Communication alone is insufficient. Natural language promises are cheap and unverifiable; threats are credible only through repetition; warnings spread only through voluntary disclosure. The question is therefore not whether communication helps, but \textit{how much formal structure is needed on top of communication} to sustain societal cooperation.
+
+\subsection{Research Question}
+
+\begin{quote}
+\textit{What formal mechanisms, layered on top of communication, allow a society of self-interested agents to maintain market stability?}
+\end{quote}
+
+We instantiate this question as a \textbf{marketplace society}: a multi-agent environment in which agents hold complementary production specialties and must trade to obtain utility. The marketplace is a natural laboratory for this question because:
+
+\begin{itemize}
+  \item Cooperative surplus is structural — every agent benefits from trading, so there is always something to lose from defection.
+  \item Defection opportunities arise at every step — production, negotiation, and execution all admit exploitation.
+  \item Communication is realistic — agents negotiate, broadcast price signals, and propagate reputation information, mirroring real market behavior.
+\end{itemize}
+
+\subsection{Contributions}
+
+This paper makes the following contributions:
+
+\begin{enumerate}
+  \item A concrete simulation environment implementing a marketplace social dilemma with comparative advantage, private and public communication channels, and a natural defection surface.
+  \item A layered mechanism testing framework that benchmarks Reputation, Contracting, and Mediation — individually and in combination — against a communication-only baseline.
+  \item A measurement framework combining four social metrics (Efficiency, Equality, Sustainability, Peace) with intermediate behavioral variables to decompose mechanism effects.
+  \item A comparison of mechanism combinations to identify the minimum mechanism set required for market stability.
+\end{enumerate}
+
+\placeholder{Figure: Overview diagram of the marketplace society — agents, goods, channels, and mechanism layers. Suggested: a schematic with three agent nodes (A, B, C specialty), trade arrows, private/public channel distinction, and mechanism icons (contract scroll, mediator node, reputation badge).}
+
+% ============================================================
+\section{Related Work}
+\label{sec:related}
+% ============================================================
+
+\subsection{Cooperation in Multi-Agent Systems}
+
+The study of cooperation in multi-agent systems draws from game theory, evolutionary biology, and mechanism design. Classical results establish that cooperation is fragile without repeated interaction, punishment mechanisms, or binding agreements \citep{axelrod1984}. Evolutionary analyses using replicator dynamics show that without mechanisms, defecting strategies outcompete cooperators and the population converges to all-defection \citep{coopeval}.
+
+\subsection{LLM Agents in Social Dilemmas}
+
+\citet{gallego2024} study LLM policies in social dilemmas under dense versus sparse feedback. They find that providing agents with four social-metric signals — rather than a scalar reward alone — produces significantly more cooperative behavior, and identify five reward-hacking attack classes by which agents exploit metric definitions without improving actual social welfare.
+
+\citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding: all modern LLMs defect without mechanisms; Contracting and Mediation achieve near-perfect cooperation; Reputation has moderate standalone effectiveness but is important as a complement.
+
+\subsection{Large-Scale Agent Societies}
+
+\citet{agentsociety} introduce AgentSociety, a large-scale simulator supporting over 10,000 LLM agents with a mind-behavior coupling architecture (Needs, Emotion, Cognition modules) and a three-space environment (Urban, Social, Economic). Their validated experiments demonstrate that LLM agents produce recognizable emergent social dynamics at scale. We adapt their agent architecture for our marketplace setting.
+
+\subsection{Cooperative Resilience}
+
+\citet{chaconresilience} provide a formal definition of cooperative resilience and a four-stage measurement framework: pre-disruption baseline, disruption impact, adaptation, and recovery. They find that RL agents handle resource shocks better, while LLM agents handle social shocks (e.g., adversarial infiltration) better. Their operationalisation of cooperative stability informs our social metrics design.
+
+% ============================================================
+\section{Environment Setup}
+\label{sec:environment}
+% ============================================================
+
+\subsection{Goods and Comparative Advantage}
+
+The marketplace contains $K = 3$ distinct goods: $A$, $B$, and $C$. Each agent holds one \textit{production specialty}: they can produce their specialty good at low cost but cannot produce others.
+
+\begin{itemize}
+  \item \textbf{Production cost}: 1 utility unit per unit produced (specialty only).
+  \item \textbf{Consumption utility}: $+3$ utility units per unit of a \textit{needed} good consumed.
+  \item \textbf{Needed goods}: all goods except an agent's specialty.
+\end{itemize}
+
+This creates structural \textit{comparative advantage}: every agent gains more from trading than from autarky. With three agents (one of each specialty) all trading:
+
+\[
+\text{Net utility per agent per round} = 3 + 3 - 1 = +5 \quad \text{(receive 2 needed goods, produce 1)}
+\]
+
+With no trading:
+
+\[
+\text{Net utility per agent per round} = 0
+\]
+
+The cooperative surplus is not a payoff manipulation — it arises directly from the production and consumption structure.
+
+\placeholder{Figure: Goods and trade flow diagram. Suggested: triangle of three agents (A-producer, B-producer, C-producer) with directed trade arrows showing who supplies whom, and utility gain/cost annotations.}
+
+\subsection{Agent Population}
+
+The simulation runs with $N = 10$ agents. Agents are \textit{homogeneous}: all use the same underlying LLM (GPT-5.4 Nano, OpenAI). Specialties are distributed evenly across the three goods ($\lfloor N/3 \rfloor$ agents per specialty, remainder assigned by round-robin).
+
+Homogeneity is a deliberate design choice: mechanism effects are not confounded by differences in model capabilities across agents.
+
+\subsection{Round Structure}
+
+Each simulation run consists of $T = 30$ rounds. Each round proceeds through five phases:
+
+\begin{enumerate}
+  \item \textbf{Production phase} — each agent decides how many units to produce (0–5 units).
+  \item \textbf{Communication phase} — agents send private messages and public broadcasts; all agents read their inboxes before proceeding.
+  \item \textbf{Trade phase} — agents execute agreed trades; defection (accepting goods without delivering) is possible unless a mechanism prevents it.
+  \item \textbf{Consumption phase} — agents consume held goods and receive utility.
+  \item \textbf{Update phase} — reputation scores updated, contracts checked, social metrics and intermediate variables logged.
+\end{enumerate}
+
+\placeholder{Figure: Round structure timeline. Suggested: horizontal timeline with five labeled phases, arrows showing information flow between phases (e.g., communication informs trade decisions).}
+
+\subsection{Defection Surface}
+
+Defection opportunities arise at every phase:
+
+\begin{itemize}
+  \item \textbf{Under-produce}: promise to trade $N$ units but produce fewer, short-changing the counterparty.
+  \item \textbf{Renege}: accept received goods then refuse to transfer one's own.
+  \item \textbf{Misrepresent}: claim higher quality or quantity than delivered.
+  \item \textbf{Exploit}: offer unfavorable terms to agents with no alternative trading partners.
+\end{itemize}
+
+Without formal mechanisms, rational agents anticipate these possibilities and reduce trade volume, driving the society toward autarky (utility $\approx 0$).
+
+\subsection{Agent State}
+
+Each agent maintains the following state, visible to themselves and — where indicated — to others:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small, breaklines=true]
+inventory:          {good_A: int, good_B: int, good_C: int}
+utility_history:    [float]           -- running log of utility per round
+system_reputation:  {agent_id: float} -- engine-tracked (visible if +Reputation)
+public_mentions:    {agent_id: [str]} -- public channel statements about each agent
+pending_contracts:  [Contract]        -- signed but unexecuted contracts
+private_inbox:      [Message]         -- private messages received this round
+public_feed:        [Message]         -- all public broadcasts this round
+social_metrics:     {efficiency, equality, sustainability, peace}
+\end{lstlisting}
+
+Agents maintain a \textbf{memory window of the last 5 rounds per trading partner}, enabling relationship-building without unbounded context growth.
+
+% ============================================================
+\section{Communication Protocol}
+\label{sec:communication}
+% ============================================================
+
+Communication is \textbf{always enabled} across all experimental conditions — it is the baseline, not a treatment. Two channels operate simultaneously.
+
+\subsection{Private Channel}
+
+The private channel is bilateral: one sender, one recipient. Its content is invisible to all other agents. It is used for negotiation, contract proposals, side deals, and relationship maintenance.
+
+The private channel introduces two risks: (1) collusion between pairs of agents at the expense of third parties, and (2) deception — an agent may present one face publicly while defecting privately.
+
+\subsection{Public Channel}
+
+The public channel is a broadcast: all agents receive every public message, and the simulation engine logs it. Public messages are \textbf{attributed} — sender identity is always visible. Attribution makes whistleblowing a genuine risk-taking act (retaliation is possible) and false accusation a traceable offense.
+
+\subsection{The Second-Order Dilemma}
+
+The private/public channel design introduces a \textit{second-order social dilemma}: a victim of private defection must decide whether to broadcast a warning on the public channel. Broadcasting benefits the market (it propagates reputation information) but costs effort and risks retaliation from the defector. This dilemma is present in all conditions and is captured through the \textit{whistleblowing rate} intermediate variable (Section~\ref{sec:measurement}).
+
+\subsection{Mediator Channel Access}
+
+When the Mediation mechanism is active, the mediator observes both channels for trades it is involved in. This makes the mediator an honest broker: it cannot be deceived by a party claiming one thing publicly and doing another privately.
+
+\placeholder{Figure: Communication channel diagram. Suggested: two agents connected by a private channel (dashed, labeled ``bilateral, invisible'') and both connected to a public broadcast bus (solid, labeled ``attributed, all agents receive''). Mediator node shown with access to both channels.}
+
+% ============================================================
+\section{Formal Mechanisms}
+\label{sec:mechanisms}
+% ============================================================
+
+Each mechanism is a layer added on top of the communication baseline. We test each in isolation and in combination.
+
+\subsection{Baseline: Communication Only}
+
+No formal structure beyond communication. Defection is costless except through informal reputation that spreads via voluntary public broadcasts. This is the experimental control — it captures how far natural language coordination gets without enforcement.
+
+\subsection{Reputation (+R)}
+
+Two reputation layers are tracked simultaneously, reflecting the private/public channel distinction.
+
+\paragraph{Layer 1 — System-tracked (objective).}
+
+The simulation engine logs actual trade outcomes regardless of what agents say:
+
+\[
+\text{rep}(a) = \frac{\text{successful\_trades}(a)}{\text{total\_attempted\_trades}(a)} \quad \text{(exponentially decay-weighted toward recency)}
+\]
+
+This score is ground truth, visible to all agents in their state when the Reputation mechanism is active.
+
+\paragraph{Layer 2 — Socially-propagated (subjective).}
+
+What agents choose to say about each other on the public channel. Always present as part of the communication baseline, but unverified. An agent may have been defected on privately and choose to broadcast — or may be lying to damage a competitor.
+
+When +R is active, agents see both layers. The gap between Layer 1 and Layer 2 is itself informative: a high system score with negative public mentions may indicate a reputation attack; a low system score with positive mentions may indicate collusion.
+
+\subsection{Contracting (+C)}
+
+Agents may propose binding contracts via the private channel:
+
+\[
+\text{Contract} = \langle \text{parties}, \text{terms}, \text{penalty } P, \text{round } R \rangle
+\]
+
+If both parties sign, the simulation engine enforces the contract. A breaching agent pays penalty $P$ from their utility; the penalty transfers to the non-breaching party. The recommended penalty is $P = 2 \times \text{value of the breached good}$, making breach unprofitable.
+
+\subsection{Mediation (+M)}
+
+A mediator agent is available each session. Agents may delegate trade execution to the mediator via the \texttt{delegate\_to\_mediator(trade\_id)} action. If both counterparties delegate, the mediator executes a simultaneous fair exchange — neither party can defect on a mediated trade.
+
+The mediator charges a small fee per mediated trade, making mediation a real choice rather than a dominant strategy. At the start of each session, agents vote on a mediator design following the CoopEval protocol \citep{coopeval}.
+
+\subsection{Combined (+RCM)}
+
+All three mechanisms active simultaneously. Agents select which trades to handle through which mechanism on a per-trade basis.
+
+\placeholder{Table: Mechanism comparison table. Suggested: rows = Baseline / +R / +C / +M / +RCM, columns = Enforcement type / Information effect / Cost to agents / Predicted defection reduction. Fill with qualitative entries from the literature.}
+
+% ============================================================
+\section{Agent Architecture}
+\label{sec:agents}
+% ============================================================
+
+Each agent's reasoning loop follows the mind-behavior coupling architecture from \citet{agentsociety}, adapted for the marketplace setting.
+
+\subsection{LLM Reasoning Prompt}
+
+Each round, the agent receives a structured prompt:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small, breaklines=true]
+You are Agent {id}, a trader in a marketplace.
+Your specialty: you produce Good {X} at low cost.
+Your needs: you need Good {Y} and Good {Z} to gain utility.
+
+Current state:
+  Inventory: {inventory}
+  Last round utility: {last_utility}
+  Market health: Efficiency={e}, Equality={eq},
+                 Sustainability={s}, Peace={p}
+  [Reputation block — if +R active]
+  [Contract block  — if +C active]
+
+Messages received this round:
+  {private_inbox}
+  {public_feed}
+
+Pending trade offers:
+  {offers}
+
+Your goal is to maximise your total utility over all rounds.
+Decide your actions for this round. Output as JSON.
+\end{lstlisting}
+
+The four social metrics are included in \textit{every} condition, including the baseline. This implements the dense feedback finding from \citet{gallego2024} as a baseline feature, separate from the formal mechanisms under test.
+
+\subsection{Action Space}
+
+Agents may take any combination of the following actions per round:
+
+\begin{table}[H]
+\centering
+\caption{Agent action space}
+\label{tab:actions}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Action & Channel & Availability \\
+\midrule
+\texttt{produce(good, quantity)} & — & Always \\
+\texttt{send\_private(target, text)} & Private & Always \\
+\texttt{send\_public(text)} & Public & Always \\
+\texttt{propose\_trade(target, offer, request)} & Private & Always \\
+\texttt{accept\_trade(id)} / \texttt{reject\_trade(id)} & — & Always \\
+\texttt{defect\_trade(id)} & — & Always (if no enforcement) \\
+\texttt{propose\_contract(target, terms)} & Private & +C only \\
+\texttt{sign\_contract(id)} / \texttt{reject\_contract(id)} & — & +C only \\
+\texttt{delegate\_to\_mediator(trade\_id)} & Private & +M only \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+\section{Experimental Design}
+\label{sec:experiments}
+% ============================================================
+
+\subsection{Conditions}
+
+\begin{table}[H]
+\centering
+\caption{Experimental conditions}
+\label{tab:conditions}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Label & Mechanism & Agents & Rounds & Runs \\
+\midrule
+B   & Communication only        & 10 & 30 & 10 \\
+R   & +Reputation               & 10 & 30 & 10 \\
+C   & +Contracting              & 10 & 30 & 10 \\
+M   & +Mediation                & 10 & 30 & 10 \\
+RC  & +Reputation +Contracting  & 10 & 30 & 10 \\
+CM  & +Contracting +Mediation   & 10 & 30 & 10 \\
+RCM & All three                 & 10 & 30 & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Total: $7 \times 10 \times 30 = 2{,}100$ agent-rounds; approximately 21,000 LLM calls.
+
+% ============================================================
+\section{Measurement}
+\label{sec:measurement}
+% ============================================================
+
+\subsection{Primary Social Metrics}
+
+Four metrics are computed each round and fed back to agents. They jointly operationalise \textit{market stability}.
+
+\begin{table}[H]
+\centering
+\caption{Social metrics}
+\label{tab:metrics}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Metric & Formula & Interpretation \\
+\midrule
+Efficiency    & $\dfrac{\text{utility\_realized}}{\text{utility\_possible}}$ & Are trades completing? \\[8pt]
+Equality      & $1 - \text{Gini}(\text{utility\_per\_agent})$                 & Is surplus shared? \\[8pt]
+Sustainability & $\dfrac{\bar{p}_t}{\bar{p}_1}$                               & Is production holding up? \\[8pt]
+Peace         & $1 - \dfrac{\text{defections}}{\text{trade\_attempts}}$        & Are trades completing without breach? \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Market stability criterion}: all four metrics remain above 0.5 for the duration of the simulation after the mechanism reaches steady state.
+
+\subsection{Intermediate Variables}
+
+The following variables are logged per condition to decompose mechanism effects into direct (fewer defections) and indirect (better information propagation) channels. They are particularly important for interpreting the Reputation mechanism, whose effectiveness depends on agents resolving the second-order whistleblowing dilemma.
+
+\begin{table}[H]
+\centering
+\caption{Intermediate variables}
+\label{tab:intermediate}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Variable & Formula & Purpose \\
+\midrule
+Whistleblowing rate &
+  $\dfrac{\text{warnings\_broadcast}}{\text{defections\_suffered}}$ &
+  Direct vs. indirect mechanism effect \\[8pt]
+False accusation rate &
+  $\dfrac{\text{unverified\_neg\_mentions}}{\text{total\_neg\_mentions}}$ &
+  Reputation manipulation detection \\[8pt]
+Warning accuracy &
+  $\dfrac{\text{accurate\_warnings}}{\text{total\_warnings}}$ &
+  Reliability of social reputation layer \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\placeholder{Figure: Example time-series plots for all four social metrics across conditions B, C, and RCM over 30 rounds. Suggested: 2×2 panel (one panel per metric), with one line per condition.}
+
+\placeholder{Figure: Whistleblowing rate by condition. Suggested: bar chart, conditions on x-axis, mean whistleblowing rate on y-axis. Highlights differential effect of mechanisms on second-order dilemma resolution.}
+
+% ============================================================
+\section{Discussion}
+\label{sec:discussion}
+% ============================================================
+
+% [To be completed after experimental results are obtained.]
+
+\subsection{Expected Findings}
+
+Based on prior literature, we anticipate:
+
+\begin{itemize}
+  \item The baseline (B) will show partial cooperation — agents can coordinate through language — but fragile and volatile.
+  \item +Contracting (C) will produce the largest standalone gain in Efficiency and Peace, consistent with \citet{coopeval}.
+  \item +Mediation (M) will perform comparably to Contracting on Efficiency but will reduce Equality if the mediator fee is non-trivial.
+  \item +Reputation (R) alone will show moderate improvement; its effectiveness will be mediated by the whistleblowing rate.
+  \item The full stack (RCM) will sustain all four metrics above the market stability threshold.
+\end{itemize}
+
+\subsection{Open Questions}
+
+\begin{enumerate}
+  \item What is the minimum mechanism set for market stability — can Reputation alone suffice, or is Contracting always necessary?
+  \item Do mechanisms differentially affect the whistleblowing rate, and does this mediate their cooperative gains?
+\end{enumerate}
+
+\placeholder{Figure: Mechanism comparison radar chart. Suggested: quadrilateral axes = Efficiency, Equality, Sustainability, Peace; one polygon per condition. Visual summary of which mechanism dominates on which dimension.}
+
+% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% ============================================================
+
+% [To be completed after experimental results are obtained.]
+
+This paper presented a marketplace simulation framework for studying formal cooperation mechanisms in self-interested LLM agent societies. We specified an environment with structural comparative advantage, a natural defection surface, and two-channel communication (private and public, attributed). We designed a layered experimental framework testing Reputation, Contracting, Mediation, and their combinations against a communication-only baseline. Measurement covers four social metrics and intermediate behavioral variables.
+
+We expect the results to provide concrete guidance on the minimum mechanism stack required for market stability, and to advance understanding of how formal structure interacts with natural language coordination in multi-agent systems.
+
+% ============================================================
+% Bibliography
+% ============================================================
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem[Gallego et al.(2024)]{gallego2024}
+Gallego, V., et al. (2024).
+\textit{Cooperation and Exploitation in LLM-based Multi-Agent Systems}.
+Komorebi AI.
+
+\bibitem[Tewolde et al.(2024)]{coopeval}
+Tewolde, E., Zhang, J., et al. (2024).
+\textit{CoopEval: A Benchmark for Evaluating Cooperation Mechanisms in LLM Agents}.
+CMU / University of Toronto / ETH Zürich.
+
+\bibitem[Gao et al.(2024)]{agentsociety}
+Gao, C., et al. (2024).
+\textit{AgentSociety: Large-Scale Simulation of LLM-Driven Generative Agents for Social Science}.
+Tsinghua University.
+
+\bibitem[Chacon-Chamorro et al.(2024)]{chaconresilience}
+Chacon-Chamorro, D., et al. (2024).
+\textit{Cooperative Resilience in Artificial Intelligence Multiagent Systems}.
+Universidad de los Andes.
+
+\bibitem[Yang et al.(2024)]{aris}
+Yang, Z., et al. (2024).
+\textit{Autonomous Research via Intelligent Systems (ARIS)}.
+Shanghai Jiao Tong University.
+
+\bibitem[Axelrod(1984)]{axelrod1984}
+Axelrod, R. (1984).
+\textit{The Evolution of Cooperation}.
+Basic Books.
+
+\end{thebibliography}
+
+\end{document}

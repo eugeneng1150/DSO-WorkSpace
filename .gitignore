@@ -1,0 +1,16 @@
+# Environment
+.env
+venv/
+simulation/venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# Data outputs (large, reproducible)
+simulation/data/runs/
+simulation/data/plots/
+simulation/data/analyst_report_*.md
+.env.save
