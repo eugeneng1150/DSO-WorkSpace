@@ -15,13 +15,33 @@ CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
 COLORS = dict(zip(CONDITIONS, cm.tab10(np.linspace(0, 1, len(CONDITIONS)))))
 STABILITY_THRESHOLD = 0.5
 
+_UTILITY_CONSUME = 3
+_MAX_PRODUCE = 5
+_COST_PRODUCE = 1
+_N_AGENTS = 9
+_THEORETICAL_MAX = _UTILITY_CONSUME * _MAX_PRODUCE * 2 * _N_AGENTS
+
+
+def _fix_efficiency(run: dict) -> dict:
+    """Recompute efficiency using corrected formula: consumption utility / theoretical max."""
+    for rnd in run["rounds"]:
+        utilities = rnd.get("utilities", {})
+        production = rnd.get("production", {})
+        actual_utility = sum(float(v) for v in utilities.values())
+        production_cost = sum(float(v) for v in production.values()) * _COST_PRODUCE
+        eff = round(max(0.0, min(1.0, (actual_utility + production_cost) / max(_THEORETICAL_MAX, 1))), 4)
+        rnd["metrics"]["efficiency"] = eff
+    if run.get("final_metrics") and run["rounds"]:
+        run["final_metrics"]["efficiency"] = run["rounds"][-1]["metrics"]["efficiency"]
+    return run
+
 
 def _load_runs(condition: str) -> list[dict]:
     files = sorted(DATA_DIR.glob(f"{condition}_run_*.json"))
     runs = []
     for f in files:
         with open(f) as fp:
-            runs.append(json.load(fp))
+            runs.append(_fix_efficiency(json.load(fp)))
     return runs
 
 

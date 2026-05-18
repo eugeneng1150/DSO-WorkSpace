@@ -8,7 +8,7 @@ from datetime import datetime
 import numpy as np
 from openai import OpenAI
 
-from ..config import AZURE_ENDPOINT, MODEL
+from ..config import AZURE_ENDPOINT, MODEL, UTILITY_CONSUME, MAX_PRODUCE, COST_PRODUCE, N_AGENTS
 
 DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
 OUT_DIR = Path(__file__).parent.parent / "data"
@@ -22,6 +22,22 @@ client = OpenAI(
     base_url=AZURE_ENDPOINT,
 )
 
+_THEORETICAL_MAX = UTILITY_CONSUME * MAX_PRODUCE * 2 * N_AGENTS
+
+
+def _fix_efficiency(run: dict) -> dict:
+    """Recompute efficiency using corrected formula: consumption utility / theoretical max."""
+    for rnd in run["rounds"]:
+        utilities = rnd.get("utilities", {})
+        production = rnd.get("production", {})
+        actual_utility = sum(float(v) for v in utilities.values())
+        production_cost = sum(float(v) for v in production.values()) * COST_PRODUCE
+        eff = round(max(0.0, min(1.0, (actual_utility + production_cost) / max(_THEORETICAL_MAX, 1))), 4)
+        rnd["metrics"]["efficiency"] = eff
+    if run.get("final_metrics") and run["rounds"]:
+        run["final_metrics"]["efficiency"] = run["rounds"][-1]["metrics"]["efficiency"]
+    return run
+
 
 def _load_all_runs() -> dict[str, list[dict]]:
     data = {}
@@ -30,7 +46,7 @@ def _load_all_runs() -> dict[str, list[dict]]:
         runs = []
         for f in files:
             with open(f) as fp:
-                runs.append(json.load(fp))
+                runs.append(_fix_efficiency(json.load(fp)))
         if runs:
             data[condition] = runs
     return data

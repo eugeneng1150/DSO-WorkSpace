@@ -6,7 +6,7 @@ import math
 if TYPE_CHECKING:
     from ..engine.market import Market
 
-from ..config import UTILITY_CONSUME, GOODS, N_AGENTS
+from ..config import UTILITY_CONSUME, COST_PRODUCE, GOODS, N_AGENTS
 
 
 def _gini(values: list[float]) -> float:
@@ -28,15 +28,15 @@ def compute_metrics(market: "Market", round_utilities: dict[int, float]) -> dict
     agent_ids = market.agent_ids
     n = len(agent_ids)
 
-    # Efficiency: actual utility / theoretical max
-    # Theoretical max: every agent trades all complementary goods they need
-    # Upper bound approximation: each agent could earn UTILITY_CONSUME * MAX_PRODUCE * 2 needs
-    # Simpler: compare to round 1 baseline if set, else use fixed upper bound
+    # Efficiency: consumption utility realised / max possible consumption utility
+    # Strips out production cost so a round with no trades = 0, perfect trading = 1.
     from ..config import MAX_PRODUCE
-    theoretical_max_per_agent = UTILITY_CONSUME * MAX_PRODUCE * 2 - 0  # consume both needed goods
-    theoretical_max = theoretical_max_per_agent * n
+    current_prod = market.production_per_round[-1] if market.production_per_round else {}
+    production_cost_this_round = sum(current_prod.values()) * COST_PRODUCE
     actual_utility = sum(round_utilities.values())
-    efficiency = max(0.0, min(1.0, actual_utility / max(theoretical_max, 1)))
+    consumption_utility = actual_utility + production_cost_this_round
+    theoretical_max = UTILITY_CONSUME * MAX_PRODUCE * 2 * n
+    efficiency = max(0.0, min(1.0, consumption_utility / max(theoretical_max, 1)))
 
     # Equality: 1 - Gini coefficient of utility distribution
     utils = list(round_utilities.values())

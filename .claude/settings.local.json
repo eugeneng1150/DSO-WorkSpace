@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep -l \"compute_metrics\\\\|efficiency\\\\|gini\")",
+      "Bash(python3 *)"
+    ]
+  }
+}
