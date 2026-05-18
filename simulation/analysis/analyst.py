@@ -88,7 +88,7 @@ def _build_analyst_prompt(summary: dict) -> str:
     return f"""You are a research analyst reviewing the results of a multi-agent marketplace simulation.
 
 The simulation tests 8 conditions (B=baseline, R=+Reputation, C=+Contracting, M=+Mediation, RC, RM, CM, RCM).
-Each condition runs 10 independent sessions of 30 rounds with 9 LLM agents trading 3 goods.
+Each condition runs 5 independent sessions of 30 rounds with 9 LLM agents trading 3 goods.
 
 Research question: Which formal mechanism (or combination) allows a society of self-interested agents
 to maintain market stability? Market stability = all four social metrics (Efficiency, Equality,

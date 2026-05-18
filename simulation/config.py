@@ -17,7 +17,7 @@ MAX_PRODUCE = 5       # per round
 
 # Simulation parameters
 ROUNDS = 30
-RUNS_PER_CONDITION = 10
+RUNS_PER_CONDITION = 5
 MEMORY_WINDOW = 5     # rounds of partner history shown to agent
 
 # Mechanism parameters
