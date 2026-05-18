@@ -35,6 +35,7 @@ class Game:
         self.market = Market(agent_ids=agent_ids, goods=GOODS)
 
         self.round_logs: list[dict] = []
+        self.trace_log: list[dict] = []
         self._utility_history: dict[int, list[float]] = {a.agent_id: [] for a in agents}
 
     def run(self) -> list[dict]:
@@ -193,6 +194,17 @@ class Game:
             _staggered_call(agent, prompt, i * 0.1)
             for i, (agent, prompt) in enumerate(prompts.values())
         ])
+
+        for agent_id, (agent, _) in prompts.items():
+            if agent.last_raw_response:
+                self.trace_log.append({
+                    "round": round_num,
+                    "phase": phase,
+                    "agent_id": agent_id,
+                    "agent_type": type(agent).__name__,
+                    "specialty": agent.specialty,
+                    "reasoning": agent.last_raw_response,
+                })
 
         return {
             agent_id: actions

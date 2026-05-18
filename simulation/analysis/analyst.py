@@ -8,14 +8,19 @@ from datetime import datetime
 import numpy as np
 from openai import OpenAI
 
+from ..config import AZURE_ENDPOINT, MODEL
+
 DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
 OUT_DIR = Path(__file__).parent.parent / "data"
 
-CONDITIONS = ["B", "R", "C", "M", "RC", "CM", "RCM"]
+CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
 METRICS = ["efficiency", "equality", "sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+client = OpenAI(
+    api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
+    base_url=AZURE_ENDPOINT,
+)
 
 
 def _load_all_runs() -> dict[str, list[dict]]:
@@ -82,7 +87,7 @@ def _build_analyst_prompt(summary: dict) -> str:
     summary_text = json.dumps(summary, indent=2)
     return f"""You are a research analyst reviewing the results of a multi-agent marketplace simulation.
 
-The simulation tests 7 conditions (B=baseline, R=+Reputation, C=+Contracting, M=+Mediation, RC, CM, RCM).
+The simulation tests 8 conditions (B=baseline, R=+Reputation, C=+Contracting, M=+Mediation, RC, RM, CM, RCM).
 Each condition runs 10 independent sessions of 30 rounds with 9 LLM agents trading 3 goods.
 
 Research question: Which formal mechanism (or combination) allows a society of self-interested agents
@@ -107,7 +112,7 @@ Write a structured findings report covering:
 
 1. **Which conditions achieved market stability?** (stability_rate and final metric values)
 2. **Which single mechanism was most effective?** Compare R, C, M individually vs baseline B.
-3. **Do mechanism combinations outperform single mechanisms?** Compare RC, CM, RCM vs their components.
+3. **Do mechanism combinations outperform single mechanisms?** Compare RC, RM, CM, RCM vs their components.
 4. **What is the minimum sufficient mechanism set?**
 5. **Intermediate variable analysis**: Did mechanisms work through direct defection reduction (Peace up)
    or through improved information propagation (whistleblowing rate changed)?
@@ -118,7 +123,7 @@ Be specific — cite numbers from the summary. Flag where data is insufficient t
 """
 
 
-def run_analyst(model: str = "gpt-5.4-nano", save: bool = True) -> str:
+def run_analyst(model: str = MODEL, save: bool = True) -> str:
     print("Loading run logs...")
     all_runs = _load_all_runs()
     if not all_runs:

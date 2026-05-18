@@ -52,6 +52,7 @@ def run_condition(condition: str, runs: int = RUNS_PER_CONDITION) -> list[dict]:
         }
         summaries.append(summary)
         _save_run(condition, run_idx, summary)
+        _save_traces(condition, run_idx, game.trace_log)
 
     return summaries
 
@@ -70,3 +71,12 @@ def _save_run(condition: str, run_idx: int, data: dict) -> None:
     with open(filename, "w") as f:
         json.dump(data, f, indent=2)
     print(f"  Saved → {filename}")
+
+
+def _save_traces(condition: str, run_idx: int, traces: list[dict]) -> None:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    filename = DATA_DIR / f"{condition}_run_{run_idx:02d}_traces.jsonl"
+    with open(filename, "w") as f:
+        for entry in traces:
+            f.write(json.dumps(entry) + "\n")
+    print(f"  Saved traces → {filename} ({len(traces)} entries)")

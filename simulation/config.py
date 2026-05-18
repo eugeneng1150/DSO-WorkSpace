@@ -36,7 +36,7 @@ MAX_RETRIES = 3       # JSON parse retries per agent call
 COT_AGENT_IDS = {0, 1, 2, 3, 4, 5, 6, 7, 8}   # all agents
 
 # Experimental conditions
-CONDITIONS = ["B", "R", "C", "M", "RC", "CM", "RCM"]
+CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
 
 CONDITION_MECHANISMS = {
     "B":   [],
@@ -44,6 +44,7 @@ CONDITION_MECHANISMS = {
     "C":   ["contracting"],
     "M":   ["mediation"],
     "RC":  ["reputation", "contracting"],
+    "RM":  ["reputation", "mediation"],
     "CM":  ["contracting", "mediation"],
     "RCM": ["reputation", "contracting", "mediation"],
 }

@@ -50,6 +50,7 @@ class _BaseAgent:
         self.needs = needs
         self.last_utility: float = 0.0
         self.total_utility: float = 0.0
+        self.last_raw_response: str = ""
 
     def _suffix(self) -> str:
         raise NotImplementedError
@@ -65,6 +66,7 @@ class _BaseAgent:
                     temperature=0.7,
                 )
                 text = response.choices[0].message.content
+                self.last_raw_response = text
                 return _extract_json(text)
             except RateLimitError:
                 wait = backoff * (2 ** attempt)
