@@ -56,7 +56,7 @@ def _fmt_partner_history(market: "Market", agent_id: int) -> str:
             outcome = t.status.upper()
             lines.append(
                 f"    Round {t.round_num}: offered {t.offer_qty}×{t.offer_good} "
-                f"for {t.request_qty}×{t.request_good} — {outcome}"
+                f"for {t.price} tokens — {outcome}"
             )
     return "\n".join(lines)
 
@@ -83,7 +83,8 @@ def _fmt_pending_offers(market: "Market", agent_id: int) -> str:
         return "  (none)"
     return "\n".join(
         f"  Trade {o.trade_id}: Agent {o.proposer_id} offers "
-        f"{o.offer_qty}×Good {o.offer_good} for {o.request_qty}×Good {o.request_good}"
+        f"{o.offer_qty}×Good {o.offer_good} for {o.price} tokens"
+        f"{' (seller delegated to mediator)' if o.proposer_delegated else ''}"
         for o in offers
     )
 
@@ -125,15 +126,18 @@ def _fmt_public_mentions(market: "Market", agent_id: int) -> str:
 def _fmt_active_contracts(contracts: list["Contract"], agent_id: int) -> str:
     if not contracts:
         return "  (none)"
+    def fmt_asset(qty: int, asset: str) -> str:
+        return f"{qty} tokens" if asset == "TOKENS" else f"{qty}×Good {asset}"
+
     lines = []
     for c in contracts:
         if c.proposer_id == agent_id:
-            my_del = f"{c.proposer_delivers_qty}×Good {c.proposer_delivers_good}"
-            their_del = f"{c.counterparty_delivers_qty}×Good {c.counterparty_delivers_good}"
+            my_del = fmt_asset(c.proposer_delivers_qty, c.proposer_delivers_good)
+            their_del = fmt_asset(c.counterparty_delivers_qty, c.counterparty_delivers_good)
             partner = c.counterparty_id
         else:
-            my_del = f"{c.counterparty_delivers_qty}×Good {c.counterparty_delivers_good}"
-            their_del = f"{c.proposer_delivers_qty}×Good {c.proposer_delivers_good}"
+            my_del = fmt_asset(c.counterparty_delivers_qty, c.counterparty_delivers_good)
+            their_del = fmt_asset(c.proposer_delivers_qty, c.proposer_delivers_good)
             partner = c.proposer_id
         lines.append(
             f"  Contract {c.contract_id}:\n"
@@ -250,6 +254,27 @@ def _build_mechanism_block(
     return "\n\n".join(blocks)
 
 
+def _build_mechanism_actions(mechanisms: list[str], agent_id: int) -> str:
+    actions = []
+    if "contracting" in mechanisms:
+        actions.extend([
+            f'  {{"action": "propose_contract", "target": "{agent_id}", "terms": {{"i_deliver": {{"good": "A"|"B"|"C"|"TOKENS", "quantity": int}}, "they_deliver": {{"good": "A"|"B"|"C"|"TOKENS", "quantity": int}}, "breach_penalty": int, "execution_round": int}}}}',
+            '  {"action": "sign_contract", "contract_id": "..."}',
+            '  {"action": "reject_contract", "contract_id": "..."}',
+        ])
+    if "mediation" in mechanisms:
+        actions.append('  {"action": "delegate_to_mediator", "trade_id": "..."}')
+
+    if not actions:
+        return ""
+
+    return (
+        "Available actions for active mechanisms:\n"
+        + "\n".join(actions)
+        + "\n"
+    )
+
+
 def build_prompt(
     agent_id: int,
     specialty: str,
@@ -264,6 +289,7 @@ def build_prompt(
     inv_a, inv_b, inv_c = _fmt_inventory(market, agent_id)
 
     mechanism_block = _build_mechanism_block(mechanisms, market, agent_id, stage_overrides)
+    mechanism_actions = _build_mechanism_actions(mechanisms, agent_id)
 
     prompt = _BASE
     prompt = prompt.replace("{agent_id}", str(agent_id))
@@ -273,10 +299,9 @@ def build_prompt(
     prompt = prompt.replace("{inv_A}", inv_a)
     prompt = prompt.replace("{inv_B}", inv_b)
     prompt = prompt.replace("{inv_C}", inv_c)
+    prompt = prompt.replace("{tokens}", str(market.tokens.get(agent_id, 0)))
     prompt = prompt.replace("{last_utility}", f"{last_utility:.1f}")
     prompt = prompt.replace("{total_utility}", f"{total_utility:.1f}")
-    prompt = prompt.replace("{efficiency:.2f}", f"{metrics.get('efficiency', 0):.2f}")
-    prompt = prompt.replace("{equality:.2f}", f"{metrics.get('equality', 0):.2f}")
     prompt = prompt.replace("{sustainability:.2f}", f"{metrics.get('sustainability', 0):.2f}")
     prompt = prompt.replace("{peace:.2f}", f"{metrics.get('peace', 0):.2f}")
     prompt = prompt.replace("{partner_history}", _fmt_partner_history(market, agent_id))
@@ -284,5 +309,6 @@ def build_prompt(
     prompt = prompt.replace("{public_feed}", _fmt_public_feed(market))
     prompt = prompt.replace("{pending_offers}", _fmt_pending_offers(market, agent_id))
     prompt = prompt.replace("{mechanism_block}", mechanism_block)
+    prompt = prompt.replace("{mechanism_actions}", mechanism_actions)
 
     return prompt

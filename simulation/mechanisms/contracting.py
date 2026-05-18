@@ -23,11 +23,16 @@ class ContractingMechanism(Mechanism):
             if contract.status != "signed" or contract.execution_round != round_num:
                 continue
 
-            proposer_inv = market.inventories[contract.proposer_id]
-            counterparty_inv = market.inventories[contract.counterparty_id]
-
-            proposer_breached = proposer_inv.get(contract.proposer_delivers_good, 0) < contract.proposer_delivers_qty
-            counterparty_breached = counterparty_inv.get(contract.counterparty_delivers_good, 0) < contract.counterparty_delivers_qty
+            proposer_breached = not market.can_deliver_asset(
+                contract.proposer_id,
+                contract.proposer_delivers_good,
+                contract.proposer_delivers_qty,
+            )
+            counterparty_breached = not market.can_deliver_asset(
+                contract.counterparty_id,
+                contract.counterparty_delivers_good,
+                contract.counterparty_delivers_qty,
+            )
 
             if proposer_breached:
                 self._apply_breach(market, contract.proposer_id, contract.counterparty_id, contract.breach_penalty)
@@ -37,11 +42,11 @@ class ContractingMechanism(Mechanism):
                 contract.status = "breached"
             else:
                 # Both can deliver — execute the exchange
-                market.transfer_goods(
+                market.transfer_asset(
                     contract.proposer_id, contract.counterparty_id,
                     contract.proposer_delivers_good, contract.proposer_delivers_qty
                 )
-                market.transfer_goods(
+                market.transfer_asset(
                     contract.counterparty_id, contract.proposer_id,
                     contract.counterparty_delivers_good, contract.counterparty_delivers_qty
                 )
@@ -55,6 +60,7 @@ class ContractingMechanism(Mechanism):
         market._penalty_ledger[breacher_id] = (
             market._penalty_ledger.get(breacher_id, 0) + penalty
         )
+        # Negative entry: consumed_utility -= negative_value adds penalty as compensation
         market._penalty_ledger[victim_id] = (
             market._penalty_ledger.get(victim_id, 0) - penalty
         )

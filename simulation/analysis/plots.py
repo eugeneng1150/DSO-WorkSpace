@@ -6,42 +6,22 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 
+from ..config import COOPERATION_THRESHOLD
+
 DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
 OUT_DIR = Path(__file__).parent.parent / "data" / "plots"
 
-METRICS = ["efficiency", "equality", "sustainability", "peace"]
+METRICS = ["sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
 COLORS = dict(zip(CONDITIONS, cm.tab10(np.linspace(0, 1, len(CONDITIONS)))))
-STABILITY_THRESHOLD = 0.5
-
-_UTILITY_CONSUME = 3
-_MAX_PRODUCE = 5
-_COST_PRODUCE = 1
-_N_AGENTS = 9
-_THEORETICAL_MAX = _UTILITY_CONSUME * _MAX_PRODUCE * 2 * _N_AGENTS
-
-
-def _fix_efficiency(run: dict) -> dict:
-    """Recompute efficiency using corrected formula: consumption utility / theoretical max."""
-    for rnd in run["rounds"]:
-        utilities = rnd.get("utilities", {})
-        production = rnd.get("production", {})
-        actual_utility = sum(float(v) for v in utilities.values())
-        production_cost = sum(float(v) for v in production.values()) * _COST_PRODUCE
-        eff = round(max(0.0, min(1.0, (actual_utility + production_cost) / max(_THEORETICAL_MAX, 1))), 4)
-        rnd["metrics"]["efficiency"] = eff
-    if run.get("final_metrics") and run["rounds"]:
-        run["final_metrics"]["efficiency"] = run["rounds"][-1]["metrics"]["efficiency"]
-    return run
-
 
 def _load_runs(condition: str) -> list[dict]:
     files = sorted(DATA_DIR.glob(f"{condition}_run_*.json"))
     runs = []
     for f in files:
         with open(f) as fp:
-            runs.append(_fix_efficiency(json.load(fp)))
+            runs.append(json.load(fp))
     return runs
 
 
@@ -71,9 +51,8 @@ def _mean_round_field(runs: list[dict], field: str) -> list[float]:
 # ── Existing plots (updated for 8 conditions) ────────────────────────────────
 
 def plot_metric_trajectories(save: bool = True) -> None:
-    """2x2 panel: one subplot per metric, all conditions over rounds."""
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-    axes = axes.flatten()
+    """One subplot per marketplace cooperation metric, all conditions over rounds."""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
     for ax, metric in zip(axes, METRICS):
         for condition in CONDITIONS:
@@ -84,7 +63,7 @@ def plot_metric_trajectories(save: bool = True) -> None:
             rounds = list(range(1, len(trajectory) + 1))
             ax.plot(rounds, trajectory, label=condition, color=COLORS[condition], linewidth=1.8)
 
-        ax.axhline(STABILITY_THRESHOLD, color="black", linestyle="--", linewidth=0.8, alpha=0.5, label="stability threshold")
+        ax.axhline(COOPERATION_THRESHOLD, color="black", linestyle="--", linewidth=0.8, alpha=0.5, label="cooperation threshold")
         ax.set_title(metric.capitalize())
         ax.set_xlabel("Round")
         ax.set_ylabel(metric)
@@ -92,7 +71,7 @@ def plot_metric_trajectories(save: bool = True) -> None:
         ax.legend(fontsize=8)
         ax.grid(True, alpha=0.3)
 
-    fig.suptitle("Social Metrics Over Rounds by Condition", fontsize=14, fontweight="bold")
+    fig.suptitle("Marketplace Cooperation Metrics Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout()
     _maybe_save(fig, "metric_trajectories.png", save)
 
@@ -180,38 +159,38 @@ def plot_intermediate_variables(save: bool = True) -> None:
 
 # ── New plots ─────────────────────────────────────────────────────────────────
 
-def plot_stability_rates(save: bool = True) -> None:
-    """Bar chart: fraction of runs achieving market stability per condition."""
+def plot_marketplace_cooperation_rates(save: bool = True) -> None:
+    """Bar chart: fraction of runs achieving marketplace cooperation per condition."""
     labels, rates = [], []
     for condition in CONDITIONS:
         runs = _load_runs(condition)
         if not runs:
             continue
-        stable = sum(
+        cooperative = sum(
             1 for run in runs
             if all(
-                run["rounds"][-1]["metrics"].get(m, 0) >= STABILITY_THRESHOLD
+                run["rounds"][-1]["metrics"].get(m, 0) > COOPERATION_THRESHOLD
                 for m in METRICS
             )
         )
         labels.append(condition)
-        rates.append(stable / len(runs))
+        rates.append(cooperative / len(runs))
 
     fig, ax = plt.subplots(figsize=(10, 5))
     x = np.arange(len(labels))
     bars = ax.bar(x, rates, color=[COLORS[c] for c in labels], alpha=0.85)
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    ax.set_ylabel("Stability rate (fraction of runs)")
+    ax.set_ylabel("Marketplace cooperation rate")
     ax.set_ylim(0, 1.1)
     ax.axhline(1.0, color="green", linestyle="--", linewidth=0.8, alpha=0.5)
     for bar, rate in zip(bars, rates):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
                 f"{rate:.0%}", ha="center", va="bottom", fontsize=9, fontweight="bold")
-    ax.set_title("Market Stability Rate by Condition\n(all 4 metrics ≥ 0.5 at round 30)", fontweight="bold")
+    ax.set_title("Marketplace Cooperation Rate by Condition\n(Sustainability and Peace > 0.5 at final round)", fontweight="bold")
     ax.grid(axis="y", alpha=0.3)
     plt.tight_layout()
-    _maybe_save(fig, "stability_rates.png", save)
+    _maybe_save(fig, "marketplace_cooperation_rates.png", save)
 
 
 def plot_defection_trajectory(save: bool = True) -> None:
@@ -411,7 +390,7 @@ def plot_all(save: bool = True) -> None:
     plot_final_metrics_heatmap(save)
     plot_defection_rates(save)
     plot_intermediate_variables(save)
-    plot_stability_rates(save)
+    plot_marketplace_cooperation_rates(save)
     plot_defection_trajectory(save)
     plot_trade_volume(save)
     plot_contract_utilisation(save)

@@ -1,46 +1,20 @@
-"""Compute all 7 metrics per round from market state."""
+"""Compute marketplace cooperation metrics per round from market state."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import math
 
 if TYPE_CHECKING:
     from ..engine.market import Market
 
-from ..config import UTILITY_CONSUME, COST_PRODUCE, GOODS, N_AGENTS
-
-
-def _gini(values: list[float]) -> float:
-    if not values or sum(values) == 0:
-        return 0.0
-    n = len(values)
-    sorted_v = sorted(values)
-    cumsum = 0.0
-    for i, v in enumerate(sorted_v):
-        cumsum += (2 * (i + 1) - n - 1) * v
-    return cumsum / (n * sum(sorted_v))
+from ..config import COOPERATION_THRESHOLD
 
 
 def compute_metrics(market: "Market", round_utilities: dict[int, float]) -> dict[str, float]:
     """
     round_utilities: {agent_id: utility_this_round}
-    Returns dict with efficiency, equality, sustainability, peace + intermediate variables.
+    Returns dict with sustainability, peace + intermediate variables.
     """
     agent_ids = market.agent_ids
     n = len(agent_ids)
-
-    # Efficiency: consumption utility realised / max possible consumption utility
-    # Strips out production cost so a round with no trades = 0, perfect trading = 1.
-    from ..config import MAX_PRODUCE
-    current_prod = market.production_per_round[-1] if market.production_per_round else {}
-    production_cost_this_round = sum(current_prod.values()) * COST_PRODUCE
-    actual_utility = sum(round_utilities.values())
-    consumption_utility = actual_utility + production_cost_this_round
-    theoretical_max = UTILITY_CONSUME * MAX_PRODUCE * 2 * n
-    efficiency = max(0.0, min(1.0, consumption_utility / max(theoretical_max, 1)))
-
-    # Equality: 1 - Gini coefficient of utility distribution
-    utils = list(round_utilities.values())
-    equality = 1.0 - _gini(utils)
 
     # Sustainability: avg production this round / avg production round 1
     current_prod = market.production_per_round[-1] if market.production_per_round else {}
@@ -78,8 +52,6 @@ def compute_metrics(market: "Market", round_utilities: dict[int, float]) -> dict
     warning_accuracy = accurate_warnings / max(total_warnings, 1)
 
     return {
-        "efficiency": round(efficiency, 4),
-        "equality": round(equality, 4),
         "sustainability": round(sustainability, 4),
         "peace": round(peace, 4),
         "whistleblowing_rate": round(whistleblowing_rate, 4),
@@ -88,6 +60,9 @@ def compute_metrics(market: "Market", round_utilities: dict[int, float]) -> dict
     }
 
 
-def is_stable(metrics: dict[str, float], threshold: float = 0.5) -> bool:
-    core = ["efficiency", "equality", "sustainability", "peace"]
-    return all(metrics.get(k, 0) >= threshold for k in core)
+def achieves_marketplace_cooperation(
+    metrics: dict[str, float],
+    threshold: float = COOPERATION_THRESHOLD,
+) -> bool:
+    core = ["sustainability", "peace"]
+    return all(metrics.get(k, 0) > threshold for k in core)

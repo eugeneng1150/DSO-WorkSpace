@@ -22,9 +22,9 @@ class TradeOffer:
     target_id: int
     offer_good: str
     offer_qty: int
-    request_good: str
-    request_qty: int
+    price: int
     round_num: int
+    proposer_delegated: bool = False
     status: str = "pending"   # pending | accepted | rejected | completed | defected | mediated
 
 
@@ -61,6 +61,8 @@ class Market:
         self.inventories: dict[int, dict[str, int]] = {
             aid: {g: 0 for g in goods} for aid in agent_ids
         }
+        from ..config import STARTING_TOKENS
+        self.tokens: dict[int, int] = {aid: STARTING_TOKENS for aid in agent_ids}
 
         # Message queues (reset each round)
         self.private_inboxes: dict[int, list[Message]] = {aid: [] for aid in agent_ids}
@@ -144,7 +146,6 @@ class Market:
             victim = trade.target_id if defected_by == trade.proposer_id else trade.proposer_id
             self.defections_suffered[victim] = self.defections_suffered.get(victim, 0) + 1
             self._update_reputation(defected_by, success=False)
-            self._update_reputation(victim, success=True)
         else:
             self._update_reputation(trade.proposer_id, success=True)
             self._update_reputation(trade.target_id, success=True)
@@ -168,9 +169,26 @@ class Market:
                 history.setdefault(partner, []).append(t)
         return history
 
+    def can_deliver_asset(self, agent_id: int, asset: str, qty: int) -> bool:
+        if asset == "TOKENS":
+            return self.tokens.get(agent_id, 0) >= qty
+        return self.inventories[agent_id].get(asset, 0) >= qty
+
+    def transfer_asset(self, from_id: int, to_id: int, asset: str, qty: int) -> bool:
+        if asset == "TOKENS":
+            return self.transfer_tokens(from_id, to_id, qty)
+        return self.transfer_goods(from_id, to_id, asset, qty)
+
     def transfer_goods(self, from_id: int, to_id: int, good: str, qty: int) -> bool:
         if self.inventories[from_id][good] < qty:
             return False
         self.inventories[from_id][good] -= qty
         self.inventories[to_id][good] += qty
+        return True
+
+    def transfer_tokens(self, from_id: int, to_id: int, amount: int) -> bool:
+        if amount < 0 or self.tokens.get(from_id, 0) < amount:
+            return False
+        self.tokens[from_id] -= amount
+        self.tokens[to_id] += amount
         return True

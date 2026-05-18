@@ -12,8 +12,10 @@ AGENTS_PER_GOOD = 3
 
 # Utility values
 UTILITY_CONSUME = 3   # per unit of needed good consumed
-COST_PRODUCE = 1      # per unit produced
+COST_PRODUCE = 1      # tokens per unit produced
 MAX_PRODUCE = 5       # per round
+STARTING_TOKENS = 20  # initial budget per agent
+FAIR_PRICE = 2        # suggested fair token price per unit
 
 # Simulation parameters
 ROUNDS = 30
@@ -24,8 +26,8 @@ MEMORY_WINDOW = 5     # rounds of partner history shown to agent
 MEDIATION_FEE = 1
 DEFAULT_BREACH_PENALTY = 6   # 2x utility value of one unit
 
-# Stability threshold (all metrics must exceed this)
-STABILITY_THRESHOLD = 0.5
+# Marketplace cooperation threshold (Sustainability and Peace must exceed this)
+COOPERATION_THRESHOLD = 0.5
 
 # LLM
 AZURE_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/openai/v1"

@@ -96,9 +96,7 @@ producing one good and needs the other two. Agents can cooperate (fair trade) or
 (take goods without reciprocating).
 
 Condition: {condition} — {mechanism_label}
-Final metrics: efficiency={_fmt(final_metrics.get('efficiency'))}, \
-equality={_fmt(final_metrics.get('equality'))}, \
-sustainability={_fmt(final_metrics.get('sustainability'))}, \
+Final marketplace cooperation metrics: sustainability={_fmt(final_metrics.get('sustainability'))}, \
 peace={_fmt(final_metrics.get('peace'))}
 Total defections across all rounds: {total_defections}
 

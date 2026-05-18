@@ -20,7 +20,7 @@ class MediationMechanism(Mechanism):
     async def _design_and_vote(self, market: "Market", agents: list["_BaseAgent"]) -> None:
         from ..engine.prompt_builder import build_prompt
 
-        metrics = {k: 1.0 for k in ["efficiency", "equality", "sustainability", "peace"]}
+        metrics = {k: 1.0 for k in ["sustainability", "peace"]}
 
         # Stage 1: all agents propose a design
         design_prompts = [

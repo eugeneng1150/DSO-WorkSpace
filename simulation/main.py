@@ -2,7 +2,7 @@
 
 Usage:
     python -m simulation.main --condition B          # run one condition
-    python -m simulation.main --all                  # run all 7 conditions
+    python -m simulation.main --all                  # run all 8 conditions
     python -m simulation.main --analyse              # run analyst agent on existing logs
     python -m simulation.main --plot                 # generate plots from existing logs
     python -m simulation.main --all --plot --analyse # full pipeline

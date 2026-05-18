@@ -8,36 +8,19 @@ from datetime import datetime
 import numpy as np
 from openai import OpenAI
 
-from ..config import AZURE_ENDPOINT, MODEL, UTILITY_CONSUME, MAX_PRODUCE, COST_PRODUCE, N_AGENTS
+from ..config import AZURE_ENDPOINT, MODEL, COOPERATION_THRESHOLD
 
 DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
 OUT_DIR = Path(__file__).parent.parent / "data"
 
 CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
-METRICS = ["efficiency", "equality", "sustainability", "peace"]
+METRICS = ["sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 
 client = OpenAI(
     api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
     base_url=AZURE_ENDPOINT,
 )
-
-_THEORETICAL_MAX = UTILITY_CONSUME * MAX_PRODUCE * 2 * N_AGENTS
-
-
-def _fix_efficiency(run: dict) -> dict:
-    """Recompute efficiency using corrected formula: consumption utility / theoretical max."""
-    for rnd in run["rounds"]:
-        utilities = rnd.get("utilities", {})
-        production = rnd.get("production", {})
-        actual_utility = sum(float(v) for v in utilities.values())
-        production_cost = sum(float(v) for v in production.values()) * COST_PRODUCE
-        eff = round(max(0.0, min(1.0, (actual_utility + production_cost) / max(_THEORETICAL_MAX, 1))), 4)
-        rnd["metrics"]["efficiency"] = eff
-    if run.get("final_metrics") and run["rounds"]:
-        run["final_metrics"]["efficiency"] = run["rounds"][-1]["metrics"]["efficiency"]
-    return run
-
 
 def _load_all_runs() -> dict[str, list[dict]]:
     data = {}
@@ -46,7 +29,7 @@ def _load_all_runs() -> dict[str, list[dict]]:
         runs = []
         for f in files:
             with open(f) as fp:
-                runs.append(_fix_efficiency(json.load(fp)))
+                runs.append(json.load(fp))
         if runs:
             data[condition] = runs
     return data
@@ -74,17 +57,17 @@ def _summarize(all_runs: dict[str, list[dict]]) -> dict:
                 ),
             }
 
-        # Stability: fraction of runs where all 4 metrics > 0.5 at end
-        stable_runs = sum(
+        # Marketplace cooperation: final Sustainability and Peace both exceed threshold.
+        cooperative_runs = sum(
             1 for run in runs
             if all(
-                run["rounds"][-1]["metrics"].get(m, 0) >= 0.5
+                run["rounds"][-1]["metrics"].get(m, 0) > COOPERATION_THRESHOLD
                 for m in METRICS
             )
         )
-        cond_summary["stable_runs"] = stable_runs
+        cond_summary["cooperative_runs"] = cooperative_runs
         cond_summary["total_runs"] = len(runs)
-        cond_summary["stability_rate"] = round(stable_runs / max(len(runs), 1), 3)
+        cond_summary["marketplace_cooperation_rate"] = round(cooperative_runs / max(len(runs), 1), 3)
 
         # Total defections across all rounds and runs
         total_defections = sum(
@@ -106,13 +89,12 @@ def _build_analyst_prompt(summary: dict) -> str:
 The simulation tests 8 conditions (B=baseline, R=+Reputation, C=+Contracting, M=+Mediation, RC, RM, CM, RCM).
 Each condition runs 5 independent sessions of 30 rounds with 9 LLM agents trading 3 goods.
 
-Research question: Which formal mechanism (or combination) allows a society of self-interested agents
-to maintain market stability? Market stability = all four social metrics (Efficiency, Equality,
-Sustainability, Peace) above 0.5 by end of simulation.
+Research question: Which formal mechanism (or combination) allows self-interested agents
+to maintain marketplace cooperation in a repeated trading environment?
 
-Social metrics:
-- Efficiency: fraction of possible gains from trade realised
-- Equality: how evenly utility is distributed (1 = perfectly equal)
+Marketplace cooperation is achieved when final-round Sustainability and Peace both exceed 0.5.
+
+Primary metrics:
 - Sustainability: whether production is maintained vs round 1 baseline
 - Peace: fraction of trades completing without defection
 
@@ -126,7 +108,7 @@ Simulation summary statistics:
 
 Write a structured findings report covering:
 
-1. **Which conditions achieved market stability?** (stability_rate and final metric values)
+1. **Which conditions achieved marketplace cooperation?** (marketplace_cooperation_rate and final metric values)
 2. **Which single mechanism was most effective?** Compare R, C, M individually vs baseline B.
 3. **Do mechanism combinations outperform single mechanisms?** Compare RC, RM, CM, RCM vs their components.
 4. **What is the minimum sufficient mechanism set?**
