@@ -1,5 +1,6 @@
 """Central market state: inventories, message queues, trade ledger, contracts, mediation."""
 from __future__ import annotations
+import re
 import uuid
 from dataclasses import dataclass, field
 from typing import Optional
@@ -109,12 +110,23 @@ class Market:
                 self.warnings_broadcast[msg.sender_id] = (
                     self.warnings_broadcast.get(msg.sender_id, 0) + 1
                 )
+                target = self._extract_mentioned_agent(msg.text)
+                if target is not None:
+                    self.negative_mentions.append({
+                        "sender": msg.sender_id,
+                        "target": target,
+                        "round": msg.round_num,
+                    })
         else:
             self.private_inboxes[msg.recipient_id].append(msg)
 
     def _is_negative_mention(self, text: str) -> bool:
         keywords = ["defect", "cheat", "short", "failed", "breach", "warn", "didn't deliver", "stole"]
         return any(k in text.lower() for k in keywords)
+
+    def _extract_mentioned_agent(self, text: str) -> Optional[int]:
+        match = re.search(r'Agent (\d+)', text)
+        return int(match.group(1)) if match else None
 
     def post_trade_offer(self, offer: TradeOffer):
         self.pending_offers[offer.target_id].append(offer)

@@ -44,6 +44,7 @@ def run_condition(condition: str, runs: int = RUNS_PER_CONDITION) -> list[dict]:
             "condition": condition,
             "run": run_idx,
             "timestamp": datetime.utcnow().isoformat(),
+            "session_log": game.session_log,
             "rounds": round_logs,
             "final_metrics": round_logs[-1]["metrics"] if round_logs else {},
             "agent_types": {

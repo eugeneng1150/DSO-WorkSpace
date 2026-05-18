@@ -36,6 +36,7 @@ class Game:
 
         self.round_logs: list[dict] = []
         self.trace_log: list[dict] = []
+        self.session_log: dict = {}
         self._utility_history: dict[int, list[float]] = {a.agent_id: [] for a in agents}
 
     def run(self) -> list[dict]:
@@ -46,6 +47,36 @@ class Game:
         # Session start hooks (e.g. mediation design/vote)
         for mech in self.mechanisms:
             mech.on_session_start(self.market, self.agents)
+
+        # Capture one-time session state after setup
+        if self.market.mediator_designs:
+            approval_counts: dict[int, int] = {}
+            for approved_ids in self.market.mediation_votes.values():
+                for did in approved_ids:
+                    approval_counts[did] = approval_counts.get(did, 0) + 1
+            self.session_log["mediator_designs"] = [
+                {
+                    "designer_id": d.designer_id,
+                    "action_both": d.action_both,
+                    "action_one": d.action_one,
+                    "rationale": d.rationale,
+                    "approval_votes": approval_counts.get(d.designer_id, 0),
+                }
+                for d in self.market.mediator_designs
+            ]
+            self.session_log["mediation_votes"] = {
+                str(voter): approved
+                for voter, approved in self.market.mediation_votes.items()
+            }
+            if self.market.active_mediator:
+                m = self.market.active_mediator
+                self.session_log["elected_mediator"] = {
+                    "designer_id": m.designer_id,
+                    "action_both": m.action_both,
+                    "action_one": m.action_one,
+                    "rationale": m.rationale,
+                    "approval_votes": approval_counts.get(m.designer_id, 0),
+                }
 
         for round_num in range(1, ROUNDS + 1):
             self.market.new_round(round_num)
@@ -76,16 +107,93 @@ class Game:
                 for m in self.market.public_feed
             ]
 
+            round_trades = [t for t in self.market.trade_history if t.round_num == round_num]
+
+            # Reputation deltas vs previous round
+            prev_rep = self.round_logs[-1]["reputation"] if self.round_logs else {}
+            reputation_now = {
+                str(aid): round(score, 4)
+                for aid, score in self.market.system_reputation.items()
+            }
+            reputation_delta = {
+                aid: round(reputation_now[aid] - prev_rep.get(aid, reputation_now[aid]), 4)
+                for aid in reputation_now
+            }
+
+            # Contracting: split contracts by status and what happened this round
+            def _fmt_contract(c) -> dict:
+                return {
+                    "contract_id": c.contract_id,
+                    "proposer": c.proposer_id,
+                    "counterparty": c.counterparty_id,
+                    "proposer_delivers": {"good": c.proposer_delivers_good, "qty": c.proposer_delivers_qty},
+                    "counterparty_delivers": {"good": c.counterparty_delivers_good, "qty": c.counterparty_delivers_qty},
+                    "breach_penalty": c.breach_penalty,
+                    "execution_round": c.execution_round,
+                    "status": c.status,
+                }
+
+            all_contracts = list(self.market.contracts.values())
+            contracts_proposed  = [_fmt_contract(c) for c in all_contracts if c.status == "proposed"]
+            contracts_active    = [_fmt_contract(c) for c in all_contracts if c.status == "signed"]
+            contracts_executed  = [_fmt_contract(c) for c in all_contracts if c.status == "executed" and c.execution_round == round_num]
+            contracts_breached  = [_fmt_contract(c) for c in all_contracts if c.status == "breached" and c.execution_round == round_num]
+            contracts_rejected  = [_fmt_contract(c) for c in all_contracts if c.status == "rejected"]
+            penalty_ledger      = dict(getattr(self.market, "_penalty_ledger", {}))
+
+            # Mediation: active mediator config + trade outcomes
+            active_med = self.market.active_mediator
+            mediated_trades = [t for t in round_trades if t.status == "mediated"]
+
             self.round_logs.append({
                 "round": round_num,
                 "metrics": metrics,
-                "utilities": round_utilities,
-                "trade_count": len([t for t in self.market.trade_history if t.round_num == round_num]),
-                "defections": sum(
-                    1 for t in self.market.trade_history
-                    if t.round_num == round_num and t.status == "defected"
-                ),
-                "production": dict(self.market.production_per_round[-1]) if self.market.production_per_round else {},
+                "utilities": {str(k): v for k, v in round_utilities.items()},
+                "production": {str(k): v for k, v in (self.market.production_per_round[-1] if self.market.production_per_round else {}).items()},
+                "inventories": {
+                    str(aid): dict(inv)
+                    for aid, inv in self.market.inventories.items()
+                },
+                # --- Reputation ---
+                "reputation": reputation_now,
+                "reputation_delta": reputation_delta,
+                # --- Trades ---
+                "trades": [
+                    {
+                        "trade_id": t.trade_id,
+                        "proposer": t.proposer_id,
+                        "target": t.target_id,
+                        "offer": {"good": t.offer_good, "qty": t.offer_qty},
+                        "request": {"good": t.request_good, "qty": t.request_qty},
+                        "status": t.status,
+                    }
+                    for t in round_trades
+                ],
+                "trade_count": len(round_trades),
+                "defections": sum(1 for t in round_trades if t.status == "defected"),
+                "mediated_trade_count": len(mediated_trades),
+                # --- Contracting ---
+                "contracts_proposed": contracts_proposed,
+                "contracts_active": contracts_active,
+                "contracts_executed_this_round": contracts_executed,
+                "contracts_breached_this_round": contracts_breached,
+                "contracts_rejected": contracts_rejected,
+                "penalty_ledger": penalty_ledger,
+                # --- Mediation ---
+                "active_mediator": {
+                    "designer_id": active_med.designer_id,
+                    "action_both": active_med.action_both,
+                    "action_one": active_med.action_one,
+                } if active_med else None,
+                # --- Reputation intermediate ---
+                "defections_suffered_cumulative": {
+                    str(k): v for k, v in self.market.defections_suffered.items()
+                },
+                "warnings_broadcast_cumulative": {
+                    str(k): v for k, v in self.market.warnings_broadcast.items()
+                },
+                "negative_mentions": list(self.market.negative_mentions),
+                # --- Messages ---
                 "private_messages": private_messages,
                 "public_messages": public_messages,
             })
