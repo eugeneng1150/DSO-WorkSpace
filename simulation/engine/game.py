@@ -66,6 +66,16 @@ class Game:
             for mech in self.mechanisms:
                 mech.on_round_end(self.market, round_num)
 
+            private_messages = [
+                {"sender": m.sender_id, "recipient": m.recipient_id, "text": m.text}
+                for inbox in self.market.private_inboxes.values()
+                for m in inbox
+            ]
+            public_messages = [
+                {"sender": m.sender_id, "text": m.text}
+                for m in self.market.public_feed
+            ]
+
             self.round_logs.append({
                 "round": round_num,
                 "metrics": metrics,
@@ -76,6 +86,8 @@ class Game:
                     if t.round_num == round_num and t.status == "defected"
                 ),
                 "production": dict(self.market.production_per_round[-1]) if self.market.production_per_round else {},
+                "private_messages": private_messages,
+                "public_messages": public_messages,
             })
 
         return self.round_logs
