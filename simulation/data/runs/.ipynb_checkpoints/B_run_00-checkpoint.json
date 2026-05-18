@@ -1,0 +1,1107 @@
+{
+  "condition": "B",
+  "run": 0,
+  "timestamp": "2026-05-18T01:04:39.267072",
+  "rounds": [
+    {
+      "round": 1,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.0,
+        "sustainability": 1.0,
+        "peace": 1.0,
+        "whistleblowing_rate": 0.0,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": -5.0,
+        "7": -5.0,
+        "8": -5.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 5,
+        "7": 5,
+        "8": 5
+      }
+    },
+    {
+      "round": 2,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.0,
+        "sustainability": 0.0,
+        "peace": 0.0,
+        "whistleblowing_rate": 0.2,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 5,
+      "defections": 5,
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 3,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 1.0,
+        "whistleblowing_rate": 0.6,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 4,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.7778,
+        "sustainability": 0.2222,
+        "peace": 0.0,
+        "whistleblowing_rate": 0.8333,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 1,
+      "defections": 1,
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 5,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.5,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      }
+    },
+    {
+      "round": 6,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.8889,
+        "sustainability": 0.1111,
+        "peace": 0.4,
+        "whistleblowing_rate": 1.0,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 5,
+      "defections": 3,
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 7,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 0.0,
+        "whistleblowing_rate": 0.9231,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 2,
+      "defections": 2,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 8,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.7778,
+        "sustainability": 0.2222,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.0,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 1,
+      "defections": 1,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 9,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.1429,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 5,
+        "5": 0,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      }
+    },
+    {
+      "round": 10,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.1333,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "trade_count": 1,
+      "defections": 1,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 5,
+        "4": 5,
+        "5": 0,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      }
+    },
+    {
+      "round": 11,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.2667,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 12,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.4,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 13,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.7778,
+        "sustainability": 0.2222,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.3125,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 1,
+      "defections": 1,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 14,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.2778,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 2,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 15,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.2,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 2,
+      "defections": 2,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 16,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.25,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": -5.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 0,
+        "6": 5,
+        "7": 5,
+        "8": 0
+      }
+    },
+    {
+      "round": 17,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.35,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 18,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.35,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 19,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.2273,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 2,
+      "defections": 2,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 20,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.2727,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 5,
+        "4": 5,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 21,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.25,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "trade_count": 2,
+      "defections": 2,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      }
+    },
+    {
+      "round": 22,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.7778,
+        "sustainability": 0.2222,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.2917,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 23,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.32,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 1,
+      "defections": 1,
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 24,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.3333,
+        "sustainability": 0.6667,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.4,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": -5.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 0,
+        "6": 5,
+        "7": 5,
+        "8": 0
+      }
+    },
+    {
+      "round": 25,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 0.5,
+        "whistleblowing_rate": 1.2414,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": -5.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 4,
+      "defections": 2,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 5,
+        "4": 5,
+        "5": 0,
+        "6": 5,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 26,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.7778,
+        "sustainability": 0.2222,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.2,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 1,
+      "defections": 1,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 5,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 27,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.2333,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": -5.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 0,
+        "6": 5,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 28,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.2667,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 0,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    },
+    {
+      "round": 29,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.3333,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": -5.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "trade_count": 0,
+      "defections": 0,
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 5,
+        "5": 0,
+        "6": 5,
+        "7": 5,
+        "8": 0
+      }
+    },
+    {
+      "round": 30,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.2059,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": -5.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "trade_count": 4,
+      "defections": 4,
+      "production": {
+        "0": 0,
+        "1": 5,
+        "2": 0,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      }
+    }
+  ],
+  "final_metrics": {
+    "efficiency": 0.0,
+    "equality": 1.4444,
+    "sustainability": 0.5556,
+    "peace": 0.0,
+    "whistleblowing_rate": 1.2059,
+    "false_accusation_rate": 0.0,
+    "warning_accuracy": 0.0
+  },
+  "agent_types": {
+    "0": "CoTAgent",
+    "1": "CoTAgent",
+    "2": "CoTAgent",
+    "3": "CoTAgent",
+    "4": "CoTAgent",
+    "5": "CoTAgent",
+    "6": "CoTAgent",
+    "7": "CoTAgent",
+    "8": "CoTAgent"
+  }
+}

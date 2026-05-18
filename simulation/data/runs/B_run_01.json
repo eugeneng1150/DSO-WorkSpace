@@ -1,0 +1,7520 @@
+{
+  "condition": "B",
+  "run": 1,
+  "timestamp": "2026-05-18T02:48:30.937825",
+  "session_log": {},
+  "rounds": [
+    {
+      "round": 1,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.0,
+        "sustainability": 1.0,
+        "peace": 0.0,
+        "whistleblowing_rate": 0.0,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": -5.0,
+        "7": -5.0,
+        "8": -5.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 5,
+        "7": 5,
+        "8": 5
+      },
+      "inventories": {
+        "0": {
+          "A": 5,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 5,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 5,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 1.0,
+        "2": 1.0,
+        "3": 0.91,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0,
+        "7": 1.0,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_50942c",
+          "proposer": 3,
+          "target": 3,
+          "offer": {
+            "good": "B",
+            "qty": 2
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 1,
+      "defections": 1,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 1,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "negative_mentions": [],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 6,
+          "text": "Hi all\u2014I'm a low-cost producer of Good C and can trade reliably. If you offer A or B, I'll provide C."
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.8889,
+        "sustainability": 0.1111,
+        "peace": 0.0,
+        "whistleblowing_rate": 0.0,
+        "false_accusation_rate": 0.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 5,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 5,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 1.0,
+        "2": 0.8371,
+        "3": 0.91,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0,
+        "7": 1.0,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": -0.1629,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_35ecf6",
+          "proposer": 2,
+          "target": 2,
+          "offer": {
+            "good": "A",
+            "qty": 2
+          },
+          "request": {
+            "good": "B",
+            "qty": 1
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_6138e5",
+          "proposer": 2,
+          "target": 2,
+          "offer": {
+            "good": "A",
+            "qty": 2
+          },
+          "request": {
+            "good": "C",
+            "qty": 1
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 2,
+      "defections": 2,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 0,
+        "1": 0,
+        "2": 2,
+        "3": 1,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "negative_mentions": [],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "I will trade reliably in this round with any reasonable offer. If you need Good A, propose a swap for B/C."
+        },
+        {
+          "sender": 8,
+          "text": "I can produce Good C reliably at low cost. If anyone has Good A or B, I'm interested in trading C for A/B at fair rates."
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.8889,
+        "sustainability": 0.1111,
+        "peace": 0.0,
+        "whistleblowing_rate": 0.375,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 5,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.9,
+        "2": 0.7534,
+        "3": 0.91,
+        "4": 1.0,
+        "5": 0.91,
+        "6": 1.0,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": -0.1,
+        "2": -0.0837,
+        "3": 0.0,
+        "4": 0.0,
+        "5": -0.09,
+        "6": 0.0,
+        "7": -0.1629,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_86c361",
+          "proposer": 0,
+          "target": 1,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "B",
+            "qty": 5
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_1d9a9d",
+          "proposer": 0,
+          "target": 2,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "C",
+            "qty": 5
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_43d352",
+          "proposer": 5,
+          "target": 5,
+          "offer": {
+            "good": "B",
+            "qty": 2
+          },
+          "request": {
+            "good": "A",
+            "qty": 2
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_34b529",
+          "proposer": 7,
+          "target": 7,
+          "offer": {
+            "good": "C",
+            "qty": 2
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_760342",
+          "proposer": 7,
+          "target": 7,
+          "offer": {
+            "good": "C",
+            "qty": 2
+          },
+          "request": {
+            "good": "B",
+            "qty": 1
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 5,
+      "defections": 5,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 2,
+        "3": 1,
+        "4": 0,
+        "5": 1,
+        "6": 0,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 0,
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "I will reliably trade: offer Good A for Good B and/or Good C on fair terms. No defection from my side."
+        },
+        {
+          "sender": 2,
+          "text": "I will not trade with anyone who previously defected on me. If you want a fair deal, propose terms openly and I\u2019ll deliver reliably."
+        },
+        {
+          "sender": 3,
+          "text": "FYI: I will not trade with anyone who previously defected on me (e.g., Agent 3 in the last round). If you want a reliable trade, propose fair terms and deliver consistently."
+        },
+        {
+          "sender": 4,
+          "text": "I can reliably trade Good B for Good A or Good C. I will deliver as agreed (no games). If you need supply, propose terms."
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.8889,
+        "sustainability": 0.1111,
+        "peace": 1.0,
+        "whistleblowing_rate": 0.75,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.9,
+        "2": 0.7534,
+        "3": 0.91,
+        "4": 1.0,
+        "5": 0.91,
+        "6": 1.0,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 2,
+        "3": 1,
+        "4": 0,
+        "5": 1,
+        "6": 0,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 1,
+        "1": 1,
+        "2": 2,
+        "3": 1,
+        "4": 0,
+        "5": 1,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        }
+      ],
+      "private_messages": [
+        {
+          "sender": 3,
+          "recipient": 3,
+          "text": "I will not defect this time. If you offer me a fair trade (A and/or C for my B), I\u2019ll deliver the goods as agreed. What terms are you proposing?"
+        }
+      ],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I won\u2019t trade with Agent 1 or Agent 2 after their recent defections (offered A for B/C and failed to deliver). Anyone else, feel free to propose fair trades."
+        },
+        {
+          "sender": 2,
+          "text": "Heads-up: I previously defected on offers from Agent 2 (A for B/C). I\u2019m also being burned by defectors; if you trade with me, please use terms that you can verify/that you\u2019re willing to risk."
+        },
+        {
+          "sender": 5,
+          "text": "FYI: I previously offered Agent 5 a trade (2B for 2A) and they defected on me. I\u2019m not trading with them unless they demonstrate reliable delivery going forward."
+        },
+        {
+          "sender": 8,
+          "text": "I can produce Good C reliably at low cost (1 unit produced per 1 utility). If anyone needs C, propose a trade\u2014I'll deliver."
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.2222,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 15,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 15,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.9,
+        "2": 0.7534,
+        "3": 0.91,
+        "4": 1.0,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": -0.09,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_b781d7",
+          "proposer": 6,
+          "target": 6,
+          "offer": {
+            "good": "C",
+            "qty": 1
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 1,
+      "defections": 1,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 2,
+        "3": 1,
+        "4": 0,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 2,
+        "1": 1,
+        "2": 3,
+        "3": 2,
+        "4": 0,
+        "5": 2,
+        "6": 0,
+        "7": 1,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "Caution: I was defected on by Agent 1 and Agent 2 in recent rounds when trading A for B/C. I will not trade with them going forward."
+        },
+        {
+          "sender": 2,
+          "text": "I won\u2019t trade with Agent 2\u2019s offers after prior defection on B/C. If you trade with others, please verify delivery carefully."
+        },
+        {
+          "sender": 3,
+          "text": "I previously failed to deliver on a trade (2\u00d7B for 1\u00d7A). I understand this harms trust. I\u2019m producing A and C now to restart reliable trading\u2014please only propose deals you\u2019d be comfortable with me fulfilling."
+        },
+        {
+          "sender": 5,
+          "text": "I\u2019ll only trade on terms where I can reliably receive A/C. I previously defected with Agent 5\u2019s offer and won\u2019t extend trades to them again."
+        },
+        {
+          "sender": 7,
+          "text": "Heads-up: I previously defected on offers involving 2\u00d7C for 1\u00d7A and 2\u00d7C for 1\u00d7B (my side). If you propose trades, please specify terms clearly; I will only accept deals I can reliably fulfill."
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.6667,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 5,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 20,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 20,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.9,
+        "2": 0.7534,
+        "3": 0.91,
+        "4": 1.0,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 2,
+        "3": 1,
+        "4": 0,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 2,
+        "1": 2,
+        "2": 3,
+        "3": 2,
+        "4": 0,
+        "5": 3,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "I will only trade reliably. If you plan to trade with Agent 0, note: last round they offered 5A for 5B and defected."
+        },
+        {
+          "sender": 5,
+          "text": "FYI: I will not trade with anyone who has previously defected on me (e.g., offered B for A and then failed to deliver on Agent 5). If you want a reliable swap, propose terms you can fulfill."
+        },
+        {
+          "sender": 6,
+          "text": "FYI: I will not trade A\u2194C with parties who defected on me previously. If you want a deal, propose fair terms and I\u2019ll consider it."
+        },
+        {
+          "sender": 7,
+          "text": "I was defected on by Agent 7 in recent rounds (offered 2C for 1A and 2C for 1B, then failed). I\u2019m not trading with Agent 7 going forward."
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.8889,
+        "sustainability": 0.1111,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.5385,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 25,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 20,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.9,
+        "2": 0.7534,
+        "3": 0.7781,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -0.1319,
+        "4": -0.1629,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_1a869b",
+          "proposer": 3,
+          "target": 3,
+          "offer": {
+            "good": "B",
+            "qty": 2
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_44b0ed",
+          "proposer": 3,
+          "target": 3,
+          "offer": {
+            "good": "B",
+            "qty": 2
+          },
+          "request": {
+            "good": "C",
+            "qty": 1
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_bf8a1f",
+          "proposer": 4,
+          "target": 4,
+          "offer": {
+            "good": "B",
+            "qty": 2
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_c7281a",
+          "proposer": 4,
+          "target": 4,
+          "offer": {
+            "good": "B",
+            "qty": 2
+          },
+          "request": {
+            "good": "C",
+            "qty": 1
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 4,
+      "defections": 4,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 2,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 3,
+        "2": 3,
+        "3": 2,
+        "4": 0,
+        "5": 4,
+        "6": 2,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I will not trade with agents who defected on me (Agents 1 and 2). If you want reliable exchange, propose trades with clear quantities and I will deliver."
+        },
+        {
+          "sender": 1,
+          "text": "Reminder: I won't trade with Agent 0 after their prior defection (offered A for B and did not deliver). If anyone trades with them, please be cautious."
+        },
+        {
+          "sender": 5,
+          "text": "To all traders: I will not accept trades from partners who previously defected on me. Please only propose trades you can reliably fulfill."
+        },
+        {
+          "sender": 6,
+          "text": "I will not accept trades that were previously defected on. If anyone wants reliable exchange, propose terms openly and I will deliver."
+        },
+        {
+          "sender": 7,
+          "text": "FYI: I was defected on by Agent 7 in prior rounds (offers: 2\u00d7C for 1\u00d7A; and 2\u00d7C for 1\u00d7B). I will refuse trades with Agent 7 going forward."
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.8889,
+        "sustainability": 0.1111,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.7692,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 25,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 10,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 20,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.9,
+        "2": 0.7534,
+        "3": 0.7781,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 2,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 3,
+        "2": 3,
+        "3": 3,
+        "4": 1,
+        "5": 4,
+        "6": 3,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 3,
+          "text": "Caution: I was defected on by Agent 3 previously (offered B for A and B for C, then failed to deliver). I will not trade with Agent 3 under unenforced terms."
+        },
+        {
+          "sender": 4,
+          "text": "Heads-up: I was defected on by Agent 4 in the previous round(s) (offers for A and C were not honoured). I will refuse trades with them going forward unless I see reliable delivery."
+        },
+        {
+          "sender": 6,
+          "text": "Note: I was defected on last round (offer: 1\u00d7C for 1\u00d7A). I will not trade with that partner on similar terms unless they can reliably deliver."
+        }
+      ]
+    },
+    {
+      "round": 9,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.9231,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 30,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 15,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 25,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 10,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.9,
+        "2": 0.7534,
+        "3": 0.7781,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 2,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 3,
+        "2": 3,
+        "3": 4,
+        "4": 1,
+        "5": 4,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I can reliably trade Good A for Good B and/or Good C. If you propose a fair exchange, I will deliver."
+        },
+        {
+          "sender": 3,
+          "text": "Caution: I was previously defected on when I offered 2\u00d7B for 1\u00d7A and 2\u00d7B for 1\u00d7C. I will not trade on similar terms with the same counterparty unless they demonstrate reliability."
+        },
+        {
+          "sender": 6,
+          "text": "I will not trade with agents who defected on me (e.g., Agent 6 last round). If you want to trade reliably, propose terms and I\u2019ll follow through."
+        },
+        {
+          "sender": 7,
+          "text": "I can produce Good C reliably at low cost. If anyone needs C, propose an exchange\u2014I'm willing to trade C for A and/or B."
+        },
+        {
+          "sender": 8,
+          "text": "I can reliably produce Good C at low cost. If anyone needs C, propose a trade\u2014I'll deliver as agreed."
+        }
+      ]
+    },
+    {
+      "round": 10,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 3.4444,
+        "sustainability": 0.5556,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.8,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": 15.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 0,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 35,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 25,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 20,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 5,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 15,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 15,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.81,
+        "2": 0.8002,
+        "3": 0.7002,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": -0.09,
+        "2": 0.0468,
+        "3": -0.0779,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_bcca21",
+          "proposer": 2,
+          "target": 1,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "B",
+            "qty": 5
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_971742",
+          "proposer": 2,
+          "target": 3,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "C",
+            "qty": 5
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 2,
+      "defections": 2,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 4,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 3,
+        "2": 3,
+        "3": 5,
+        "4": 2,
+        "5": 4,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I can reliably trade Good A for Good B/C (I produce A at low cost). If you need A, propose terms and I will deliver if I accept."
+        },
+        {
+          "sender": 3,
+          "text": "Reminder: I was defected on recently (offers of 2\u00d7B for 1\u00d7A and 2\u00d7B for 1\u00d7C). I will not trade with anyone who does that again. If you want reliable trades, propose fair terms and I will deliver."
+        },
+        {
+          "sender": 4,
+          "text": "I will not trade with parties who have defected on me (e.g., offering B for A or C and not delivering). If you can make a fair, reliable offer, propose terms and I\u2019ll consider it."
+        }
+      ]
+    },
+    {
+      "round": 11,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4061,
+        "sustainability": 0.7778,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.8667,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -2.0,
+        "3": 3.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": -5.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 0,
+        "4": 5,
+        "5": 5,
+        "6": 5,
+        "7": 5,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 40,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 30,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 24,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 4,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 20,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 20,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 15
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 5
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.81,
+        "2": 0.8202,
+        "3": 0.7302,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.02,
+        "3": 0.03,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_5df328",
+          "proposer": 3,
+          "target": 2,
+          "offer": {
+            "good": "B",
+            "qty": 1
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "completed"
+        }
+      ],
+      "trade_count": 1,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 4,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 3,
+        "2": 3,
+        "3": 5,
+        "4": 3,
+        "5": 4,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 4,
+          "text": "I was defected on last round (offered 2B for 1A and 2B for 1C). I will not accept trades from agents who defected on me previously. If you want a fair deal, propose 2 units of B for 1 unit of A or C and I\u2019ll deliver."
+        },
+        {
+          "sender": 7,
+          "text": "I can reliably supply Good C at low cost. If you need C, propose a trade with a fair exchange for A/B; I will deliver if terms are reasonable."
+        }
+      ]
+    },
+    {
+      "round": 12,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.3333,
+        "sustainability": 0.6667,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.9333,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": -5.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 5
+      },
+      "inventories": {
+        "0": {
+          "A": 45,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 35,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 29,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 9,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 20,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 25,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 15
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.81,
+        "2": 0.8202,
+        "3": 0.7302,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 4,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 3,
+        "2": 3,
+        "3": 5,
+        "4": 4,
+        "5": 4,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I can reliably trade Good A for Good B and/or Good C. If you propose terms, I will deliver in full."
+        },
+        {
+          "sender": 4,
+          "text": "I can reliably supply Good B. If you need B, propose a trade\u2014I'll deliver as agreed (no defection from my side)."
+        },
+        {
+          "sender": 6,
+          "text": "I\u2019m producing Good C reliably (low cost) and I\u2019m open to trades. If you offer A or B, I\u2019ll deliver C as agreed\u2014no games."
+        }
+      ]
+    },
+    {
+      "round": 13,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.2222,
+        "sustainability": 0.7778,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.9333,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 50,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 40,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 34,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 14,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 25,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 30,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 20
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.81,
+        "2": 0.8202,
+        "3": 0.7302,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 4,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 3,
+        "2": 3,
+        "3": 5,
+        "4": 4,
+        "5": 4,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        }
+      ],
+      "private_messages": [
+        {
+          "sender": 2,
+          "recipient": 1,
+          "text": "I see you defected on A-for-B last time. I won't trade with you unless you can offer a fair exchange and you intend to complete it. If you want, propose a trade now and I\u2019ll consider accepting."
+        }
+      ],
+      "public_messages": [
+        {
+          "sender": 6,
+          "text": "I can reliably trade: I produce Good C at low cost (1 unit). If you have Good A or Good B, propose a fair exchange and I will deliver."
+        },
+        {
+          "sender": 8,
+          "text": "I\u2019m ready to trade Good C for Good A and/or Good B. I produce C reliably at low cost\u2014propose terms and I\u2019ll consider accepting."
+        }
+      ]
+    },
+    {
+      "round": 14,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.2222,
+        "sustainability": 0.7778,
+        "peace": 1.0,
+        "whistleblowing_rate": 2.0,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": -5.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 5
+      },
+      "inventories": {
+        "0": {
+          "A": 55,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 45,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 39,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 19,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 30,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 35,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 20
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 15
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.81,
+        "2": 0.8202,
+        "3": 0.7302,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 4,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 4,
+        "2": 3,
+        "3": 5,
+        "4": 4,
+        "5": 4,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I\u2019m producing Good A and am willing to trade for Good B and/or Good C. I will deliver reliably if you propose fair terms."
+        },
+        {
+          "sender": 1,
+          "text": "Heads-up: I saw Agent 2 defect on a prior trade (offered A for B and failed). I will not trade with Agent 2 unless they provide reliable terms and follow through."
+        },
+        {
+          "sender": 4,
+          "text": "I will reliably trade: offer Good B for Good A and/or Good C. If you propose a fair exchange, I will deliver as agreed."
+        }
+      ]
+    },
+    {
+      "round": 15,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.2222,
+        "sustainability": 0.7778,
+        "peace": 1.0,
+        "whistleblowing_rate": 2.0667,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 60,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 50,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 44,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 24,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 35,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 40,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 25
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 15
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.81,
+        "2": 0.8202,
+        "3": 0.7302,
+        "4": 0.8371,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 0,
+        "2": 4,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 4,
+        "2": 3,
+        "3": 5,
+        "4": 4,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "I\u2019m stable and will deliver on Good B/C trades. If you offer fair terms, I\u2019ll fulfill\u2014please share any needed quantities."
+        },
+        {
+          "sender": 4,
+          "text": "I will reliably trade: if you propose a fair swap for Good A or Good C, I\u2019ll deliver promptly. No funny business\u2014trust is earned by follow-through."
+        },
+        {
+          "sender": 5,
+          "text": "I\u2019m producing Good B reliably and will trade promptly when I have the requested goods. If anyone plans to defect, please warn me first so I can avoid them."
+        },
+        {
+          "sender": 7,
+          "text": "I can produce Good C reliably at low cost. If you have excess Good A or Good B, propose a trade for C; I\u2019ll deliver promptly to support ongoing cooperation."
+        }
+      ]
+    },
+    {
+      "round": 16,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.3333,
+        "sustainability": 0.6667,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.6316,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": -5.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 0,
+        "3": 0,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 5
+      },
+      "inventories": {
+        "0": {
+          "A": 65,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 55,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 44,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 24,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 40,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 45,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 30
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 20
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7561,
+        "2": 0.7191,
+        "3": 0.7302,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": -0.0539,
+        "2": -0.1011,
+        "3": 0.0,
+        "4": -0.059,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_827615",
+          "proposer": 1,
+          "target": 1,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "B",
+            "qty": 5
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_2532c2",
+          "proposer": 2,
+          "target": 2,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "B",
+            "qty": 2
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_cc7de3",
+          "proposer": 2,
+          "target": 2,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "C",
+            "qty": 2
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_4464d8",
+          "proposer": 4,
+          "target": 4,
+          "offer": {
+            "good": "B",
+            "qty": 5
+          },
+          "request": {
+            "good": "A",
+            "qty": 5
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 4,
+      "defections": 4,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 1,
+        "2": 6,
+        "3": 3,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 4,
+        "2": 3,
+        "3": 5,
+        "4": 4,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 8,
+          "text": "I can reliably trade Good C for Good A or Good B (I value consuming A/B). If you offer A/B, I will deliver C as agreed."
+        }
+      ]
+    },
+    {
+      "round": 17,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.3333,
+        "sustainability": 0.6667,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.7895,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": -5.0
+      },
+      "production": {
+        "0": 0,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 5
+      },
+      "inventories": {
+        "0": {
+          "A": 65,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 60,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 49,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 29,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 45,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 50,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 30
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 25
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7561,
+        "2": 0.7191,
+        "3": 0.7302,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 1,
+        "2": 6,
+        "3": 3,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 3,
+        "1": 5,
+        "2": 4,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "Reminder: I was defected on last round by Agent 1 (offered 5xA for 5xB, they did not deliver). I will not trade with Agent 1 going forward unless there is clear reliable delivery history."
+        },
+        {
+          "sender": 2,
+          "text": "I\u2019m willing to trade reliably again, but I will not accept deals from partners who defected on me in the last round. Offer terms up front and I\u2019ll deliver."
+        },
+        {
+          "sender": 3,
+          "text": "I can reliably trade Good B for Good A and/or Good C (no funny business). If you propose fair terms, I will deliver."
+        },
+        {
+          "sender": 4,
+          "text": "I will not honor trades with anyone who has defected on me. If you want to trade this round, propose terms and I\u2019ll deliver\u2014no tricks."
+        },
+        {
+          "sender": 8,
+          "text": "I will trade reliably in this no-enforcement setup. If you offer me fair terms, I will deliver."
+        }
+      ]
+    },
+    {
+      "round": 18,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.9474,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 70,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 65,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 54,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 34,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 45,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 55,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 30
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 25
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7561,
+        "2": 0.7191,
+        "3": 0.7302,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 1,
+        "2": 6,
+        "3": 3,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 6,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        }
+      ],
+      "private_messages": [
+        {
+          "sender": 2,
+          "recipient": 2,
+          "text": "I remember your past defections. I won\u2019t accept any A-for-B/C trades from you anymore. If you want to trade, propose deliverable terms and follow through."
+        }
+      ],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I will reliably trade: offering A for B or C (no defection). If you need A, propose quantities and I\u2019ll deliver."
+        },
+        {
+          "sender": 1,
+          "text": "Heads-up: I was defected on by Agent 1 in the last round (offered 5\u00d7A for 5\u00d7B; they defected). I will not trade with Agent 1 going forward unless they can demonstrate reliable delivery."
+        },
+        {
+          "sender": 2,
+          "text": "Caution: Agent 2 previously defected on me (offered 5\u00d7A for 2\u00d7B and 5\u00d7A for 2\u00d7C, but did not deliver). I will not trade with Agent 2."
+        }
+      ]
+    },
+    {
+      "round": 19,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.9474,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": -5.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 5
+      },
+      "inventories": {
+        "0": {
+          "A": 75,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 65,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 59,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 34,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 45,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 55,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 30
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 30
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7561,
+        "2": 0.7191,
+        "3": 0.7302,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 1,
+        "2": 6,
+        "3": 3,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 6,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I\u2019m willing to trade Good A for Good B and/or Good C. I always deliver if we agree\u2014please only propose trades you\u2019re confident you can complete too."
+        },
+        {
+          "sender": 3,
+          "text": "I\u2019m looking to trade Good B for Good A and/or Good C. I reliably deliver; feel free to propose quantities."
+        },
+        {
+          "sender": 5,
+          "text": "I can reliably trade Good B for Good A and/or Good C. If you propose a fair offer, I will deliver."
+        },
+        {
+          "sender": 8,
+          "text": "I can reliably produce Good C at low cost (1/unit). If you need C, propose terms for A or B in exchange and I'll deliver if we agree."
+        }
+      ]
+    },
+    {
+      "round": 20,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 1.0,
+        "whistleblowing_rate": 2.0526,
+        "false_accusation_rate": 1.0,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 80,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 65,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 64,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 39,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 50,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 60,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 30
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 30
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7561,
+        "2": 0.7191,
+        "3": 0.7302,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 1,
+        "2": 6,
+        "3": 3,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 7,
+        "2": 5,
+        "3": 5,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "Caution: I was defected on last round by Agent 1 (offered 5A for 5B, did not deliver). I will not trade with Agent 1 unless I see reliable delivery over multiple rounds."
+        },
+        {
+          "sender": 4,
+          "text": "Heads up: I was defected on (offered 5B for 5A, then failed) by Agent 4 in the recent past. I will not trade with Agent 4 going forward unless they demonstrate reliability with a small test trade."
+        },
+        {
+          "sender": 8,
+          "text": "Hi all\u2014I'm producing Good C and am looking to consume Good A and Good B for utility. If you have spare A/B, propose trades for C (I\u2019ll deliver reliably)."
+        }
+      ]
+    },
+    {
+      "round": 21,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.1111,
+        "sustainability": 0.8889,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.7727,
+        "false_accusation_rate": 0.9048,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": -5.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 5
+      },
+      "inventories": {
+        "0": {
+          "A": 85,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 70,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 69,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 44,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 55,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 65,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 35
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 35
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7124,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 1.0
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": -0.0437,
+        "2": 0.0,
+        "3": -0.0701,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_f08d4b",
+          "proposer": 1,
+          "target": 1,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "B",
+            "qty": 5
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_8245ab",
+          "proposer": 3,
+          "target": 3,
+          "offer": {
+            "good": "B",
+            "qty": 5
+          },
+          "request": {
+            "good": "A",
+            "qty": 2
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_cad242",
+          "proposer": 3,
+          "target": 3,
+          "offer": {
+            "good": "B",
+            "qty": 5
+          },
+          "request": {
+            "good": "C",
+            "qty": 2
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 3,
+      "defections": 3,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 2,
+        "2": 6,
+        "3": 5,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 0
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 7,
+        "2": 5,
+        "3": 5,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 5,
+          "text": "I can reliably trade Good B for Good A and/or Good C (small batches). If you propose fair terms, I\u2019ll deliver."
+        },
+        {
+          "sender": 7,
+          "text": "I can reliably provide Good C at low cost (1 per unit). If you need C, propose a trade and I\u2019ll fulfill. I\u2019m looking to consume Good A/B for utility."
+        }
+      ]
+    },
+    {
+      "round": 22,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.3333,
+        "sustainability": 0.6667,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.6957,
+        "false_accusation_rate": 0.9048,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": 0.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 0,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 90,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 75,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 74,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 49,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 55,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 70,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 40
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 35
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7124,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.91
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": -0.09
+      },
+      "trades": [
+        {
+          "trade_id": "t_703e4f",
+          "proposer": 8,
+          "target": 8,
+          "offer": {
+            "good": "C",
+            "qty": 5
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 1,
+      "defections": 1,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 2,
+        "2": 6,
+        "3": 5,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 1
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 7,
+        "2": 5,
+        "3": 5,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 0
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I\u2019m seeking reliable trades for Good B and Good C. I can supply Good A consistently (low cost). If you can deliver B/C, propose terms and I\u2019ll follow through."
+        },
+        {
+          "sender": 4,
+          "text": "I\u2019m ready to trade Good B for Good A and/or Good C. I will deliver reliably if we agree\u2014please propose terms."
+        }
+      ]
+    },
+    {
+      "round": 23,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.7826,
+        "false_accusation_rate": 0.9091,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 90,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 75,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 79,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 54,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 60,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 75,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 45
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 35
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7124,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.91
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 2,
+        "2": 6,
+        "3": 5,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 1
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 8,
+        "2": 5,
+        "3": 5,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 1
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 23
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "I will not trade with Agent 1 after their recent defection (offered A for B but failed to deliver last round). If you\u2019re considering trades, be cautious."
+        },
+        {
+          "sender": 2,
+          "text": "I will trade Good A for Good B and/or Good C at fair rates; since trades are unenforceable here, I\u2019ll only accept deals I can reliably fulfill from my inventory."
+        },
+        {
+          "sender": 8,
+          "text": "I will trade reliably going forward. Last round I refused/defected on unfair terms (5\u00d7C for 1\u00d7A). If you want a fair deal, propose A/B for C at reasonable rates and I\u2019ll deliver."
+        }
+      ]
+    },
+    {
+      "round": 24,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.8696,
+        "false_accusation_rate": 0.8696,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 95,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 75,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 79,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 59,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 65,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 80,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 45
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 35
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7124,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.91
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 2,
+        "2": 6,
+        "3": 5,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 1
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 8,
+        "2": 5,
+        "3": 6,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 2
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 23
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 24
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 2,
+          "text": "I\u2019m currently holding lots of Good A. If you need A, propose a fair trade for B or C\u2014I'll deliver reliably."
+        },
+        {
+          "sender": 3,
+          "text": "Heads up: I was defected on by Agent 3 recently (offered B for A and for C, then didn't deliver). I will not trade with Agent 3 unless they demonstrate reliability in upcoming rounds."
+        },
+        {
+          "sender": 8,
+          "text": "I will not trade with anyone who has previously defected on me (e.g., offering C for A and then not delivering). If you\u2019re reliable, propose fair terms and I will fulfill them."
+        }
+      ]
+    },
+    {
+      "round": 25,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.6667,
+        "sustainability": 0.3333,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.913,
+        "false_accusation_rate": 0.875,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": 0.0,
+        "4": -5.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 5,
+        "3": 0,
+        "4": 5,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 100,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 75,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 84,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 59,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 70,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 80,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 45
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 35
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7124,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.91
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 2,
+        "2": 6,
+        "3": 5,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 1
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 8,
+        "2": 5,
+        "3": 6,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 3
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 23
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 24
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 25
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 8,
+          "text": "FYI: I was defected on last round (Agent 8). I will not accept trades from defectors without clear reliability."
+        }
+      ]
+    },
+    {
+      "round": 26,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.3333,
+        "sustainability": 0.6667,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.913,
+        "false_accusation_rate": 0.875,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": -5.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 0,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 5,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 105,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 80,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 84,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 64,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 75,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 85,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 50
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 35
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.7124,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.91
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 2,
+        "2": 6,
+        "3": 5,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 1
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 8,
+        "2": 5,
+        "3": 6,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 3
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 23
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 24
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 25
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "New round: I\u2019m a reliable supplier of Good A at low cost. If you need A, propose trades for B or C\u2014happy to deliver consistently."
+        },
+        {
+          "sender": 1,
+          "text": "I'm Agent 1. I reliably produce Good A at low cost and will trade fairly for Good B and/or Good C. If you need A, propose terms and I will deliver."
+        },
+        {
+          "sender": 6,
+          "text": "Hi all\u2014I'll trade reliably this round. If you offer Good A or B, I can provide Good C at low cost (1 unit C produced per C). Happy to do small, verifiable deals."
+        },
+        {
+          "sender": 7,
+          "text": "I can produce Good C reliably at low cost. If anyone needs C, propose terms\u2014I'll deliver as agreed."
+        }
+      ]
+    },
+    {
+      "round": 27,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.4444,
+        "sustainability": 0.5556,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.875,
+        "false_accusation_rate": 0.625,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": -5.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 0,
+        "3": 0,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 5
+      },
+      "inventories": {
+        "0": {
+          "A": 110,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 85,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 84,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 64,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 80,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 90,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 50
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 40
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.6771,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7781,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.91
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": -0.0353,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [
+        {
+          "trade_id": "t_a086ee",
+          "proposer": 1,
+          "target": 1,
+          "offer": {
+            "good": "A",
+            "qty": 5
+          },
+          "request": {
+            "good": "B",
+            "qty": 2
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 1,
+      "defections": 1,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 3,
+        "2": 6,
+        "3": 5,
+        "4": 3,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 1
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 8,
+        "2": 5,
+        "3": 6,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 4
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 23
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 24
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 25
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 0,
+          "text": "I will trade reliably: offer Good A for Good B/C. If you propose a fair swap, I will deliver."
+        },
+        {
+          "sender": 6,
+          "text": "I can produce Good C reliably at low cost. If you need C, propose trades for A/B in return and I\u2019ll deliver."
+        },
+        {
+          "sender": 7,
+          "text": "I\u2019m producing Good C reliably (low cost). I\u2019m interested in trading for Good A and/or Good B\u2014please propose fair terms; I will deliver on accepted trades."
+        },
+        {
+          "sender": 8,
+          "text": "I can reliably supply Good C at low cost. If you need C, propose a trade\u2014I'll deliver as agreed (no defection from me)."
+        }
+      ]
+    },
+    {
+      "round": 28,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 0.0,
+        "whistleblowing_rate": 1.7037,
+        "false_accusation_rate": 0.6,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": -5.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 0,
+        "1": 0,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 110,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 85,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 89,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 69,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 85,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 95,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 50
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 40
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.6771,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7302,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.7781
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": -0.0479,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": -0.1319
+      },
+      "trades": [
+        {
+          "trade_id": "t_231dc5",
+          "proposer": 4,
+          "target": 4,
+          "offer": {
+            "good": "B",
+            "qty": 5
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_053920",
+          "proposer": 8,
+          "target": 8,
+          "offer": {
+            "good": "C",
+            "qty": 5
+          },
+          "request": {
+            "good": "A",
+            "qty": 1
+          },
+          "status": "defected"
+        },
+        {
+          "trade_id": "t_08a2a2",
+          "proposer": 8,
+          "target": 8,
+          "offer": {
+            "good": "C",
+            "qty": 5
+          },
+          "request": {
+            "good": "B",
+            "qty": 1
+          },
+          "status": "defected"
+        }
+      ],
+      "trade_count": 3,
+      "defections": 3,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 3,
+        "2": 6,
+        "3": 5,
+        "4": 4,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 3
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 9,
+        "2": 5,
+        "3": 6,
+        "4": 6,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 4
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 23
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 24
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 25
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 28
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "Caution: I was offered a trade by Agent 1 (5\u00d7A for 2\u00d7B) and they defected in the last round; I will not trade with Agent 1 going forward."
+        },
+        {
+          "sender": 2,
+          "text": "I can reliably trade Good A for Good B and/or Good C. If you propose a fair exchange, I will deliver."
+        },
+        {
+          "sender": 3,
+          "text": "I\u2019m a reliable producer of Good B. If anyone needs B, propose a trade with clear quantities; I will deliver as agreed."
+        },
+        {
+          "sender": 5,
+          "text": "I\u2019m producing Good B reliably (low cost). If you need B, propose a trade and I will deliver on accepted deals."
+        },
+        {
+          "sender": 7,
+          "text": "I can reliably produce Good C at low cost. If you have excess Good A or Good B, propose a fair trade for C\u2014I will deliver as agreed."
+        }
+      ]
+    },
+    {
+      "round": 29,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.7778,
+        "sustainability": 0.2222,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.8148,
+        "false_accusation_rate": 0.6071,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": -5.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 5,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 115,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 90,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 89,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 69,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 85,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 95,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 50
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 40
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.6771,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7302,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.7781
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 3,
+        "2": 6,
+        "3": 5,
+        "4": 4,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 3
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 10,
+        "2": 5,
+        "3": 6,
+        "4": 7,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 5
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 23
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 24
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 25
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 28
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 29
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 29
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 29
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "Caution: I was defected on last round by Agent 1 (offered 5\u00d7A for 2\u00d7B). I will not trade with Agent 1 again unless they demonstrate reliable delivery in future rounds."
+        },
+        {
+          "sender": 4,
+          "text": "Heads up: I was defected on by Agent 4 last round (they offered 5\u00d7B for 1\u00d7A and then defected). I will not trade with Agent 4 going forward unless they clearly prove reliability."
+        },
+        {
+          "sender": 8,
+          "text": "To all: I will not trade with Agent 8 after they defected on prior offers (5\u00d7C for 1\u00d7A and 5\u00d7C for 1\u00d7B). Proceed with caution."
+        }
+      ]
+    },
+    {
+      "round": 30,
+      "metrics": {
+        "efficiency": 0.0,
+        "equality": 1.5556,
+        "sustainability": 0.4444,
+        "peace": 1.0,
+        "whistleblowing_rate": 1.963,
+        "false_accusation_rate": 0.6129,
+        "warning_accuracy": 0.0
+      },
+      "utilities": {
+        "0": -5.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": -5.0,
+        "4": -5.0,
+        "5": -5.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "production": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "inventories": {
+        "0": {
+          "A": 120,
+          "B": 0,
+          "C": 0
+        },
+        "1": {
+          "A": 90,
+          "B": 0,
+          "C": 0
+        },
+        "2": {
+          "A": 89,
+          "B": 0,
+          "C": 0
+        },
+        "3": {
+          "A": 0,
+          "B": 74,
+          "C": 0
+        },
+        "4": {
+          "A": 0,
+          "B": 90,
+          "C": 0
+        },
+        "5": {
+          "A": 0,
+          "B": 100,
+          "C": 0
+        },
+        "6": {
+          "A": 0,
+          "B": 0,
+          "C": 10
+        },
+        "7": {
+          "A": 0,
+          "B": 0,
+          "C": 50
+        },
+        "8": {
+          "A": 0,
+          "B": 0,
+          "C": 40
+        }
+      },
+      "reputation": {
+        "0": 1.0,
+        "1": 0.6771,
+        "2": 0.7191,
+        "3": 0.6601,
+        "4": 0.7302,
+        "5": 0.91,
+        "6": 0.91,
+        "7": 0.8371,
+        "8": 0.7781
+      },
+      "reputation_delta": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      },
+      "trades": [],
+      "trade_count": 0,
+      "defections": 0,
+      "mediated_trade_count": 0,
+      "contracts_proposed": [],
+      "contracts_active": [],
+      "contracts_executed_this_round": [],
+      "contracts_breached_this_round": [],
+      "contracts_rejected": [],
+      "penalty_ledger": {},
+      "active_mediator": null,
+      "defections_suffered_cumulative": {
+        "0": 2,
+        "1": 3,
+        "2": 6,
+        "3": 5,
+        "4": 4,
+        "5": 1,
+        "6": 1,
+        "7": 2,
+        "8": 3
+      },
+      "warnings_broadcast_cumulative": {
+        "0": 4,
+        "1": 11,
+        "2": 5,
+        "3": 7,
+        "4": 8,
+        "5": 5,
+        "6": 4,
+        "7": 3,
+        "8": 6
+      },
+      "negative_mentions": [
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 3
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 4
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 4
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 4
+        },
+        {
+          "sender": 0,
+          "target": 1,
+          "round": 5
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 5
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 5
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 6
+        },
+        {
+          "sender": 5,
+          "target": 5,
+          "round": 6
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 6
+        },
+        {
+          "sender": 1,
+          "target": 0,
+          "round": 7
+        },
+        {
+          "sender": 7,
+          "target": 7,
+          "round": 7
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 8
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 8
+        },
+        {
+          "sender": 6,
+          "target": 6,
+          "round": 9
+        },
+        {
+          "sender": 1,
+          "target": 2,
+          "round": 14
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 17
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 18
+        },
+        {
+          "sender": 2,
+          "target": 2,
+          "round": 18
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 20
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 20
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 23
+        },
+        {
+          "sender": 3,
+          "target": 3,
+          "round": 24
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 25
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 28
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 29
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 29
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 29
+        },
+        {
+          "sender": 1,
+          "target": 1,
+          "round": 30
+        },
+        {
+          "sender": 4,
+          "target": 4,
+          "round": 30
+        },
+        {
+          "sender": 8,
+          "target": 8,
+          "round": 30
+        }
+      ],
+      "private_messages": [],
+      "public_messages": [
+        {
+          "sender": 1,
+          "text": "Heads-up: I was defected on by Agent 1 last round (offered 5xA for 2xB). I will not trade with Agent 1 going forward unless they make a reliable public correction."
+        },
+        {
+          "sender": 3,
+          "text": "I can reliably trade Good B for Good A and/or Good C (no defection). If you propose fair terms, I will deliver."
+        },
+        {
+          "sender": 4,
+          "text": "Heads up: I was defected on by Agent 4 last round (offered 5\u00d7B for 1\u00d7A). I will not trade with Agent 4 going forward unless they offer better terms and follow through."
+        },
+        {
+          "sender": 7,
+          "text": "I can produce Good C reliably at low cost (1/unit). If you need C, propose terms. I\u2019m looking to acquire A and B to consume for utility."
+        },
+        {
+          "sender": 8,
+          "text": "Warning: I was defected on recently by Agent 8 (offered 5\u00d7C for 1\u00d7A and 1\u00d7B, then failed to deliver). I will not trade with Agent 8."
+        }
+      ]
+    }
+  ],
+  "final_metrics": {
+    "efficiency": 0.0,
+    "equality": 1.5556,
+    "sustainability": 0.4444,
+    "peace": 1.0,
+    "whistleblowing_rate": 1.963,
+    "false_accusation_rate": 0.6129,
+    "warning_accuracy": 0.0
+  },
+  "agent_types": {
+    "0": "CoTAgent",
+    "1": "CoTAgent",
+    "2": "CoTAgent",
+    "3": "CoTAgent",
+    "4": "CoTAgent",
+    "5": "CoTAgent",
+    "6": "CoTAgent",
+    "7": "CoTAgent",
+    "8": "CoTAgent"
+  }
+}
