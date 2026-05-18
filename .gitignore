@@ -10,5 +10,4 @@ __pycache__/
 .DS_Store
 
 # Data outputs (large, reproducible)
-simulation/data/plots/
 .env.save
