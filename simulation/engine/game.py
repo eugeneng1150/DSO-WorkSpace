@@ -46,7 +46,7 @@ class Game:
     async def _run_async(self) -> list[dict]:
         # Session start hooks (e.g. mediation design/vote)
         for mech in self.mechanisms:
-            mech.on_session_start(self.market, self.agents)
+            await mech.on_session_start(self.market, self.agents)
 
         # Capture one-time session state after setup
         if self.market.mediator_designs:

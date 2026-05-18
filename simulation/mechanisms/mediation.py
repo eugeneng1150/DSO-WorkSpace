@@ -13,15 +13,12 @@ if TYPE_CHECKING:
 class MediationMechanism(Mechanism):
     name = "mediation"
 
-    def on_session_start(self, market: "Market", agents: list["_BaseAgent"]) -> None:
+    async def on_session_start(self, market: "Market", agents: list["_BaseAgent"]) -> None:
         """Run design phase (stage 1) then vote phase (stage 2) before Round 1."""
-        asyncio.get_event_loop().run_until_complete(
-            self._design_and_vote(market, agents)
-        )
+        await self._design_and_vote(market, agents)
 
     async def _design_and_vote(self, market: "Market", agents: list["_BaseAgent"]) -> None:
         from ..engine.prompt_builder import build_prompt
-        from ..metrics.social import compute_metrics
 
         metrics = {k: 1.0 for k in ["efficiency", "equality", "sustainability", "peace"]}
 

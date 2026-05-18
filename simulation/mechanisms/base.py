@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class Mechanism(ABC):
     name: str = ""
 
-    def on_session_start(self, market: "Market", agents: list["_BaseAgent"]) -> None:
+    async def on_session_start(self, market: "Market", agents: list["_BaseAgent"]) -> None:
         """Called once before Round 1. Used by Mediation for design/vote phase."""
 
     def on_round_start(self, market: "Market", round_num: int) -> None:
