@@ -28,7 +28,8 @@ DEFAULT_BREACH_PENALTY = 6   # 2x utility value of one unit
 STABILITY_THRESHOLD = 0.5
 
 # LLM
-MODEL = "gpt-5.4-nano"
+AZURE_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/openai/v1"
+MODEL = "gpt-5.4-nano-BQ-Cohort"
 MAX_RETRIES = 3       # JSON parse retries per agent call
 
 # Agent reasoning style: all agents use chain-of-thought (CoopEval CoTAgent pattern)

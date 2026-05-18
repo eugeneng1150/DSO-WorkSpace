@@ -11,7 +11,7 @@ import argparse
 import os
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=__file__.replace("simulation/main.py", ".env").replace("main.py", "../.env"))
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 from .engine.runner import run_condition, run_all
 from .config import CONDITIONS
@@ -26,8 +26,8 @@ def main():
     parser.add_argument("--analyse", action="store_true", help="Run analyst agent after simulation")
     args = parser.parse_args()
 
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("ERROR: OPENAI_API_KEY not set. Add it to .env or export it.")
+    if not os.environ.get("AZURE_OPENAI_API_KEY"):
+        print("ERROR: AZURE_OPENAI_API_KEY not set. Add it to .env or export it.")
         return
 
     if args.condition:

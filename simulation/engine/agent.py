@@ -12,9 +12,12 @@ from typing import Any
 
 from openai import AsyncOpenAI, RateLimitError
 
-from ..config import MODEL, MAX_RETRIES, COT_AGENT_IDS, GOODS, AGENTS_PER_GOOD
+from ..config import MODEL, MAX_RETRIES, COT_AGENT_IDS, GOODS, AGENTS_PER_GOOD, AZURE_ENDPOINT
 
-client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+client = AsyncOpenAI(
+    api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
+    base_url=AZURE_ENDPOINT,
+)
 
 _IO_SUFFIX = "\nOutput your chosen actions as a JSON array. Respond with the JSON array only, no other text."
 
