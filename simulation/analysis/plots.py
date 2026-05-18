@@ -11,8 +11,9 @@ OUT_DIR = Path(__file__).parent.parent / "data" / "plots"
 
 METRICS = ["efficiency", "equality", "sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
-CONDITIONS = ["B", "R", "C", "M", "RC", "CM", "RCM"]
-COLORS = cm.tab10(np.linspace(0, 1, len(CONDITIONS)))
+CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
+COLORS = dict(zip(CONDITIONS, cm.tab10(np.linspace(0, 1, len(CONDITIONS)))))
+STABILITY_THRESHOLD = 0.5
 
 
 def _load_runs(condition: str) -> list[dict]:
@@ -25,7 +26,6 @@ def _load_runs(condition: str) -> list[dict]:
 
 
 def _mean_metric_over_rounds(runs: list[dict], metric: str) -> list[float]:
-    """Average metric value per round across all runs."""
     if not runs:
         return []
     n_rounds = len(runs[0]["rounds"])
@@ -36,21 +36,35 @@ def _mean_metric_over_rounds(runs: list[dict], metric: str) -> list[float]:
     return values
 
 
+def _mean_round_field(runs: list[dict], field: str) -> list[float]:
+    """Average a numeric round-level field (not inside metrics) over rounds."""
+    if not runs:
+        return []
+    n_rounds = len(runs[0]["rounds"])
+    values = []
+    for r in range(n_rounds):
+        vals = [run["rounds"][r].get(field, 0) for run in runs if r < len(run["rounds"])]
+        values.append(np.mean(vals) if vals else 0.0)
+    return values
+
+
+# ── Existing plots (updated for 8 conditions) ────────────────────────────────
+
 def plot_metric_trajectories(save: bool = True) -> None:
-    """One subplot per metric: all conditions over rounds."""
+    """2x2 panel: one subplot per metric, all conditions over rounds."""
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     axes = axes.flatten()
 
     for ax, metric in zip(axes, METRICS):
-        for color, condition in zip(COLORS, CONDITIONS):
+        for condition in CONDITIONS:
             runs = _load_runs(condition)
             if not runs:
                 continue
             trajectory = _mean_metric_over_rounds(runs, metric)
             rounds = list(range(1, len(trajectory) + 1))
-            ax.plot(rounds, trajectory, label=condition, color=color, linewidth=1.8)
+            ax.plot(rounds, trajectory, label=condition, color=COLORS[condition], linewidth=1.8)
 
-        ax.axhline(0.5, color="black", linestyle="--", linewidth=0.8, alpha=0.5, label="stability threshold")
+        ax.axhline(STABILITY_THRESHOLD, color="black", linestyle="--", linewidth=0.8, alpha=0.5, label="stability threshold")
         ax.set_title(metric.capitalize())
         ax.set_xlabel("Round")
         ax.set_ylabel(metric)
@@ -72,7 +86,7 @@ def plot_final_metrics_heatmap(save: bool = True) -> None:
             vals = [r["final_metrics"].get(metric, 0) for r in runs]
             data[i, j] = np.mean(vals) if vals else 0.0
 
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(8, 6))
     im = ax.imshow(data, cmap="RdYlGn", vmin=0, vmax=1, aspect="auto")
     ax.set_xticks(range(len(METRICS)))
     ax.set_xticklabels([m.capitalize() for m in METRICS])
@@ -88,7 +102,7 @@ def plot_final_metrics_heatmap(save: bool = True) -> None:
 
 
 def plot_defection_rates(save: bool = True) -> None:
-    """Bar chart: mean defection rate per condition."""
+    """Bar chart: mean defection rate per condition at final round."""
     means, stds, labels = [], [], []
     for condition in CONDITIONS:
         runs = _load_runs(condition)
@@ -100,9 +114,9 @@ def plot_defection_rates(save: bool = True) -> None:
         stds.append(np.std(defection_vals))
         labels.append(condition)
 
-    fig, ax = plt.subplots(figsize=(9, 5))
+    fig, ax = plt.subplots(figsize=(10, 5))
     x = np.arange(len(labels))
-    ax.bar(x, means, yerr=stds, capsize=5, color=COLORS[:len(labels)], alpha=0.85)
+    ax.bar(x, means, yerr=stds, capsize=5, color=[COLORS[c] for c in labels], alpha=0.85)
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.set_ylabel("Defection rate (1 - Peace)")
@@ -122,7 +136,6 @@ def plot_intermediate_variables(save: bool = True) -> None:
             runs = _load_runs(condition)
             if not runs:
                 continue
-            # Average across all rounds and runs
             vals = []
             for run in runs:
                 for rnd in run["rounds"]:
@@ -133,11 +146,11 @@ def plot_intermediate_variables(save: bool = True) -> None:
             labels.append(condition)
 
         x = np.arange(len(labels))
-        ax.bar(x, means, color=COLORS[:len(labels)], alpha=0.85)
+        ax.bar(x, means, color=[COLORS[c] for c in labels], alpha=0.85)
         ax.set_xticks(x)
         ax.set_xticklabels(labels)
         ax.set_title(var.replace("_", " ").title())
-        ax.set_ylim(0, 1)
+        ax.set_ylim(0, max(means) * 1.2 if means else 1)
         ax.grid(axis="y", alpha=0.3)
 
     fig.suptitle("Intermediate Variables by Condition", fontsize=13, fontweight="bold")
@@ -145,11 +158,246 @@ def plot_intermediate_variables(save: bool = True) -> None:
     _maybe_save(fig, "intermediate_variables.png", save)
 
 
+# ── New plots ─────────────────────────────────────────────────────────────────
+
+def plot_stability_rates(save: bool = True) -> None:
+    """Bar chart: fraction of runs achieving market stability per condition."""
+    labels, rates = [], []
+    for condition in CONDITIONS:
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+        stable = sum(
+            1 for run in runs
+            if all(
+                run["rounds"][-1]["metrics"].get(m, 0) >= STABILITY_THRESHOLD
+                for m in METRICS
+            )
+        )
+        labels.append(condition)
+        rates.append(stable / len(runs))
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    x = np.arange(len(labels))
+    bars = ax.bar(x, rates, color=[COLORS[c] for c in labels], alpha=0.85)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.set_ylabel("Stability rate (fraction of runs)")
+    ax.set_ylim(0, 1.1)
+    ax.axhline(1.0, color="green", linestyle="--", linewidth=0.8, alpha=0.5)
+    for bar, rate in zip(bars, rates):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
+                f"{rate:.0%}", ha="center", va="bottom", fontsize=9, fontweight="bold")
+    ax.set_title("Market Stability Rate by Condition\n(all 4 metrics ≥ 0.5 at round 30)", fontweight="bold")
+    ax.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    _maybe_save(fig, "stability_rates.png", save)
+
+
+def plot_defection_trajectory(save: bool = True) -> None:
+    """Line chart: defection count per round over time per condition."""
+    fig, ax = plt.subplots(figsize=(12, 6))
+    for condition in CONDITIONS:
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+        trajectory = _mean_round_field(runs, "defections")
+        rounds = list(range(1, len(trajectory) + 1))
+        ax.plot(rounds, trajectory, label=condition, color=COLORS[condition], linewidth=1.8)
+
+    ax.set_xlabel("Round")
+    ax.set_ylabel("Mean defections per round")
+    ax.set_title("Defection Count Over Rounds by Condition", fontweight="bold")
+    ax.legend(fontsize=9)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    _maybe_save(fig, "defection_trajectory.png", save)
+
+
+def plot_trade_volume(save: bool = True) -> None:
+    """Line chart: trade count per round over time per condition."""
+    fig, ax = plt.subplots(figsize=(12, 6))
+    for condition in CONDITIONS:
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+        trajectory = _mean_round_field(runs, "trade_count")
+        rounds = list(range(1, len(trajectory) + 1))
+        ax.plot(rounds, trajectory, label=condition, color=COLORS[condition], linewidth=1.8)
+
+    ax.set_xlabel("Round")
+    ax.set_ylabel("Mean trades per round")
+    ax.set_title("Trade Volume Over Rounds by Condition", fontweight="bold")
+    ax.legend(fontsize=9)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    _maybe_save(fig, "trade_volume.png", save)
+
+
+def plot_contract_utilisation(save: bool = True) -> None:
+    """For contracting conditions: contracts proposed/executed/breached per round."""
+    contracting_conditions = [c for c in CONDITIONS if "C" in c]
+    if not contracting_conditions:
+        return
+
+    fig, axes = plt.subplots(1, len(contracting_conditions),
+                              figsize=(5 * len(contracting_conditions), 5), sharey=True)
+    if len(contracting_conditions) == 1:
+        axes = [axes]
+
+    for ax, condition in zip(axes, contracting_conditions):
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+
+        def _count_field(runs, key):
+            n_rounds = len(runs[0]["rounds"])
+            out = []
+            for r in range(n_rounds):
+                vals = [len(run["rounds"][r].get(key, [])) for run in runs if r < len(run["rounds"])]
+                out.append(np.mean(vals) if vals else 0.0)
+            return out
+
+        rounds = list(range(1, len(runs[0]["rounds"]) + 1))
+        proposed  = _count_field(runs, "contracts_proposed")
+        active    = _count_field(runs, "contracts_active")
+        executed  = _count_field(runs, "contracts_executed_this_round")
+        breached  = _count_field(runs, "contracts_breached_this_round")
+
+        ax.plot(rounds, proposed, label="Proposed", linewidth=1.5, linestyle="--")
+        ax.plot(rounds, active,   label="Active",   linewidth=1.5)
+        ax.plot(rounds, executed, label="Executed", linewidth=1.5)
+        ax.plot(rounds, breached, label="Breached", linewidth=1.5, color="red")
+        ax.set_title(f"Condition {condition}")
+        ax.set_xlabel("Round")
+        ax.legend(fontsize=8)
+        ax.grid(True, alpha=0.3)
+
+    axes[0].set_ylabel("Mean contract count")
+    fig.suptitle("Contract Utilisation by Round", fontsize=13, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "contract_utilisation.png", save)
+
+
+def plot_mediation_utilisation(save: bool = True) -> None:
+    """For mediation conditions: fraction of trades mediated per round."""
+    mediation_conditions = [c for c in CONDITIONS if "M" in c]
+    if not mediation_conditions:
+        return
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    for condition in mediation_conditions:
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+        n_rounds = len(runs[0]["rounds"])
+        fractions = []
+        for r in range(n_rounds):
+            mediated = np.mean([run["rounds"][r].get("mediated_trade_count", 0)
+                                for run in runs if r < len(run["rounds"])])
+            total = np.mean([run["rounds"][r].get("trade_count", 0)
+                             for run in runs if r < len(run["rounds"])])
+            fractions.append(mediated / total if total > 0 else 0.0)
+        rounds = list(range(1, n_rounds + 1))
+        ax.plot(rounds, fractions, label=condition, color=COLORS[condition], linewidth=1.8)
+
+    ax.set_xlabel("Round")
+    ax.set_ylabel("Fraction of trades mediated")
+    ax.set_ylim(0, 1.05)
+    ax.set_title("Mediation Utilisation Over Rounds", fontweight="bold")
+    ax.legend(fontsize=9)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    _maybe_save(fig, "mediation_utilisation.png", save)
+
+
+def plot_reputation_trajectories(save: bool = True) -> None:
+    """For reputation conditions: mean and min reputation score over rounds."""
+    reputation_conditions = [c for c in CONDITIONS if "R" in c]
+    if not reputation_conditions:
+        return
+
+    fig, axes = plt.subplots(1, len(reputation_conditions),
+                              figsize=(5 * len(reputation_conditions), 5), sharey=True)
+    if len(reputation_conditions) == 1:
+        axes = [axes]
+
+    for ax, condition in zip(axes, reputation_conditions):
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+        n_rounds = len(runs[0]["rounds"])
+        mean_rep, min_rep = [], []
+        for r in range(n_rounds):
+            all_scores = []
+            min_scores = []
+            for run in runs:
+                if r >= len(run["rounds"]):
+                    continue
+                rep = run["rounds"][r].get("reputation", {})
+                scores = list(rep.values())
+                if scores:
+                    all_scores.extend(scores)
+                    min_scores.append(min(scores))
+            mean_rep.append(np.mean(all_scores) if all_scores else 1.0)
+            min_rep.append(np.mean(min_scores) if min_scores else 1.0)
+
+        rounds = list(range(1, n_rounds + 1))
+        ax.plot(rounds, mean_rep, label="Mean reputation", color=COLORS[condition], linewidth=1.8)
+        ax.plot(rounds, min_rep, label="Min reputation", color=COLORS[condition],
+                linewidth=1.5, linestyle="--", alpha=0.7)
+        ax.axhline(0.5, color="black", linestyle=":", linewidth=0.8, alpha=0.5)
+        ax.set_title(f"Condition {condition}")
+        ax.set_xlabel("Round")
+        ax.set_ylim(0, 1.05)
+        ax.legend(fontsize=8)
+        ax.grid(True, alpha=0.3)
+
+    axes[0].set_ylabel("Reputation score")
+    fig.suptitle("Reputation Score Trajectories", fontsize=13, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "reputation_trajectories.png", save)
+
+
+def plot_utility_distribution(save: bool = True) -> None:
+    """Boxplot: final round utility distribution across agents per condition."""
+    labels, all_utils = [], []
+    for condition in CONDITIONS:
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+        utils = []
+        for run in runs:
+            final_round = run["rounds"][-1]
+            utils.extend(final_round.get("utilities", {}).values())
+        labels.append(condition)
+        all_utils.append(utils)
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    bp = ax.boxplot(all_utils, labels=labels, patch_artist=True, notch=False)
+    for patch, condition in zip(bp["boxes"], labels):
+        patch.set_facecolor(COLORS[condition])
+        patch.set_alpha(0.7)
+    ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.4)
+    ax.set_ylabel("Agent utility (final round)")
+    ax.set_title("Utility Distribution Across Agents by Condition (Final Round)", fontweight="bold")
+    ax.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    _maybe_save(fig, "utility_distribution.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
     plot_defection_rates(save)
     plot_intermediate_variables(save)
+    plot_stability_rates(save)
+    plot_defection_trajectory(save)
+    plot_trade_volume(save)
+    plot_contract_utilisation(save)
+    plot_mediation_utilisation(save)
+    plot_reputation_trajectories(save)
+    plot_utility_distribution(save)
     print(f"Plots saved to {OUT_DIR}")
 
 
