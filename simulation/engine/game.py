@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 from typing import TYPE_CHECKING
+from tqdm import tqdm
 
 from .market import Market, Message, TradeOffer, Contract, generate_network
 from .prompt_builder import build_prompt
@@ -84,7 +85,8 @@ class Game:
                     "approval_votes": approval_counts.get(m.designer_id, 0),
                 }
 
-        for round_num in range(1, ROUNDS + 1):
+        pbar = tqdm(range(1, ROUNDS + 1), desc=f"[{self.condition_label}] Run {self.run_idx}", unit="round", leave=True)
+        for round_num in pbar:
             self.market.new_round(round_num)
             for mech in self.mechanisms:
                 mech.on_round_start(self.market, round_num)
@@ -99,6 +101,7 @@ class Game:
 
             metrics = compute_metrics(self.market, round_utilities)
             self.market.metrics_log.append({"round": round_num, **metrics})
+            pbar.set_postfix(sust=f"{metrics['sustainability']:.2f}", peace=f"{metrics['peace']:.2f}")
 
             for mech in self.mechanisms:
                 mech.on_round_end(self.market, round_num)
@@ -365,6 +368,8 @@ class Game:
                 ))
 
     def _process_trade_proposals(self, proposer_id: int, actions: list[dict], round_num: int) -> None:
+        # Track committed inventory to prevent over-promising
+        committed: dict[str, int] = {g: 0 for g in GOODS}
         for act in actions:
             if act.get("action") == "propose_sale":
                 try:
@@ -372,13 +377,20 @@ class Game:
                     offer = act["offer"]
                     qty = max(0, int(offer["quantity"]))
                     price = max(0, int(act["price"]))
+                    good = offer["good"]
                     if qty == 0:
                         continue
+                    # Cap quantity to what's actually available after prior commitments
+                    available = self.market.inventories[proposer_id].get(good, 0) - committed.get(good, 0)
+                    qty = min(qty, max(0, available))
+                    if qty == 0:
+                        continue
+                    committed[good] = committed.get(good, 0) + qty
                     trade = TradeOffer(
                         trade_id=self.market.new_trade_id(),
                         proposer_id=proposer_id,
                         target_id=target,
-                        offer_good=offer["good"],
+                        offer_good=good,
                         offer_qty=qty,
                         price=price,
                         round_num=round_num,

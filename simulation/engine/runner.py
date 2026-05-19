@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 from datetime import datetime
+from tqdm import tqdm
 
 from .agent import make_agents
 from .game import Game
@@ -28,8 +29,7 @@ def run_condition(condition: str, runs: int = RUNS_PER_CONDITION) -> list[dict]:
     mechanism_names = CONDITION_MECHANISMS[condition]
     summaries = []
 
-    for run_idx in range(runs):
-        print(f"[{condition}] Run {run_idx + 1}/{runs}...")
+    for run_idx in tqdm(range(runs), desc=f"Condition {condition}", unit="run", leave=True):
         agents = make_agents()
         mechanisms = _make_mechanisms(mechanism_names)
         game = Game(

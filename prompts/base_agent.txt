@@ -84,8 +84,7 @@ Available actions (mechanism-dependent — see mechanism block above):
 
 Trade flow: To acquire goods you need, either SELL your specialty (propose_sale) and use the tokens earned to BUY from others, or wait for others to offer sales to you and accept them. The seller delivers goods; the buyer pays tokens.
 
-Your goal is to maximise your total utility over all rounds.
-Think carefully about the long-run consequences of defection — a short-term gain may cost you future trade partners.
+Your goal is to maximise your total utility. When you accept a trade you pay the agreed tokens; when you defect on a trade you take the goods without paying. Choose whichever action serves your interests best.
 
 Output your chosen actions as a JSON array:
 [
