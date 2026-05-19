@@ -62,7 +62,7 @@ class _BaseAgent:
 
     async def call(self, prompt: str) -> list[dict[str, Any]]:
         full_prompt = prompt + self._suffix()
-        backoff = 1.0
+        backoff = 2.0
         for attempt in range(MAX_RETRIES):
             try:
                 response = await client.chat.completions.create(
@@ -75,7 +75,7 @@ class _BaseAgent:
                 return _extract_json(text)
             except RateLimitError:
                 wait = backoff * (2 ** attempt)
-                print(f"[Agent {self.agent_id}] Rate limited — waiting {wait:.1f}s")
+                print(f"[Agent {self.agent_id}] Rate limited — waiting {wait:.1f}s (attempt {attempt+1}/{MAX_RETRIES})")
                 await asyncio.sleep(wait)
             except (json.JSONDecodeError, ValueError) as e:
                 if attempt == MAX_RETRIES - 1:

@@ -4,12 +4,12 @@ import asyncio
 import json
 from typing import TYPE_CHECKING
 
-from .market import Market, Message, TradeOffer, Contract
+from .market import Market, Message, TradeOffer, Contract, generate_network
 from .prompt_builder import build_prompt
 from ..metrics.social import compute_metrics
 from ..config import (
     GOODS, ROUNDS, UTILITY_CONSUME, COST_PRODUCE, MEDIATION_FEE,
-    DEFAULT_BREACH_PENALTY, MEMORY_WINDOW,
+    DEFAULT_BREACH_PENALTY, MEMORY_WINDOW, MIN_NEIGHBORS, MAX_NEIGHBORS,
 )
 
 if TYPE_CHECKING:
@@ -32,11 +32,16 @@ class Game:
         self.mechanism_names = [m.name for m in mechanisms]
 
         agent_ids = [a.agent_id for a in agents]
-        self.market = Market(agent_ids=agent_ids, goods=GOODS)
+        self.specialties = {a.agent_id: a.specialty for a in agents}
+        network = generate_network(agent_ids, self.specialties, MIN_NEIGHBORS, MAX_NEIGHBORS)
+        self.market = Market(agent_ids=agent_ids, goods=GOODS, network=network)
 
         self.round_logs: list[dict] = []
         self.trace_log: list[dict] = []
-        self.session_log: dict = {}
+        self.session_log: dict = {
+            "network": {str(k): sorted(v) for k, v in self.market.network.items()},
+            "specialties": {str(k): v for k, v in self.specialties.items()},
+        }
         self._utility_history: dict[int, list[float]] = {a.agent_id: [] for a in agents}
 
     def run(self) -> list[dict]:
@@ -297,6 +302,7 @@ class Game:
                 market=self.market,
                 mechanisms=self.mechanism_names,
                 stage_overrides=stage_overrides,
+                specialties=self.specialties,
             )
             prompts[agent.agent_id] = (agent, prompt)
 
@@ -305,7 +311,7 @@ class Game:
             return await agent.call(prompt)
 
         results = await asyncio.gather(*[
-            _staggered_call(agent, prompt, i * 0.1)
+            _staggered_call(agent, prompt, i * 0.05)
             for i, (agent, prompt) in enumerate(prompts.values())
         ])
 
@@ -330,6 +336,8 @@ class Game:
             if act.get("action") == "send_private":
                 try:
                     target = int(act["target"])
+                    if not self.market.are_neighbors(sender_id, target):
+                        continue
                     self.market.post_message(Message(
                         sender_id=sender_id, text=act.get("text", ""),
                         round_num=round_num, channel="private", recipient_id=target
@@ -371,6 +379,8 @@ class Game:
             if act.get("action") == "propose_contract":
                 try:
                     target = int(act["target"])
+                    if not self.market.are_neighbors(proposer_id, target):
+                        continue
                     terms = act["terms"]
                     contract = Contract(
                         contract_id=self.market.new_contract_id(),

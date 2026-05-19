@@ -7,8 +7,8 @@ DATA_DIR = Path(__file__).parent / "data" / "runs"
 
 # Market structure
 GOODS = ["A", "B", "C"]
-N_AGENTS = 9          # 3 per good
-AGENTS_PER_GOOD = 3
+N_AGENTS = 18         # 6 per good
+AGENTS_PER_GOOD = 6
 
 # Utility values
 UTILITY_CONSUME = 3   # per unit of needed good consumed
@@ -36,10 +36,14 @@ MODEL = "gpt-5.4-nano-BQ-Cohort"
 # LLM — analyst agent (Claude)
 ANALYST_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/anthropic"
 ANALYST_MODEL = "claude-opus-4-6-BQ-Cohort"
-MAX_RETRIES = 3       # JSON parse retries per agent call
+MAX_RETRIES = 6       # retries per agent call (handles rate limits with 18 agents)
 
 # Agent reasoning style: all agents use chain-of-thought (CoopEval CoTAgent pattern)
-COT_AGENT_IDS = {0, 1, 2, 3, 4, 5, 6, 7, 8}   # all agents
+COT_AGENT_IDS = set(range(18))   # all agents
+
+# Network structure
+MIN_NEIGHBORS = 4
+MAX_NEIGHBORS = 6
 
 # Experimental conditions
 CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]

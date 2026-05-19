@@ -3,7 +3,10 @@
     "allow": [
       "Bash(xargs grep -l \"compute_metrics\\\\|efficiency\\\\|gini\")",
       "Bash(python3 *)",
-      "Bash(pdftotext \"C:/Users/NYiSheng/Documents/DSO-WorkSpace/Raw/CoopEval.pdf\" -)"
+      "Bash(pdftotext \"C:/Users/NYiSheng/Documents/DSO-WorkSpace/Raw/CoopEval.pdf\" -)",
+      "WebSearch",
+      "WebFetch(domain:www.aimodels.fyi)",
+      "WebFetch(domain:arxiv.org)"
     ]
   }
 }

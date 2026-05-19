@@ -1,5 +1,6 @@
 """Central market state: inventories, message queues, trade ledger, contracts, mediation."""
 from __future__ import annotations
+import random
 import re
 import uuid
 from dataclasses import dataclass, field
@@ -51,11 +52,57 @@ class MediatorDesign:
     approvals: int = 0
 
 
+def generate_network(
+    agent_ids: list[int],
+    specialties: dict[int, str],
+    min_neighbors: int = 4,
+    max_neighbors: int = 6,
+) -> dict[int, set[int]]:
+    """Generate a static trade network guaranteeing each agent can reach both other goods."""
+    goods_to_agents: dict[str, list[int]] = {}
+    for aid, good in specialties.items():
+        goods_to_agents.setdefault(good, []).append(aid)
+
+    all_goods = list(goods_to_agents.keys())
+    adj: dict[int, set[int]] = {aid: set() for aid in agent_ids}
+
+    def _add_edge(a: int, b: int):
+        adj[a].add(b)
+        adj[b].add(a)
+
+    # Step 1: guarantee each agent has at least one neighbor per other good
+    for aid in agent_ids:
+        my_good = specialties[aid]
+        for g in all_goods:
+            if g == my_good:
+                continue
+            candidates = [x for x in goods_to_agents[g] if x not in adj[aid]]
+            if not candidates:
+                candidates = goods_to_agents[g]
+            # Prefer agents with fewer connections to balance degree
+            candidates.sort(key=lambda x: len(adj[x]))
+            _add_edge(aid, candidates[0])
+
+    # Step 2: add random edges until each agent has min_neighbors
+    for aid in agent_ids:
+        while len(adj[aid]) < min_neighbors:
+            candidates = [x for x in agent_ids if x != aid and x not in adj[aid] and len(adj[x]) < max_neighbors]
+            if not candidates:
+                break
+            _add_edge(aid, random.choice(candidates))
+
+    return adj
+
+
 class Market:
-    def __init__(self, agent_ids: list[int], goods: list[str]):
+    def __init__(self, agent_ids: list[int], goods: list[str],
+                 network: dict[int, set[int]] | None = None):
         self.agent_ids = agent_ids
         self.goods = goods
         self.round_num = 0
+
+        # Social network: agent_id -> set of neighbor agent_ids
+        self.network: dict[int, set[int]] = network or {aid: set(agent_ids) - {aid} for aid in agent_ids}
 
         # Inventories: agent_id -> {good: qty}
         self.inventories: dict[int, dict[str, int]] = {
@@ -130,7 +177,12 @@ class Market:
         match = re.search(r'Agent (\d+)', text)
         return int(match.group(1)) if match else None
 
+    def are_neighbors(self, agent_a: int, agent_b: int) -> bool:
+        return agent_b in self.network.get(agent_a, set())
+
     def post_trade_offer(self, offer: TradeOffer):
+        if not self.are_neighbors(offer.proposer_id, offer.target_id):
+            return
         self.pending_offers[offer.target_id].append(offer)
 
     def new_trade_id(self) -> str:

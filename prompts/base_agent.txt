@@ -26,6 +26,13 @@ Cumulative utility:  {total_utility}
   Sustainability:{sustainability:.2f}  — whether agents are still willing to produce (1 = same as round 1)
   Peace:         {peace:.2f}        — fraction of attempted trades completing without defection
 
+=== YOUR TRADE NETWORK ===
+
+You can only trade with and send private messages to your direct neighbors:
+{neighbors}
+
+You CANNOT trade with agents not listed above. Public broadcasts are visible to all agents.
+
 === RECENT TRADE HISTORY (your last 5 rounds per partner) ===
 
 {partner_history}

@@ -77,6 +77,17 @@ def _fmt_public_feed(market: "Market") -> str:
     )
 
 
+def _fmt_neighbors(market: "Market", agent_id: int, specialties: dict[int, str]) -> str:
+    neighbors = sorted(market.network.get(agent_id, set()))
+    if not neighbors:
+        return "  (none)"
+    lines = []
+    for nid in neighbors:
+        good = specialties.get(nid, "?")
+        lines.append(f"  Agent {nid} (produces Good {good})")
+    return "\n".join(lines)
+
+
 def _fmt_pending_offers(market: "Market", agent_id: int) -> str:
     offers = market.pending_offers[agent_id]
     if not offers:
@@ -285,6 +296,7 @@ def build_prompt(
     market: "Market",
     mechanisms: list[str],
     stage_overrides: dict[str, str] | None = None,
+    specialties: dict[int, str] | None = None,
 ) -> str:
     inv_a, inv_b, inv_c = _fmt_inventory(market, agent_id)
 
@@ -308,6 +320,7 @@ def build_prompt(
     prompt = prompt.replace("{private_inbox}", _fmt_inbox(market, agent_id))
     prompt = prompt.replace("{public_feed}", _fmt_public_feed(market))
     prompt = prompt.replace("{pending_offers}", _fmt_pending_offers(market, agent_id))
+    prompt = prompt.replace("{neighbors}", _fmt_neighbors(market, agent_id, specialties or {}))
     prompt = prompt.replace("{mechanism_block}", mechanism_block)
     prompt = prompt.replace("{mechanism_actions}", mechanism_actions)
 
