@@ -32,7 +32,7 @@ Cumulative utility:  {total_utility}
 
 === SPOILAGE WARNING ===
 
-Goods are perishable: you lose 30% of all held inventory at the start of each round.
+Goods are perishable: you lose 20% of all held inventory at the start of each round.
 Produce and sell within the same round to avoid losses.
 
 === YOUR TRADE NETWORK ===

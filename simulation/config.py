@@ -17,7 +17,7 @@ MAX_PRODUCE = 5       # per round
 STARTING_TOKENS = 20  # initial budget per agent
 ROUND_INCOME = 3      # tokens granted to each agent per round (prevents deflationary collapse)
 FAIR_PRICE = 2        # suggested fair token price per unit
-SPOILAGE_RATE = 0.3   # 30% of held inventory lost per round (perishable goods)
+SPOILAGE_RATE = 0.2   # 20% of held inventory lost per round (perishable goods)
 
 # Simulation parameters
 ROUNDS = 30

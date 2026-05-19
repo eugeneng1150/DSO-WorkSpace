@@ -171,10 +171,10 @@ Tokens create resource scarcity: agents must balance spending on production agai
 
 \subsection{Inventory Spoilage}
 
-Goods are perishable: at the start of each round (from round 2 onward), all held inventory decays by 30\%. Formally, for each agent $a$ and good $g$:
+Goods are perishable: at the start of each round (from round 2 onward), all held inventory decays by 20\%. Formally, for each agent $a$ and good $g$:
 
 \[
-I_{a,g}^{t} \leftarrow \lfloor I_{a,g}^{t-1} \times (1 - \psi) \rfloor, \quad \psi = 0.3
+I_{a,g}^{t} \leftarrow \lfloor I_{a,g}^{t-1} \times (1 - \psi) \rfloor, \quad \psi = 0.2
 \]
 
 Spoilage creates temporal urgency: agents cannot hoard goods across rounds without loss, so they are pressured to produce and sell within the same round. This increases trade volume and expands the defection surface — more trades means more opportunities for exploitation — giving formal mechanisms a harder baseline to improve upon.
@@ -206,7 +206,7 @@ The network constraint makes cooperation more consequential: losing a trade part
 Each simulation run consists of $T = 30$ rounds. Each round proceeds through five phases:
 
 \begin{enumerate}
-  \item \textbf{Income and spoilage phase} — each agent receives 3 tokens of per-round income. All held inventory decays by 30\% (from round 2 onward).
+  \item \textbf{Income and spoilage phase} — each agent receives 3 tokens of per-round income. All held inventory decays by 20\% (from round 2 onward).
   \item \textbf{Production phase} — each agent decides how many units to produce (0--5 units). Production costs tokens, so agents must have sufficient balance.
   \item \textbf{Communication phase} — agents send private messages (to neighbours only) and public broadcasts (to all); agents propose trades and contracts to neighbours.
   \item \textbf{Trade phase} — agents accept, reject, or defect on incoming offers. Completed trades transfer goods and tokens between parties. Defection (taking goods without paying) is possible unless a mechanism prevents it.
