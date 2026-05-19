@@ -176,6 +176,7 @@ class Game:
                         "offer": {"good": t.offer_good, "qty": t.offer_qty},
                         "price": t.price,
                         "status": t.status,
+                        "defected_by": t.defected_by,
                     }
                     for t in round_trades
                 ],
@@ -320,6 +321,8 @@ class Game:
                 mechanisms=self.mechanism_names,
                 stage_overrides=stage_overrides,
                 specialties=self.specialties,
+                round_num=round_num,
+                total_rounds=ROUNDS,
             )
             prompts[agent.agent_id] = (agent, prompt)
 

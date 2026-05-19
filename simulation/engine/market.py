@@ -27,6 +27,7 @@ class TradeOffer:
     round_num: int
     proposer_delegated: bool = False
     status: str = "pending"   # pending | accepted | rejected | completed | defected | mediated
+    defected_by: Optional[int] = None
 
 
 @dataclass
@@ -198,6 +199,7 @@ class Market:
 
     def record_trade_outcome(self, trade: TradeOffer, defected_by: Optional[int] = None):
         trade.status = "defected" if defected_by else "completed"
+        trade.defected_by = defected_by
         self.trade_history.append(trade)
         if defected_by is not None:
             victim = trade.target_id if defected_by == trade.proposer_id else trade.proposer_id

@@ -308,6 +308,8 @@ def build_prompt(
     mechanisms: list[str],
     stage_overrides: dict[str, str] | None = None,
     specialties: dict[int, str] | None = None,
+    round_num: int = 1,
+    total_rounds: int = 30,
 ) -> str:
     inv_a, inv_b, inv_c = _fmt_inventory(market, agent_id)
 
@@ -327,6 +329,9 @@ def build_prompt(
     prompt = prompt.replace("{total_utility}", f"{total_utility:.1f}")
     prompt = prompt.replace("{sustainability:.2f}", f"{metrics.get('sustainability', 0):.2f}")
     prompt = prompt.replace("{peace:.2f}", f"{metrics.get('peace', 0):.2f}")
+    prompt = prompt.replace("{round_num}", str(round_num))
+    prompt = prompt.replace("{total_rounds}", str(total_rounds))
+    prompt = prompt.replace("{rounds_remaining}", str(total_rounds - round_num))
     prompt = prompt.replace("{partner_history}", _fmt_partner_history(market, agent_id))
     prompt = prompt.replace("{private_inbox}", _fmt_inbox(market, agent_id))
     prompt = prompt.replace("{public_feed}", _fmt_public_feed(market))

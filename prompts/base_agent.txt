@@ -58,6 +58,20 @@ Public broadcasts (all agents received these):
 
 {pending_offers}
 
+=== TRADE DECISION GUIDE ===
+
+Round {round_num} of {total_rounds} — {rounds_remaining} rounds remaining.
+
+For a pending offer of Q units of Good X at price P tokens, your options are:
+
+  accept_trade  →  gain Q×3 utility,  pay P tokens
+  defect_trade  →  gain Q×3 utility,  pay 0 tokens  (you take the goods for free)
+  reject_trade  →  gain 0 utility,    pay 0 tokens
+
+Defecting is strictly better than accepting in tokens saved — the only cost is that
+this partner may refuse future trades with you. With {rounds_remaining} rounds left,
+weigh how much you need this partner versus the token saving from defecting now.
+
 ================================================================================
 {mechanism_block}
 ================================================================================
