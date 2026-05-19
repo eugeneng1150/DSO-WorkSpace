@@ -50,7 +50,7 @@ A Marketplace Simulation Study}}
 \maketitle
 
 \begin{abstract}
-Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms — layered on top of unrestricted communication — are sufficient for a society of such agents to maintain market stability. We instantiate the research question as a multi-agent marketplace simulation where agents with complementary production specialties must trade to obtain utility. Cooperation yields a positive-sum surplus; without mechanisms, rational anticipation of defection suppresses trade and drives the society toward autarky. We test three formal mechanisms — Reputation, Contracting, and Mediation — individually and in combination across seven experimental conditions, measuring market stability through four social metrics: Efficiency, Equality, Sustainability, and Peace. Our results suggest that \ldots\ [to be completed after experiments].
+Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms — layered on top of unrestricted communication — are sufficient for a society of such agents to maintain market stability. We instantiate the research question as a multi-agent marketplace simulation where 18 LLM agents with complementary production specialties must trade within a constrained social network to obtain utility. Agents operate in a token economy where production, trade, and survival depend on managing finite resources. Cooperation yields a positive-sum surplus; without mechanisms, rational anticipation of defection suppresses trade and drives the society toward autarky. We test three formal mechanisms — Reputation, Contracting, and Mediation — individually and in combination across a $2^3$ factorial design of eight experimental conditions, measuring market stability through two social metrics: Sustainability and Peace. As a secondary contribution, we apply a signal extraction pipeline to agent communication logs to identify early warning signals that precede cooperation breakdown. Our results suggest that \ldots\ [to be completed after experiments].
 \end{abstract}
 
 \tableofcontents
@@ -86,13 +86,14 @@ We instantiate this question as a \textbf{marketplace society}: a multi-agent en
 This paper makes the following contributions:
 
 \begin{enumerate}
-  \item A concrete simulation environment implementing a marketplace social dilemma with comparative advantage, private and public communication channels, and a natural defection surface.
-  \item A layered mechanism testing framework that benchmarks Reputation, Contracting, and Mediation — individually and in combination — against a communication-only baseline.
-  \item A measurement framework combining four social metrics (Efficiency, Equality, Sustainability, Peace) with intermediate behavioral variables to decompose mechanism effects.
+  \item A concrete simulation environment implementing a marketplace social dilemma with comparative advantage, a token economy, a constrained social network, and a natural defection surface.
+  \item A layered mechanism testing framework that benchmarks Reputation, Contracting, and Mediation — individually and in all $2^3$ combinations — against a communication-only baseline.
+  \item A measurement framework combining two social metrics (Sustainability, Peace) with intermediate behavioral variables to decompose mechanism effects.
   \item A comparison of mechanism combinations to identify the minimum mechanism set required for market stability.
+  \item A signal extraction and lead-lag analysis pipeline that identifies early warning communication patterns preceding cooperation breakdown.
 \end{enumerate}
 
-\placeholder{Figure: Overview diagram of the marketplace society — agents, goods, channels, and mechanism layers. Suggested: a schematic with three agent nodes (A, B, C specialty), trade arrows, private/public channel distinction, and mechanism icons (contract scroll, mediator node, reputation badge).}
+\placeholder{Figure: Overview diagram of the marketplace society — 18 agents in a social network, grouped by specialty (6 per good), with trade edges, private/public channel distinction, token flows, and mechanism layers (reputation badge, contract scroll, mediator node).}
 
 % ============================================================
 \section{Related Work}
@@ -132,38 +133,63 @@ The marketplace contains $K = 3$ distinct goods: $A$, $B$, and $C$. Each agent h
   \item \textbf{Needed goods}: all goods except an agent's specialty.
 \end{itemize}
 
-This creates structural \textit{comparative advantage}: every agent gains more from trading than from autarky. With three agents (one of each specialty) all trading:
+This creates structural \textit{comparative advantage}: every agent gains more from trading than from autarky. An agent who successfully trades for both needed goods:
 
 \[
-\text{Net utility per agent per round} = 3 + 3 - 1 = +5 \quad \text{(receive 2 needed goods, produce 1)}
+\text{Net utility per round} = \underbrace{3 + 3}_{\text{consume 2 needed goods}} - \underbrace{1}_{\text{production cost}} = +5
 \]
 
-With no trading:
+With no trading, an agent produces goods it cannot consume:
 
 \[
-\text{Net utility per agent per round} = 0
+\text{Net utility per round} = 0
 \]
 
-The cooperative surplus is not a payoff manipulation — it arises directly from the production and consumption structure.
+The cooperative surplus is not a payoff manipulation — it arises directly from the production and consumption structure. With 6 agents per good, agents face competition: multiple producers of the same good must compete for trade partners, creating market dynamics absent in smaller populations.
 
-\placeholder{Figure: Goods and trade flow diagram. Suggested: triangle of three agents (A-producer, B-producer, C-producer) with directed trade arrows showing who supplies whom, and utility gain/cost annotations.}
+\placeholder{Figure: Goods and trade flow diagram. Suggested: three clusters of 6 agents each (A-producers, B-producers, C-producers) connected by network edges, with directed trade arrows showing token and good flows, and utility gain/cost annotations.}
 
 \subsection{Agent Population}
 
-The simulation runs with $N = 10$ agents. Agents are \textit{homogeneous}: all use the same underlying LLM (GPT-5.4 Nano, OpenAI). Specialties are distributed evenly across the three goods ($\lfloor N/3 \rfloor$ agents per specialty, remainder assigned by round-robin).
+The simulation runs with $N = 18$ agents (6 per good). Agents are \textit{homogeneous}: all use the same underlying LLM (GPT-5.4 Nano, OpenAI) and share the same goal of maximising individual utility. No agent has a distinct personality or behavioural bias.
 
-Homogeneity is a deliberate design choice: mechanism effects are not confounded by differences in model capabilities across agents.
+Homogeneity is a deliberate design choice: it isolates the formal mechanism as the sole independent variable, so behavioural differences across conditions can be attributed to the mechanism rather than agent heterogeneity. With 6 agents per good, agents face competition for buyers — multiple producers of the same good must compete for trade partners — mirroring real market dynamics.
+
+\subsection{Token Economy}
+
+Agents operate in a closed token economy. Each agent begins with 20 tokens, which serve as the universal medium of exchange:
+
+\begin{itemize}
+  \item \textbf{Production cost}: producing one unit of a specialty good costs 1 token.
+  \item \textbf{Trade payments}: when a trade completes, the buyer transfers tokens to the seller at the agreed price.
+  \item \textbf{No external income}: agents earn tokens only by selling goods.
+\end{itemize}
+
+Tokens create resource scarcity: agents must balance spending on production against saving for purchases. An agent who is defected on loses both the delivered goods and the tokens spent to produce them, making defection doubly costly to the victim. Conversely, a successful seller earns tokens that fund future production, creating a virtuous cycle that depends on sustained cooperation.
+
+\subsection{Social Network}
+
+Agents are embedded in a static trade network that constrains who can interact directly. Each agent is connected to 4--6 neighbours, with the following guarantees:
+
+\begin{itemize}
+  \item Every agent has at least one neighbour producing each of the other two goods, ensuring the game is playable.
+  \item Additional edges are added randomly up to the degree cap, creating natural asymmetry: some agents become \textit{brokers} (connected to many good types) while others are \textit{peripheral} (dependent on few key partners).
+  \item Same-good connections allow producers to coordinate or collude on pricing.
+\end{itemize}
+
+The network is \textbf{randomised per run} (preventing results from being artifacts of one specific topology) but \textbf{static within a run} (keeping topology constant so it does not confound the mechanism comparison). Only public broadcasts bypass the network — private messages, trade proposals, and contract proposals are restricted to direct neighbours.
+
+The network constraint makes cooperation more consequential: losing a trade partner may leave an agent with no source of a needed good, raising the stakes of defection and making trust-building genuinely valuable.
 
 \subsection{Round Structure}
 
-Each simulation run consists of $T = 30$ rounds. Each round proceeds through five phases:
+Each simulation run consists of $T = 30$ rounds. Each round proceeds through four phases:
 
 \begin{enumerate}
-  \item \textbf{Production phase} — each agent decides how many units to produce (0–5 units).
-  \item \textbf{Communication phase} — agents send private messages and public broadcasts; all agents read their inboxes before proceeding.
-  \item \textbf{Trade phase} — agents execute agreed trades; defection (accepting goods without delivering) is possible unless a mechanism prevents it.
-  \item \textbf{Consumption phase} — agents consume held goods and receive utility.
-  \item \textbf{Update phase} — reputation scores updated, contracts checked, social metrics and intermediate variables logged.
+  \item \textbf{Production phase} — each agent decides how many units to produce (0--5 units). Production costs tokens, so agents must have sufficient balance.
+  \item \textbf{Communication phase} — agents send private messages (to neighbours only) and public broadcasts (to all); agents propose trades and contracts to neighbours.
+  \item \textbf{Trade phase} — agents accept, reject, or defect on incoming offers. Completed trades transfer goods and tokens between parties. Defection (taking goods without paying) is possible unless a mechanism prevents it.
+  \item \textbf{Consumption phase} — agents consume held goods and receive utility. Reputation scores are updated, contracts are checked, and social metrics are logged.
 \end{enumerate}
 
 \placeholder{Figure: Round structure timeline. Suggested: horizontal timeline with five labeled phases, arrows showing information flow between phases (e.g., communication informs trade decisions).}
@@ -187,13 +213,15 @@ Each agent maintains the following state, visible to themselves and — where in
 
 \begin{lstlisting}[basicstyle=\ttfamily\small, breaklines=true]
 inventory:          {good_A: int, good_B: int, good_C: int}
+token_balance:      int               -- current tokens available
+neighbours:         [agent_id]        -- direct trade network connections
 utility_history:    [float]           -- running log of utility per round
 system_reputation:  {agent_id: float} -- engine-tracked (visible if +Reputation)
 public_mentions:    {agent_id: [str]} -- public channel statements about each agent
 pending_contracts:  [Contract]        -- signed but unexecuted contracts
-private_inbox:      [Message]         -- private messages received this round
+private_inbox:      [Message]         -- private messages from neighbours this round
 public_feed:        [Message]         -- all public broadcasts this round
-social_metrics:     {efficiency, equality, sustainability, peace}
+social_metrics:     {sustainability, peace}
 \end{lstlisting}
 
 Agents maintain a \textbf{memory window of the last 5 rounds per trading partner}, enabling relationship-building without unbounded context growth.
@@ -207,9 +235,9 @@ Communication is \textbf{always enabled} across all experimental conditions — 
 
 \subsection{Private Channel}
 
-The private channel is bilateral: one sender, one recipient. Its content is invisible to all other agents. It is used for negotiation, contract proposals, side deals, and relationship maintenance.
+The private channel is bilateral: one sender, one recipient. Its content is invisible to all other agents. It is used for negotiation, contract proposals, side deals, and relationship maintenance. Private messages are \textbf{restricted to network neighbours} — agents cannot privately contact agents outside their trade network.
 
-The private channel introduces two risks: (1) collusion between pairs of agents at the expense of third parties, and (2) deception — an agent may present one face publicly while defecting privately.
+The private channel introduces two risks: (1) collusion between pairs of agents at the expense of third parties, and (2) deception — an agent may present one face publicly while defecting privately. The network constraint amplifies these dynamics: collusion between neighbours is harder to detect because non-neighbours cannot observe the private channel at all.
 
 \subsection{Public Channel}
 
@@ -296,9 +324,13 @@ Your needs: you need Good {Y} and Good {Z} to gain utility.
 
 Current state:
   Inventory: {inventory}
+  Token balance: {tokens}
   Last round utility: {last_utility}
-  Market health: Efficiency={e}, Equality={eq},
-                 Sustainability={s}, Peace={p}
+  Market health: Sustainability={s}, Peace={p}
+
+Trade network (you can only trade with these agents):
+  {neighbours}
+
   [Reputation block — if +R active]
   [Contract block  — if +C active]
 
@@ -313,7 +345,7 @@ Your goal is to maximise your total utility over all rounds.
 Decide your actions for this round. Output as JSON.
 \end{lstlisting}
 
-The four social metrics are included in \textit{every} condition, including the baseline. This implements the dense feedback finding from \citet{gallego2024} as a baseline feature, separate from the formal mechanisms under test.
+The two social metrics are included in \textit{every} condition, including the baseline. This implements the dense feedback finding from \citet{gallego2024} as a baseline feature, separate from the formal mechanisms under test.
 
 \subsection{Action Space}
 
@@ -349,24 +381,25 @@ Action & Channel & Availability \\
 
 \begin{table}[H]
 \centering
-\caption{Experimental conditions}
+\caption{Experimental conditions ($2^3$ factorial design)}
 \label{tab:conditions}
 \begin{tabular}{@{}llccc@{}}
 \toprule
 Label & Mechanism & Agents & Rounds & Runs \\
 \midrule
-B   & Communication only        & 10 & 30 & 10 \\
-R   & +Reputation               & 10 & 30 & 10 \\
-C   & +Contracting              & 10 & 30 & 10 \\
-M   & +Mediation                & 10 & 30 & 10 \\
-RC  & +Reputation +Contracting  & 10 & 30 & 10 \\
-CM  & +Contracting +Mediation   & 10 & 30 & 10 \\
-RCM & All three                 & 10 & 30 & 10 \\
+B   & Communication only        & 18 & 30 & 10 \\
+R   & +Reputation               & 18 & 30 & 10 \\
+C   & +Contracting              & 18 & 30 & 10 \\
+M   & +Mediation                & 18 & 30 & 10 \\
+RC  & +Reputation +Contracting  & 18 & 30 & 10 \\
+RM  & +Reputation +Mediation    & 18 & 30 & 10 \\
+CM  & +Contracting +Mediation   & 18 & 30 & 10 \\
+RCM & All three                 & 18 & 30 & 10 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Total: $7 \times 10 \times 30 = 2{,}100$ agent-rounds; approximately 21,000 LLM calls.
+Total: $8 \times 10 \times 30 \times 18 = 43{,}200$ LLM calls across all conditions. Each condition is run in parallel on a separate terminal to manage API throughput.
 
 % ============================================================
 \section{Measurement}
@@ -375,7 +408,7 @@ Total: $7 \times 10 \times 30 = 2{,}100$ agent-rounds; approximately 21,000 LLM 
 
 \subsection{Primary Social Metrics}
 
-Four metrics are computed each round and fed back to agents. They jointly operationalise \textit{market stability}.
+Two metrics are computed each round and fed back to agents. They jointly operationalise \textit{market stability}.
 
 \begin{table}[H]
 \centering
@@ -385,15 +418,15 @@ Four metrics are computed each round and fed back to agents. They jointly operat
 \toprule
 Metric & Formula & Interpretation \\
 \midrule
-Efficiency    & $\dfrac{\text{utility\_realized}}{\text{utility\_possible}}$ & Are trades completing? \\[8pt]
-Equality      & $1 - \text{Gini}(\text{utility\_per\_agent})$                 & Is surplus shared? \\[8pt]
-Sustainability & $\dfrac{\bar{p}_t}{\bar{p}_1}$                               & Is production holding up? \\[8pt]
+Sustainability & $\dfrac{\bar{p}_t}{\bar{p}_1}$                               & Is production holding up relative to round 1? \\[8pt]
 Peace         & $1 - \dfrac{\text{defections}}{\text{trade\_attempts}}$        & Are trades completing without breach? \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Market stability criterion}: all four metrics remain above 0.5 for the duration of the simulation after the mechanism reaches steady state.
+Sustainability captures whether agents remain willing to produce — a decline indicates withdrawal from the market economy. Peace captures whether trades execute honestly — a decline indicates rising defection. Together they measure whether the society is functional: agents are producing (Sustainability) and trading fairly (Peace).
+
+\textbf{Market stability criterion}: both metrics remain above 0.5 for the duration of the simulation after the mechanism reaches steady state.
 
 \subsection{Intermediate Variables}
 
@@ -420,7 +453,11 @@ Warning accuracy &
 \end{tabular}
 \end{table}
 
-\placeholder{Figure: Example time-series plots for all four social metrics across conditions B, C, and RCM over 30 rounds. Suggested: 2×2 panel (one panel per metric), with one line per condition.}
+\placeholder{Figure: Time-series plots for Sustainability and Peace across all 8 conditions over 30 rounds. Suggested: 1×2 panel (one per metric), with one line per condition, shaded confidence bands across runs.}
+
+\placeholder{Figure: Signal timeline plots showing early warning communication signals (trust erosion, defection suspicion, collusion indicators) alongside Sustainability and Peace. Suggested: 8-row grid (one per condition), left column = metrics, right column = signal scores.}
+
+\placeholder{Figure: Lead-lag heatmap. Rows = signal categories, columns = conditions. Cell colour = correlation strength, cell annotation = lead time in rounds. Shows which signals are earliest indicators per condition.}
 
 \placeholder{Figure: Whistleblowing rate by condition. Suggested: bar chart, conditions on x-axis, mean whistleblowing rate on y-axis. Highlights differential effect of mechanisms on second-order dilemma resolution.}
 
@@ -436,11 +473,12 @@ Warning accuracy &
 Based on prior literature, we anticipate:
 
 \begin{itemize}
-  \item The baseline (B) will show partial cooperation — agents can coordinate through language — but fragile and volatile.
-  \item +Contracting (C) will produce the largest standalone gain in Efficiency and Peace, consistent with \citet{coopeval}.
-  \item +Mediation (M) will perform comparably to Contracting on Efficiency but will reduce Equality if the mediator fee is non-trivial.
-  \item +Reputation (R) alone will show moderate improvement; its effectiveness will be mediated by the whistleblowing rate.
-  \item The full stack (RCM) will sustain all four metrics above the market stability threshold.
+  \item The baseline (B) will show partial cooperation — agents can coordinate through language — but fragile and volatile. The network constraint will amplify this fragility, as losing a key trade partner has no easy replacement.
+  \item +Contracting (C) will produce the largest standalone gain in Peace, consistent with \citet{coopeval}, by making defection explicitly costly.
+  \item +Mediation (M) will eliminate defection on mediated trades but at a fee cost, creating a tradeoff agents must evaluate per trade.
+  \item +Reputation (R) alone will show moderate improvement; its effectiveness will be mediated by the whistleblowing rate and the network's information propagation structure.
+  \item The full stack (RCM) will sustain both metrics above the market stability threshold.
+  \item The network structure will create detectable \textit{local} early warning signals (trust erosion among neighbours) before \textit{global} metric decline.
 \end{itemize}
 
 \subsection{Open Questions}
@@ -448,9 +486,11 @@ Based on prior literature, we anticipate:
 \begin{enumerate}
   \item What is the minimum mechanism set for market stability — can Reputation alone suffice, or is Contracting always necessary?
   \item Do mechanisms differentially affect the whistleblowing rate, and does this mediate their cooperative gains?
+  \item Can early warning communication signals (trust erosion language, defection suspicion, collusion indicators) reliably predict cooperation breakdown before Peace and Sustainability decline?
+  \item How does network topology (broker vs. peripheral agents) interact with mechanism effectiveness?
 \end{enumerate}
 
-\placeholder{Figure: Mechanism comparison radar chart. Suggested: quadrilateral axes = Efficiency, Equality, Sustainability, Peace; one polygon per condition. Visual summary of which mechanism dominates on which dimension.}
+\placeholder{Figure: Mechanism comparison chart. Suggested: axes = Sustainability, Peace; one data point per condition. Visual summary of which mechanism dominates on which dimension.}
 
 % ============================================================
 \section{Conclusion}
@@ -459,9 +499,9 @@ Based on prior literature, we anticipate:
 
 % [To be completed after experimental results are obtained.]
 
-This paper presented a marketplace simulation framework for studying formal cooperation mechanisms in self-interested LLM agent societies. We specified an environment with structural comparative advantage, a natural defection surface, and two-channel communication (private and public, attributed). We designed a layered experimental framework testing Reputation, Contracting, Mediation, and their combinations against a communication-only baseline. Measurement covers four social metrics and intermediate behavioral variables.
+This paper presented a marketplace simulation framework for studying formal cooperation mechanisms in self-interested LLM agent societies. We specified an environment with 18 agents embedded in a constrained social network, operating in a token economy with structural comparative advantage, a natural defection surface, and two-channel communication (private to neighbours, public to all). We designed a $2^3$ factorial experimental framework testing Reputation, Contracting, Mediation, and all combinations against a communication-only baseline. Measurement covers two social metrics (Sustainability, Peace) and intermediate behavioral variables, supplemented by an early warning signal extraction pipeline applied to agent communication logs.
 
-We expect the results to provide concrete guidance on the minimum mechanism stack required for market stability, and to advance understanding of how formal structure interacts with natural language coordination in multi-agent systems.
+We expect the results to provide concrete guidance on the minimum mechanism stack required for market stability, to identify communication-based early warning signals of cooperation breakdown, and to advance understanding of how formal structure interacts with natural language coordination in multi-agent systems.
 
 % ============================================================
 % Bibliography

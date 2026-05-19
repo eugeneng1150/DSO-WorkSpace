@@ -39,7 +39,7 @@ If you do not wish to propose a contract, output an empty array [].
 To propose a contract, include this action in your JSON output:
   {
     "action": "propose_contract",
-    "target": "{agent_id}",
+    "target": "<neighbor_id>",
     "terms": {
       "i_deliver":       {"good": "A"|"B"|"C", "quantity": int},
       "they_deliver":    {"good": "A"|"B"|"C", "quantity": int},

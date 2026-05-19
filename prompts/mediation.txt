@@ -86,7 +86,7 @@ prevents exploitation but may discourage use.
 Output your votes as a JSON array:
   {
     "action": "vote_mediator",
-    "approved": ["{agent_id}", "{agent_id}"]
+    "approved": ["<designer_id>", "<designer_id>"]
   }
 
 Include the agent IDs of every design you approve. Leave the list empty

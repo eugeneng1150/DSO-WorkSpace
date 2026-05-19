@@ -97,7 +97,7 @@ class CoTAgent(_BaseAgent):
 
 
 def make_agents() -> list[_BaseAgent]:
-    """Create 9 agents (3 per good), mixing CoT and IO styles."""
+    """Create agents (AGENTS_PER_GOOD per good), using CoT or IO style."""
     agents = []
     idx = 0
     for good in GOODS:
