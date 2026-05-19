@@ -22,7 +22,12 @@ client = AsyncOpenAI(
 _IO_SUFFIX = "\nOutput your chosen actions as a JSON array. Respond with the JSON array only, no other text."
 
 _COT_SUFFIX = (
-    "\nThink step by step about your current situation, your goals, and the risks. "
+    "\nBefore choosing actions, write your reasoning:\n\n"
+    "<reasoning>\n"
+    "1. My situation: (inventory, utility, what happened last round)\n"
+    "2. My assessment: (who can I trust, what are the risks)\n"
+    "3. My strategy: (what I will do this round and why)\n"
+    "</reasoning>\n\n"
     "Then output your chosen actions in a ```json\n...\n``` block."
 )
 

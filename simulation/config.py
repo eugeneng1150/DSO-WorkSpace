@@ -19,7 +19,7 @@ FAIR_PRICE = 2        # suggested fair token price per unit
 
 # Simulation parameters
 ROUNDS = 30
-RUNS_PER_CONDITION = 5
+RUNS_PER_CONDITION = 15
 MEMORY_WINDOW = 5     # rounds of partner history shown to agent
 
 # Mechanism parameters
@@ -29,9 +29,13 @@ DEFAULT_BREACH_PENALTY = 6   # 2x utility value of one unit
 # Marketplace cooperation threshold (Sustainability and Peace must exceed this)
 COOPERATION_THRESHOLD = 0.5
 
-# LLM
+# LLM — simulation agents (GPT)
 AZURE_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/openai/v1"
 MODEL = "gpt-5.4-nano-BQ-Cohort"
+
+# LLM — analyst agent (Claude)
+ANALYST_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/anthropic"
+ANALYST_MODEL = "claude-opus-4-6-BQ-Cohort"
 MAX_RETRIES = 3       # JSON parse retries per agent call
 
 # Agent reasoning style: all agents use chain-of-thought (CoopEval CoTAgent pattern)

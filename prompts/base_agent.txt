@@ -16,13 +16,13 @@ Inventory:
   Good B: {inv_B} units
   Good C: {inv_C} units
 
+Token balance: {tokens} tokens (used for production costs and trade payments)
+
 Last round utility:  {last_utility}
 Cumulative utility:  {total_utility}
 
 === MARKET HEALTH (all agents see this) ===
 
-  Efficiency:    {efficiency:.2f}   — fraction of possible gains from trade that are being realised
-  Equality:      {equality:.2f}     — how evenly utility is distributed (1 = perfectly equal)
   Sustainability:{sustainability:.2f}  — whether agents are still willing to produce (1 = same as round 1)
   Peace:         {peace:.2f}        — fraction of attempted trades completing without defection
 

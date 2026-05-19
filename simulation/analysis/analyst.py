@@ -6,9 +6,9 @@ from pathlib import Path
 from datetime import datetime
 
 import numpy as np
-from openai import OpenAI
+import anthropic
 
-from ..config import AZURE_ENDPOINT, MODEL, COOPERATION_THRESHOLD
+from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, COOPERATION_THRESHOLD
 
 DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
 OUT_DIR = Path(__file__).parent.parent / "data"
@@ -17,9 +17,9 @@ CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
 METRICS = ["sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 
-client = OpenAI(
+client = anthropic.Anthropic(
     api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
-    base_url=AZURE_ENDPOINT,
+    base_url=ANALYST_ENDPOINT,
 )
 
 def _load_all_runs() -> dict[str, list[dict]]:
@@ -121,7 +121,7 @@ Be specific — cite numbers from the summary. Flag where data is insufficient t
 """
 
 
-def run_analyst(model: str = MODEL, save: bool = True) -> str:
+def run_analyst(model: str = ANALYST_MODEL, save: bool = True) -> str:
     print("Loading run logs...")
     all_runs = _load_all_runs()
     if not all_runs:
@@ -132,12 +132,13 @@ def run_analyst(model: str = MODEL, save: bool = True) -> str:
 
     print("Calling analyst LLM...")
     prompt = _build_analyst_prompt(summary)
-    response = client.chat.completions.create(
+    response = client.messages.create(
         model=model,
+        max_tokens=4096,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.3,
     )
-    report = response.choices[0].message.content
+    report = response.content[0].text
 
     if save:
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")

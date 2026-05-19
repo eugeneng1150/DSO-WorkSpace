@@ -385,6 +385,147 @@ def plot_utility_distribution(save: bool = True) -> None:
     _maybe_save(fig, "utility_distribution.png", save)
 
 
+def _load_signals(condition: str) -> list[dict]:
+    """Load all signal extraction files for a condition."""
+    signals_dir = Path(__file__).parent.parent / "data" / "signals"
+    files = sorted(signals_dir.glob(f"{condition}_run_*_signals.json"))
+    results = []
+    for f in files:
+        with open(f) as fp:
+            results.append(json.load(fp))
+    return results
+
+
+def _mean_signal_over_rounds(signal_runs: list[dict], signal_name: str) -> list[float]:
+    """Average a signal across runs, per round."""
+    if not signal_runs:
+        return []
+    n_rounds = len(signal_runs[0].get("rounds", []))
+    values = []
+    for r in range(n_rounds):
+        round_vals = [
+            run["rounds"][r].get("signals", {}).get(signal_name, 0.0)
+            for run in signal_runs if r < len(run.get("rounds", []))
+        ]
+        values.append(np.mean(round_vals) if round_vals else 0.0)
+    return values
+
+
+from .reasoning_analyst import SIGNAL_NAMES
+SIGNAL_COLORS = dict(zip(SIGNAL_NAMES, cm.Set2(np.linspace(0, 1, len(SIGNAL_NAMES)))))
+
+
+def plot_signal_timelines(save: bool = True) -> None:
+    """For each condition: signals over time (bottom) vs Peace/Sustainability (top)."""
+    signals_dir = Path(__file__).parent.parent / "data" / "signals"
+    if not signals_dir.exists():
+        print("No signal data found. Run --extract-signals first.")
+        return
+
+    fig, axes = plt.subplots(len(CONDITIONS), 2, figsize=(16, 3 * len(CONDITIONS)),
+                              sharex=True)
+    if len(CONDITIONS) == 1:
+        axes = [axes]
+
+    for row, condition in enumerate(CONDITIONS):
+        sig_runs = _load_signals(condition)
+        metric_runs = _load_runs(condition)
+        if not sig_runs or not metric_runs:
+            continue
+
+        n_rounds = len(sig_runs[0].get("rounds", []))
+        rounds = list(range(1, n_rounds + 1))
+
+        ax_metric = axes[row][0]
+        peace = _mean_metric_over_rounds(metric_runs, "peace")
+        sust = _mean_metric_over_rounds(metric_runs, "sustainability")
+        ax_metric.plot(rounds, peace, label="Peace", linewidth=2, color="tab:blue")
+        ax_metric.plot(rounds, sust, label="Sustainability", linewidth=2, color="tab:green")
+        ax_metric.axhline(COOPERATION_THRESHOLD, color="black", linestyle="--",
+                          linewidth=0.8, alpha=0.5)
+        ax_metric.set_ylim(0, 1.05)
+        ax_metric.set_ylabel(condition, fontweight="bold", fontsize=11)
+        ax_metric.grid(True, alpha=0.3)
+        if row == 0:
+            ax_metric.set_title("Behavioral Metrics", fontweight="bold")
+            ax_metric.legend(fontsize=7)
+
+        ax_signal = axes[row][1]
+        for sig_name in SIGNAL_NAMES:
+            trajectory = _mean_signal_over_rounds(sig_runs, sig_name)
+            if trajectory:
+                ax_signal.plot(rounds[:len(trajectory)], trajectory,
+                               label=sig_name.replace("_", " "),
+                               color=SIGNAL_COLORS[sig_name], linewidth=1.5)
+        ax_signal.set_ylim(0, 1.05)
+        ax_signal.grid(True, alpha=0.3)
+        if row == 0:
+            ax_signal.set_title("Social Signals", fontweight="bold")
+            ax_signal.legend(fontsize=6, ncol=2)
+
+    axes[-1][0].set_xlabel("Round")
+    axes[-1][1].set_xlabel("Round")
+    fig.suptitle("Social Signals vs Behavioral Metrics Over Time",
+                 fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "signal_timelines.png", save)
+
+
+def plot_lead_lag_heatmap(save: bool = True) -> None:
+    """Heatmap: signals × conditions, cell = best early warning lag (rounds ahead)."""
+    from .reasoning_analyst import compute_lead_lag
+
+    signals_dir = Path(__file__).parent.parent / "data" / "signals"
+    if not signals_dir.exists():
+        print("No signal data found. Run --extract-signals first.")
+        return
+
+    conditions_with_signals = [
+        c for c in CONDITIONS
+        if list(signals_dir.glob(f"{c}_run_*_signals.json"))
+    ]
+    if not conditions_with_signals:
+        print("No signal data found for any condition.")
+        return
+
+    lag_data = np.zeros((len(SIGNAL_NAMES), len(conditions_with_signals)))
+    corr_data = np.zeros_like(lag_data)
+
+    for j, cond in enumerate(conditions_with_signals):
+        lead_lag = compute_lead_lag(cond)
+        for i, sig in enumerate(SIGNAL_NAMES):
+            peace_corr = lead_lag[sig]["peace"]["best_correlation"]
+            sust_corr = lead_lag[sig]["sustainability"]["best_correlation"]
+            if peace_corr < sust_corr:
+                corr_data[i, j] = peace_corr
+                lag_data[i, j] = lead_lag[sig]["peace"]["best_early_warning_lag"]
+            else:
+                corr_data[i, j] = sust_corr
+                lag_data[i, j] = lead_lag[sig]["sustainability"]["best_early_warning_lag"]
+
+    fig, ax = plt.subplots(figsize=(max(8, 2 * len(conditions_with_signals)),
+                                     1 + len(SIGNAL_NAMES)))
+    im = ax.imshow(-corr_data, cmap="YlOrRd", vmin=0, vmax=1, aspect="auto")
+    ax.set_xticks(range(len(conditions_with_signals)))
+    ax.set_xticklabels(conditions_with_signals)
+    ax.set_yticks(range(len(SIGNAL_NAMES)))
+    ax.set_yticklabels([s.replace("_", " ").title() for s in SIGNAL_NAMES])
+    plt.colorbar(im, ax=ax, label="Early warning strength (|correlation|)")
+    for i in range(len(SIGNAL_NAMES)):
+        for j in range(len(conditions_with_signals)):
+            c = corr_data[i, j]
+            lag = int(lag_data[i, j])
+            if c < -0.15:
+                ax.text(j, i, f"{lag}r\n{c:.2f}", ha="center", va="center",
+                        fontsize=8, fontweight="bold")
+            else:
+                ax.text(j, i, "—", ha="center", va="center", fontsize=9, color="gray")
+    ax.set_title("Early Warning Signals: Lead Time (rounds) & Correlation Strength",
+                 fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "lead_lag_heatmap.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
@@ -397,6 +538,8 @@ def plot_all(save: bool = True) -> None:
     plot_mediation_utilisation(save)
     plot_reputation_trajectories(save)
     plot_utility_distribution(save)
+    plot_signal_timelines(save)
+    plot_lead_lag_heatmap(save)
     print(f"Plots saved to {OUT_DIR}")
 
 
