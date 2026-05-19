@@ -15,6 +15,7 @@ UTILITY_CONSUME = 3   # per unit of needed good consumed
 COST_PRODUCE = 1      # tokens per unit produced
 MAX_PRODUCE = 5       # per round
 STARTING_TOKENS = 20  # initial budget per agent
+ROUND_INCOME = 3      # tokens granted to each agent per round (prevents deflationary collapse)
 FAIR_PRICE = 2        # suggested fair token price per unit
 
 # Simulation parameters
@@ -42,8 +43,8 @@ MAX_RETRIES = 6       # retries per agent call (handles rate limits with 18 agen
 COT_AGENT_IDS = set(range(18))   # all agents
 
 # Network structure
-MIN_NEIGHBORS = 4
-MAX_NEIGHBORS = 6
+MIN_NEIGHBORS = 6
+MAX_NEIGHBORS = 9
 
 # Experimental conditions
 CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]

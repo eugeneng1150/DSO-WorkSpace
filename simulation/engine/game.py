@@ -10,6 +10,7 @@ from ..metrics.social import compute_metrics
 from ..config import (
     GOODS, ROUNDS, UTILITY_CONSUME, COST_PRODUCE, MEDIATION_FEE,
     DEFAULT_BREACH_PENALTY, MEMORY_WINDOW, MIN_NEIGHBORS, MAX_NEIGHBORS,
+    ROUND_INCOME,
 )
 
 if TYPE_CHECKING:
@@ -208,6 +209,10 @@ class Game:
 
     async def _run_round(self, round_num: int) -> dict[int, float]:
         """Execute all 5 phases. Returns {agent_id: utility_this_round}."""
+
+        # --- Phase 0: Round income (prevents deflationary token drain) ---
+        for agent in self.agents:
+            self.market.tokens[agent.agent_id] += ROUND_INCOME
 
         # --- Phase 1: Production ---
         production_actions = await self._call_agents_phase("production", round_num)

@@ -157,22 +157,24 @@ Homogeneity is a deliberate design choice: it isolates the formal mechanism as t
 
 \subsection{Token Economy}
 
-Agents operate in a closed token economy. Each agent begins with 20 tokens, which serve as the universal medium of exchange:
+Agents operate in a token economy. Each agent begins with 20 tokens, which serve as the universal medium of exchange:
 
 \begin{itemize}
   \item \textbf{Production cost}: producing one unit of a specialty good costs 1 token.
-  \item \textbf{Trade payments}: when a trade completes, the buyer transfers tokens to the seller at the agreed price.
-  \item \textbf{No external income}: agents earn tokens only by selling goods.
+  \item \textbf{Trade payments}: when a trade completes, the buyer transfers tokens to the seller at the agreed price. The suggested fair price is 2 tokens per unit.
+  \item \textbf{Per-round income}: each agent receives 3 tokens at the start of every round.
 \end{itemize}
+
+The per-round income prevents deflationary collapse. Production permanently destroys tokens (the cost is subtracted, not transferred), so without income injection the money supply shrinks by approximately $18 \times 4 = 72$ tokens per round while the starting pool is only $18 \times 20 = 360$ tokens. At 3 tokens per agent per round (54 tokens injected), the income roughly balances production destruction, keeping the economy liquid without eliminating scarcity.
 
 Tokens create resource scarcity: agents must balance spending on production against saving for purchases. An agent who is defected on loses both the delivered goods and the tokens spent to produce them, making defection doubly costly to the victim. Conversely, a successful seller earns tokens that fund future production, creating a virtuous cycle that depends on sustained cooperation.
 
 \subsection{Social Network}
 
-Agents are embedded in a static trade network that constrains who can interact directly. Each agent is connected to 4--6 neighbours, with the following guarantees:
+Agents are embedded in a static trade network that constrains who can interact directly. Each agent is connected to 6--9 neighbours, with the following guarantees:
 
 \begin{itemize}
-  \item Every agent has at least one neighbour producing each of the other two goods, ensuring the game is playable.
+  \item Every agent has at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods and resilience against individual partner defection.
   \item Additional edges are added randomly up to the degree cap, creating natural asymmetry: some agents become \textit{brokers} (connected to many good types) while others are \textit{peripheral} (dependent on few key partners).
   \item Same-good connections allow producers to coordinate or collude on pricing.
 \end{itemize}
@@ -387,19 +389,19 @@ Action & Channel & Availability \\
 \toprule
 Label & Mechanism & Agents & Rounds & Runs \\
 \midrule
-B   & Communication only        & 18 & 30 & 10 \\
-R   & +Reputation               & 18 & 30 & 10 \\
-C   & +Contracting              & 18 & 30 & 10 \\
-M   & +Mediation                & 18 & 30 & 10 \\
-RC  & +Reputation +Contracting  & 18 & 30 & 10 \\
-RM  & +Reputation +Mediation    & 18 & 30 & 10 \\
-CM  & +Contracting +Mediation   & 18 & 30 & 10 \\
-RCM & All three                 & 18 & 30 & 10 \\
+B   & Communication only        & 18 & 30 & 5 \\
+R   & +Reputation               & 18 & 30 & 5 \\
+C   & +Contracting              & 18 & 30 & 5 \\
+M   & +Mediation                & 18 & 30 & 5 \\
+RC  & +Reputation +Contracting  & 18 & 30 & 5 \\
+RM  & +Reputation +Mediation    & 18 & 30 & 5 \\
+CM  & +Contracting +Mediation   & 18 & 30 & 5 \\
+RCM & All three                 & 18 & 30 & 5 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Total: $8 \times 10 \times 30 \times 18 = 43{,}200$ LLM calls across all conditions. Each condition is run in parallel on a separate terminal to manage API throughput.
+Total: $8 \times 5 \times 30 \times 18 = 21{,}600$ LLM calls across all conditions. Each condition is run in parallel on a separate terminal to manage API throughput.
 
 % ============================================================
 \section{Measurement}

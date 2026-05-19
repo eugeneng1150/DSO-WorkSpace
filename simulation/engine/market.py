@@ -70,18 +70,23 @@ def generate_network(
         adj[a].add(b)
         adj[b].add(a)
 
-    # Step 1: guarantee each agent has at least one neighbor per other good
+    # Step 1: guarantee each agent has at least 3 neighbors per other good
+    cross_good_min = min(3, len(next(iter(goods_to_agents.values()))))
     for aid in agent_ids:
         my_good = specialties[aid]
         for g in all_goods:
             if g == my_good:
                 continue
-            candidates = [x for x in goods_to_agents[g] if x not in adj[aid]]
-            if not candidates:
-                candidates = goods_to_agents[g]
-            # Prefer agents with fewer connections to balance degree
-            candidates.sort(key=lambda x: len(adj[x]))
-            _add_edge(aid, candidates[0])
+            current = [x for x in adj[aid] if specialties[x] == g]
+            needed = cross_good_min - len(current)
+            for _ in range(needed):
+                candidates = [x for x in goods_to_agents[g] if x not in adj[aid] and len(adj[x]) < max_neighbors]
+                if not candidates:
+                    candidates = [x for x in goods_to_agents[g] if x not in adj[aid]]
+                if not candidates:
+                    break
+                candidates.sort(key=lambda x: len(adj[x]))
+                _add_edge(aid, candidates[0])
 
     # Step 2: add random edges until each agent has min_neighbors
     for aid in agent_ids:
