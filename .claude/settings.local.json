@@ -6,7 +6,8 @@
       "Bash(pdftotext \"C:/Users/NYiSheng/Documents/DSO-WorkSpace/Raw/CoopEval.pdf\" -)",
       "WebSearch",
       "WebFetch(domain:www.aimodels.fyi)",
-      "WebFetch(domain:arxiv.org)"
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:www.jasss.org)"
     ]
   }
 }

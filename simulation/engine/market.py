@@ -226,6 +226,20 @@ class Market:
                 history.setdefault(partner, []).append(t)
         return history
 
+    def get_market_prices(self, window: int = 5) -> dict[str, dict]:
+        recent = [t for t in self.trade_history
+                  if t.round_num > self.round_num - window
+                  and t.status in ("completed", "mediated")]
+        prices: dict[str, dict] = {}
+        for g in self.goods:
+            trades_for_good = [t for t in recent if t.offer_good == g and t.offer_qty > 0]
+            if trades_for_good:
+                avg = sum(t.price / t.offer_qty for t in trades_for_good) / len(trades_for_good)
+                prices[g] = {"avg_price": round(avg, 1), "trade_count": len(trades_for_good)}
+            else:
+                prices[g] = {"avg_price": None, "trade_count": 0}
+        return prices
+
     def can_deliver_asset(self, agent_id: int, asset: str, qty: int) -> bool:
         if asset == "TOKENS":
             return self.tokens.get(agent_id, 0) >= qty

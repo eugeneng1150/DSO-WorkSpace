@@ -26,6 +26,15 @@ Cumulative utility:  {total_utility}
   Sustainability:{sustainability:.2f}  — whether agents are still willing to produce (1 = same as round 1)
   Peace:         {peace:.2f}        — fraction of attempted trades completing without defection
 
+=== MARKET PRICES (average over last 5 rounds) ===
+
+{market_prices}
+
+=== SPOILAGE WARNING ===
+
+Goods are perishable: you lose 30% of all held inventory at the start of each round.
+Produce and sell within the same round to avoid losses.
+
 === YOUR TRADE NETWORK ===
 
 You can only trade with and send private messages to your direct neighbors:

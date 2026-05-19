@@ -66,6 +66,21 @@ Prompts adapted from CoopEval's "here is the twist" injection pattern, rewritten
 
 ---
 
+## 2026-05-19 — Ingested dynamic pricing paper
+
+**Sources ingested**:
+- `dynaimic pricing.pdf` (Chen, Liu, Xu — Tianjin University, JASSS 2018)
+
+**Pages created**:
+- `dynamic-pricing-perishable.md` — source summary: 4 competing retailer agents selling perishable grapes, Q-learning dynamic pricing vs 3 fixed strategies, dual spoilage model (quantity + value decay), key finding that perishability punishes hoarding and overpricing
+
+**Pages updated**:
+- `index.md` — added dynamic-pricing-perishable entry to Source Summaries table
+
+**Context**: Paper cited to motivate the inventory spoilage mechanic (30% flat decay per round) added to the simulation. The spoilage concept comes from this paper; our implementation is simplified to a flat percentage rather than their dual quantity/value decay model.
+
+---
+
 ## 2026-05-17 — Removed resilience tests
 
 **Decision**: resilience testing (resource shock + social shock) removed from scope to keep the experiment clean and focused.

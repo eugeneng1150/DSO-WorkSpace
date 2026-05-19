@@ -169,9 +169,27 @@ The per-round income prevents deflationary collapse. Production permanently dest
 
 Tokens create resource scarcity: agents must balance spending on production against saving for purchases. An agent who is defected on loses both the delivered goods and the tokens spent to produce them, making defection doubly costly to the victim. Conversely, a successful seller earns tokens that fund future production, creating a virtuous cycle that depends on sustained cooperation.
 
+\subsection{Inventory Spoilage}
+
+Goods are perishable: at the start of each round (from round 2 onward), all held inventory decays by 30\%. Formally, for each agent $a$ and good $g$:
+
+\[
+I_{a,g}^{t} \leftarrow \lfloor I_{a,g}^{t-1} \times (1 - \psi) \rfloor, \quad \psi = 0.3
+\]
+
+Spoilage creates temporal urgency: agents cannot hoard goods across rounds without loss, so they are pressured to produce and sell within the same round. This increases trade volume and expands the defection surface — more trades means more opportunities for exploitation — giving formal mechanisms a harder baseline to improve upon.
+
+The design is motivated by \citet{chen2018perishable}, who show that perishability fundamentally alters agent pricing strategies in competitive multi-agent markets: agents who delay trade or overprice are punished by inventory decay, driving more realistic market dynamics.
+
+\subsection{Price Transparency}
+
+All agents observe a market price signal: the average trade price per good over the last 5 rounds, computed from completed (non-defected) trades. This information is available in all conditions including the baseline.
+
+Price transparency provides a common reference point for pricing decisions, allowing agents to identify unfair offers and anchor negotiations. It also creates observable price trends — a rising average price for a good signals scarcity, while a falling price signals surplus. This mirrors the role of price indices in real markets and reduces information asymmetry across the network.
+
 \subsection{Social Network}
 
-Agents are embedded in a static trade network that constrains who can interact directly. Each agent is connected to 6--9 neighbours, with the following guarantees:
+Agents are embedded in a static trade network that constrains who can interact directly. Each agent is connected to 7--9 neighbours, with the following guarantees:
 
 \begin{itemize}
   \item Every agent has at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods and resilience against individual partner defection.
@@ -185,9 +203,10 @@ The network constraint makes cooperation more consequential: losing a trade part
 
 \subsection{Round Structure}
 
-Each simulation run consists of $T = 30$ rounds. Each round proceeds through four phases:
+Each simulation run consists of $T = 30$ rounds. Each round proceeds through five phases:
 
 \begin{enumerate}
+  \item \textbf{Income and spoilage phase} — each agent receives 3 tokens of per-round income. All held inventory decays by 30\% (from round 2 onward).
   \item \textbf{Production phase} — each agent decides how many units to produce (0--5 units). Production costs tokens, so agents must have sufficient balance.
   \item \textbf{Communication phase} — agents send private messages (to neighbours only) and public broadcasts (to all); agents propose trades and contracts to neighbours.
   \item \textbf{Trade phase} — agents accept, reject, or defect on incoming offers. Completed trades transfer goods and tokens between parties. Defection (taking goods without paying) is possible unless a mechanism prevents it.
@@ -541,6 +560,11 @@ Shanghai Jiao Tong University.
 Axelrod, R. (1984).
 \textit{The Evolution of Cooperation}.
 Basic Books.
+
+\bibitem[Chen et al.(2018)]{chen2018perishable}
+Chen, W., Liu, H., \& Xu, D. (2018).
+\textit{Dynamic Pricing Strategies for Perishable Product in a Competitive Multi-Agent Retailers Market}.
+Journal of Artificial Societies and Social Simulation, 21(2), Article 12.
 
 \end{thebibliography}
 

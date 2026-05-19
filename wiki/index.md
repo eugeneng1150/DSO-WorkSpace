@@ -14,6 +14,7 @@ Concrete target: a marketplace society with trade and communication.
 | [[agentsociety]] | Large-scale social simulator (10k+ LLM agents); 5 validated experiments; mind-behavior coupling architecture |
 | [[cooperative-resilience-paper]] | Formal definition and 4-stage measurement of cooperative resilience; RL vs LLM agents under disruption |
 | [[coopeval]] | Benchmark of 4 cooperation mechanisms × 4 social dilemmas × 6 LLMs; Contracting and Mediation most effective |
+| [[dynamic-pricing-perishable]] | Multi-agent perishable goods pricing; Q-learning vs fixed strategies; spoilage mechanic alters agent behavior |
 
 ## Concept Pages
 

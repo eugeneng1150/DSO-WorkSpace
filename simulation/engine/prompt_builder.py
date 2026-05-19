@@ -100,6 +100,17 @@ def _fmt_pending_offers(market: "Market", agent_id: int) -> str:
     )
 
 
+def _fmt_market_prices(market: "Market") -> str:
+    prices = market.get_market_prices()
+    lines = []
+    for good, info in prices.items():
+        if info["avg_price"] is not None:
+            lines.append(f"  Good {good}: avg {info['avg_price']:.1f} tokens/unit ({info['trade_count']} trades)")
+        else:
+            lines.append(f"  Good {good}: no recent trades")
+    return "\n".join(lines)
+
+
 def _fmt_reputation_table(market: "Market", agent_id: int) -> str:
     lines = []
     for aid, score in market.system_reputation.items():
@@ -320,6 +331,7 @@ def build_prompt(
     prompt = prompt.replace("{private_inbox}", _fmt_inbox(market, agent_id))
     prompt = prompt.replace("{public_feed}", _fmt_public_feed(market))
     prompt = prompt.replace("{pending_offers}", _fmt_pending_offers(market, agent_id))
+    prompt = prompt.replace("{market_prices}", _fmt_market_prices(market))
     prompt = prompt.replace("{neighbors}", _fmt_neighbors(market, agent_id, specialties or {}))
     prompt = prompt.replace("{mechanism_block}", mechanism_block)
     prompt = prompt.replace("{mechanism_actions}", mechanism_actions)
