@@ -58,11 +58,12 @@ def run_condition(condition: str, runs: int = RUNS_PER_CONDITION) -> list[dict]:
     return summaries
 
 
-def run_all(conditions: list[str] = CONDITIONS) -> dict[str, list[dict]]:
+def run_all(conditions: list[str] = CONDITIONS, runs: int | None = None) -> dict[str, list[dict]]:
     """Run all conditions sequentially."""
     results = {}
+    kwargs = {"runs": runs} if runs is not None else {}
     for condition in conditions:
-        results[condition] = run_condition(condition)
+        results[condition] = run_condition(condition, **kwargs)
     return results
 
 

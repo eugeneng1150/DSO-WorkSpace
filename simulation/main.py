@@ -39,11 +39,7 @@ def main():
         run_condition(args.condition, **kwargs)
 
     elif args.all:
-        kwargs = {}
-        if args.runs:
-            from . import config
-            config.RUNS_PER_CONDITION = args.runs
-        run_all()
+        run_all(runs=args.runs if args.runs else None)
 
     if args.plot:
         from .analysis.plots import plot_all
