@@ -149,7 +149,7 @@ The causal chain is clear: agents reason that producing goods that will be stole
 
 Agents overwhelmingly reason about defection in terms of **immediate token savings** versus **future trade access**. The system prompt apparently tells agents that "defect_trade is strictly better" in token terms, and agents internalize this. Early on, agents suppress defection impulses to preserve relationships:
 
-> **Agent 4, Round 1**: "I will not defect because there are no prior trade relationships or offers yet, and the market is fully peaceful/sustainable now—best to star[t building trust]"
+> **Agent 4, Round 1**: "I will not defect because there are no prior trade relationships or offers yet, and the market is fully peaceful/sustainable now—best to start building trust"
 
 > **Agent 2, Round 1**: "Since defecting saves tokens if I ever accept an incoming offer, the main risk is partners refusing future trades—but early on, I need to start accumulating B and C."
 
