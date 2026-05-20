@@ -41,6 +41,8 @@ class MediationMechanism(Mechanism):
 
         for agent, actions in zip(agents, design_responses):
             for action in actions:
+                if not isinstance(action, dict):
+                    continue
                 if action.get("action") == "propose_mediator":
                     design = action.get("design", {})
                     market.mediator_designs.append(
@@ -71,6 +73,8 @@ class MediationMechanism(Mechanism):
 
         for agent, actions in zip(agents, vote_responses):
             for action in actions:
+                if not isinstance(action, dict):
+                    continue
                 if action.get("action") == "vote_mediator":
                     approved_ids = action.get("approved", [])
                     market.mediation_votes[agent.agent_id] = [int(x) for x in approved_ids]

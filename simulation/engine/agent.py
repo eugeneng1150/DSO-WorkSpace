@@ -35,17 +35,22 @@ _COT_SUFFIX = (
 def _extract_json(text: str) -> list[dict]:
     # Try bare JSON first
     text = text.strip()
+    raw = None
     if text.startswith("["):
-        return json.loads(text)
-    # Try ```json block
-    match = re.search(r"```json\s*(\[.*?\])\s*```", text, re.DOTALL)
-    if match:
-        return json.loads(match.group(1))
-    # Fallback: find first [ ... ] in text
-    match = re.search(r"(\[.*\])", text, re.DOTALL)
-    if match:
-        return json.loads(match.group(1))
-    raise ValueError(f"No JSON array found in response:\n{text[:300]}")
+        raw = json.loads(text)
+    if raw is None:
+        # Try ```json block
+        match = re.search(r"```json\s*(\[.*?\])\s*```", text, re.DOTALL)
+        if match:
+            raw = json.loads(match.group(1))
+    if raw is None:
+        # Fallback: find first [ ... ] in text
+        match = re.search(r"(\[.*\])", text, re.DOTALL)
+        if match:
+            raw = json.loads(match.group(1))
+    if raw is None:
+        raise ValueError(f"No JSON array found in response:\n{text[:300]}")
+    return [item for item in raw if isinstance(item, dict)]
 
 
 class _BaseAgent:
