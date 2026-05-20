@@ -51,38 +51,55 @@ def _mean_round_field(runs: list[dict], field: str) -> list[float]:
 # ── Existing plots (updated for 8 conditions) ────────────────────────────────
 
 def plot_metric_trajectories(save: bool = True) -> None:
-    """One subplot per marketplace cooperation metric, all conditions over rounds."""
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    """2×4 grid — one panel per condition, each showing Sustainability and Peace over rounds."""
+    n_cols = 4
+    n_rows = 2
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
+    axes_flat = axes.flatten()
 
-    for ax, metric in zip(axes, METRICS):
-        for condition in CONDITIONS:
-            runs = _load_runs(condition)
-            if not runs:
-                continue
-            trajectory = _mean_metric_over_rounds(runs, metric)
-            rounds = list(range(1, len(trajectory) + 1))
-            ax.plot(rounds, trajectory, label=condition, color=COLORS[condition], linewidth=1.8)
+    for ax, condition in zip(axes_flat, CONDITIONS):
+        runs = _load_runs(condition)
+        if runs:
+            for metric, color, label in zip(
+                METRICS,
+                ["tab:green", "tab:blue"],
+                ["Sustainability", "Peace"],
+            ):
+                trajectory = _mean_metric_over_rounds(runs, metric)
+                rounds = list(range(1, len(trajectory) + 1))
+                ax.plot(rounds, trajectory, label=label, color=color, linewidth=1.8)
 
-        ax.axhline(COOPERATION_THRESHOLD, color="black", linestyle="--", linewidth=0.8, alpha=0.5, label="cooperation threshold")
-        ax.set_title(metric.capitalize())
-        ax.set_xlabel("Round")
-        ax.set_ylabel(metric)
+        ax.axhline(COOPERATION_THRESHOLD, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
+        ax.set_title(condition, fontweight="bold")
         ax.set_ylim(0, 1.05)
-        ax.legend(fontsize=8)
         ax.grid(True, alpha=0.3)
 
-    fig.suptitle("Marketplace Cooperation Metrics Over Rounds by Condition", fontsize=14, fontweight="bold")
+    for ax in axes_flat[len(CONDITIONS):]:
+        ax.set_visible(False)
+
+    for ax in axes[-1]:
+        ax.set_xlabel("Round")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Metric value")
+
+    handles, labels = axes_flat[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=3, fontsize=9, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle("Sustainability and Peace Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout()
     _maybe_save(fig, "metric_trajectories.png", save)
 
 
 def plot_final_metrics_heatmap(save: bool = True) -> None:
-    """Heatmap: conditions × metrics, value = mean final metric."""
+    """Heatmap: conditions × metrics, value = mean over all rounds (not just final round)."""
     data = np.zeros((len(CONDITIONS), len(METRICS)))
     for i, condition in enumerate(CONDITIONS):
         runs = _load_runs(condition)
         for j, metric in enumerate(METRICS):
-            vals = [r["final_metrics"].get(metric, 0) for r in runs]
+            vals = [
+                rnd["metrics"].get(metric, 0)
+                for run in runs
+                for rnd in run["rounds"]
+            ]
             data[i, j] = np.mean(vals) if vals else 0.0
 
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -91,11 +108,11 @@ def plot_final_metrics_heatmap(save: bool = True) -> None:
     ax.set_xticklabels([m.capitalize() for m in METRICS])
     ax.set_yticks(range(len(CONDITIONS)))
     ax.set_yticklabels(CONDITIONS)
-    plt.colorbar(im, ax=ax, label="Mean value (final round)")
+    plt.colorbar(im, ax=ax, label="Mean value (all rounds)")
     for i in range(len(CONDITIONS)):
         for j in range(len(METRICS)):
             ax.text(j, i, f"{data[i, j]:.2f}", ha="center", va="center", fontsize=9)
-    ax.set_title("Final Round Metrics by Condition", fontweight="bold")
+    ax.set_title("Mean Metrics Over All Rounds by Condition", fontweight="bold")
     plt.tight_layout()
     _maybe_save(fig, "final_metrics_heatmap.png", save)
 
@@ -194,41 +211,61 @@ def plot_marketplace_cooperation_rates(save: bool = True) -> None:
 
 
 def plot_defection_trajectory(save: bool = True) -> None:
-    """Line chart: defection count per round over time per condition."""
-    fig, ax = plt.subplots(figsize=(12, 6))
-    for condition in CONDITIONS:
-        runs = _load_runs(condition)
-        if not runs:
-            continue
-        trajectory = _mean_round_field(runs, "defections")
-        rounds = list(range(1, len(trajectory) + 1))
-        ax.plot(rounds, trajectory, label=condition, color=COLORS[condition], linewidth=1.8)
+    """2×4 grid — one panel per condition showing defection count over rounds."""
+    n_cols = 4
+    n_rows = 2
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True)
+    axes_flat = axes.flatten()
 
-    ax.set_xlabel("Round")
-    ax.set_ylabel("Mean defections per round")
-    ax.set_title("Defection Count Over Rounds by Condition", fontweight="bold")
-    ax.legend(fontsize=9)
-    ax.grid(True, alpha=0.3)
+    for ax, condition in zip(axes_flat, CONDITIONS):
+        runs = _load_runs(condition)
+        if runs:
+            trajectory = _mean_round_field(runs, "defections")
+            rounds = list(range(1, len(trajectory) + 1))
+            ax.plot(rounds, trajectory, color=COLORS[condition], linewidth=1.8)
+            ax.fill_between(rounds, trajectory, alpha=0.15, color=COLORS[condition])
+        ax.set_title(condition, fontweight="bold")
+        ax.grid(True, alpha=0.3)
+
+    for ax in axes_flat[len(CONDITIONS):]:
+        ax.set_visible(False)
+
+    for ax in axes[-1]:
+        ax.set_xlabel("Round")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Defections per round")
+
+    fig.suptitle("Defection Count Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout()
     _maybe_save(fig, "defection_trajectory.png", save)
 
 
 def plot_trade_volume(save: bool = True) -> None:
-    """Line chart: trade count per round over time per condition."""
-    fig, ax = plt.subplots(figsize=(12, 6))
-    for condition in CONDITIONS:
-        runs = _load_runs(condition)
-        if not runs:
-            continue
-        trajectory = _mean_round_field(runs, "trade_count")
-        rounds = list(range(1, len(trajectory) + 1))
-        ax.plot(rounds, trajectory, label=condition, color=COLORS[condition], linewidth=1.8)
+    """2×4 grid — one panel per condition showing trade volume over rounds."""
+    n_cols = 4
+    n_rows = 2
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True)
+    axes_flat = axes.flatten()
 
-    ax.set_xlabel("Round")
-    ax.set_ylabel("Mean trades per round")
-    ax.set_title("Trade Volume Over Rounds by Condition", fontweight="bold")
-    ax.legend(fontsize=9)
-    ax.grid(True, alpha=0.3)
+    for ax, condition in zip(axes_flat, CONDITIONS):
+        runs = _load_runs(condition)
+        if runs:
+            trajectory = _mean_round_field(runs, "trade_count")
+            rounds = list(range(1, len(trajectory) + 1))
+            ax.plot(rounds, trajectory, color=COLORS[condition], linewidth=1.8)
+            ax.fill_between(rounds, trajectory, alpha=0.15, color=COLORS[condition])
+        ax.set_title(condition, fontweight="bold")
+        ax.grid(True, alpha=0.3)
+
+    for ax in axes_flat[len(CONDITIONS):]:
+        ax.set_visible(False)
+
+    for ax in axes[-1]:
+        ax.set_xlabel("Round")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Trades per round")
+
+    fig.suptitle("Trade Volume Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout()
     _maybe_save(fig, "trade_volume.png", save)
 
@@ -526,12 +563,61 @@ def plot_lead_lag_heatmap(save: bool = True) -> None:
     _maybe_save(fig, "lead_lag_heatmap.png", save)
 
 
+def plot_stability_rates(save: bool = True) -> None:
+    """Bar chart: fraction of rounds (across all runs) where BOTH sustainability AND peace
+    exceed the cooperation threshold, per condition.
+
+    Uses the mean metric value over all rounds — not just the final round — so that peace
+    is not evaluated at a single potentially noisy endpoint.
+    """
+    labels, stable_fractions = [], []
+
+    for condition in CONDITIONS:
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+
+        stable_rounds = 0
+        total_rounds = 0
+        for run in runs:
+            for rnd in run["rounds"]:
+                sust = rnd["metrics"].get("sustainability", 0)
+                peace = rnd["metrics"].get("peace", 0)
+                if sust > COOPERATION_THRESHOLD and peace > COOPERATION_THRESHOLD:
+                    stable_rounds += 1
+                total_rounds += 1
+
+        labels.append(condition)
+        stable_fractions.append(stable_rounds / total_rounds if total_rounds > 0 else 0.0)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    x = np.arange(len(labels))
+    bars = ax.bar(x, stable_fractions, color=[COLORS[c] for c in labels], alpha=0.85)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.set_ylabel("Fraction of rounds both metrics > 0.5")
+    ax.set_ylim(0, 1.1)
+    ax.axhline(1.0, color="green", linestyle="--", linewidth=0.8, alpha=0.5)
+    for bar, frac in zip(bars, stable_fractions):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
+                f"{frac:.0%}", ha="center", va="bottom", fontsize=9, fontweight="bold")
+    ax.set_title(
+        "Stability Rate by Condition\n"
+        "(Fraction of rounds with Sustainability > 0.5 AND Peace > 0.5)",
+        fontweight="bold",
+    )
+    ax.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    _maybe_save(fig, "stability_rates.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
     plot_defection_rates(save)
     plot_intermediate_variables(save)
     plot_marketplace_cooperation_rates(save)
+    plot_stability_rates(save)
     plot_defection_trajectory(save)
     plot_trade_volume(save)
     plot_contract_utilisation(save)
