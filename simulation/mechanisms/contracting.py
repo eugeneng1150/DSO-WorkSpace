@@ -34,7 +34,11 @@ class ContractingMechanism(Mechanism):
                 contract.counterparty_delivers_qty,
             )
 
-            if proposer_breached:
+            if proposer_breached and counterparty_breached:
+                self._apply_breach(market, contract.proposer_id, contract.counterparty_id, contract.breach_penalty)
+                self._apply_breach(market, contract.counterparty_id, contract.proposer_id, contract.breach_penalty)
+                contract.status = "breached"
+            elif proposer_breached:
                 self._apply_breach(market, contract.proposer_id, contract.counterparty_id, contract.breach_penalty)
                 contract.status = "breached"
             elif counterparty_breached:

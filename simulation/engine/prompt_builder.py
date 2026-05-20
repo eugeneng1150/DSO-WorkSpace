@@ -26,16 +26,30 @@ _MEDIATION = _load("mediation.txt")
 
 
 def _extract_stage(template: str, stage_label: str) -> str:
-    """Extract a single STAGE N block from a multi-stage template."""
+    """Extract a single STAGE N block from a multi-stage template.
+
+    Template format:
+        ----
+        STAGE N: TITLE
+        Description lines (skipped)
+        ----
+        Content (extracted)
+    """
     lines = template.splitlines(keepends=True)
     in_stage = False
+    past_header = False
     result = []
     for line in lines:
-        if f"STAGE {stage_label}" in line and "---" in line:
+        if f"STAGE {stage_label}" in line:
             in_stage = True
-        elif in_stage and line.startswith("---") and "STAGE" in line:
-            break
-        elif in_stage:
+        elif in_stage and not past_header:
+            if line.strip() and set(line.strip()).issubset(set("-=")):
+                past_header = True
+        elif in_stage and past_header:
+            if "STAGE" in line and f"STAGE {stage_label}" not in line:
+                break
+            if line.strip() and set(line.strip()).issubset(set("-=")):
+                continue
             result.append(line)
     return "".join(result).strip()
 
@@ -280,7 +294,7 @@ def _build_mechanism_actions(mechanisms: list[str], agent_id: int) -> str:
     actions = []
     if "contracting" in mechanisms:
         actions.extend([
-            f'  {{"action": "propose_contract", "target": "{agent_id}", "terms": {{"i_deliver": {{"good": "A"|"B"|"C"|"TOKENS", "quantity": int}}, "they_deliver": {{"good": "A"|"B"|"C"|"TOKENS", "quantity": int}}, "breach_penalty": int, "execution_round": int}}}}',
+            '  {"action": "propose_contract", "target": <neighbor_id>, "terms": {"i_deliver": {"good": "A"|"B"|"C"|"TOKENS", "quantity": int}, "they_deliver": {"good": "A"|"B"|"C"|"TOKENS", "quantity": int}, "breach_penalty": int, "execution_round": int}}',
             '  {"action": "sign_contract", "contract_id": "..."}',
             '  {"action": "reject_contract", "contract_id": "..."}',
         ])

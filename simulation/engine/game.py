@@ -104,6 +104,8 @@ class Game:
             pbar.set_postfix(sust=f"{metrics['sustainability']:.2f}", peace=f"{metrics['peace']:.2f}")
 
             for mech in self.mechanisms:
+                if mech.name == "contracting":
+                    continue  # already enforced in Phase 3b inside _run_round
                 mech.on_round_end(self.market, round_num)
 
             private_messages = [
@@ -266,6 +268,11 @@ class Game:
         for agent in self.agents:
             actions = trade_actions.get(agent.agent_id, [])
             self._process_trade_decisions(agent.agent_id, actions, round_num)
+
+        # --- Phase 3b: Contract enforcement (before consumption so penalties apply same round) ---
+        for mech in self.mechanisms:
+            if hasattr(mech, 'on_round_end') and mech.name == "contracting":
+                mech.on_round_end(self.market, round_num)
 
         # --- Phase 4: Consumption ---
         round_utilities: dict[int, float] = {}
@@ -471,10 +478,8 @@ class Game:
 
             elif action_type in ("accept_trade", "delegate_to_mediator"):
                 delegated = action_type == "delegate_to_mediator"
-                # Check if proposer also delegated (both must delegate for guarantee)
-                proposer_delegated = offer.proposer_delegated
 
-                if delegated and proposer_delegated and self.market.active_mediator:
+                if delegated and self.market.active_mediator:
                     # Mediated simultaneous exchange
                     self._execute_mediated_trade(offer, round_num)
                 else:
@@ -521,6 +526,27 @@ class Game:
                 defected_by = offer.proposer_id if not seller_ready else offer.target_id
                 self.market.record_trade_outcome(offer, defected_by=defected_by)
             # Deduct mediation fee from both parties only when mediation was attempted
+            if not hasattr(self.market, "_penalty_ledger"):
+                self.market._penalty_ledger = {}
+            for aid in [offer.proposer_id, offer.target_id]:
+                self.market._penalty_ledger[aid] = (
+                    self.market._penalty_ledger.get(aid, 0) + MEDIATION_FEE
+                )
+        elif active.action_both == "execute_split":
+            seller_ready = self.market.can_deliver_asset(offer.proposer_id, offer.offer_good, offer.offer_qty)
+            buyer_ready = self.market.can_deliver_asset(offer.target_id, "TOKENS", offer.price)
+            if seller_ready and buyer_ready:
+                half_qty = max(1, offer.offer_qty // 2)
+                half_price = max(1, offer.price // 2)
+                self.market.transfer_goods(offer.proposer_id, offer.target_id, offer.offer_good, half_qty)
+                self.market.transfer_tokens(offer.target_id, offer.proposer_id, half_price)
+                offer.status = "mediated"
+                self.market.trade_history.append(offer)
+                self.market._update_reputation(offer.proposer_id, success=True)
+                self.market._update_reputation(offer.target_id, success=True)
+            else:
+                defected_by = offer.proposer_id if not seller_ready else offer.target_id
+                self.market.record_trade_outcome(offer, defected_by=defected_by)
             if not hasattr(self.market, "_penalty_ledger"):
                 self.market._penalty_ledger = {}
             for aid in [offer.proposer_id, offer.target_id]:

@@ -68,8 +68,8 @@ the breach penalty to the other.
 Review the proposed contract carefully:
 
   Proposed by:     {proposer_id}
-  I must deliver:  {their_delivery_good}, {their_delivery_qty} units
-  They must deliver: {my_delivery_good}, {my_delivery_qty} units
+  I must deliver:  {my_delivery_good}, {my_delivery_qty} units
+  They must deliver: {their_delivery_good}, {their_delivery_qty} units
   Breach penalty:  {penalty} utility points (paid by the party that fails to deliver)
   Execution round: Round {execution_round}
 

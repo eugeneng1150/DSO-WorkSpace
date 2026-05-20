@@ -90,11 +90,7 @@ Available actions (always):
   {"action": "reject_trade",  "trade_id": "..."}
   {"action": "defect_trade",  "trade_id": "..."}
 
-Available actions (mechanism-dependent — see mechanism block above):
-  {"action": "propose_contract",        "target": "<neighbor_id>", "terms": {...}}   [+Contracting only]
-  {"action": "sign_contract",           "contract_id": "..."}                      [+Contracting only]
-  {"action": "reject_contract",         "contract_id": "..."}                      [+Contracting only]
-  {"action": "delegate_to_mediator",    "trade_id": "..."}                         [+Mediation only]
+{mechanism_actions}
 
 Trade flow: To acquire goods you need, either SELL your specialty (propose_sale) and use the tokens earned to BUY from others, or wait for others to offer sales to you and accept them. The seller delivers goods; the buyer pays tokens.
 
