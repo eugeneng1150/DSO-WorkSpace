@@ -408,7 +408,8 @@ def _extract_round_context(rounds_data: list[dict], priority_rounds: set[int]) -
                 lines.append(
                     f"  Trade: Agent {t['proposer']}→Agent {t['target']} "
                     f"({t['offer']['qty']}×{t['offer']['good']} for "
-                    f"{t['request']['qty']}×{t['request']['good']}) — {t['status'].upper()}"
+                    f"{t['price']} tokens) — {t['status'].upper()}"
+                    + (f" [defected by Agent {t['defected_by']}]" if t.get('defected_by') is not None else "")
                 )
         else:
             lines.append("  Trades: none")
