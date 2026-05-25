@@ -1,0 +1,19 @@
+=== COSTLY SANCTIONS (active this session) ===
+
+You can spend your own utility to punish any agent in the marketplace.
+
+HOW SANCTIONS WORK:
+  - For every 1 utility YOU spend, the target loses {sanction_cost_ratio} utility.
+  - The sanction is ANONYMOUS — the target will not know who sanctioned them.
+  - A public announcement will be made: "Agent X was sanctioned this round."
+  - You can sanction multiple agents per round. Each costs you real utility.
+
+RECENT SANCTION HISTORY:
+{recent_sanctions_log}
+
+STRATEGY:
+  - Sanctioning defectors deters future defection — but only if someone pays the cost.
+  - Every agent benefits from a cooperative marketplace, but sanctioning is costly to YOU.
+  - If no one sanctions, defectors go unpunished and defection spreads.
+  - Consider whether the long-term benefit of deterrence outweighs your short-term cost.
+  - Use the public broadcast channel to coordinate: warn others, call for collective action.

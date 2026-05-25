@@ -39,6 +39,9 @@ GOV_CLEAN_ROUNDS_TO_DEESCALATE = 2
 NET_MAX_SEVER_PER_ROUND = 99
 NET_MAX_REQUEST_PER_ROUND = 99
 
+# Sanction mechanism parameters
+SANCTION_COST_RATIO = 3   # spend 1 utility → target loses 3
+
 # Marketplace cooperation threshold (Sustainability and Peace must exceed this)
 COOPERATION_THRESHOLD = 0.5
 
@@ -60,7 +63,7 @@ MAX_NEIGHBORS = 99
 
 # Experimental conditions (2^4 factorial: R, C, M, G)
 CONDITIONS = [
-    "B", "R", "C", "M", "G", "N", "NR",
+    "B", "R", "C", "M", "G", "N", "NR", "S",
     # Combinations (disabled for initial test runs):
     # "RC", "RM", "RG", "CM", "CG", "MG",
     # "RCM", "RCG", "RMG", "CMG",
@@ -86,4 +89,5 @@ CONDITION_MECHANISMS = {
     "RCMG": ["reputation", "contracting", "mediation", "governance"],
     "N":    ["network_rewiring"],
     "NR":   ["network_rewiring", "reputation"],
+    "S":    ["sanction"],
 }

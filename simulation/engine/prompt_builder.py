@@ -11,6 +11,7 @@ from ..config import (
     MEDIATION_FEE, MEMORY_WINDOW, GOV_WARNING_EXPIRY,
     GOV_CLEAN_ROUNDS_TO_DEESCALATE,
     NET_MAX_SEVER_PER_ROUND, NET_MAX_REQUEST_PER_ROUND,
+    SANCTION_COST_RATIO,
 )
 
 if TYPE_CHECKING:
@@ -31,6 +32,7 @@ _CONTRACTING = _load("contracting.txt")
 _MEDIATION = _load("mediation.txt")
 _GOVERNANCE = _load("governance.txt")
 _NETWORK_REWIRING = _load("network_rewiring.txt")
+_SANCTION = _load("sanction.txt")
 
 
 def _extract_stage(template: str, stage_label: str) -> str:
@@ -93,8 +95,10 @@ def _fmt_inbox(market: "Market", agent_id: int) -> str:
 def _fmt_public_feed(market: "Market") -> str:
     if not market.public_feed:
         return "  (none)"
+    def _sender_label(sender_id: int) -> str:
+        return "System" if sender_id < 0 else f"Agent {sender_id}"
     return "\n".join(
-        f"  [Agent {m.sender_id}, Round {m.round_num}]: {m.text}"
+        f"  [{_sender_label(m.sender_id)}, Round {m.round_num}]: {m.text}"
         for m in market.public_feed
     )
 
@@ -165,6 +169,18 @@ def _fmt_public_mentions(market: "Market", agent_id: int) -> str:
     for aid, stmts in mentions.items():
         lines.append(f"  Agent {aid}:")
         lines.extend(stmts[-3:])
+    return "\n".join(lines)
+
+
+def _fmt_recent_sanctions(market: "Market") -> str:
+    if not hasattr(market, "sanction_log") or not market.sanction_log:
+        return "  No sanctions yet."
+    recent = [s for s in market.sanction_log if s["round"] >= market.round_num - 5]
+    if not recent:
+        return "  No recent sanctions."
+    lines = []
+    for s in recent[-10:]:
+        lines.append(f"  Round {s['round']}: Agent {s['target']} sanctioned (lost {s['damage']} utility)")
     return "\n".join(lines)
 
 
@@ -371,6 +387,12 @@ def _build_mechanism_block(
             block = block.replace("{net_max_request}", str(NET_MAX_REQUEST_PER_ROUND))
             blocks.append(block)
 
+        elif mech == "sanction":
+            block = _SANCTION
+            block = block.replace("{sanction_cost_ratio}", str(SANCTION_COST_RATIO))
+            block = block.replace("{recent_sanctions_log}", _fmt_recent_sanctions(market))
+            blocks.append(block)
+
     return "\n\n".join(blocks)
 
 
@@ -389,6 +411,8 @@ def _build_mechanism_actions(mechanisms: list[str]) -> str:
             '  {"action": "sever_link",   "target": <neighbor_id>}',
             '  {"action": "request_link", "target": <any_agent_id>}',
         ])
+    if "sanction" in mechanisms:
+        actions.append('  {"action": "sanction", "target": <any_agent_id>, "amount": <int>}  [you spend amount, target loses amount × 3]')
 
     if not actions:
         return ""

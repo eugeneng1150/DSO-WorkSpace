@@ -16,6 +16,7 @@ def _make_mechanisms(mechanism_names: list[str]):
     from ..mechanisms.mediation import MediationMechanism
     from ..mechanisms.governance import GovernanceMechanism
     from ..mechanisms.network_rewiring import NetworkRewiringMechanism
+    from ..mechanisms.sanction import SanctionMechanism
 
     lookup = {
         "reputation": ReputationMechanism,
@@ -23,6 +24,7 @@ def _make_mechanisms(mechanism_names: list[str]):
         "mediation": MediationMechanism,
         "governance": GovernanceMechanism,
         "network_rewiring": NetworkRewiringMechanism,
+        "sanction": SanctionMechanism,
     }
     return [lookup[name]() for name in mechanism_names]
 

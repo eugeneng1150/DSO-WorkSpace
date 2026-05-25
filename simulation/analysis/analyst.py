@@ -78,17 +78,50 @@ def _summarize(all_runs: dict[str, list[dict]]) -> dict:
     return summary
 
 
-def _build_analyst_prompt(summary: dict) -> str:
+def _build_round_table(all_runs: dict[str, list[dict]]) -> str:
+    """Build a per-round table for each condition showing defections and avg utility."""
+    lines = []
+    for condition, runs in sorted(all_runs.items()):
+        n_runs = len(runs)
+        max_rounds = max(len(run["rounds"]) for run in runs)
+        lines.append(f"\n### Condition {condition} ({n_runs} runs)")
+        lines.append(f"{'Round':>5} | {'Defections':>10} | {'Avg Utility':>11} | {'Peace':>6} | {'Sustainability':>14}")
+        lines.append(f"{'-'*5}-+-{'-'*10}-+-{'-'*11}-+-{'-'*6}-+-{'-'*14}")
+        for r in range(max_rounds):
+            defections = []
+            utilities = []
+            peace_vals = []
+            sust_vals = []
+            for run in runs:
+                if r < len(run["rounds"]):
+                    rnd = run["rounds"][r]
+                    defections.append(rnd.get("defections", 0))
+                    if "utilities" in rnd:
+                        utilities.extend(float(v) for v in rnd["utilities"].values())
+                    peace_vals.append(rnd["metrics"].get("peace", 0))
+                    sust_vals.append(rnd["metrics"].get("sustainability", 0))
+            avg_def = sum(defections) / len(defections) if defections else 0
+            avg_util = sum(utilities) / len(utilities) if utilities else 0
+            avg_peace = sum(peace_vals) / len(peace_vals) if peace_vals else 0
+            avg_sust = sum(sust_vals) / len(sust_vals) if sust_vals else 0
+            lines.append(
+                f"{r+1:>5} | {avg_def:>10.1f} | {avg_util:>11.2f} | {avg_peace:>6.3f} | {avg_sust:>14.3f}"
+            )
+    return "\n".join(lines)
+
+
+def _build_analyst_prompt(summary: dict, round_table: str) -> str:
     summary_text = json.dumps(summary, indent=2)
     conditions_list = ", ".join(summary.keys())
     n_conditions = len(summary)
     return f"""You are a research analyst reviewing the results of a multi-agent marketplace simulation.
 
 The simulation tests {n_conditions} conditions: {conditions_list}.
-Mechanisms: R=reputation, C=contracting, M=mediation, G=governance, N=network rewiring.
+Mechanisms: R=reputation, C=contracting, M=mediation, G=governance, N=network rewiring,
+NR=network rewiring + reputation, S=costly sanctions (agent-initiated punishment).
 Single-letter conditions isolate one mechanism; multi-letter conditions combine them; B=baseline (none).
-N is a standalone condition (not factorial-combined) inspired by RepuNet — agents can sever and
-request trade links each round, reshaping the trade network based on partner reliability.
+N is a standalone condition inspired by RepuNet — agents can sever and request trade links each round.
+NR combines network rewiring with reputation scores. S lets agents spend utility to punish others (1:3 ratio).
 
 Each condition runs multiple independent sessions of 30 rounds with 18 LLM agents trading 3 goods.
 
@@ -109,6 +142,9 @@ Intermediate variables (to decompose mechanism effects):
 Simulation summary statistics:
 {summary_text}
 
+Per-round breakdown (averaged across runs for each condition):
+{round_table}
+
 Write a structured findings report covering:
 
 1. **Which conditions achieved marketplace cooperation?** (marketplace_cooperation_rate and final metric values)
@@ -117,12 +153,16 @@ Write a structured findings report covering:
 4. **What is the minimum sufficient mechanism set?**
 5. **How does N (network rewiring) compare?** Did structural partner selection outperform or underperform
    institutional mechanisms (R, C, M, G)?
-6. **Intermediate variable analysis**: Did mechanisms work through direct defection reduction (Peace up)
+6. **How does NR (network rewiring + reputation) compare to N alone?** Does adding reputation improve outcomes?
+7. **How does S (sanctions) compare?** Did agents actually spend utility to punish, and did it deter defection?
+8. **Round-by-round trends**: Using the per-round table, identify which conditions show cooperation
+   improving over time vs deteriorating. Note any turning points or phase transitions.
+9. **Intermediate variable analysis**: Did mechanisms work through direct defection reduction (Peace up)
    or through improved information propagation (whistleblowing rate changed)?
-7. **Unexpected patterns or anomalies** in the data.
-8. **Implications for the research question**.
+10. **Unexpected patterns or anomalies** in the data.
+11. **Implications for the research question**.
 
-Be specific — cite numbers from the summary. Flag where data is insufficient to draw conclusions.
+Be specific — cite numbers from the summary and round tables. Flag where data is insufficient to draw conclusions.
 """
 
 
@@ -135,8 +175,13 @@ def run_analyst(model: str = ANALYST_MODEL, save: bool = True) -> str:
     print(f"Loaded runs for conditions: {list(all_runs.keys())}")
     summary = _summarize(all_runs)
 
+    round_table = _build_round_table(all_runs)
+    print("\n=== Per-Round Breakdown ===")
+    print(round_table)
+    print()
+
     print("Calling analyst LLM...")
-    prompt = _build_analyst_prompt(summary)
+    prompt = _build_analyst_prompt(summary, round_table)
     response = client.messages.create(
         model=model,
         max_tokens=4096,

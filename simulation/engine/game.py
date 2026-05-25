@@ -10,7 +10,7 @@ from ..metrics.social import compute_metrics
 from ..config import (
     GOODS, ROUNDS, UTILITY_CONSUME, COST_PRODUCE, MEDIATION_FEE,
     DEFAULT_BREACH_PENALTY, MAX_PRODUCE, MIN_NEIGHBORS, MAX_NEIGHBORS,
-    SPOILAGE_RATE,
+    SPOILAGE_RATE, SANCTION_COST_RATIO,
 )
 
 if TYPE_CHECKING:
@@ -224,6 +224,11 @@ class Game:
                     e for e in self.market.network_events
                     if e["round"] == round_num
                 ] if "network_rewiring" in self.mechanism_names else None,
+                # --- Sanctions ---
+                "sanctions_this_round": [
+                    s for s in self.market.sanction_log
+                    if s["round"] == round_num
+                ] if hasattr(self.market, "sanction_log") and "sanction" in self.mechanism_names else None,
                 # --- Messages ---
                 "private_messages": private_messages,
                 "public_messages": public_messages,
@@ -273,6 +278,10 @@ class Game:
         # Network rewiring (after messages/proposals, before trade phase)
         if "network_rewiring" in self.mechanism_names:
             self._process_network_actions(comm_actions, round_num)
+
+        # Sanctions (agents punish others based on past behavior)
+        if "sanction" in self.mechanism_names:
+            self._process_sanction_actions(comm_actions, round_num)
 
         # Contract review stage: agents that received proposals respond
         if "contracting" in self.mechanism_names:
@@ -506,6 +515,42 @@ class Game:
                         self.market.request_link(agent.agent_id, target, round_num, request_used)
                 except (KeyError, ValueError, TypeError):
                     pass
+
+    def _process_sanction_actions(
+        self, comm_actions: dict[int, list[dict]], round_num: int
+    ) -> None:
+        for agent in sorted(self.agents, key=lambda a: a.agent_id):
+            actions = comm_actions.get(agent.agent_id, [])
+            for act in actions:
+                if act.get("action") != "sanction":
+                    continue
+                try:
+                    target = int(act["target"])
+                    amount = int(act["amount"])
+                except (KeyError, ValueError, TypeError):
+                    continue
+                if target not in self.market.agent_ids or target == agent.agent_id or amount <= 0:
+                    continue
+                damage = amount * SANCTION_COST_RATIO
+                self.market._penalty_ledger[agent.agent_id] = (
+                    self.market._penalty_ledger.get(agent.agent_id, 0) + amount
+                )
+                self.market._penalty_ledger[target] = (
+                    self.market._penalty_ledger.get(target, 0) + damage
+                )
+                self.market.sanction_log.append({
+                    "round": round_num,
+                    "punisher": agent.agent_id,
+                    "target": target,
+                    "spent": amount,
+                    "damage": damage,
+                })
+                self.market.public_feed.append(Message(
+                    sender_id=-1,
+                    text=f"Agent {target} was sanctioned this round (-{damage} utility).",
+                    round_num=round_num,
+                    channel="public",
+                ))
 
     def _process_trade_decisions(self, agent_id: int, actions: list[dict], round_num: int) -> None:
         for act in actions:
