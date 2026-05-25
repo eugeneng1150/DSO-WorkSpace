@@ -36,8 +36,8 @@ GOV_WARNING_EXPIRY = 2
 GOV_CLEAN_ROUNDS_TO_DEESCALATE = 2
 
 # Network Rewiring mechanism parameters
-NET_MAX_SEVER_PER_ROUND = 1
-NET_MAX_REQUEST_PER_ROUND = 1
+NET_MAX_SEVER_PER_ROUND = 3
+NET_MAX_REQUEST_PER_ROUND = 3
 
 # Marketplace cooperation threshold (Sustainability and Peace must exceed this)
 COOPERATION_THRESHOLD = 0.5
@@ -60,7 +60,7 @@ MAX_NEIGHBORS = 9
 
 # Experimental conditions (2^4 factorial: R, C, M, G)
 CONDITIONS = [
-    "B", "R", "C", "M", "G", "N",
+    "B", "R", "C", "M", "G", "N", "NR",
     # Combinations (disabled for initial test runs):
     # "RC", "RM", "RG", "CM", "CG", "MG",
     # "RCM", "RCG", "RMG", "CMG",
@@ -85,4 +85,5 @@ CONDITION_MECHANISMS = {
     "CMG":  ["contracting", "mediation", "governance"],
     "RCMG": ["reputation", "contracting", "mediation", "governance"],
     "N":    ["network_rewiring"],
+    "NR":   ["network_rewiring", "reputation"],
 }

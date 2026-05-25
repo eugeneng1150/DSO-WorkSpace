@@ -37,6 +37,7 @@ _MECHANISM_LABELS = {
     "CMG":  "contracting + mediation + governance",
     "RCMG": "reputation + contracting + mediation + governance",
     "N":    "network rewiring (RepuNet-inspired)",
+    "NR":   "network rewiring + reputation",
 }
 
 SIGNAL_CATEGORIES = {

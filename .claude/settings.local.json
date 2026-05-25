@@ -14,7 +14,10 @@
       "Bash(gh api *)",
       "WebFetch(domain:www.marktechpost.com)",
       "WebFetch(domain:ai-scholar.tech)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Read(//usr/**)",
+      "Read(//mingw64/**)",
+      "Bash(/mingw64/bin/pdftotext.exe \"C:/Users/NYiSheng/Documents/DSO-WorkSpace/Raw/Reputation as a solution to cooperation collaspe in LLM.pdf\" -)"
     ]
   }
 }

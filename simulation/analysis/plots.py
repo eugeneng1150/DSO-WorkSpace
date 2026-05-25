@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 
-from ..config import COOPERATION_THRESHOLD, CONDITIONS, DATA_DIR
+from ..config import COOPERATION_THRESHOLD, CONDITIONS, CONDITION_MECHANISMS, DATA_DIR
 
 OUT_DIR = Path(__file__).parent.parent / "data" / "plots"
 
@@ -610,16 +610,20 @@ def plot_stability_rates(save: bool = True) -> None:
 
 
 def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] = (10, 30)) -> None:
-    """Draw network graph snapshots for condition N at specified rounds."""
+    """Draw network graph snapshots for conditions with network rewiring."""
     import networkx as nx
     import math
 
-    runs = _load_runs("N")
-    if not runs:
-        print("  [network_snapshots] No N-condition runs found, skipping.")
+    network_conditions = [c for c in CONDITIONS if "network_rewiring" in CONDITION_MECHANISMS.get(c, [])]
+    all_runs: list[tuple[str, int, dict]] = []
+    for cond in network_conditions:
+        for idx, run in enumerate(_load_runs(cond)):
+            all_runs.append((cond, idx, run))
+    if not all_runs:
+        print("  [network_snapshots] No network-rewiring condition runs found, skipping.")
         return
 
-    for run_idx, run in enumerate(runs):
+    for cond, run_idx, run in all_runs:
         specialties = run["session_log"]["specialties"]
         valid_ids = sorted(int(a) for a in specialties)
         rounds_data = run["rounds"]
@@ -720,9 +724,9 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
         axes[0].legend(handles=legend_items, loc="upper left", fontsize=9,
                        framealpha=0.9, title="Node size = reputation")
 
-        fig.suptitle(f"Condition N — Network Topology (Run {run_idx})", fontsize=14, fontweight="bold")
+        fig.suptitle(f"Condition {cond} — Network Topology (Run {run_idx})", fontsize=14, fontweight="bold")
         fig.subplots_adjust(top=0.88, wspace=0.1)
-        _maybe_save(fig, f"network_snapshot_run{run_idx:02d}.png", save)
+        _maybe_save(fig, f"network_snapshot_{cond}_run{run_idx:02d}.png", save)
 
 
 def plot_all(save: bool = True) -> None:
