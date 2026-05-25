@@ -11,7 +11,7 @@ from itertools import combinations
 import numpy as np
 from scipy.stats import mannwhitneyu
 
-from ..config import DATA_DIR
+from .. import config
 
 METRICS = ["sustainability", "peace", "mean_utility"]
 
@@ -19,7 +19,7 @@ METRICS = ["sustainability", "peace", "mean_utility"]
 def _discover_runs() -> dict[str, list[dict]]:
     """Auto-discover all condition run logs in DATA_DIR."""
     data: dict[str, list[dict]] = {}
-    for f in sorted(DATA_DIR.glob("*_run_*.json")):
+    for f in sorted(config.DATA_DIR.glob("*_run_*.json")):
         if "_traces" in f.name:
             continue
         with open(f) as fp:
@@ -62,7 +62,7 @@ def _sig_marker(p: float) -> str:
 def run_stats() -> str:
     all_runs = _discover_runs()
     if not all_runs:
-        return "No run logs found in " + str(DATA_DIR)
+        return "No run logs found in " + str(config.DATA_DIR)
 
     lines: list[str] = []
     lines.append("=" * 70)

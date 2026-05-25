@@ -14,10 +14,25 @@ from openai import AsyncOpenAI, RateLimitError, BadRequestError
 
 from ..config import MODEL, MAX_RETRIES, COT_AGENT_IDS, GOODS, AGENTS_PER_GOOD, AZURE_ENDPOINT
 
-client = AsyncOpenAI(
-    api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
-    base_url=AZURE_ENDPOINT,
-)
+_client = None
+_model = MODEL
+
+
+def configure_llm(base_url: str, api_key: str, model: str):
+    """Override the LLM endpoint/model at runtime (called from main before any agents run)."""
+    global _client, _model
+    _client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+    _model = model
+
+
+def _get_client() -> AsyncOpenAI:
+    global _client
+    if _client is None:
+        _client = AsyncOpenAI(
+            api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
+            base_url=AZURE_ENDPOINT,
+        )
+    return _client
 
 _IO_SUFFIX = "\nOutput your chosen actions as a JSON array. Respond with the JSON array only, no other text."
 
@@ -70,8 +85,8 @@ class _BaseAgent:
         backoff = 2.0
         for attempt in range(MAX_RETRIES):
             try:
-                response = await client.chat.completions.create(
-                    model=MODEL,
+                response = await _get_client().chat.completions.create(
+                    model=_model,
                     messages=[{"role": "user", "content": full_prompt}],
                     temperature=0.7,
                 )

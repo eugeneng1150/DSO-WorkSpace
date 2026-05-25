@@ -7,7 +7,8 @@ from tqdm import tqdm
 
 from .agent import make_agents
 from .game import Game
-from ..config import CONDITIONS, CONDITION_MECHANISMS, RUNS_PER_CONDITION, DATA_DIR
+from .. import config
+from ..config import CONDITIONS, CONDITION_MECHANISMS, RUNS_PER_CONDITION
 
 
 def _make_mechanisms(mechanism_names: list[str]):
@@ -73,16 +74,16 @@ def run_all(conditions: list[str] = CONDITIONS, runs: int | None = None) -> dict
 
 
 def _save_run(condition: str, run_idx: int, data: dict) -> None:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    filename = DATA_DIR / f"{condition}_run_{run_idx:02d}.json"
+    config.DATA_DIR.mkdir(parents=True, exist_ok=True)
+    filename = config.DATA_DIR / f"{condition}_run_{run_idx:02d}.json"
     with open(filename, "w") as f:
         json.dump(data, f, indent=2)
     print(f"  Saved → {filename}")
 
 
 def _save_traces(condition: str, run_idx: int, traces: list[dict]) -> None:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    filename = DATA_DIR / f"{condition}_run_{run_idx:02d}_traces.jsonl"
+    config.DATA_DIR.mkdir(parents=True, exist_ok=True)
+    filename = config.DATA_DIR / f"{condition}_run_{run_idx:02d}_traces.jsonl"
     with open(filename, "w") as f:
         for entry in traces:
             f.write(json.dumps(entry) + "\n")

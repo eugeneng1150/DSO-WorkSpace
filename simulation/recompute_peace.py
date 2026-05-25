@@ -2,7 +2,8 @@
 import json
 from pathlib import Path
 
-from .config import DATA_DIR, CONDITIONS
+from . import config
+from .config import CONDITIONS
 
 
 def recompute_run(filepath: Path) -> bool:
@@ -29,7 +30,7 @@ def recompute_run(filepath: Path) -> bool:
 
 def main():
     for condition in CONDITIONS:
-        runs = sorted(DATA_DIR.glob(f"{condition}_run_*.json"))
+        runs = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
         for fp in runs:
             recompute_run(fp)
             final = json.loads(fp.read_text())["final_metrics"]["peace"]

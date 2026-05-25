@@ -28,11 +28,27 @@ def main():
     parser.add_argument("--extract-signals", action="store_true", help="Extract social signals from agent messages/CoT")
     parser.add_argument("--all-runs", action="store_true", help="Process all runs (not just run 0)")
     parser.add_argument("--run-idx", type=int, default=0, help="Run index to analyse (default 0)")
+    parser.add_argument("--model", type=str, default=None,
+                        choices=["gpt-5.4-mini", "oss-120b"],
+                        help="Agent LLM backend: gpt-5.4-mini (Azure, default) or oss-120b (local Docker)")
     args = parser.parse_args()
 
-    if not os.environ.get("AZURE_OPENAI_API_KEY"):
-        print("ERROR: AZURE_OPENAI_API_KEY not set. Add it to .env or export it.")
-        return
+    model_tag = args.model or "gpt-5.4-mini"
+    from .config import set_model_tag
+    set_model_tag(model_tag)
+
+    if args.model == "oss-120b":
+        from .config import DOCKER_ENDPOINT, DOCKER_MODEL, DOCKER_API_KEY
+        from .engine.agent import configure_llm
+        configure_llm(base_url=DOCKER_ENDPOINT, api_key=DOCKER_API_KEY, model=DOCKER_MODEL)
+        print(f"Using local Docker model: {DOCKER_MODEL}")
+    else:
+        if not os.environ.get("AZURE_OPENAI_API_KEY"):
+            print("ERROR: AZURE_OPENAI_API_KEY not set. Add it to .env or export it.")
+            return
+
+    from . import config as _cfg
+    print(f"Data directory: {_cfg.DATA_DIR}")
 
     if args.condition:
         kwargs = {"runs": args.runs} if args.runs else {}

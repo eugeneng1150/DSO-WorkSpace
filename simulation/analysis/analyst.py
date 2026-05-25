@@ -8,7 +8,8 @@ from datetime import datetime
 import numpy as np
 import anthropic
 
-from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, COOPERATION_THRESHOLD, CONDITIONS, DATA_DIR
+from .. import config
+from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, COOPERATION_THRESHOLD, CONDITIONS
 OUT_DIR = Path(__file__).parent.parent / "data"
 METRICS = ["sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
@@ -21,7 +22,7 @@ client = anthropic.Anthropic(
 def _load_all_runs() -> dict[str, list[dict]]:
     data = {}
     for condition in CONDITIONS:
-        files = sorted(DATA_DIR.glob(f"{condition}_run_*.json"))
+        files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
         runs = []
         for f in files:
             with open(f) as fp:

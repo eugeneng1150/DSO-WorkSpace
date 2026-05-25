@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 
-from ..config import COOPERATION_THRESHOLD, CONDITIONS, CONDITION_MECHANISMS, DATA_DIR
+from .. import config
+from ..config import COOPERATION_THRESHOLD, CONDITIONS, CONDITION_MECHANISMS
 
 OUT_DIR = Path(__file__).parent.parent / "data" / "plots"
 
@@ -15,7 +16,7 @@ INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accurac
 COLORS = dict(zip(CONDITIONS, cm.tab20(np.linspace(0, 1, len(CONDITIONS)))))
 
 def _load_runs(condition: str) -> list[dict]:
-    files = sorted(DATA_DIR.glob(f"{condition}_run_*.json"))
+    files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
     runs = []
     for f in files:
         with open(f) as fp:

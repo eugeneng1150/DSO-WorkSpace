@@ -1,7 +1,14 @@
 from pathlib import Path
 
 # Paths
-DATA_DIR = Path(__file__).parent / "data" / "runs"
+_BASE_DATA_DIR = Path(__file__).parent / "data" / "runs"
+DATA_DIR = _BASE_DATA_DIR  # default; call set_model_tag() to add model subfolder
+
+
+def set_model_tag(tag: str):
+    """Set DATA_DIR to _BASE_DATA_DIR / tag so each model gets its own log folder."""
+    global DATA_DIR
+    DATA_DIR = _BASE_DATA_DIR / tag
 
 # Market structure
 GOODS = ["A", "B", "C"]
@@ -45,9 +52,14 @@ SANCTION_COST_RATIO = 3   # spend 1 utility → target loses 3
 # Marketplace cooperation threshold (Sustainability and Peace must exceed this)
 COOPERATION_THRESHOLD = 0.5
 
-# LLM — simulation agents (GPT)
+# LLM — simulation agents (GPT via Azure, default)
 AZURE_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/openai/v1"
 MODEL = "gpt-5.4-mini-BQ-Cohort"
+
+# LLM — local Docker (oss-120b via llama.cpp)
+DOCKER_ENDPOINT = "http://localhost:12434/engines/llama.cpp/v1"
+DOCKER_MODEL = "hf.co/unsloth/gpt-oss-120b-GGUF:Q4_K_M"
+DOCKER_API_KEY = "local"
 
 # LLM — analyst agent (Claude)
 ANALYST_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/anthropic"

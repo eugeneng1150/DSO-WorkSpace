@@ -15,7 +15,8 @@ from pathlib import Path
 import numpy as np
 import anthropic
 
-from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, CONDITIONS, DATA_DIR
+from .. import config
+from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, CONDITIONS
 SIGNALS_DIR = Path(__file__).parent.parent / "data" / "signals"
 OUT_DIR = Path(__file__).parent.parent / "data"
 
@@ -98,7 +99,7 @@ client = anthropic.Anthropic(
 # ── Data loading ─────────────────────────────────────────────────────────────
 
 def _load_traces(condition: str, run_idx: int) -> list[dict]:
-    path = DATA_DIR / f"{condition}_run_{run_idx:02d}_traces.jsonl"
+    path = config.DATA_DIR / f"{condition}_run_{run_idx:02d}_traces.jsonl"
     if not path.exists():
         return []
     with open(path) as f:
@@ -106,7 +107,7 @@ def _load_traces(condition: str, run_idx: int) -> list[dict]:
 
 
 def _load_run(condition: str, run_idx: int) -> dict:
-    path = DATA_DIR / f"{condition}_run_{run_idx:02d}.json"
+    path = config.DATA_DIR / f"{condition}_run_{run_idx:02d}.json"
     if not path.exists():
         return {}
     with open(path) as f:
@@ -285,7 +286,7 @@ def extract_all_signals(
     targets = [condition] if condition else CONDITIONS
 
     for cond in targets:
-        run_files = sorted(DATA_DIR.glob(f"{cond}_run_*.json"))
+        run_files = sorted(config.DATA_DIR.glob(f"{cond}_run_*.json"))
         run_files = [f for f in run_files if "traces" not in f.name]
         if not all_runs:
             run_files = run_files[:1]
@@ -319,7 +320,7 @@ def compute_lead_lag(
     For each signal, checks: does a high signal at round t predict LOW Peace/Sustainability
     at round t+lag? A strong negative correlation at small lag = early warning.
     """
-    run_files = sorted(DATA_DIR.glob(f"{condition}_run_*.json"))
+    run_files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
     run_files = [f for f in run_files if "traces" not in f.name]
 
     all_correlations: dict[str, dict[str, dict[int, list[float]]]] = {
