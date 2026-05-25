@@ -650,12 +650,14 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
                 ax.set_visible(False)
                 continue
 
+            valid_ids = {int(a) for a in specialties}
             G = nx.Graph()
             for aid in specialties:
                 G.add_node(int(aid))
             for aid_str, neighbors in net.items():
                 for nb in neighbors:
-                    G.add_edge(int(aid_str), nb)
+                    if int(aid_str) in valid_ids and nb in valid_ids:
+                        G.add_edge(int(aid_str), nb)
 
             node_list = sorted(G.nodes())
             node_colors = [GOOD_COLORS.get(specialties[str(n)], "grey") for n in node_list]

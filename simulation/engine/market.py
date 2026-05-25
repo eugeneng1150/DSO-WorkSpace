@@ -217,6 +217,8 @@ class Market:
         from ..config import NET_MAX_REQUEST_PER_ROUND, MAX_NEIGHBORS
         if request_used.get(initiator, 0) >= NET_MAX_REQUEST_PER_ROUND:
             return False
+        if target not in self.agent_ids:
+            return False
         if initiator == target:
             return False
         if self.are_neighbors(initiator, target):
