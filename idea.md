@@ -258,6 +258,31 @@ M, N, and G are predicted to be most resilient, but for fundamentally different 
 
 This is a publishable finding if confirmed — different mechanisms defend against adversaries through different strategies (neutralization vs isolation vs ejection).
 
+### Substantiating Claims (Post-Experiment Analysis)
+
+Three levels of evidence, from weakest to strongest:
+
+**1. Statistical significance (p-values)**
+With 15 runs per condition, use Mann-Whitney U test (non-parametric, no normality assumption) to compare each mechanism vs baseline B:
+```python
+from scipy.stats import mannwhitneyu
+stat, p = mannwhitneyu(mechanism_utilities, baseline_utilities, alternative="greater")
+```
+Report as a table: condition | mean final utility | p-value vs B. p < 0.05 = significant.
+Also compare across mechanisms (R vs G, N vs G, etc.) for pairwise rankings.
+
+**2. Causal pathway evidence (mechanism of action)**
+Don't just show outcomes improved — show the mechanism worked THROUGH its intended channel:
+- **R**: agents with low reputation received fewer trade proposals (information → avoidance)
+- **G**: warned/fined agents reduced defection rate in subsequent rounds (deterrence → behavior change)
+- **N**: defectors' neighbor count dropped over time, cooperators' held stable (structural → isolation)
+- **C**: agents with active contracts defected less than in uncontracted trades (commitment → compliance)
+- **M**: mediated trades had lower defection than unmediated trades (enforcement → fair execution)
+All derivable from existing logged data — no new simulation runs needed, just post-hoc analysis.
+
+**3. Controlled adversarial test (troll sweep)**
+Inject hardcoded defectors (0, 2, 4, 6 trolls) and show which mechanisms maintain positive utility. This is the strongest evidence because the troll is a known ground-truth defector — if G suspends it, if N isolates it, that's proof the mechanism detected and contained a real adversary. See Phase 2 below.
+
 ### Open Design Questions for Phase 2
 
 - **Timing**: trolls from round 1, or injected mid-game (e.g., round 15)? Round 1 tests resilience; mid-game tests recovery

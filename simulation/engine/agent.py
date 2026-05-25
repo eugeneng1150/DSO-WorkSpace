@@ -10,7 +10,7 @@ import asyncio
 import os
 from typing import Any
 
-from openai import AsyncOpenAI, RateLimitError
+from openai import AsyncOpenAI, RateLimitError, BadRequestError
 
 from ..config import MODEL, MAX_RETRIES, COT_AGENT_IDS, GOODS, AGENTS_PER_GOOD, AZURE_ENDPOINT
 
@@ -82,10 +82,18 @@ class _BaseAgent:
                 wait = backoff * (2 ** attempt)
                 print(f"[Agent {self.agent_id}] Rate limited — waiting {wait:.1f}s (attempt {attempt+1}/{MAX_RETRIES})")
                 await asyncio.sleep(wait)
+            except BadRequestError as e:
+                if "flagged" in str(e).lower() or "usage policy" in str(e).lower():
+                    wait = backoff * (2 ** attempt)
+                    print(f"[Agent {self.agent_id}] Content filter triggered — retrying in {wait:.1f}s (attempt {attempt+1}/{MAX_RETRIES})")
+                    await asyncio.sleep(wait)
+                else:
+                    raise
             except (json.JSONDecodeError, ValueError) as e:
                 if attempt == MAX_RETRIES - 1:
                     print(f"[Agent {self.agent_id}] JSON parse failed after {MAX_RETRIES} attempts: {e}")
                     return []
+        print(f"[Agent {self.agent_id}] All {MAX_RETRIES} attempts failed — returning empty actions")
         return []
 
 
