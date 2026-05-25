@@ -17,7 +17,10 @@
       "Bash(git *)",
       "Read(//usr/**)",
       "Read(//mingw64/**)",
-      "Bash(/mingw64/bin/pdftotext.exe \"C:/Users/NYiSheng/Documents/DSO-WorkSpace/Raw/Reputation as a solution to cooperation collaspe in LLM.pdf\" -)"
+      "Bash(/mingw64/bin/pdftotext.exe \"C:/Users/NYiSheng/Documents/DSO-WorkSpace/Raw/Reputation as a solution to cooperation collaspe in LLM.pdf\" -)",
+      "Bash(grep -v \"^gpt-5.4-mini$\")",
+      "Bash(mv C:/Users/NYiSheng/Documents/DSO-WorkSpace/simulation/data/runs/*.json C:/Users/NYiSheng/Documents/DSO-WorkSpace/simulation/data/runs/gpt-5.4-mini/)",
+      "Bash(mv C:/Users/NYiSheng/Documents/DSO-WorkSpace/simulation/data/runs/*.jsonl C:/Users/NYiSheng/Documents/DSO-WorkSpace/simulation/data/runs/gpt-5.4-mini/)"
     ]
   }
 }

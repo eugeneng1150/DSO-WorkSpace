@@ -2,7 +2,7 @@ from pathlib import Path
 
 # Paths
 _BASE_DATA_DIR = Path(__file__).parent / "data" / "runs"
-DATA_DIR = _BASE_DATA_DIR  # default; call set_model_tag() to add model subfolder
+DATA_DIR = _BASE_DATA_DIR / "gpt-5.4-mini"  # default; call set_model_tag() to override
 
 
 def set_model_tag(tag: str):
