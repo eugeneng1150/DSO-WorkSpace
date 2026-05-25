@@ -7,15 +7,14 @@ Current neighbor count: {neighbor_count}
 SEVER A LINK (sever_link):
   - Immediately removes your connection to that agent — no more trades either way.
   - Unilateral: the other agent does not consent or get advance notice.
-  - Max {net_max_sever} sever per round.
+  - No limit on how many links you can sever per round.
   - You may sever down to zero neighbors (you will earn nothing but avoid exploitation).
   - You can re-request a severed link in a future round.
 
 REQUEST A LINK (request_link):
   - Propose a new connection to ANY agent in the marketplace.
-  - Auto-accepted if the target has capacity (fewer than max neighbors).
-  - Silently rejected if the target is at capacity. No penalty.
-  - Max {net_max_request} request per round.
+  - Auto-accepted.
+  - No limit on how many links you can request per round.
 
 STRATEGY:
   - Your trade history tells you who is reliable and who defects. Act on it.

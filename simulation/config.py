@@ -36,8 +36,8 @@ GOV_WARNING_EXPIRY = 2
 GOV_CLEAN_ROUNDS_TO_DEESCALATE = 2
 
 # Network Rewiring mechanism parameters
-NET_MAX_SEVER_PER_ROUND = 3
-NET_MAX_REQUEST_PER_ROUND = 3
+NET_MAX_SEVER_PER_ROUND = 99
+NET_MAX_REQUEST_PER_ROUND = 99
 
 # Marketplace cooperation threshold (Sustainability and Peace must exceed this)
 COOPERATION_THRESHOLD = 0.5
@@ -56,7 +56,7 @@ COT_AGENT_IDS = set(range(18))   # all agents
 
 # Network structure
 MIN_NEIGHBORS = 7
-MAX_NEIGHBORS = 9
+MAX_NEIGHBORS = 99
 
 # Experimental conditions (2^4 factorial: R, C, M, G)
 CONDITIONS = [
