@@ -1,7 +1,6 @@
 """Main simulation loop: 5 phases per round."""
 from __future__ import annotations
 import asyncio
-import json
 from typing import TYPE_CHECKING
 from tqdm import tqdm
 
@@ -10,8 +9,8 @@ from .prompt_builder import build_prompt
 from ..metrics.social import compute_metrics
 from ..config import (
     GOODS, ROUNDS, UTILITY_CONSUME, COST_PRODUCE, MEDIATION_FEE,
-    DEFAULT_BREACH_PENALTY, MEMORY_WINDOW, MIN_NEIGHBORS, MAX_NEIGHBORS,
-    ROUND_INCOME, SPOILAGE_RATE,
+    DEFAULT_BREACH_PENALTY, MAX_PRODUCE, MIN_NEIGHBORS, MAX_NEIGHBORS,
+    SPOILAGE_RATE,
 )
 
 if TYPE_CHECKING:
@@ -44,7 +43,7 @@ class Game:
             "network": {str(k): sorted(v) for k, v in self.market.network.items()},
             "specialties": {str(k): v for k, v in self.specialties.items()},
         }
-        self._utility_history: dict[int, list[float]] = {a.agent_id: [] for a in agents}
+        self._pre_consumption_penalties: dict[int, float] = {}
 
     def run(self) -> list[dict]:
         loop = asyncio.get_event_loop()
@@ -150,7 +149,7 @@ class Game:
             contracts_executed  = [_fmt_contract(c) for c in all_contracts if c.status == "executed" and c.execution_round == round_num]
             contracts_breached  = [_fmt_contract(c) for c in all_contracts if c.status == "breached" and c.execution_round == round_num]
             contracts_rejected  = [_fmt_contract(c) for c in all_contracts if c.status == "rejected"]
-            penalty_ledger      = dict(getattr(self.market, "_penalty_ledger", {}))
+            penalty_ledger      = self._pre_consumption_penalties
 
             # Mediation: active mediator config + trade outcomes
             active_med = self.market.active_mediator
@@ -165,7 +164,6 @@ class Game:
                     str(aid): dict(inv)
                     for aid, inv in self.market.inventories.items()
                 },
-                "tokens": {str(aid): v for aid, v in self.market.tokens.items()},
                 # --- Reputation ---
                 "reputation": reputation_now,
                 "reputation_delta": reputation_delta,
@@ -176,7 +174,7 @@ class Game:
                         "proposer": t.proposer_id,
                         "target": t.target_id,
                         "offer": {"good": t.offer_good, "qty": t.offer_qty},
-                        "price": t.price,
+                        "want": {"good": t.want_good, "qty": t.want_qty},
                         "status": t.status,
                         "defected_by": t.defected_by,
                     }
@@ -206,6 +204,26 @@ class Game:
                     str(k): v for k, v in self.market.warnings_broadcast.items()
                 },
                 "negative_mentions": list(self.market.negative_mentions),
+                # --- Governance ---
+                "governance": {
+                    str(aid): {
+                        "status": self.market.governance_states[aid].status,
+                        "fine_tier": self.market.governance_states[aid].fine_tier,
+                        "signals": list(self.market.governance_states[aid].triggered_signals),
+                        "clean_rounds": self.market.governance_states[aid].clean_rounds,
+                        "suspension_rounds_left": self.market.governance_states[aid].suspension_rounds_left,
+                    }
+                    for aid in self.market.agent_ids
+                } if self.market.governance_states else None,
+                # --- Network Rewiring ---
+                "network": {
+                    str(aid): sorted(neighbors)
+                    for aid, neighbors in self.market.network.items()
+                } if "network_rewiring" in self.mechanism_names else None,
+                "network_events_this_round": [
+                    e for e in self.market.network_events
+                    if e["round"] == round_num
+                ] if "network_rewiring" in self.mechanism_names else None,
                 # --- Messages ---
                 "private_messages": private_messages,
                 "public_messages": public_messages,
@@ -216,11 +234,7 @@ class Game:
     async def _run_round(self, round_num: int) -> dict[int, float]:
         """Execute all 5 phases. Returns {agent_id: utility_this_round}."""
 
-        # --- Phase 0a: Round income (prevents deflationary token drain) ---
-        for agent in self.agents:
-            self.market.tokens[agent.agent_id] += ROUND_INCOME
-
-        # --- Phase 0b: Inventory spoilage (perishable goods) ---
+        # --- Phase 0: Inventory spoilage (perishable goods) ---
         if round_num > 1:
             for agent in self.agents:
                 inv = self.market.inventories[agent.agent_id]
@@ -233,17 +247,17 @@ class Game:
         production_actions = await self._call_agents_phase("production", round_num)
         production_this_round: dict[int, int] = {}
         for agent in self.agents:
+            gov = self.market.governance_states.get(agent.agent_id)
+            if gov and gov.status == "suspended":
+                production_this_round[agent.agent_id] = 0
+                continue
             actions = production_actions.get(agent.agent_id, [])
             units = 0
             for act in actions:
                 if act.get("action") == "produce" and act.get("good") == agent.specialty:
-                    qty = min(int(act.get("quantity", 0)), 5)
-                    affordable_qty = min(qty, self.market.tokens.get(agent.agent_id, 0) // COST_PRODUCE)
-                    production_cost = affordable_qty * COST_PRODUCE
-                    if production_cost:
-                        self.market.tokens[agent.agent_id] -= production_cost
-                    self.market.inventories[agent.agent_id][agent.specialty] += affordable_qty
-                    units += affordable_qty
+                    qty = min(max(0, int(act.get("quantity", 0))), MAX_PRODUCE - units)
+                    self.market.inventories[agent.agent_id][agent.specialty] += qty
+                    units += qty
             production_this_round[agent.agent_id] = units
         self.market.production_per_round.append(production_this_round)
 
@@ -255,6 +269,10 @@ class Game:
             self._process_trade_proposals(agent.agent_id, actions, round_num)
             if "contracting" in self.mechanism_names:
                 self._process_contract_proposals(agent.agent_id, actions, round_num)
+
+        # Network rewiring (after messages/proposals, before trade phase)
+        if "network_rewiring" in self.mechanism_names:
+            self._process_network_actions(comm_actions, round_num)
 
         # Contract review stage: agents that received proposals respond
         if "contracting" in self.mechanism_names:
@@ -271,8 +289,11 @@ class Game:
 
         # --- Phase 3b: Contract enforcement (before consumption so penalties apply same round) ---
         for mech in self.mechanisms:
-            if hasattr(mech, 'on_round_end') and mech.name == "contracting":
+            if mech.name == "contracting":
                 mech.on_round_end(self.market, round_num)
+
+        # Snapshot penalties before consumption pops them
+        self._pre_consumption_penalties = dict(self.market._penalty_ledger)
 
         # --- Phase 4: Consumption ---
         round_utilities: dict[int, float] = {}
@@ -284,15 +305,17 @@ class Game:
                 consumed_utility += qty * UTILITY_CONSUME
                 inv[need] = 0  # consume all held units of needed goods
 
-            # Apply contract breach penalties
-            if hasattr(self.market, "_penalty_ledger"):
-                penalty = self.market._penalty_ledger.pop(agent.agent_id, 0)
-                consumed_utility -= penalty
+            # Deduct production cost (utility-based)
+            units_produced = self.market.production_per_round[-1].get(agent.agent_id, 0)
+            consumed_utility -= units_produced * COST_PRODUCE
+
+            # Apply penalties (contract breaches, mediation fees, governance fines)
+            penalty = self.market._penalty_ledger.pop(agent.agent_id, 0)
+            consumed_utility -= penalty
 
             round_utilities[agent.agent_id] = consumed_utility
             agent.last_utility = consumed_utility
             agent.total_utility += consumed_utility
-            self._utility_history[agent.agent_id].append(consumed_utility)
 
         return round_utilities
 
@@ -300,6 +323,10 @@ class Game:
         """Build prompts for all agents and call them concurrently."""
         prompts = {}
         for agent in self.agents:
+            gov = self.market.governance_states.get(agent.agent_id)
+            if gov and gov.status == "suspended":
+                continue
+
             stage_overrides = {}
             for mech in self.mechanisms:
                 stage_overrides.update(mech.get_stage_override(agent, self.market))
@@ -381,14 +408,16 @@ class Game:
         # Track committed inventory to prevent over-promising
         committed: dict[str, int] = {g: 0 for g in GOODS}
         for act in actions:
-            if act.get("action") == "propose_sale":
+            if act.get("action") == "propose_trade":
                 try:
                     target = int(act["target"])
                     offer = act["offer"]
                     qty = max(0, int(offer["quantity"]))
-                    price = max(0, int(act["price"]))
                     good = offer["good"]
-                    if qty == 0:
+                    want = act["want"]
+                    want_good = want["good"]
+                    want_qty = max(0, int(want["quantity"]))
+                    if qty == 0 or want_qty == 0:
                         continue
                     # Cap quantity to what's actually available after prior commitments
                     available = self.market.inventories[proposer_id].get(good, 0) - committed.get(good, 0)
@@ -402,7 +431,8 @@ class Game:
                         target_id=target,
                         offer_good=good,
                         offer_qty=qty,
-                        price=price,
+                        want_good=want_good,
+                        want_qty=want_qty,
                         round_num=round_num,
                         proposer_delegated=bool(act.get("use_mediator", False)),
                     )
@@ -432,7 +462,7 @@ class Game:
                     self.market.contracts[contract.contract_id] = contract
                     # Notify counterparty via private channel
                     def fmt_asset(qty: int, asset: str) -> str:
-                        return f"{qty} tokens" if asset == "TOKENS" else f"{qty}×{asset}"
+                        return f"{qty}×{asset}"
 
                     self.market.post_message(Message(
                         sender_id=proposer_id,
@@ -458,6 +488,25 @@ class Game:
             elif act.get("action") == "reject_contract":
                 contract.status = "rejected"
 
+    def _process_network_actions(
+        self, comm_actions: dict[int, list[dict]], round_num: int
+    ) -> None:
+        sever_used: dict[int, int] = {}
+        request_used: dict[int, int] = {}
+        for agent in sorted(self.agents, key=lambda a: a.agent_id):
+            actions = comm_actions.get(agent.agent_id, [])
+            for act in actions:
+                action_type = act.get("action")
+                try:
+                    if action_type == "sever_link":
+                        target = int(act["target"])
+                        self.market.sever_link(agent.agent_id, target, round_num, sever_used)
+                    elif action_type == "request_link":
+                        target = int(act["target"])
+                        self.market.request_link(agent.agent_id, target, round_num, request_used)
+                except (KeyError, ValueError, TypeError):
+                    pass
+
     def _process_trade_decisions(self, agent_id: int, actions: list[dict], round_num: int) -> None:
         for act in actions:
             action_type = act.get("action")
@@ -477,82 +526,97 @@ class Game:
                 offer.status = "rejected"
 
             elif action_type in ("accept_trade", "delegate_to_mediator"):
-                delegated = action_type == "delegate_to_mediator"
+                target_delegated = action_type == "delegate_to_mediator"
+                use_mediator = (target_delegated or offer.proposer_delegated) and self.market.active_mediator is not None
 
-                if delegated and self.market.active_mediator:
-                    # Mediated simultaneous exchange
-                    self._execute_mediated_trade(offer, round_num)
+                if use_mediator:
+                    self._execute_mediated_trade(offer, round_num, target_delegated=target_delegated)
                 else:
-                    # Standard trade: proposer delivers first, target may defect
                     self._execute_standard_trade(offer, agent_id, defect=False, round_num=round_num)
 
             elif action_type == "defect_trade":
-                self._execute_standard_trade(offer, agent_id, defect=True, round_num=round_num)
+                if offer.proposer_delegated and self.market.active_mediator:
+                    if self.market.active_mediator.action_one == "cancel":
+                        offer.status = "rejected"
+                        self.market.trade_history.append(offer)
+                    else:
+                        self._execute_standard_trade(offer, agent_id, defect=True, round_num=round_num)
+                else:
+                    self._execute_standard_trade(offer, agent_id, defect=True, round_num=round_num)
 
     def _execute_standard_trade(
         self, offer: TradeOffer, accepting_agent: int, defect: bool, round_num: int
     ) -> None:
         if defect:
-            # Buyer takes seller's goods but does not pay.
+            # Target takes proposer's goods without delivering their own
             transferred = self.market.transfer_goods(
                 offer.proposer_id, accepting_agent, offer.offer_good, offer.offer_qty
             )
-            if transferred:
-                self.market.record_trade_outcome(offer, defected_by=accepting_agent)
+            self.market.record_trade_outcome(offer, defected_by=accepting_agent)
         else:
-            if not self.market.can_deliver_asset(offer.proposer_id, offer.offer_good, offer.offer_qty):
+            proposer_can = self.market.can_deliver_asset(
+                offer.proposer_id, offer.offer_good, offer.offer_qty
+            )
+            target_can = self.market.can_deliver_asset(
+                accepting_agent, offer.want_good, offer.want_qty
+            )
+            if not proposer_can:
                 self.market.record_trade_outcome(offer, defected_by=offer.proposer_id)
                 return
-            ok1 = self.market.transfer_goods(offer.proposer_id, accepting_agent, offer.offer_good, offer.offer_qty)
-            ok2 = self.market.transfer_tokens(accepting_agent, offer.proposer_id, offer.price)
+            if not target_can:
+                self.market.record_trade_outcome(offer, defected_by=accepting_agent)
+                return
+            ok1 = self.market.transfer_goods(
+                offer.proposer_id, accepting_agent, offer.offer_good, offer.offer_qty
+            )
+            ok2 = self.market.transfer_goods(
+                accepting_agent, offer.proposer_id, offer.want_good, offer.want_qty
+            )
             if ok1 and ok2:
                 self.market.record_trade_outcome(offer)
             else:
-                self.market.record_trade_outcome(offer, defected_by=accepting_agent if not ok2 else offer.proposer_id)
+                defector = accepting_agent if not ok2 else offer.proposer_id
+                self.market.record_trade_outcome(offer, defected_by=defector)
 
-    def _execute_mediated_trade(self, offer: TradeOffer, round_num: int) -> None:
+    def _execute_mediated_trade(self, offer: TradeOffer, round_num: int, target_delegated: bool = True) -> None:
         active = self.market.active_mediator
-        if active.action_both == "execute_fair":
-            seller_ready = self.market.can_deliver_asset(offer.proposer_id, offer.offer_good, offer.offer_qty)
-            buyer_ready = self.market.can_deliver_asset(offer.target_id, "TOKENS", offer.price)
-            if seller_ready and buyer_ready:
-                self.market.transfer_goods(offer.proposer_id, offer.target_id, offer.offer_good, offer.offer_qty)
-                self.market.transfer_tokens(offer.target_id, offer.proposer_id, offer.price)
+        both_delegated = offer.proposer_delegated and target_delegated
+        action = active.action_both if both_delegated else active.action_one
+
+        trade_succeeded = False
+
+        if action in ("execute_fair", "execute_split"):
+            proposer_ready = self.market.can_deliver_asset(offer.proposer_id, offer.offer_good, offer.offer_qty)
+            target_ready = self.market.can_deliver_asset(offer.target_id, offer.want_good, offer.want_qty)
+            if proposer_ready and target_ready:
+                if action == "execute_split":
+                    half_offer = max(1, offer.offer_qty // 2)
+                    half_want = max(1, offer.want_qty // 2)
+                    self.market.transfer_goods(offer.proposer_id, offer.target_id, offer.offer_good, half_offer)
+                    self.market.transfer_goods(offer.target_id, offer.proposer_id, offer.want_good, half_want)
+                    offer.offer_qty = half_offer
+                    offer.want_qty = half_want
+                else:
+                    self.market.transfer_goods(offer.proposer_id, offer.target_id, offer.offer_good, offer.offer_qty)
+                    self.market.transfer_goods(offer.target_id, offer.proposer_id, offer.want_good, offer.want_qty)
                 offer.status = "mediated"
                 self.market.trade_history.append(offer)
                 self.market._update_reputation(offer.proposer_id, success=True)
                 self.market._update_reputation(offer.target_id, success=True)
+                trade_succeeded = True
             else:
-                defected_by = offer.proposer_id if not seller_ready else offer.target_id
+                defected_by = offer.proposer_id if not proposer_ready else offer.target_id
                 self.market.record_trade_outcome(offer, defected_by=defected_by)
-            # Deduct mediation fee from both parties only when mediation was attempted
-            if not hasattr(self.market, "_penalty_ledger"):
-                self.market._penalty_ledger = {}
-            for aid in [offer.proposer_id, offer.target_id]:
-                self.market._penalty_ledger[aid] = (
-                    self.market._penalty_ledger.get(aid, 0) + MEDIATION_FEE
-                )
-        elif active.action_both == "execute_split":
-            seller_ready = self.market.can_deliver_asset(offer.proposer_id, offer.offer_good, offer.offer_qty)
-            buyer_ready = self.market.can_deliver_asset(offer.target_id, "TOKENS", offer.price)
-            if seller_ready and buyer_ready:
-                half_qty = max(1, offer.offer_qty // 2)
-                half_price = max(1, offer.price // 2)
-                self.market.transfer_goods(offer.proposer_id, offer.target_id, offer.offer_good, half_qty)
-                self.market.transfer_tokens(offer.target_id, offer.proposer_id, half_price)
-                offer.status = "mediated"
-                self.market.trade_history.append(offer)
-                self.market._update_reputation(offer.proposer_id, success=True)
-                self.market._update_reputation(offer.target_id, success=True)
-            else:
-                defected_by = offer.proposer_id if not seller_ready else offer.target_id
-                self.market.record_trade_outcome(offer, defected_by=defected_by)
-            if not hasattr(self.market, "_penalty_ledger"):
-                self.market._penalty_ledger = {}
-            for aid in [offer.proposer_id, offer.target_id]:
-                self.market._penalty_ledger[aid] = (
-                    self.market._penalty_ledger.get(aid, 0) + MEDIATION_FEE
-                )
-        elif active.action_both == "cancel":
+        elif action == "cancel":
             offer.status = "rejected"
             self.market.trade_history.append(offer)
+
+        if trade_succeeded:
+            if offer.proposer_delegated:
+                self.market._penalty_ledger[offer.proposer_id] = (
+                    self.market._penalty_ledger.get(offer.proposer_id, 0) + MEDIATION_FEE
+                )
+            if target_delegated:
+                self.market._penalty_ledger[offer.target_id] = (
+                    self.market._penalty_ledger.get(offer.target_id, 0) + MEDIATION_FEE
+                )

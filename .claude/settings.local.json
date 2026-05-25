@@ -11,7 +11,10 @@
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:github.com)",
-      "Bash(gh api *)"
+      "Bash(gh api *)",
+      "WebFetch(domain:www.marktechpost.com)",
+      "WebFetch(domain:ai-scholar.tech)",
+      "Bash(git *)"
     ]
   }
 }

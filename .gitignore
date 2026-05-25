@@ -8,6 +8,7 @@ __pycache__/
 *.pyc
 *.pyo
 .DS_Store
+.ipynb_checkpoints/
 
 # Data outputs (large, reproducible)
 .env.save

@@ -23,7 +23,8 @@ class TradeOffer:
     target_id: int
     offer_good: str
     offer_qty: int
-    price: int
+    want_good: str
+    want_qty: int
     round_num: int
     proposer_delegated: bool = False
     status: str = "pending"   # pending | accepted | rejected | completed | defected | mediated
@@ -50,7 +51,6 @@ class MediatorDesign:
     action_both: str    # execute_fair | execute_split | cancel
     action_one: str
     rationale: str
-    approvals: int = 0
 
 
 def generate_network(
@@ -114,8 +114,7 @@ class Market:
         self.inventories: dict[int, dict[str, int]] = {
             aid: {g: 0 for g in goods} for aid in agent_ids
         }
-        from ..config import STARTING_TOKENS
-        self.tokens: dict[int, int] = {aid: STARTING_TOKENS for aid in agent_ids}
+        # Tokens removed — pure barter economy
 
         # Message queues (reset each round)
         self.private_inboxes: dict[int, list[Message]] = {aid: [] for aid in agent_ids}
@@ -149,7 +148,18 @@ class Market:
         # Defection tracking for intermediate variables
         self.defections_suffered: dict[int, int] = {aid: 0 for aid in agent_ids}
         self.warnings_broadcast: dict[int, int] = {aid: 0 for aid in agent_ids}
-        self.negative_mentions: list[dict] = []  # {sender, target, round, verified}
+        self.negative_mentions: list[dict] = []  # {sender, target, round}
+
+        # Penalty ledger (shared by contracting, mediation, governance)
+        self._penalty_ledger: dict[int, float] = {}
+
+        # Governance state (governance mechanism — populated by GovernanceMechanism.on_session_start)
+        self.governance_states: dict = {}
+        self.governance_log: list[dict] = []
+
+        # Network rewiring state (network_rewiring mechanism)
+        self.network_events: list[dict] = []
+        self.network_degree_history: list[dict] = []
 
     def new_round(self, round_num: int):
         self.round_num = round_num
@@ -185,6 +195,48 @@ class Market:
 
     def are_neighbors(self, agent_a: int, agent_b: int) -> bool:
         return agent_b in self.network.get(agent_a, set())
+
+    def sever_link(self, initiator: int, target: int, round_num: int,
+                   sever_used: dict[int, int]) -> bool:
+        from ..config import NET_MAX_SEVER_PER_ROUND
+        if sever_used.get(initiator, 0) >= NET_MAX_SEVER_PER_ROUND:
+            return False
+        if not self.are_neighbors(initiator, target):
+            return False
+        self.network[initiator].discard(target)
+        self.network[target].discard(initiator)
+        sever_used[initiator] = sever_used.get(initiator, 0) + 1
+        self.network_events.append({
+            "round": round_num, "type": "sever",
+            "initiator": initiator, "target": target, "outcome": "applied",
+        })
+        return True
+
+    def request_link(self, initiator: int, target: int, round_num: int,
+                     request_used: dict[int, int]) -> bool:
+        from ..config import NET_MAX_REQUEST_PER_ROUND, MAX_NEIGHBORS
+        if request_used.get(initiator, 0) >= NET_MAX_REQUEST_PER_ROUND:
+            return False
+        if initiator == target:
+            return False
+        if self.are_neighbors(initiator, target):
+            return False
+        if len(self.network.get(initiator, set())) >= MAX_NEIGHBORS:
+            return False
+        if len(self.network.get(target, set())) >= MAX_NEIGHBORS:
+            self.network_events.append({
+                "round": round_num, "type": "request",
+                "initiator": initiator, "target": target, "outcome": "rejected_capacity",
+            })
+            return False
+        self.network[initiator].add(target)
+        self.network[target].add(initiator)
+        request_used[initiator] = request_used.get(initiator, 0) + 1
+        self.network_events.append({
+            "round": round_num, "type": "request",
+            "initiator": initiator, "target": target, "outcome": "applied",
+        })
+        return True
 
     def post_trade_offer(self, offer: TradeOffer):
         if not self.are_neighbors(offer.proposer_id, offer.target_id):
@@ -228,29 +280,25 @@ class Market:
                 history.setdefault(partner, []).append(t)
         return history
 
-    def get_market_prices(self, window: int = 5) -> dict[str, dict]:
+    def get_exchange_rates(self, window: int = 5) -> dict[str, dict]:
         recent = [t for t in self.trade_history
                   if t.round_num > self.round_num - window
                   and t.status in ("completed", "mediated")]
-        prices: dict[str, dict] = {}
-        for g in self.goods:
-            trades_for_good = [t for t in recent if t.offer_good == g and t.offer_qty > 0]
-            if trades_for_good:
-                avg = sum(t.price / t.offer_qty for t in trades_for_good) / len(trades_for_good)
-                prices[g] = {"avg_price": round(avg, 1), "trade_count": len(trades_for_good)}
-            else:
-                prices[g] = {"avg_price": None, "trade_count": 0}
-        return prices
+        rates: dict[str, dict] = {}
+        for t in recent:
+            key = f"{t.offer_good}_for_{t.want_good}"
+            rates.setdefault(key, {"ratios": [], "trade_count": 0})
+            if t.want_qty > 0:
+                rates[key]["ratios"].append(t.offer_qty / t.want_qty)
+            rates[key]["trade_count"] += 1
+        for key in rates:
+            ratios = rates[key]["ratios"]
+            rates[key]["avg_ratio"] = round(sum(ratios) / len(ratios), 1) if ratios else 0
+            del rates[key]["ratios"]
+        return rates
 
     def can_deliver_asset(self, agent_id: int, asset: str, qty: int) -> bool:
-        if asset == "TOKENS":
-            return self.tokens.get(agent_id, 0) >= qty
         return self.inventories[agent_id].get(asset, 0) >= qty
-
-    def transfer_asset(self, from_id: int, to_id: int, asset: str, qty: int) -> bool:
-        if asset == "TOKENS":
-            return self.transfer_tokens(from_id, to_id, qty)
-        return self.transfer_goods(from_id, to_id, asset, qty)
 
     def transfer_goods(self, from_id: int, to_id: int, good: str, qty: int) -> bool:
         if self.inventories[from_id][good] < qty:
@@ -259,9 +307,3 @@ class Market:
         self.inventories[to_id][good] += qty
         return True
 
-    def transfer_tokens(self, from_id: int, to_id: int, amount: int) -> bool:
-        if amount < 0 or self.tokens.get(from_id, 0) < amount:
-            return False
-        self.tokens[from_id] -= amount
-        self.tokens[to_id] += amount
-        return True

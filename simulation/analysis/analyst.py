@@ -8,12 +8,8 @@ from datetime import datetime
 import numpy as np
 import anthropic
 
-from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, COOPERATION_THRESHOLD
-
-DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
+from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, COOPERATION_THRESHOLD, CONDITIONS, DATA_DIR
 OUT_DIR = Path(__file__).parent.parent / "data"
-
-CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
 METRICS = ["sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 
@@ -84,10 +80,17 @@ def _summarize(all_runs: dict[str, list[dict]]) -> dict:
 
 def _build_analyst_prompt(summary: dict) -> str:
     summary_text = json.dumps(summary, indent=2)
+    conditions_list = ", ".join(summary.keys())
+    n_conditions = len(summary)
     return f"""You are a research analyst reviewing the results of a multi-agent marketplace simulation.
 
-The simulation tests 8 conditions (B=baseline, R=+Reputation, C=+Contracting, M=+Mediation, RC, RM, CM, RCM).
-Each condition runs 5 independent sessions of 30 rounds with 9 LLM agents trading 3 goods.
+The simulation tests {n_conditions} conditions: {conditions_list}.
+Mechanisms: R=reputation, C=contracting, M=mediation, G=governance, N=network rewiring.
+Single-letter conditions isolate one mechanism; multi-letter conditions combine them; B=baseline (none).
+N is a standalone condition (not factorial-combined) inspired by RepuNet — agents can sever and
+request trade links each round, reshaping the trade network based on partner reliability.
+
+Each condition runs multiple independent sessions of 30 rounds with 18 LLM agents trading 3 goods.
 
 Research question: Which formal mechanism (or combination) allows self-interested agents
 to maintain marketplace cooperation in a repeated trading environment?
@@ -109,13 +112,15 @@ Simulation summary statistics:
 Write a structured findings report covering:
 
 1. **Which conditions achieved marketplace cooperation?** (marketplace_cooperation_rate and final metric values)
-2. **Which single mechanism was most effective?** Compare R, C, M individually vs baseline B.
-3. **Do mechanism combinations outperform single mechanisms?** Compare RC, RM, CM, RCM vs their components.
+2. **Which single mechanism was most effective?** Compare each isolated mechanism vs baseline B.
+3. **Do mechanism combinations outperform single mechanisms?** (Only if combination data is present.)
 4. **What is the minimum sufficient mechanism set?**
-5. **Intermediate variable analysis**: Did mechanisms work through direct defection reduction (Peace up)
+5. **How does N (network rewiring) compare?** Did structural partner selection outperform or underperform
+   institutional mechanisms (R, C, M, G)?
+6. **Intermediate variable analysis**: Did mechanisms work through direct defection reduction (Peace up)
    or through improved information propagation (whistleblowing rate changed)?
-6. **Unexpected patterns or anomalies** in the data.
-7. **Implications for the research question**.
+7. **Unexpected patterns or anomalies** in the data.
+8. **Implications for the research question**.
 
 Be specific — cite numbers from the summary. Flag where data is insufficient to draw conclusions.
 """

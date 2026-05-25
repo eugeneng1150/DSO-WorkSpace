@@ -7,6 +7,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ..config import (
+    MEDIATION_FEE, MEMORY_WINDOW, GOV_WARNING_EXPIRY,
+    GOV_CLEAN_ROUNDS_TO_DEESCALATE,
+    NET_MAX_SEVER_PER_ROUND, NET_MAX_REQUEST_PER_ROUND,
+)
+
 if TYPE_CHECKING:
     from .market import Market, Contract, TradeOffer
 
@@ -23,6 +29,8 @@ _BASELINE = _load("baseline.txt")
 _REPUTATION = _load("reputation.txt")
 _CONTRACTING = _load("contracting.txt")
 _MEDIATION = _load("mediation.txt")
+_GOVERNANCE = _load("governance.txt")
+_NETWORK_REWIRING = _load("network_rewiring.txt")
 
 
 def _extract_stage(template: str, stage_label: str) -> str:
@@ -60,7 +68,7 @@ def _fmt_inventory(market: "Market", agent_id: int) -> tuple[str, str, str]:
 
 
 def _fmt_partner_history(market: "Market", agent_id: int) -> str:
-    history = market.get_partner_history(agent_id)
+    history = market.get_partner_history(agent_id, window=MEMORY_WINDOW)
     if not history:
         return "  No trade history yet."
     lines = []
@@ -70,7 +78,7 @@ def _fmt_partner_history(market: "Market", agent_id: int) -> str:
             outcome = t.status.upper()
             lines.append(
                 f"    Round {t.round_num}: offered {t.offer_qty}×{t.offer_good} "
-                f"for {t.price} tokens — {outcome}"
+                f"for {t.want_qty}×{t.want_good} — {outcome}"
             )
     return "\n".join(lines)
 
@@ -108,21 +116,25 @@ def _fmt_pending_offers(market: "Market", agent_id: int) -> str:
         return "  (none)"
     return "\n".join(
         f"  Trade {o.trade_id}: Agent {o.proposer_id} offers "
-        f"{o.offer_qty}×Good {o.offer_good} for {o.price} tokens"
-        f"{' (seller delegated to mediator)' if o.proposer_delegated else ''}"
+        f"{o.offer_qty}×Good {o.offer_good}, wants {o.want_qty}×Good {o.want_good}"
+        f"{' (proposer delegated to mediator)' if o.proposer_delegated else ''}"
         for o in offers
     )
 
 
-def _fmt_market_prices(market: "Market") -> str:
-    prices = market.get_market_prices()
+def _fmt_exchange_rates(market: "Market") -> str:
+    rates = market.get_exchange_rates()
+    if not rates:
+        return "  No recent trades yet."
     lines = []
-    for good, info in prices.items():
-        if info["avg_price"] is not None:
-            lines.append(f"  Good {good}: avg {info['avg_price']:.1f} tokens/unit ({info['trade_count']} trades)")
-        else:
-            lines.append(f"  Good {good}: no recent trades")
-    return "\n".join(lines)
+    for key, info in rates.items():
+        offer_good, want_good = key.split("_for_")
+        if info["trade_count"] > 0:
+            lines.append(
+                f"  {offer_good}→{want_good}: avg {info['avg_ratio']:.1f}:1 "
+                f"({info['trade_count']} trades)"
+            )
+    return "\n".join(lines) if lines else "  No recent trades yet."
 
 
 def _fmt_reputation_table(market: "Market", agent_id: int) -> str:
@@ -140,10 +152,7 @@ def _fmt_reputation_table(market: "Market", agent_id: int) -> str:
 
 def _fmt_public_mentions(market: "Market", agent_id: int) -> str:
     mentions: dict[int, list[str]] = {}
-    for msg in market.public_feed + [
-        m for inbox in market.private_inboxes.values() for m in inbox
-        if m.channel == "public"
-    ]:
+    for msg in market.public_feed:
         # Heuristic: public mentions about other agents
         for aid in market.agent_ids:
             if aid != agent_id and f"Agent {aid}" in msg.text:
@@ -163,7 +172,7 @@ def _fmt_active_contracts(contracts: list["Contract"], agent_id: int) -> str:
     if not contracts:
         return "  (none)"
     def fmt_asset(qty: int, asset: str) -> str:
-        return f"{qty} tokens" if asset == "TOKENS" else f"{qty}×Good {asset}"
+        return f"{qty}×Good {asset}"
 
     lines = []
     for c in contracts:
@@ -197,6 +206,67 @@ def _fmt_mediator_designs(market: "Market") -> str:
             f"    Rationale: \"{d.rationale}\""
         )
     return "\n".join(lines)
+
+
+def _fmt_governance_notice(market: "Market", agent_id: int) -> tuple[str, str]:
+    if not market.governance_states:
+        return "", ""
+
+    state = market.governance_states.get(agent_id)
+    if state is None:
+        return "", ""
+
+    signal_names = {
+        "D1_defection_rate": "D1: High defection rate",
+        "D2_production_withdrawal": "D2: Production withdrawal",
+        "D3_trade_volume_collapse": "D3: Trade volume collapse",
+        "D4_predatory_targeting": "D4: Predatory targeting",
+    }
+    signal_list = ", ".join(signal_names.get(s, s) for s in state.triggered_signals) or "None"
+
+    if state.status == "active":
+        status_block = "  Status: CLEAR — no regulatory action. Continue trading normally."
+        guidance = "Maintain cooperative behavior to avoid regulatory scrutiny."
+    elif state.status == "warning":
+        rounds_needed = max(0, GOV_WARNING_EXPIRY - state.clean_rounds)
+        status_block = (
+            f"  Status: UNDER REVIEW — the regulator has flagged your recent activity.\n"
+            f"  Signals detected: {signal_list}\n"
+            f"  WARNING: continued flagged behavior will result in fines.\n"
+            f"  Clean rounds to clear: {rounds_needed}"
+        )
+        guidance = (
+            f"To return to CLEAR status: complete {GOV_WARNING_EXPIRY} consecutive rounds with zero defections "
+            "and maintain normal production/trade levels."
+        )
+    elif state.status == "fined":
+        from ..config import GOV_FINE_SCHEDULE
+        fine_amount = GOV_FINE_SCHEDULE.get(state.fine_tier, 0)
+        rounds_to_drop = max(0, GOV_CLEAN_ROUNDS_TO_DEESCALATE - state.clean_rounds)
+        status_block = (
+            f"  Status: PENALISED — Tier {state.fine_tier} fine active.\n"
+            f"  Utility penalty this round: -{fine_amount}\n"
+            f"  Signals detected: {signal_list}\n"
+            f"  Clean rounds toward de-escalation: {state.clean_rounds}/{GOV_CLEAN_ROUNDS_TO_DEESCALATE}\n"
+            f"  WARNING: continued violations will escalate. Tier 3 leads to suspension."
+        )
+        guidance = (
+            f"To reduce your fine tier: maintain {rounds_to_drop} more consecutive clean rounds "
+            f"(no oracle signals). Each {GOV_CLEAN_ROUNDS_TO_DEESCALATE} clean rounds drops "
+            f"your tier by 1. Reaching Tier 0 clears all fines."
+        )
+    elif state.status == "suspended":
+        status_block = (
+            f"  Status: SUSPENDED — you are removed from the market.\n"
+            f"  Rounds remaining: {state.suspension_rounds_left}\n"
+            f"  You cannot produce or trade until your suspension expires."
+        )
+        guidance = ""
+    else:
+        status_block = f"  Status: {state.status.upper()}"
+        guidance = ""
+
+    return status_block, guidance
 
 
 def _build_mechanism_block(
@@ -269,7 +339,7 @@ def _build_mechanism_block(
             raw = _extract_stage(_MEDIATION, stage)
 
             active = market.active_mediator
-            fee = str(1)  # from config; avoid circular import
+            fee = str(MEDIATION_FEE)
 
             if stage == "1":
                 raw = raw.replace("{mediation_fee}", fee)
@@ -287,19 +357,38 @@ def _build_mechanism_block(
 
             blocks.append(raw)
 
+        elif mech == "governance":
+            block = _GOVERNANCE
+            status_block, guidance = _fmt_governance_notice(market, agent_id)
+            block = block.replace("{governance_status_block}", status_block)
+            block = block.replace("{governance_guidance}", guidance)
+            blocks.append(block)
+
+        elif mech == "network_rewiring":
+            block = _NETWORK_REWIRING
+            block = block.replace("{neighbor_count}", str(len(market.network.get(agent_id, set()))))
+            block = block.replace("{net_max_sever}", str(NET_MAX_SEVER_PER_ROUND))
+            block = block.replace("{net_max_request}", str(NET_MAX_REQUEST_PER_ROUND))
+            blocks.append(block)
+
     return "\n\n".join(blocks)
 
 
-def _build_mechanism_actions(mechanisms: list[str], agent_id: int) -> str:
+def _build_mechanism_actions(mechanisms: list[str]) -> str:
     actions = []
     if "contracting" in mechanisms:
         actions.extend([
-            '  {"action": "propose_contract", "target": <neighbor_id>, "terms": {"i_deliver": {"good": "A"|"B"|"C"|"TOKENS", "quantity": int}, "they_deliver": {"good": "A"|"B"|"C"|"TOKENS", "quantity": int}, "breach_penalty": int, "execution_round": int}}',
+            '  {"action": "propose_contract", "target": <neighbor_id>, "terms": {"i_deliver": {"good": "A"|"B"|"C", "quantity": int}, "they_deliver": {"good": "A"|"B"|"C", "quantity": int}, "breach_penalty": int, "execution_round": int}}',
             '  {"action": "sign_contract", "contract_id": "..."}',
             '  {"action": "reject_contract", "contract_id": "..."}',
         ])
     if "mediation" in mechanisms:
         actions.append('  {"action": "delegate_to_mediator", "trade_id": "..."}')
+    if "network_rewiring" in mechanisms:
+        actions.extend([
+            '  {"action": "sever_link",   "target": <neighbor_id>}',
+            '  {"action": "request_link", "target": <any_agent_id>}',
+        ])
 
     if not actions:
         return ""
@@ -328,7 +417,7 @@ def build_prompt(
     inv_a, inv_b, inv_c = _fmt_inventory(market, agent_id)
 
     mechanism_block = _build_mechanism_block(mechanisms, market, agent_id, stage_overrides)
-    mechanism_actions = _build_mechanism_actions(mechanisms, agent_id)
+    mechanism_actions = _build_mechanism_actions(mechanisms)
 
     prompt = _BASE
     prompt = prompt.replace("{agent_id}", str(agent_id))
@@ -338,7 +427,6 @@ def build_prompt(
     prompt = prompt.replace("{inv_A}", inv_a)
     prompt = prompt.replace("{inv_B}", inv_b)
     prompt = prompt.replace("{inv_C}", inv_c)
-    prompt = prompt.replace("{tokens}", str(market.tokens.get(agent_id, 0)))
     prompt = prompt.replace("{last_utility}", f"{last_utility:.1f}")
     prompt = prompt.replace("{total_utility}", f"{total_utility:.1f}")
     prompt = prompt.replace("{sustainability:.2f}", f"{metrics.get('sustainability', 0):.2f}")
@@ -350,7 +438,7 @@ def build_prompt(
     prompt = prompt.replace("{private_inbox}", _fmt_inbox(market, agent_id))
     prompt = prompt.replace("{public_feed}", _fmt_public_feed(market))
     prompt = prompt.replace("{pending_offers}", _fmt_pending_offers(market, agent_id))
-    prompt = prompt.replace("{market_prices}", _fmt_market_prices(market))
+    prompt = prompt.replace("{exchange_rates}", _fmt_exchange_rates(market))
     prompt = prompt.replace("{neighbors}", _fmt_neighbors(market, agent_id, specialties or {}))
     prompt = prompt.replace("{mechanism_block}", mechanism_block)
     prompt = prompt.replace("{mechanism_actions}", mechanism_actions)

@@ -6,15 +6,13 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 
-from ..config import COOPERATION_THRESHOLD
+from ..config import COOPERATION_THRESHOLD, CONDITIONS, DATA_DIR
 
-DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
 OUT_DIR = Path(__file__).parent.parent / "data" / "plots"
 
 METRICS = ["sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
-CONDITIONS = ["B", "R", "C", "M", "RC", "RM", "CM", "RCM"]
-COLORS = dict(zip(CONDITIONS, cm.tab10(np.linspace(0, 1, len(CONDITIONS)))))
+COLORS = dict(zip(CONDITIONS, cm.tab20(np.linspace(0, 1, len(CONDITIONS)))))
 
 def _load_runs(condition: str) -> list[dict]:
     files = sorted(DATA_DIR.glob(f"{condition}_run_*.json"))
@@ -611,6 +609,102 @@ def plot_stability_rates(save: bool = True) -> None:
     _maybe_save(fig, "stability_rates.png", save)
 
 
+def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] = (10, 30)) -> None:
+    """Draw network graph snapshots for condition N at specified rounds."""
+    import networkx as nx
+
+    runs = _load_runs("N")
+    if not runs:
+        print("  [network_snapshots] No N-condition runs found, skipping.")
+        return
+
+    GOOD_COLORS = {"A": "#e74c3c", "B": "#3498db", "C": "#2ecc71"}
+
+    for run_idx, run in enumerate(runs):
+        specialties = run["session_log"]["specialties"]
+        rounds = run["rounds"]
+        n_rounds = len(rounds)
+
+        available = [r for r in snapshot_rounds if r <= n_rounds]
+        if not available:
+            continue
+
+        fig, axes = plt.subplots(1, len(available), figsize=(8 * len(available), 7))
+        if len(available) == 1:
+            axes = [axes]
+
+        # Build initial graph for a stable layout across snapshots
+        init_net = run["session_log"]["network"]
+        G_init = nx.Graph()
+        for aid in specialties:
+            G_init.add_node(int(aid))
+        for aid, neighbors in init_net.items():
+            for nb in neighbors:
+                G_init.add_edge(int(aid), nb)
+        pos = nx.spring_layout(G_init, seed=42, k=1.8 / (len(specialties) ** 0.5))
+
+        for ax, rnd in zip(axes, available):
+            rnd_data = rounds[rnd - 1]
+            net = rnd_data.get("network")
+            if net is None:
+                ax.set_visible(False)
+                continue
+
+            G = nx.Graph()
+            for aid in specialties:
+                G.add_node(int(aid))
+            for aid_str, neighbors in net.items():
+                for nb in neighbors:
+                    G.add_edge(int(aid_str), nb)
+
+            node_list = sorted(G.nodes())
+            node_colors = [GOOD_COLORS.get(specialties[str(n)], "grey") for n in node_list]
+            degrees = [G.degree(n) for n in node_list]
+            rep_scores = rnd_data.get("reputation", {})
+            node_sizes = [max(150, float(rep_scores.get(str(n), 1.0)) * 600) for n in node_list]
+
+            # Draw edges
+            nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.3, width=0.8)
+            # Draw nodes
+            nx.draw_networkx_nodes(G, pos, nodelist=node_list, ax=ax,
+                                   node_color=node_colors, node_size=node_sizes,
+                                   edgecolors="black", linewidths=0.5, alpha=0.9)
+            # Labels
+            nx.draw_networkx_labels(G, pos, ax=ax, font_size=7, font_weight="bold")
+
+            # Highlight isolated nodes
+            isolated = [n for n in node_list if G.degree(n) == 0]
+            if isolated:
+                nx.draw_networkx_nodes(G, pos, nodelist=isolated, ax=ax,
+                                       node_color="white", node_size=300,
+                                       edgecolors="red", linewidths=2.0)
+
+            events = rnd_data.get("network_events_this_round", [])
+            severs = sum(1 for e in events if e["type"] == "sever" and e["outcome"] == "applied")
+            requests = sum(1 for e in events if e["type"] == "request" and e["outcome"] == "applied")
+            avg_degree = np.mean(degrees) if degrees else 0
+
+            ax.set_title(
+                f"Round {rnd}\n"
+                f"Avg degree: {avg_degree:.1f} | Isolated: {len(isolated)} | "
+                f"Severs: {severs} | New links: {requests}",
+                fontsize=10, fontweight="bold",
+            )
+            ax.axis("off")
+
+        # Legend
+        for good, color in GOOD_COLORS.items():
+            axes[0].scatter([], [], c=color, s=80, label=f"Good {good}", edgecolors="black", linewidths=0.5)
+        axes[0].scatter([], [], c="white", s=80, label="Isolated", edgecolors="red", linewidths=2.0)
+        axes[0].scatter([], [], c="grey", s=200, label="Rep = 0.3 (small)", edgecolors="black", linewidths=0.5)
+        axes[0].scatter([], [], c="grey", s=500, label="Rep = 0.8 (large)", edgecolors="black", linewidths=0.5)
+        axes[0].legend(loc="upper left", fontsize=8, framealpha=0.8, title="Node size = reputation")
+
+        fig.suptitle(f"Condition N — Network Topology (Run {run_idx})", fontsize=13, fontweight="bold")
+        plt.tight_layout()
+        _maybe_save(fig, f"network_snapshot_run{run_idx:02d}.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
@@ -626,6 +720,7 @@ def plot_all(save: bool = True) -> None:
     plot_utility_distribution(save)
     plot_signal_timelines(save)
     plot_lead_lag_heatmap(save)
+    plot_network_snapshots(save)
     print(f"Plots saved to {OUT_DIR}")
 
 

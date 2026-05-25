@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..engine.market import Market
 
-from ..config import COOPERATION_THRESHOLD
-
 
 def compute_metrics(market: "Market", round_utilities: dict[int, float]) -> dict[str, float]:
     """
@@ -24,10 +22,9 @@ def compute_metrics(market: "Market", round_utilities: dict[int, float]) -> dict
     else:
         sustainability = min(1.0, avg_current / market._production_baseline)
 
-    # Peace: 1 - defection rate among attempted trades this round
-    round_trades = [t for t in market.trade_history if t.round_num == market.round_num]
-    attempted = len(round_trades)
-    defected = sum(1 for t in round_trades if t.status == "defected")
+    # Peace: 1 - defection rate among all attempted trades so far (cumulative)
+    attempted = len(market.trade_history)
+    defected = sum(1 for t in market.trade_history if t.status == "defected")
     peace = 1.0 - (defected / attempted) if attempted > 0 else 1.0
 
     # Intermediate variables
@@ -60,9 +57,3 @@ def compute_metrics(market: "Market", round_utilities: dict[int, float]) -> dict
     }
 
 
-def achieves_marketplace_cooperation(
-    metrics: dict[str, float],
-    threshold: float = COOPERATION_THRESHOLD,
-) -> bool:
-    core = ["sustainability", "peace"]
-    return all(metrics.get(k, 0) > threshold for k in core)

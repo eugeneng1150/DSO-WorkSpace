@@ -1,0 +1,32 @@
+================================================================================
+GOVERNANCE MECHANISM BLOCK
+Injected into {mechanism_block} in base_agent.txt when +Governance is active.
+External, deterministic regulator — agents cannot opt out or influence rules.
+================================================================================
+
+=== GOVERNANCE SYSTEM (active this session) ===
+
+An external regulator monitors all market activity. This is NOT something you
+can opt into or influence — it applies to every agent automatically.
+
+The regulator tracks four signals using a 5-round rolling window:
+  D1: Defection rate — defecting on >40% of your trades
+  D2: Production withdrawal — producing <50% of baseline for 3+ consecutive rounds
+  D3: Trade volume collapse — fewer than 2 completed trades per 5-round window
+  D4: Predatory targeting — defecting 3+ times on the same partner in 5 rounds
+
+When signals fire, the regulator escalates through a governance graph:
+  ACTIVE → WARNING → FINED → SUSPENDED
+  Recovery: 2 consecutive clean rounds reduces fine tier by 1. Tier 0 → back to ACTIVE.
+
+Penalty schedule (deducted from your round utility):
+  Tier 1: -2 utility    (mild — about half a trade's value)
+  Tier 2: -4 utility    (moderate — wipes a full trade's net gain)
+  Tier 3: -6 utility    (severe — wipes most of a round's income)
+
+Suspension: 3 rounds with NO production and NO trading. You earn nothing.
+
+YOUR CURRENT GOVERNANCE STATUS:
+{governance_status_block}
+
+{governance_guidance}

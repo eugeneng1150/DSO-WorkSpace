@@ -1,7 +1,6 @@
 """Orchestrates multiple runs per condition and saves JSON logs."""
 from __future__ import annotations
 import json
-import os
 from pathlib import Path
 from datetime import datetime
 from tqdm import tqdm
@@ -15,11 +14,15 @@ def _make_mechanisms(mechanism_names: list[str]):
     from ..mechanisms.reputation import ReputationMechanism
     from ..mechanisms.contracting import ContractingMechanism
     from ..mechanisms.mediation import MediationMechanism
+    from ..mechanisms.governance import GovernanceMechanism
+    from ..mechanisms.network_rewiring import NetworkRewiringMechanism
 
     lookup = {
         "reputation": ReputationMechanism,
         "contracting": ContractingMechanism,
         "mediation": MediationMechanism,
+        "governance": GovernanceMechanism,
+        "network_rewiring": NetworkRewiringMechanism,
     }
     return [lookup[name]() for name in mechanism_names]
 

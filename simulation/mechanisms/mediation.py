@@ -92,11 +92,6 @@ class MediationMechanism(Mechanism):
                 d for d in market.mediator_designs if d.designer_id == winner_id
             )
 
-    def on_trade_phase(self, market: "Market", agents: list["_BaseAgent"]) -> None:
-        """Execute mediated trades where both parties delegated."""
-        # Mediated trade execution is handled in game.py when processing accept/delegate actions.
-        pass
-
     def get_stage_override(self, agent: "_BaseAgent", market: "Market") -> dict[str, str]:
         # After session start, always stage 3 (delegation decision per round)
         return {"mediation": "3"}

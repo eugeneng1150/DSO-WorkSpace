@@ -1,6 +1,5 @@
 """Contracting mechanism: proposal → sign/reject → enforcement on breach."""
 from __future__ import annotations
-import asyncio
 from .base import Mechanism
 from typing import TYPE_CHECKING
 
@@ -11,11 +10,6 @@ if TYPE_CHECKING:
 
 class ContractingMechanism(Mechanism):
     name = "contracting"
-
-    def on_communication_phase(self, market: "Market", agents: list["_BaseAgent"]) -> None:
-        # Proposal and signing are handled by the engine parsing agent action outputs.
-        # This hook is a no-op; the engine calls agents with stage=1 then stage=2 prompts.
-        pass
 
     def on_round_end(self, market: "Market", round_num: int) -> None:
         """Enforce all contracts due this round: detect breaches, transfer penalties."""
@@ -46,21 +40,17 @@ class ContractingMechanism(Mechanism):
                 contract.status = "breached"
             else:
                 # Both can deliver — execute the exchange
-                market.transfer_asset(
+                market.transfer_goods(
                     contract.proposer_id, contract.counterparty_id,
                     contract.proposer_delivers_good, contract.proposer_delivers_qty
                 )
-                market.transfer_asset(
+                market.transfer_goods(
                     contract.counterparty_id, contract.proposer_id,
                     contract.counterparty_delivers_good, contract.counterparty_delivers_qty
                 )
                 contract.status = "executed"
 
     def _apply_breach(self, market: "Market", breacher_id: int, victim_id: int, penalty: int) -> None:
-        # Penalty deducted from breacher's next-round utility (tracked as a debt)
-        # Simple implementation: add to a penalty ledger on the market
-        if not hasattr(market, "_penalty_ledger"):
-            market._penalty_ledger = {}
         market._penalty_ledger[breacher_id] = (
             market._penalty_ledger.get(breacher_id, 0) + penalty
         )

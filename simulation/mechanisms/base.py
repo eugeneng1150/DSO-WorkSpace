@@ -17,12 +17,6 @@ class Mechanism(ABC):
     def on_round_start(self, market: "Market", round_num: int) -> None:
         """Called at the start of each round before any agent actions."""
 
-    def on_communication_phase(self, market: "Market", agents: list["_BaseAgent"]) -> None:
-        """Called during communication phase. Used by Contracting for proposal stage."""
-
-    def on_trade_phase(self, market: "Market", agents: list["_BaseAgent"]) -> None:
-        """Called during trade phase for mechanism-specific enforcement."""
-
     def on_round_end(self, market: "Market", round_num: int) -> None:
         """Called after consumption. Used for contract enforcement, reputation updates."""
 

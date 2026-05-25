@@ -38,7 +38,7 @@ A Marketplace Simulation Study}}
 \maketitle
 
 \begin{abstract}
-Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms — layered on top of unrestricted communication — are sufficient for a society of such agents to maintain market stability. We instantiate the research question as a multi-agent marketplace simulation where 18 LLM agents with complementary production specialties must trade within a constrained social network to obtain utility. Agents operate in a token economy where production, trade, and survival depend on managing finite resources. Cooperation yields a positive-sum surplus; without mechanisms, rational anticipation of defection suppresses trade and drives the society toward autarky. We test three formal mechanisms — Reputation, Contracting, and Mediation — individually and in combination across a $2^3$ factorial design of eight experimental conditions, measuring market stability through two social metrics: Sustainability and Peace. Our results reveal a striking negative finding: no condition achieves market stability, and all mechanisms increase total defections relative to the communication-only baseline. Peace is universally the binding constraint; Reputation improves Sustainability but worsens Peace; Contracting and Mediation are completely unused by agents despite being available. We trace the failure to a homogeneous reasoning framework in which every agent independently concludes defection is the dominant strategy in round one, producing a universal defection equilibrium that formal mechanisms cannot overcome. The Sustainability-Peace tradeoff that emerges --- mechanisms sustaining production while defection proliferates --- represents a novel form of institutional failure in LLM agent societies.
+Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms — layered on top of unrestricted communication — are sufficient for a society of such agents to maintain market stability. We instantiate the research question as a multi-agent marketplace simulation where 18 LLM agents with complementary production specialties must trade within a constrained social network to obtain utility. Agents operate in a barter economy where production, trade, and survival depend on managing perishable goods. Cooperation yields a positive-sum surplus; without mechanisms, rational anticipation of defection suppresses trade and drives the society toward autarky. We test three formal mechanisms — Reputation, Contracting, and Mediation — individually and in combination across a $2^3$ factorial design of eight experimental conditions, measuring market stability through two social metrics: Sustainability and Peace. Our results reveal a striking negative finding: no condition achieves market stability, and all mechanisms increase total defections relative to the communication-only baseline. Peace is universally the binding constraint; Reputation improves Sustainability but worsens Peace; Contracting and Mediation are completely unused by agents despite being available. We trace the failure to a homogeneous reasoning framework in which every agent independently concludes defection is the dominant strategy in round one, producing a universal defection equilibrium that formal mechanisms cannot overcome. The Sustainability-Peace tradeoff that emerges --- mechanisms sustaining production while defection proliferates --- represents a novel form of institutional failure in LLM agent societies.
 \end{abstract}
 
 \tableofcontents
@@ -74,7 +74,7 @@ We instantiate this question as a \textbf{marketplace society}: a multi-agent en
 This paper makes the following contributions:
 
 \begin{enumerate}
-  \item A concrete simulation environment implementing a marketplace social dilemma with comparative advantage, a token economy, a constrained social network, and a natural defection surface.
+  \item A concrete simulation environment implementing a marketplace social dilemma with comparative advantage, a barter economy, a constrained social network, and a natural defection surface.
   \item A layered mechanism testing framework that benchmarks Reputation, Contracting, and Mediation — individually and in all $2^3$ combinations — against a communication-only baseline.
   \item A measurement framework combining two social metrics (Sustainability, Peace) with intermediate behavioral variables to decompose mechanism effects.
   \item A negative empirical result: no mechanism achieves market stability; formal mechanisms paradoxically increase defection relative to the communication-only baseline.
@@ -94,7 +94,7 @@ The study of cooperation in multi-agent systems draws from game theory, evolutio
 
 \citet{gallego2024} study LLM policies in social dilemmas under dense versus sparse feedback. They find that providing agents with four social-metric signals — rather than a scalar reward alone — produces significantly more cooperative behavior, and identify five reward-hacking attack classes by which agents exploit metric definitions without improving actual social welfare.
 
-\citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding: all modern LLMs defect without mechanisms; Contracting and Mediation achieve near-perfect cooperation; Reputation has moderate standalone effectiveness but is important as a complement. Our work differs in game environment: CoopEval uses abstract matrix games with binary action choices, while we use a complex multi-good marketplace with a token economy, network constraints, and perishable goods. This environmental complexity proves to be the key differentiator.
+\citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding: all modern LLMs defect without mechanisms; Contracting and Mediation achieve near-perfect cooperation; Reputation has moderate standalone effectiveness but is important as a complement. Our work differs in game environment: CoopEval uses abstract matrix games with binary action choices, while we use a complex multi-good marketplace with a barter economy, network constraints, and perishable goods. This environmental complexity proves to be the key differentiator.
 
 \subsection{Large-Scale Agent Societies}
 
@@ -114,24 +114,24 @@ The study of cooperation in multi-agent systems draws from game theory, evolutio
 The marketplace contains $K = 3$ distinct goods: $A$, $B$, and $C$. Each agent holds one \textit{production specialty}: they can produce their specialty good at low cost but cannot produce others.
 
 \begin{itemize}
-  \item \textbf{Production cost}: 1 token per unit produced (specialty only).
-  \item \textbf{Consumption utility}: $+3$ utility units per unit of a \textit{needed} good consumed.
+  \item \textbf{Production cost}: 1 utility per unit produced (specialty only).
+  \item \textbf{Consumption utility}: $+3$ utility per unit of a \textit{needed} good consumed.
   \item \textbf{Needed goods}: all goods except an agent's specialty.
 \end{itemize}
 
-This creates structural \textit{comparative advantage}: every agent gains more from trading than from autarky. An agent who successfully trades for both needed goods earns:
+This creates structural \textit{comparative advantage}: every agent gains more from trading than from autarky. An agent who produces 2 units, trades each for one unit of a needed good, and consumes both earns:
 
 \[
-\text{Net utility per round} = \underbrace{3 + 3}_{\text{consume 2 needed goods}} - \underbrace{1}_{\text{production cost}} = +5
+\text{Net utility per round} = \underbrace{3 + 3}_{\text{consume 1 unit of each needed good}} - \underbrace{2 \times 1}_{\text{production cost}} = +4
 \]
 
 With no trading, an agent produces goods it cannot consume:
 
 \[
-\text{Net utility per round} = 0
+\text{Net utility per round} = -c \leq 0
 \]
 
-The cooperative surplus is not a payoff manipulation — it arises directly from the production and consumption structure. With 6 agents per good, agents face competition: multiple producers of the same good must compete for trade partners, creating market dynamics absent in smaller populations.
+where $c$ is the production cost incurred with no consumption benefit. The cooperative surplus is not a payoff manipulation — it arises directly from the production and consumption structure. With 6 agents per good, agents face competition: multiple producers of the same good must compete for trade partners, creating market dynamics absent in smaller populations.
 
 \subsection{Agent Population}
 
@@ -139,17 +139,17 @@ The simulation runs with $N = 18$ agents (6 per good). Agents are \textit{homoge
 
 Homogeneity is a deliberate design choice: it isolates the formal mechanism as the sole independent variable, so behavioural differences across conditions can be attributed to the mechanism rather than agent heterogeneity.
 
-\subsection{Token Economy}
+\subsection{Barter Economy}
 
-Agents operate in a token economy. Each agent begins with 20 tokens, which serve as the universal medium of exchange:
+Agents operate in a pure barter economy with no currency. All exchange is goods-for-goods:
 
 \begin{itemize}
-  \item \textbf{Production cost}: producing one unit of a specialty good costs 1 token.
-  \item \textbf{Trade payments}: when a trade completes, the buyer transfers tokens to the seller at the agreed price. The suggested fair price is 2 tokens per unit.
-  \item \textbf{Per-round income}: each agent receives 3 tokens at the start of every round to prevent deflationary collapse.
+  \item \textbf{Production cost}: producing one unit of a specialty good costs 1 utility, deducted at the end of each round.
+  \item \textbf{Trade}: a proposer offers units of their specialty good and requests units of a needed good in return. When a trade completes, both parties deliver simultaneously.
+  \item \textbf{Defection}: one party takes the offered goods without delivering their side of the barter, gaining goods at no cost.
 \end{itemize}
 
-The token economy creates a monetary layer on top of goods exchange. Defection (taking goods without paying) directly transfers wealth from seller to buyer, making repeated defection a strategy of wealth accumulation as well as goods acquisition. This makes the economic consequences of defection visible and measurable beyond the social metric of Peace.
+The barter design isolates the cooperation dilemma: the only decisions that matter are what to produce, whom to trade with, and whether to honour or defect on each trade. Defection directly transfers goods from the victim to the defector, making it a strategy of resource accumulation. This keeps the economic consequences of defection visible and measurable through the Peace metric.
 
 \subsection{Inventory Spoilage}
 
@@ -161,9 +161,9 @@ I_{a,g}^{t} \leftarrow \lfloor I_{a,g}^{t-1} \times (1 - \psi) \rfloor, \quad \p
 
 Spoilage creates temporal urgency: agents cannot hoard goods across rounds without loss, so they are pressured to produce and sell within the same round. This increases trade volume and expands the defection surface — more trades means more opportunities for exploitation — giving formal mechanisms a harder baseline to improve upon. The design is motivated by \citet{chen2018perishable}, who show that perishability fundamentally alters agent pricing strategies in competitive multi-agent markets.
 
-\subsection{Price Transparency}
+\subsection{Exchange Rate Transparency}
 
-All agents observe a market price signal: the average trade price per good over the last 5 rounds, computed from completed (non-defected) trades only. This information is available in all conditions including the baseline, providing a common reference point for pricing decisions and allowing agents to identify unfair offers.
+All agents observe recent exchange rates: the average barter ratio per good pair over the last 5 rounds, computed from completed (non-defected) trades only. For example, agents can see that Good~A has recently traded at a 1:1 ratio for Good~B across $n$ trades. This information is available in all conditions including the baseline, providing a common reference point for negotiation and allowing agents to identify unfair offers.
 
 \subsection{Social Network}
 
@@ -182,16 +182,16 @@ The network is \textbf{randomised per run} but \textbf{static within a run}. Onl
 Each simulation run consists of $T = 30$ rounds. Each round proceeds through five phases:
 
 \begin{enumerate}
-  \item \textbf{Income and spoilage phase} — each agent receives 3 tokens of per-round income. All held inventory decays by 20\% (from round 2 onward).
-  \item \textbf{Production phase} — each agent decides how many units to produce (0--5 units).
-  \item \textbf{Communication phase} — agents send private messages (to neighbours only) and public broadcasts (to all); agents propose trades and contracts to neighbours.
-  \item \textbf{Trade phase} — agents accept, reject, or defect on incoming offers. Defection transfers goods without token payment.
-  \item \textbf{Consumption phase} — agents consume held goods and receive utility. Reputation scores, contracts, and social metrics are updated.
+  \item \textbf{Spoilage phase} — all held inventory decays by 20\% (from round 2 onward).
+  \item \textbf{Production phase} — each agent decides how many units to produce (0--5 units). Production cost (1 utility per unit) is deducted at end-of-round.
+  \item \textbf{Communication phase} — agents send private messages (to neighbours only) and public broadcasts (to all); agents propose barter trades and contracts to neighbours.
+  \item \textbf{Trade phase} — agents accept, reject, or defect on incoming offers. Defection takes the offered goods without delivering the requested goods in return.
+  \item \textbf{Consumption phase} — agents consume held goods and receive utility. Production costs are deducted. Reputation scores, contracts, and social metrics are updated.
 \end{enumerate}
 
 \subsection{Defection Surface}
 
-Strategic defection in our environment takes the form of \texttt{defect\_trade}: the buyer accepts incoming goods but pays zero tokens. This is the primary strategic defection action and the one our mechanisms are designed to deter. Structural defection (proposer cannot deliver) is also possible but is not the target of the formal mechanisms.
+Strategic defection in our environment takes the form of \texttt{defect\_trade}: the target takes the proposer's offered goods without delivering the requested goods in return. This is the primary strategic defection action and the one our mechanisms are designed to deter. Structural defection (a party cannot deliver the promised goods) is also possible but is not the target of the formal mechanisms.
 
 % ============================================================
 \section{Communication Protocol}
@@ -303,7 +303,7 @@ Action & Channel & Availability \\
 \texttt{produce(good, quantity)} & — & Always \\
 \texttt{send\_private(target, text)} & Private & Always \\
 \texttt{send\_public(text)} & Public & Always \\
-\texttt{propose\_sale(target, offer, price)} & Private & Always \\
+\texttt{propose\_trade(target, offer, want)} & Private & Always \\
 \texttt{accept\_trade(id)} / \texttt{reject\_trade(id)} & — & Always \\
 \texttt{defect\_trade(id)} & — & Always \\
 \texttt{propose\_contract(target, terms)} & Private & +C only \\
@@ -315,7 +315,7 @@ Action & Channel & Availability \\
 
 \subsection{Trade Decision Guide}
 
-To elicit strategic defection, every agent's prompt includes an explicit payoff decision guide showing that \texttt{defect\_trade} saves tokens compared to \texttt{accept\_trade}, with the only cost being potential future refusal. This ensures that the absence of strategic defection in baseline is not an artifact of the model's default cooperative bias but reflects genuine cooperation. A round countdown is displayed to agents to enable end-game reasoning.
+To elicit strategic defection, every agent's prompt includes an explicit payoff decision guide showing that \texttt{defect\_trade} gains goods without delivering anything in return, with the only cost being potential future refusal by that partner. This ensures that the absence of strategic defection in baseline is not an artifact of the model's default cooperative bias but reflects genuine cooperation. A round countdown is displayed to agents to enable end-game reasoning.
 
 % ============================================================
 \section{Measurement}
@@ -608,11 +608,11 @@ Agent reasoning traces (chain-of-thought outputs per agent per round) provide in
 The most striking finding from reasoning traces is the \textbf{homogeneity of defection reasoning}. Across all conditions, every agent's round-1 reasoning trace contains a near-identical calculation:
 
 \begin{quote}
-\textit{``The trade decision guide says defecting is strictly better than accepting because it saves tokens, with only a risk of future refusal.''} — Agent 0, Condition C, Round 1
+\textit{``The trade decision guide says defecting is strictly better than accepting because I gain goods without giving anything, with only a risk of future refusal.''} — Agent 0, Condition C, Round 1
 \end{quote}
 
 \begin{quote}
-\textit{``defect\_trade is strictly better for me in the moment (I get the goods without paying), with only the risk that the counterparty may refuse future trades. With 29 rounds remaining, I can afford to be opportunistic early.''} — Agent 1, Condition M, Round 1
+\textit{``defect\_trade is strictly better for me in the moment (I get the goods without delivering anything), with only the risk that the counterparty may refuse future trades. With 29 rounds remaining, I can afford to be opportunistic early.''} — Agent 1, Condition M, Round 1
 \end{quote}
 
 All 18 agents independently arrive at the same conclusion using near-identical language before any trades occur. This homogeneous reasoning eliminates the strategic diversity that might allow cooperative agents to find each other and form stable relationships. When every agent reasons identically, the aggregate result is a collective action failure.
@@ -642,7 +642,7 @@ A recurring pattern across conditions is the inability of victimised agents to p
 Reasoning traces explain this paradox:
 
 \begin{quote}
-\textit{``Last round you defected on B-for-tokens. If you're willing to do a fair exchange, I can offer B for A this round.''} — Agent 9, Condition R, Round 29
+\textit{``Last round you defected on our B-for-A trade. If you're willing to do a fair exchange, I can offer B for A this round.''} — Agent 9, Condition R, Round 29
 \end{quote}
 
 The agent acknowledges the past defection but still offers to trade. Agents cannot effectively exclude defectors because they \textit{need} the goods those defectors produce. With only 3--4 accessible producers of each good in their neighbourhood, no agent has sufficient redundancy to enforce meaningful exclusion. Structural dependency overrides punishment.
@@ -673,7 +673,7 @@ By the time reputation data accumulates in mid-game, defection norms are already
 Our results diverge from \citet{coopeval}, who find that Contracting and Mediation achieve near-perfect cooperation in matrix games. We identify three compounding reasons for this divergence:
 
 \paragraph{1. Environmental complexity dilutes mechanism effects.}
-CoopEval agents face a single binary decision (cooperate or defect). Our agents simultaneously manage production quantities, token budgets, spoilage, network negotiation, multiple pending offers, and mechanism-specific actions. The cognitive load of the marketplace environment crowds out mechanism reasoning. Agents whose attention is consumed by inventory management and token optimisation never engage with available enforcement tools.
+CoopEval agents face a single binary decision (cooperate or defect). Our agents simultaneously manage production quantities, inventory spoilage, network negotiation, multiple pending barter offers, and mechanism-specific actions. The cognitive load of the marketplace environment crowds out mechanism reasoning. Agents whose attention is consumed by inventory management and trade optimisation never engage with available enforcement tools.
 
 \paragraph{2. Mechanism designs are not self-enforcing in a marketplace.}
 CoopEval's Contracting changes the payoff matrix itself — defection becomes less rational because the contract adjusts points automatically before any action is evaluated. Our contracting fires \textit{after} defection, as a penalty. Agents who plan to defect can rationally accept the penalty when the payoff from defection (free goods) exceeds it. Similarly, CoopEval's Mediation adds a new action option that makes defection structurally impossible for delegating players; ours requires bilateral coordination on each individual trade, creating a coordination problem inside the mechanism.

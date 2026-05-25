@@ -15,21 +15,28 @@ from pathlib import Path
 import numpy as np
 import anthropic
 
-from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, CONDITIONS
-
-DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
+from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, CONDITIONS, DATA_DIR
 SIGNALS_DIR = Path(__file__).parent.parent / "data" / "signals"
 OUT_DIR = Path(__file__).parent.parent / "data"
 
 _MECHANISM_LABELS = {
-    "B":   "no mechanisms (baseline)",
-    "R":   "reputation system",
-    "C":   "contracting",
-    "M":   "mediation",
-    "RC":  "reputation + contracting",
-    "RM":  "reputation + mediation",
-    "CM":  "contracting + mediation",
-    "RCM": "reputation + contracting + mediation",
+    "B":    "no mechanisms (baseline)",
+    "R":    "reputation system",
+    "C":    "contracting",
+    "M":    "mediation",
+    "G":    "governance",
+    "RC":   "reputation + contracting",
+    "RM":   "reputation + mediation",
+    "RG":   "reputation + governance",
+    "CM":   "contracting + mediation",
+    "CG":   "contracting + governance",
+    "MG":   "mediation + governance",
+    "RCM":  "reputation + contracting + mediation",
+    "RCG":  "reputation + contracting + governance",
+    "RMG":  "reputation + mediation + governance",
+    "CMG":  "contracting + mediation + governance",
+    "RCMG": "reputation + contracting + mediation + governance",
+    "N":    "network rewiring (RepuNet-inspired)",
 }
 
 SIGNAL_CATEGORIES = {
@@ -131,7 +138,7 @@ def _format_round_for_extraction(
             lines.append(
                 f"Trade: Agent {t['proposer']}→Agent {t['target']} "
                 f"({t['offer']['qty']}×{t['offer']['good']} for "
-                f"{t['request']['qty']}×{t['request']['good']}) — {t['status'].upper()}"
+                f"{t['want']['qty']}×{t['want']['good']}) — {t['status'].upper()}"
             )
     else:
         lines.append("Trades: none")
@@ -141,7 +148,8 @@ def _format_round_for_extraction(
         lines.append(f"[PUBLIC Agent {m['sender']}]: \"{m['text'][:250]}\"")
 
     for m in round_data.get("private_messages", []):
-        target_str = f"→Agent {m['target']}" if "target" in m else ""
+        recipient = m.get("recipient", m.get("target"))
+        target_str = f"→Agent {recipient}" if recipient is not None else ""
         lines.append(f"[PRIVATE Agent {m['sender']}{target_str}]: \"{m['text'][:250]}\"")
 
     for t in traces_for_round:
@@ -408,7 +416,7 @@ def _extract_round_context(rounds_data: list[dict], priority_rounds: set[int]) -
                 lines.append(
                     f"  Trade: Agent {t['proposer']}→Agent {t['target']} "
                     f"({t['offer']['qty']}×{t['offer']['good']} for "
-                    f"{t['price']} tokens) — {t['status'].upper()}"
+                    f"{t['want']['qty']}×{t['want']['good']}) — {t['status'].upper()}"
                     + (f" [defected by Agent {t['defected_by']}]" if t.get('defected_by') is not None else "")
                 )
         else:
@@ -417,7 +425,8 @@ def _extract_round_context(rounds_data: list[dict], priority_rounds: set[int]) -
         for m in rnd.get("public_messages", []):
             lines.append(f"  [PUBLIC Agent {m['sender']}]: \"{m['text'][:200]}\"")
         for m in rnd.get("private_messages", []):
-            target_str = f"→Agent {m['target']}" if "target" in m else ""
+            recipient = m.get("recipient", m.get("target"))
+            target_str = f"→Agent {recipient}" if recipient is not None else ""
             lines.append(f"  [PRIVATE Agent {m['sender']}{target_str}]: \"{m['text'][:200]}\"")
     return "\n".join(lines)
 
@@ -470,7 +479,7 @@ def _build_report_prompt(
 
     return f"""You are analyzing agent behavior and communication from a multi-agent marketplace simulation.
 
-Setup: 9 LLM agents trade 3 goods (A, B, C) over 30 rounds. Each agent specializes in \
+Setup: 18 LLM agents trade 3 goods (A, B, C) over 30 rounds. Each agent specializes in \
 producing one good and needs the other two. Agents can cooperate (fair trade) or defect \
 (take goods without reciprocating). Production costs 1 utility per unit; consuming a needed good gives +3 utility.
 
@@ -498,7 +507,7 @@ Do they track history or treat each trade independently?
 4. **Defection triggers**: What reasoning patterns appear before defection decisions? \
 What causes an agent to switch from cooperation to defection?
 5. **Norm formation**: Any evidence of implicit coordination or shared expectations emerging? \
-Do agents converge on conventions (e.g., fair prices, trade partners, retaliation norms)?
+Do agents converge on conventions (e.g., fair exchange rates, trade partners, retaliation norms)?
 6. **Reasoning depth**: Are agents reasoning coherently about their situation, \
 or showing shallow/repetitive thinking?
 
