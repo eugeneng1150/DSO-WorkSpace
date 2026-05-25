@@ -613,6 +613,10 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
     """Draw network graph snapshots for conditions with network rewiring."""
     import networkx as nx
     import math
+    from matplotlib.lines import Line2D
+    from matplotlib.colors import LinearSegmentedColormap
+
+    rep_cmap = LinearSegmentedColormap.from_list("rep", ["#d32f2f", "#ff9800", "#2196f3", "#1565c0"])
 
     network_conditions = [c for c in CONDITIONS if "network_rewiring" in CONDITION_MECHANISMS.get(c, [])]
     all_runs: list[tuple[str, int, dict]] = []
@@ -633,11 +637,10 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
         if not available:
             continue
 
-        fig, axes = plt.subplots(1, len(available), figsize=(9 * len(available), 9))
+        fig, axes = plt.subplots(1, len(available), figsize=(10 * len(available), 10))
         if len(available) == 1:
             axes = [axes]
 
-        # Manual circular positions — evenly spaced on a unit circle
         n = len(valid_ids)
         pos = {}
         for i, aid in enumerate(valid_ids):
@@ -659,73 +662,75 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
                         G.add_edge(int(aid_str), nb)
 
             node_list = sorted(G.nodes())
-            degrees = [G.degree(n_) for n_ in node_list]
+            degrees = {n_: G.degree(n_) for n_ in node_list}
 
             rep_scores = rnd_data.get("reputation", {})
-            rep_vals = [float(rep_scores.get(str(n_), 0.5)) for n_ in node_list]
-            node_sizes = [max(250, r * 1200) for r in rep_vals]
-            node_colors = [plt.cm.Blues(0.3 + 0.7 * r) for r in rep_vals]
+            rep_vals = {n_: float(rep_scores.get(str(n_), 0.5)) for n_ in node_list}
 
-            isolated = [n_ for n_ in node_list if G.degree(n_) == 0]
+            # Split agents into high/low rep (median split)
+            median_rep = float(np.median(list(rep_vals.values())))
+            high_rep = [n_ for n_ in node_list if rep_vals[n_] >= median_rep]
+            low_rep = [n_ for n_ in node_list if rep_vals[n_] < median_rep]
+            high_deg = np.mean([degrees[n_] for n_ in high_rep]) if high_rep else 0
+            low_deg = np.mean([degrees[n_] for n_ in low_rep]) if low_rep else 0
+            isolated = [n_ for n_ in node_list if degrees[n_] == 0]
 
-            # Draw edges manually to avoid networkx/ax mismatch
+            # Draw edges
             for u, v in G.edges():
                 x = [pos[u][0], pos[v][0]]
                 y = [pos[u][1], pos[v][1]]
-                ax.plot(x, y, color="#888888", linewidth=1.0, alpha=0.4, zorder=1)
+                ax.plot(x, y, color="#aaaaaa", linewidth=0.8, alpha=0.5, zorder=1)
 
-            # Draw nodes manually
+            # Draw nodes: red (low rep) → blue (high rep), size = rep
             for n_ in node_list:
-                idx = node_list.index(n_)
+                r = rep_vals[n_]
                 x, y = pos[n_]
-                circle = plt.Circle((x, y), 0.06 + rep_vals[idx] * 0.04,
-                                    color=node_colors[idx], ec="black", lw=1.0,
-                                    alpha=0.9, zorder=2)
+                radius = 0.05 + r * 0.05
+                color = rep_cmap(r)
+                circle = plt.Circle((x, y), radius, color=color,
+                                    ec="black", lw=1.2, alpha=0.9, zorder=2)
                 ax.add_patch(circle)
                 ax.text(x, y, str(n_), ha="center", va="center",
                         fontsize=7, fontweight="bold", color="white", zorder=3)
 
+            # Highlight isolated with red ring
             for n_ in isolated:
                 x, y = pos[n_]
-                circle = plt.Circle((x, y), 0.07, color="white", ec="red",
-                                    lw=2.5, zorder=4)
-                ax.add_patch(circle)
-                ax.text(x, y, str(n_), ha="center", va="center",
-                        fontsize=7, fontweight="bold", color="red", zorder=5)
+                ring = plt.Circle((x, y), 0.08, fill=False, ec="red",
+                                  lw=3.0, zorder=4)
+                ax.add_patch(ring)
 
             events = rnd_data.get("network_events_this_round", [])
             severs = sum(1 for e in events if e["type"] == "sever" and e["outcome"] == "applied")
             requests = sum(1 for e in events if e["type"] == "request" and e["outcome"] == "applied")
-            avg_degree = np.mean(degrees) if degrees else 0
 
             ax.set_xlim(-1.5, 1.5)
             ax.set_ylim(-1.5, 1.5)
             ax.set_aspect("equal")
             ax.set_title(
                 f"Round {rnd}\n"
-                f"Avg degree: {avg_degree:.1f}  |  Isolated: {len(isolated)}  |  "
-                f"Severs: {severs}  |  New links: {requests}",
-                fontsize=11, fontweight="bold",
+                f"High rep (≥{median_rep:.2f}): {len(high_rep)} agents, avg {high_deg:.1f} links\n"
+                f"Low rep (<{median_rep:.2f}): {len(low_rep)} agents, avg {low_deg:.1f} links\n"
+                f"Isolated: {len(isolated)}  |  Severs: {severs}  |  New links: {requests}",
+                fontsize=10, fontweight="bold",
             )
             ax.axis("off")
 
         # Legend
-        from matplotlib.patches import Circle as MplCircle
-        from matplotlib.lines import Line2D
         legend_items = [
-            Line2D([0], [0], color="#888888", lw=1.0, alpha=0.4, label="Trade link"),
-            Line2D([0], [0], marker="o", color="w", markerfacecolor="#4a90d9",
-                   markersize=8, label="Low rep (small)"),
-            Line2D([0], [0], marker="o", color="w", markerfacecolor="#1a5698",
-                   markersize=14, label="High rep (large)"),
-            Line2D([0], [0], marker="o", color="w", markerfacecolor="white",
-                   markeredgecolor="red", markeredgewidth=2, markersize=10, label="Isolated"),
+            Line2D([0], [0], color="#aaaaaa", lw=1.0, alpha=0.5, label="Trade link"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="#d32f2f",
+                   markersize=8, label="Low rep (small, red)"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="#ff9800",
+                   markersize=10, label="Mid rep (orange)"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="#1565c0",
+                   markersize=14, label="High rep (large, blue)"),
         ]
         axes[0].legend(handles=legend_items, loc="upper left", fontsize=9,
-                       framealpha=0.9, title="Node size = reputation")
+                       framealpha=0.9, title="Color & size = reputation")
 
         fig.suptitle(f"Condition {cond} — Network Topology (Run {run_idx})", fontsize=14, fontweight="bold")
-        fig.subplots_adjust(top=0.88, wspace=0.1)
+        fig.subplots_adjust(top=0.82, wspace=0.1)
         _maybe_save(fig, f"network_snapshot_{cond}_run{run_idx:02d}.png", save)
 
 
