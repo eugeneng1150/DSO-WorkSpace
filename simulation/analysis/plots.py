@@ -618,68 +618,63 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
         print("  [network_snapshots] No N-condition runs found, skipping.")
         return
 
-    GOOD_COLORS = {"A": "#e74c3c", "B": "#3498db", "C": "#2ecc71"}
-
     for run_idx, run in enumerate(runs):
         specialties = run["session_log"]["specialties"]
-        rounds = run["rounds"]
-        n_rounds = len(rounds)
+        valid_ids = {int(a) for a in specialties}
+        rounds_data = run["rounds"]
+        n_rounds = len(rounds_data)
 
         available = [r for r in snapshot_rounds if r <= n_rounds]
         if not available:
             continue
 
-        fig, axes = plt.subplots(1, len(available), figsize=(8 * len(available), 7))
+        fig, axes = plt.subplots(1, len(available), figsize=(10 * len(available), 9))
         if len(available) == 1:
             axes = [axes]
 
-        # Build initial graph for a stable layout across snapshots
-        init_net = run["session_log"]["network"]
-        G_init = nx.Graph()
-        for aid in specialties:
-            G_init.add_node(int(aid))
-        for aid, neighbors in init_net.items():
-            for nb in neighbors:
-                G_init.add_edge(int(aid), nb)
-        pos = nx.kamada_kawai_layout(G_init, scale=2.0)
+        # Fixed circular layout — all 18 nodes evenly spaced
+        pos = nx.circular_layout(nx.path_graph(len(valid_ids)))
+        pos = {i: pos[i] for i in range(len(valid_ids))}
 
         for ax, rnd in zip(axes, available):
-            rnd_data = rounds[rnd - 1]
+            rnd_data = rounds_data[rnd - 1]
             net = rnd_data.get("network")
             if net is None:
                 ax.set_visible(False)
                 continue
 
-            valid_ids = {int(a) for a in specialties}
             G = nx.Graph()
-            for aid in specialties:
-                G.add_node(int(aid))
+            G.add_nodes_from(sorted(valid_ids))
             for aid_str, neighbors in net.items():
                 for nb in neighbors:
                     if int(aid_str) in valid_ids and nb in valid_ids:
                         G.add_edge(int(aid_str), nb)
 
             node_list = sorted(G.nodes())
-            node_colors = [GOOD_COLORS.get(specialties[str(n)], "grey") for n in node_list]
             degrees = [G.degree(n) for n in node_list]
-            rep_scores = rnd_data.get("reputation", {})
-            node_sizes = [max(150, float(rep_scores.get(str(n), 1.0)) * 600) for n in node_list]
 
-            # Draw edges
-            nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.3, width=0.8)
-            # Draw nodes
+            # Node size = reputation (scaled for visibility)
+            rep_scores = rnd_data.get("reputation", {})
+            rep_vals = [float(rep_scores.get(str(n), 0.5)) for n in node_list]
+            node_sizes = [max(200, r * 1200) for r in rep_vals]
+
+            # Color: blue gradient by reputation (darker = higher rep)
+            node_colors = [plt.cm.Blues(0.3 + 0.7 * r) for r in rep_vals]
+
+            # Isolated nodes
+            isolated = [n for n in node_list if G.degree(n) == 0]
+
+            # Draw
+            nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.25, width=0.8, edge_color="grey")
             nx.draw_networkx_nodes(G, pos, nodelist=node_list, ax=ax,
                                    node_color=node_colors, node_size=node_sizes,
-                                   edgecolors="black", linewidths=0.5, alpha=0.9)
-            # Labels
-            nx.draw_networkx_labels(G, pos, ax=ax, font_size=7, font_weight="bold")
+                                   edgecolors="black", linewidths=1.0, alpha=0.9)
+            nx.draw_networkx_labels(G, pos, ax=ax, font_size=8, font_weight="bold")
 
-            # Highlight isolated nodes
-            isolated = [n for n in node_list if G.degree(n) == 0]
             if isolated:
                 nx.draw_networkx_nodes(G, pos, nodelist=isolated, ax=ax,
-                                       node_color="white", node_size=300,
-                                       edgecolors="red", linewidths=2.0)
+                                       node_color="white", node_size=350,
+                                       edgecolors="red", linewidths=2.5)
 
             events = rnd_data.get("network_events_this_round", [])
             severs = sum(1 for e in events if e["type"] == "sever" and e["outcome"] == "applied")
@@ -688,21 +683,19 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
 
             ax.set_title(
                 f"Round {rnd}\n"
-                f"Avg degree: {avg_degree:.1f} | Isolated: {len(isolated)} | "
-                f"Severs: {severs} | New links: {requests}",
-                fontsize=10, fontweight="bold",
+                f"Avg degree: {avg_degree:.1f}  |  Isolated: {len(isolated)}  |  "
+                f"Severs: {severs}  |  New links: {requests}",
+                fontsize=11, fontweight="bold",
             )
             ax.axis("off")
 
         # Legend
-        for good, color in GOOD_COLORS.items():
-            axes[0].scatter([], [], c=color, s=80, label=f"Good {good}", edgecolors="black", linewidths=0.5)
-        axes[0].scatter([], [], c="white", s=80, label="Isolated", edgecolors="red", linewidths=2.0)
-        axes[0].scatter([], [], c="grey", s=200, label="Rep = 0.3 (small)", edgecolors="black", linewidths=0.5)
-        axes[0].scatter([], [], c="grey", s=500, label="Rep = 0.8 (large)", edgecolors="black", linewidths=0.5)
-        axes[0].legend(loc="upper left", fontsize=8, framealpha=0.8, title="Node size = reputation")
+        for sz, label in [(200, "Rep ~ 0.2"), (600, "Rep ~ 0.5"), (1200, "Rep ~ 1.0")]:
+            axes[0].scatter([], [], c="#4a90d9", s=sz, label=label, edgecolors="black", linewidths=1.0)
+        axes[0].scatter([], [], c="white", s=200, label="Isolated", edgecolors="red", linewidths=2.5)
+        axes[0].legend(loc="upper left", fontsize=9, framealpha=0.9, title="Node size = reputation")
 
-        fig.suptitle(f"Condition N — Network Topology (Run {run_idx})", fontsize=13, fontweight="bold")
+        fig.suptitle(f"Condition N — Network Topology (Run {run_idx})", fontsize=14, fontweight="bold")
         plt.tight_layout()
         _maybe_save(fig, f"network_snapshot_run{run_idx:02d}.png", save)
 
