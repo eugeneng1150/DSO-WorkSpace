@@ -641,7 +641,7 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
         for aid, neighbors in init_net.items():
             for nb in neighbors:
                 G_init.add_edge(int(aid), nb)
-        pos = nx.spring_layout(G_init, seed=42, k=1.8 / (len(specialties) ** 0.5))
+        pos = nx.kamada_kawai_layout(G_init, scale=2.0)
 
         for ax, rnd in zip(axes, available):
             rnd_data = rounds[rnd - 1]
