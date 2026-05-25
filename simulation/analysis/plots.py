@@ -664,7 +664,7 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
 
             isolated = [n_ for n_ in node_list if G.degree(n_) == 0]
 
-            nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.2, width=0.8, edge_color="grey")
+            nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.5, width=1.5, edge_color="#555555")
             nx.draw_networkx_nodes(G, pos, nodelist=node_list, ax=ax,
                                    node_color=node_colors, node_size=node_sizes,
                                    edgecolors="black", linewidths=1.0, alpha=0.9)
