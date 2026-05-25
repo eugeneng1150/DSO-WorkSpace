@@ -612,6 +612,7 @@ def plot_stability_rates(save: bool = True) -> None:
 def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] = (10, 30)) -> None:
     """Draw network graph snapshots for condition N at specified rounds."""
     import networkx as nx
+    import math
 
     runs = _load_runs("N")
     if not runs:
@@ -620,7 +621,7 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
 
     for run_idx, run in enumerate(runs):
         specialties = run["session_log"]["specialties"]
-        valid_ids = {int(a) for a in specialties}
+        valid_ids = sorted(int(a) for a in specialties)
         rounds_data = run["rounds"]
         n_rounds = len(rounds_data)
 
@@ -628,13 +629,16 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
         if not available:
             continue
 
-        fig, axes = plt.subplots(1, len(available), figsize=(10 * len(available), 9))
+        fig, axes = plt.subplots(1, len(available), figsize=(9 * len(available), 9))
         if len(available) == 1:
             axes = [axes]
 
-        # Fixed circular layout — all 18 nodes evenly spaced
-        pos = nx.circular_layout(nx.path_graph(len(valid_ids)))
-        pos = {i: pos[i] for i in range(len(valid_ids))}
+        # Manual circular positions — evenly spaced on a unit circle
+        n = len(valid_ids)
+        pos = {}
+        for i, aid in enumerate(valid_ids):
+            angle = 2 * math.pi * i / n - math.pi / 2
+            pos[aid] = (math.cos(angle), math.sin(angle))
 
         for ax, rnd in zip(axes, available):
             rnd_data = rounds_data[rnd - 1]
@@ -644,43 +648,45 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
                 continue
 
             G = nx.Graph()
-            G.add_nodes_from(sorted(valid_ids))
+            G.add_nodes_from(valid_ids)
             for aid_str, neighbors in net.items():
                 for nb in neighbors:
-                    if int(aid_str) in valid_ids and nb in valid_ids:
+                    if int(aid_str) in pos and nb in pos:
                         G.add_edge(int(aid_str), nb)
 
             node_list = sorted(G.nodes())
-            degrees = [G.degree(n) for n in node_list]
+            degrees = [G.degree(n_) for n_ in node_list]
 
-            # Node size = reputation (scaled for visibility)
             rep_scores = rnd_data.get("reputation", {})
-            rep_vals = [float(rep_scores.get(str(n), 0.5)) for n in node_list]
-            node_sizes = [max(200, r * 1200) for r in rep_vals]
-
-            # Color: blue gradient by reputation (darker = higher rep)
+            rep_vals = [float(rep_scores.get(str(n_), 0.5)) for n_ in node_list]
+            node_sizes = [max(250, r * 1200) for r in rep_vals]
             node_colors = [plt.cm.Blues(0.3 + 0.7 * r) for r in rep_vals]
 
-            # Isolated nodes
-            isolated = [n for n in node_list if G.degree(n) == 0]
+            isolated = [n_ for n_ in node_list if G.degree(n_) == 0]
 
-            # Draw
-            nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.25, width=0.8, edge_color="grey")
+            nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.2, width=0.8, edge_color="grey")
             nx.draw_networkx_nodes(G, pos, nodelist=node_list, ax=ax,
                                    node_color=node_colors, node_size=node_sizes,
                                    edgecolors="black", linewidths=1.0, alpha=0.9)
-            nx.draw_networkx_labels(G, pos, ax=ax, font_size=8, font_weight="bold")
+            nx.draw_networkx_labels(G, pos, ax=ax, font_size=8, font_weight="bold",
+                                    font_color="white")
 
             if isolated:
                 nx.draw_networkx_nodes(G, pos, nodelist=isolated, ax=ax,
                                        node_color="white", node_size=350,
                                        edgecolors="red", linewidths=2.5)
+                nx.draw_networkx_labels(G, pos, ax=ax,
+                                        labels={n_: str(n_) for n_ in isolated},
+                                        font_size=8, font_weight="bold", font_color="red")
 
             events = rnd_data.get("network_events_this_round", [])
             severs = sum(1 for e in events if e["type"] == "sever" and e["outcome"] == "applied")
             requests = sum(1 for e in events if e["type"] == "request" and e["outcome"] == "applied")
             avg_degree = np.mean(degrees) if degrees else 0
 
+            ax.set_xlim(-1.5, 1.5)
+            ax.set_ylim(-1.5, 1.5)
+            ax.set_aspect("equal")
             ax.set_title(
                 f"Round {rnd}\n"
                 f"Avg degree: {avg_degree:.1f}  |  Isolated: {len(isolated)}  |  "
@@ -690,13 +696,13 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
             ax.axis("off")
 
         # Legend
-        for sz, label in [(200, "Rep ~ 0.2"), (600, "Rep ~ 0.5"), (1200, "Rep ~ 1.0")]:
+        for sz, label in [(250, "Rep ~ 0.2"), (600, "Rep ~ 0.5"), (1200, "Rep ~ 1.0")]:
             axes[0].scatter([], [], c="#4a90d9", s=sz, label=label, edgecolors="black", linewidths=1.0)
         axes[0].scatter([], [], c="white", s=200, label="Isolated", edgecolors="red", linewidths=2.5)
         axes[0].legend(loc="upper left", fontsize=9, framealpha=0.9, title="Node size = reputation")
 
         fig.suptitle(f"Condition N — Network Topology (Run {run_idx})", fontsize=14, fontweight="bold")
-        plt.tight_layout()
+        fig.subplots_adjust(top=0.88, wspace=0.1)
         _maybe_save(fig, f"network_snapshot_run{run_idx:02d}.png", save)
 
 
