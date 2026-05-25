@@ -667,11 +667,12 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
             rep_scores = rnd_data.get("reputation", {})
             rep_vals = {n_: float(rep_scores.get(str(n_), 0.5)) for n_ in node_list}
 
-            # Split agents into high/low rep (median split)
-            median_rep = float(np.median(list(rep_vals.values())))
-            high_rep = [n_ for n_ in node_list if rep_vals[n_] >= median_rep]
-            low_rep = [n_ for n_ in node_list if rep_vals[n_] < median_rep]
+            # Split agents by reputation tier (hardcoded thresholds)
+            high_rep = [n_ for n_ in node_list if rep_vals[n_] >= 0.7]
+            mid_rep = [n_ for n_ in node_list if 0.4 <= rep_vals[n_] < 0.7]
+            low_rep = [n_ for n_ in node_list if rep_vals[n_] < 0.4]
             high_deg = np.mean([degrees[n_] for n_ in high_rep]) if high_rep else 0
+            mid_deg = np.mean([degrees[n_] for n_ in mid_rep]) if mid_rep else 0
             low_deg = np.mean([degrees[n_] for n_ in low_rep]) if low_rep else 0
             isolated = [n_ for n_ in node_list if degrees[n_] == 0]
 
@@ -709,10 +710,11 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
             ax.set_aspect("equal")
             ax.set_title(
                 f"Round {rnd}\n"
-                f"High rep (≥{median_rep:.2f}): {len(high_rep)} agents, avg {high_deg:.1f} links\n"
-                f"Low rep (<{median_rep:.2f}): {len(low_rep)} agents, avg {low_deg:.1f} links\n"
+                f"High rep (≥0.7): {len(high_rep)} agents, avg {high_deg:.1f} links\n"
+                f"Mid rep (0.4–0.7): {len(mid_rep)} agents, avg {mid_deg:.1f} links\n"
+                f"Low rep (<0.4): {len(low_rep)} agents, avg {low_deg:.1f} links\n"
                 f"Isolated: {len(isolated)}  |  Severs: {severs}  |  New links: {requests}",
-                fontsize=10, fontweight="bold",
+                fontsize=9, fontweight="bold",
             )
             ax.axis("off")
 
@@ -730,7 +732,7 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
                        framealpha=0.9, title="Color & size = reputation")
 
         fig.suptitle(f"Condition {cond} — Network Topology (Run {run_idx})", fontsize=14, fontweight="bold")
-        fig.subplots_adjust(top=0.82, wspace=0.1)
+        fig.subplots_adjust(top=0.78, wspace=0.1)
         _maybe_save(fig, f"network_snapshot_{cond}_run{run_idx:02d}.png", save)
 
 
