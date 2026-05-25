@@ -664,20 +664,30 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
 
             isolated = [n_ for n_ in node_list if G.degree(n_) == 0]
 
-            nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.5, width=1.5, edge_color="#555555")
-            nx.draw_networkx_nodes(G, pos, nodelist=node_list, ax=ax,
-                                   node_color=node_colors, node_size=node_sizes,
-                                   edgecolors="black", linewidths=1.0, alpha=0.9)
-            nx.draw_networkx_labels(G, pos, ax=ax, font_size=8, font_weight="bold",
-                                    font_color="white")
+            # Draw edges manually to avoid networkx/ax mismatch
+            for u, v in G.edges():
+                x = [pos[u][0], pos[v][0]]
+                y = [pos[u][1], pos[v][1]]
+                ax.plot(x, y, color="#888888", linewidth=1.0, alpha=0.4, zorder=1)
 
-            if isolated:
-                nx.draw_networkx_nodes(G, pos, nodelist=isolated, ax=ax,
-                                       node_color="white", node_size=350,
-                                       edgecolors="red", linewidths=2.5)
-                nx.draw_networkx_labels(G, pos, ax=ax,
-                                        labels={n_: str(n_) for n_ in isolated},
-                                        font_size=8, font_weight="bold", font_color="red")
+            # Draw nodes manually
+            for n_ in node_list:
+                idx = node_list.index(n_)
+                x, y = pos[n_]
+                circle = plt.Circle((x, y), 0.06 + rep_vals[idx] * 0.04,
+                                    color=node_colors[idx], ec="black", lw=1.0,
+                                    alpha=0.9, zorder=2)
+                ax.add_patch(circle)
+                ax.text(x, y, str(n_), ha="center", va="center",
+                        fontsize=7, fontweight="bold", color="white", zorder=3)
+
+            for n_ in isolated:
+                x, y = pos[n_]
+                circle = plt.Circle((x, y), 0.07, color="white", ec="red",
+                                    lw=2.5, zorder=4)
+                ax.add_patch(circle)
+                ax.text(x, y, str(n_), ha="center", va="center",
+                        fontsize=7, fontweight="bold", color="red", zorder=5)
 
             events = rnd_data.get("network_events_this_round", [])
             severs = sum(1 for e in events if e["type"] == "sever" and e["outcome"] == "applied")
@@ -696,10 +706,19 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
             ax.axis("off")
 
         # Legend
-        for sz, label in [(250, "Rep ~ 0.2"), (600, "Rep ~ 0.5"), (1200, "Rep ~ 1.0")]:
-            axes[0].scatter([], [], c="#4a90d9", s=sz, label=label, edgecolors="black", linewidths=1.0)
-        axes[0].scatter([], [], c="white", s=200, label="Isolated", edgecolors="red", linewidths=2.5)
-        axes[0].legend(loc="upper left", fontsize=9, framealpha=0.9, title="Node size = reputation")
+        from matplotlib.patches import Circle as MplCircle
+        from matplotlib.lines import Line2D
+        legend_items = [
+            Line2D([0], [0], color="#888888", lw=1.0, alpha=0.4, label="Trade link"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="#4a90d9",
+                   markersize=8, label="Low rep (small)"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="#1a5698",
+                   markersize=14, label="High rep (large)"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="white",
+                   markeredgecolor="red", markeredgewidth=2, markersize=10, label="Isolated"),
+        ]
+        axes[0].legend(handles=legend_items, loc="upper left", fontsize=9,
+                       framealpha=0.9, title="Node size = reputation")
 
         fig.suptitle(f"Condition N — Network Topology (Run {run_idx})", fontsize=14, fontweight="bold")
         fig.subplots_adjust(top=0.88, wspace=0.1)
