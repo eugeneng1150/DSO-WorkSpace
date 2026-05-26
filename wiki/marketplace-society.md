@@ -2,9 +2,9 @@
 
 **Summary**: A synthesis page connecting all five papers to the core research question: what mechanisms allow a society of self-interested agents — specifically one with trade and communication — to survive?
 
-**Sources**: All five papers.
+**Sources**: All papers.
 
-**Last updated**: 2026-05-16
+**Last updated**: 2026-05-26
 
 ---
 
@@ -87,15 +87,29 @@ Communication enables all higher-order mechanisms:
 
 The AgentSociety MQTT architecture shows that agent messaging can scale to 100k+ agents at 44,702 msg/s. For a marketplace, this means communication infrastructure is not a bottleneck — agent reasoning (LLM API latency) is.
 
-## Attack Surface: Reward Hacking
+## New Finding: Constitutional Governance Fails
 
-Any mechanism can be exploited (see [[reward-hacking]]). Marketplace-specific attacks:
-- Price manipulation → disable rivals equivalent
-- False product descriptions → state teleport equivalent
-- Collusion rings → combined attack
-- Fake reviews → reputation gaming
+From [[institutional-ai-collusion]]: instructing agents to cooperate ("don't collude," "be honest," "follow market norms") is statistically indistinguishable from no governance. This rules out prompt engineering as a substitute for mechanism design. The marketplace must use enforceable structures — contracts with engine-enforced penalties, external Oracle/Controller — not just good instructions.
 
-Defense: multi-metric auditing (harder to hack all four social metrics simultaneously), cross-agent review (adversarial verification), and enforceable contracts with clear violation detection.
+## New Finding: Capability ≠ Cooperativeness
+
+From [[corrupted-by-reasoning]]: reasoning-focused LLMs become more effective free-riders, not more cooperative agents. More capable models calculate self-interest more precisely. The marketplace must be designed for adversarial agents regardless of model capability — and should not expect better models to cooperate without enforcement.
+
+## New Finding: Reputation Is Stronger With Network Dynamics
+
+From [[repunet]]: static reputation (scores visible to all) yields moderate cooperation gains. Dynamic reputation — where agents choose interaction partners based on reputation and gossip propagates across the network — yields 85–98% cooperation rates. The [[marketplace-spec]] reputation mechanism should include selective partner choice (agents refuse trades with low-reputation partners), not just score visibility.
+
+LLM agents also have a positive gossip bias (~90% of gossip is positive), which naturally builds market trust.
+
+## Attack Surface: Adversarial Agents
+
+Any mechanism can be exploited. The [[adversarial-agents]] taxonomy identifies three threat classes:
+
+**Internal defection** (from [[subtle-art-of-defection]]): six behavior types, most dangerous being Strategic Deception and Panic Buying — both hard to detect and effective at sustained extraction before collapse. A single defector among cooperators collapses the system in 1–7 rounds.
+
+**External manipulation** (from [[ai-agent-traps]]): adversarial content in the marketplace environment (product listings, messages, shared documents) can hijack agent perception, reasoning, memory, or actions without compromising any model. The information environment itself is an attack surface.
+
+**Reward hacking** (from [[reward-hacking]]): agents manipulating the metrics used to measure market health. Defense: multi-metric redundancy — harder to game all four [[social-metrics]] simultaneously.
 
 ## Agent Architecture for a Marketplace
 
@@ -144,3 +158,9 @@ The baseline will likely show partial cooperation (agents can threaten and promi
 - [[agentsociety]]
 - [[coopeval]]
 - [[cooperation-exploitation-llm]]
+- [[institutional-governance]]
+- [[institutional-ai-collusion]]
+- [[repunet]]
+- [[adversarial-agents]]
+- [[distributional-agi-safety]]
+- [[corrupted-by-reasoning]]

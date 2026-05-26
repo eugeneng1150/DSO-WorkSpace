@@ -15,6 +15,13 @@ Concrete target: a marketplace society with trade and communication.
 | [[cooperative-resilience-paper]] | Formal definition and 4-stage measurement of cooperative resilience; RL vs LLM agents under disruption |
 | [[coopeval]] | Benchmark of 4 cooperation mechanisms × 4 social dilemmas × 6 LLMs; Contracting and Mediation most effective |
 | [[dynamic-pricing-perishable]] | Multi-agent perishable goods pricing; Q-learning vs fixed strategies; spoilage mechanic alters agent behavior |
+| [[subtle-art-of-defection]] | 6-behavior taxonomy of uncooperative LLM strategies; GVSR pipeline; single defector collapses system in 1–7 rounds |
+| [[institutional-ai-collusion]] | Governance graph enforcement reduces severe LLM collusion 50%→5.6%; prompt-only governance fails entirely |
+| [[repunet]] | First operational LLM reputation system; dynamic networks + gossip yields 85–98% cooperation; LLMs have positive gossip bias |
+| [[corrupted-by-reasoning]] | Reasoning LLMs (o1 series) become free-riders; more capability → more calculated defection, not more cooperation |
+| [[distributional-agi-safety]] | Patchwork AGI hypothesis; 4-layer defense-in-depth framework; virtual agentic market design as primary safety tool |
+| [[institutional-ai-governance]] | Conceptual companion to collusion paper; behavioral goal-independence; mechanism design applied to alignment |
+| [[ai-agent-traps]] | DeepMind taxonomy of 6 attack categories targeting agent environment; success rates up to 86% |
 
 ## Concept Pages
 
@@ -28,3 +35,5 @@ Concrete target: a marketplace society with trade and communication.
 | [[evolutionary-dynamics]] | Replicator dynamics; how cooperative vs defecting strategies compete over time; evolutionary stability |
 | [[cooperative-resilience]] | Survival through disruption: 4-stage framework; resource shocks vs social shocks; LLM vs RL agent performance |
 | [[reward-hacking]] | Mechanism exploitation: 5 attack classes; Goodhart's Law in multi-agent systems; defenses |
+| [[institutional-governance]] | Enforcement vs. preference engineering; governance graph; deterrence condition; why prompt-only governance fails |
+| [[adversarial-agents]] | Three threat classes (internal defection, external manipulation, reward hacking); severity and detectability |

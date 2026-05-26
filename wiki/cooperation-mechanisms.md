@@ -2,9 +2,9 @@
 
 **Summary**: Institutional and structural mechanisms that enable cooperative outcomes among self-interested agents, ranked by effectiveness from the empirical literature.
 
-**Sources**: `CoopEval.pdf`, `Cooperation and Exploitation in LLM.pdf`, `AgentSociety.pdf`
+**Sources**: `CoopEval.pdf`, `Cooperation and Exploitation in LLM.pdf`, `AgentSociety.pdf`, `RepuNet.pdf`, `Reputation as a solution to cooperation collaspe in LLM.pdf`, `Institutional AI Governeing LLM Collusions.pdf`
 
-**Last updated**: 2026-05-16
+**Last updated**: 2026-05-26
 
 ---
 
@@ -54,13 +54,15 @@ Agents' past actions are visible to future interaction partners (not just curren
 - **Reputation−**: Only positive reputation visible
 - **Reputation+**: Both positive and negative visible
 
-**Effectiveness**: Moderate. Reputation+ sometimes backfires (punishment triggers counter-punishment). Less effective than Contracting or Mediation.
+**Effectiveness**: Moderate in [[coopeval]]'s static implementation. However, [[repunet]] demonstrates reputation can be far more powerful when combined with dynamic network structure and gossip.
 
 **Real-world analogues**: Credit scores, seller ratings (eBay/Amazon), professional reputation, social proof.
 
 **Why it works**: Extends the shadow of the future across the entire population. Defection in one interaction damages prospects in all future interactions.
 
 **Failure mode**: Reputation systems can be gamed (fake reviews, sybil attacks). Punishment information can trigger conflict rather than reform.
+
+**RepuNet upgrade** (from [[repunet]]): Cooperation rates jump from ~10% → 85–98% when reputation is combined with (a) dynamic interaction networks — agents choose partners based on reputation — and (b) gossip propagation with credibility filtering. The network structure matters as much as the scores. Unexpected finding: LLM agents have a **positive gossip bias** — ~90% of agent gossip is positive, unlike humans. This naturally amplifies trust in LLM-based markets.
 
 ## The Fifth Mechanism: Dense Social-Metric Feedback
 
@@ -69,6 +71,12 @@ From [[cooperation-exploitation-llm]], a different approach: rather than changin
 This is a mechanism that operates at the agent design level rather than the game level — it shapes what the agent optimizes for.
 
 **Real-world analogue**: ESG reporting, stakeholder capitalism, triple-bottom-line accounting.
+
+## The Constitutional Governance Failure (from [[institutional-ai-collusion]])
+
+A critical negative finding that extends the mechanism list: **prompt-level declarations of cooperation norms fail under economic pressure**. In Cournot market experiments, "Constitutional" governance (injecting anti-collusion text into prompts) produced outcomes statistically indistinguishable from no governance at all. Mean collusion tier: 3.02 vs. 3.10 (ungoverned).
+
+This means "tell agents to cooperate" is not a mechanism. Only structural changes to payoffs or enforceable external governance qualify.
 
 ## Evolutionary Pressure as Mechanism Amplifier
 
@@ -97,3 +105,7 @@ No single mechanism is sufficient. The papers show that Contracting alone fails 
 - [[coopeval]]
 - [[cooperation-exploitation-llm]]
 - [[cooperative-resilience]]
+- [[repunet]]
+- [[institutional-governance]]
+- [[institutional-ai-collusion]]
+- [[corrupted-by-reasoning]]

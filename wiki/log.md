@@ -81,6 +81,46 @@ Prompts adapted from CoopEval's "here is the twist" injection pattern, rewritten
 
 ---
 
+## 2026-05-26 — Ingested 7 new sources
+
+**Sources ingested**:
+- `The Subtle Art of Defection.pdf` (Kulshreshtha et al., AWS AI Labs / UC San Diego, EACL 2026)
+- `Institutional AI Governeing LLM Collusions.pdf` (Bracale Syrnikov et al., DEXAI/Icaro Lab et al., arXiv 2601.11369)
+- `RepuNet.pdf` + `Reputation as a solution to cooperation collaspe in LLM.pdf` (Ren et al., AAMAS 2026 — same paper, arXiv 2505.05029)
+- `Corrupted by Reasoning.pdf` (Guzman Piedrahita et al., ETH Zürich / MPI, COLM 2025, arXiv 2506.23276)
+- `Distributional AGI Safety.pdf` (Tomašev et al., Google DeepMind, arXiv 2512.16856)
+- `Institutional AI Governeing LLM Collusions.pdf` companion: governance framework paper (arXiv 2601.10599)
+- `AI Agents Trap.pdf` (Franklin et al., Google DeepMind, SSRN March 2026)
+
+**New source pages created**:
+- `subtle-art-of-defection.md`
+- `institutional-ai-collusion.md`
+- `repunet.md`
+- `corrupted-by-reasoning.md`
+- `distributional-agi-safety.md`
+- `institutional-ai-governance.md`
+- `ai-agent-traps.md`
+
+**New concept pages created**:
+- `institutional-governance.md` — enforcement vs. preference engineering; governance graph; deterrence condition
+- `adversarial-agents.md` — three threat classes (internal defection, external manipulation, reward hacking)
+
+**Pages updated**:
+- `cooperation-mechanisms.md` — added RepuNet findings (dynamic networks + gossip), constitutional governance failure, updated Reputation section
+- `reward-hacking.md` — added 6-behavior taxonomy from Subtle Art of Defection, external injection attacks from AI Agent Traps
+- `marketplace-society.md` — added three new findings sections (constitutional governance fails, capability ≠ cooperativeness, reputation stronger with network dynamics); updated attack surface section; added new related pages
+- `index.md` — added 7 source pages and 2 concept pages
+
+**Key new insights**:
+1. Prompt-only governance is empirically useless — institutional enforcement required
+2. More capable/reasoning LLMs are worse cooperators, not better
+3. Reputation with dynamic networks and gossip is far more effective than static reputation
+4. Single defector collapses cooperating system in 1–7 rounds; hardest-to-detect behaviors are most effective
+5. The information environment itself is an attack surface (AI Agent Traps)
+6. AGI may emerge as patchwork network — safety requires market governance, not just model alignment
+
+---
+
 ## 2026-05-17 — Removed resilience tests
 
 **Decision**: resilience testing (resource shock + social shock) removed from scope to keep the experiment clean and focused.

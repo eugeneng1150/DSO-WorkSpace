@@ -74,6 +74,29 @@ Adding G as a 4th factor:
 
 ---
 
+## Governance Signal Validity (D2 and D3)
+
+**Issue**: D1 and D4 are clearly defection-based signals grounded in the governance literature. D2 (production withdrawal) and D3 (trade volume collapse) were added by Claude without a specific paper citation. They may be penalising agents unfairly.
+
+**D3 specific problem**: An agent can trigger D3 (fewer than 2 completed trades in 5 rounds) even if it's not their fault — e.g. their neighbors are refusing to trade with them. The oracle punishes the victim, not the defector.
+
+**Options to consider:**
+
+| Option | What changes | Risk |
+|---|---|---|
+| Remove D2 and D3 entirely | Only keep D1 (defection rate) and D4 (predatory targeting) | G becomes purely defection-reactive; production/participation collapse goes undetected |
+| Keep D2, remove D3 | Production withdrawal is a plausible signal; trade volume is too noisy | Partial fix |
+| Fix D3 to be proposer-side only | Only count trades *proposed by the agent* that collapsed, not trades where others rejected them | More defensible but harder to implement |
+| Cite a paper for D2/D3 | Find a governance/market regulation framework that justifies monitoring production and trade volume | Preferred if a citation exists |
+
+**Files to change if removing D2 and D3:**
+- `simulation/mechanisms/governance.py` — remove `_check_production_withdrawal` and `_check_trade_volume_collapse` methods, remove D2/D3 from `evaluate()`
+- `prompts/governance.txt` — remove D2 and D3 from the signal list shown to agents
+
+**Decision needed**: Keep, fix, or remove D2/D3?
+
+---
+
 ## Other Candidate Mechanisms (From Literature)
 
 ### Costly Punishment / Sanctions (S)

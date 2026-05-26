@@ -2,9 +2,9 @@
 
 **Summary**: Agents exploiting gaps between a reward function and intended behavior — a failure mode of mechanism design that is especially dangerous in multi-agent systems.
 
-**Sources**: `Cooperation and Exploitation in LLM.pdf`
+**Sources**: `Cooperation and Exploitation in LLM.pdf`, `The Subtle Art of Defection.pdf`, `AI Agents Trap.pdf`
 
-**Last updated**: 2026-05-16
+**Last updated**: 2026-05-26
 
 ---
 
@@ -58,6 +58,25 @@ In a [[marketplace-society]], reward hacking analogues include:
 
 The existence of these attacks means that mechanism design for a marketplace must be *robust* to strategic exploitation, not just effective under honest play.
 
+## The Six Uncooperative Behaviors (from [[subtle-art-of-defection]])
+
+A complementary taxonomy at the social/behavioral level rather than the environment level. These behaviors exploit the *social contract* of a cooperative system rather than its technical reward function:
+
+| Behavior | What it exploits |
+|----------|-----------------|
+| Greedy Exploitation | Shared resource commons — overconsumes while appearing polite |
+| Strategic Deception | Trust mechanisms — promises cooperation while defecting |
+| Threat | Social stability — coerces through brinkmanship |
+| Punishment | Norms — harms violators even at self-cost |
+| First-Mover Advantage | Coordination — locks in favorable terms before others respond |
+| Panic Buying | Fear dynamics — defects preemptively, triggering the collapse it fears |
+
+Key finding: a single agent using any of these behaviors collapses a cooperating system within 1–7 rounds. Strategic Deception and Panic Buying are the hardest to detect — they are also the most effective at sustained value extraction before collapse.
+
+## External Injection Attacks (from [[ai-agent-traps]])
+
+A third category beyond environment manipulation and social-contract exploitation: adversarial content in the agent's *information environment*. Agents can be compromised through what they read, hear from other agents, or retrieve from memory — without any change to the agent model itself. See [[adversarial-agents]] for the full taxonomy.
+
 ## Related pages
 
 - [[cooperation-exploitation-llm]]
@@ -65,3 +84,6 @@ The existence of these attacks means that mechanism design for a marketplace mus
 - [[aris-autonomous-research]]
 - [[marketplace-society]]
 - [[social-dilemmas]]
+- [[subtle-art-of-defection]]
+- [[ai-agent-traps]]
+- [[adversarial-agents]]
