@@ -38,7 +38,7 @@ A Marketplace Simulation Study}}
 \maketitle
 
 \begin{abstract}
-Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms — layered on top of unrestricted communication — are sufficient for a society of such agents to maintain market stability. We instantiate the research question as a multi-agent marketplace simulation where 18 LLM agents with complementary production specialties must trade within a constrained social network to obtain utility. Agents operate in a barter economy where production, trade, and survival depend on managing perishable goods. Cooperation yields a positive-sum surplus; without mechanisms, rational anticipation of defection suppresses trade and drives the society toward autarky. We test three formal mechanisms — Reputation, Contracting, and Mediation — individually and in combination across a $2^3$ factorial design of eight experimental conditions, measuring market stability through two social metrics: Sustainability and Peace. Our results reveal a striking negative finding: no condition achieves market stability, and all mechanisms increase total defections relative to the communication-only baseline. Peace is universally the binding constraint; Reputation improves Sustainability but worsens Peace; Contracting and Mediation are completely unused by agents despite being available. We trace the failure to a homogeneous reasoning framework in which every agent independently concludes defection is the dominant strategy in round one, producing a universal defection equilibrium that formal mechanisms cannot overcome. The Sustainability-Peace tradeoff that emerges --- mechanisms sustaining production while defection proliferates --- represents a novel form of institutional failure in LLM agent societies.
+Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms — layered on top of unrestricted communication — are sufficient for a society of such agents to maintain market stability. We instantiate the research question as a multi-agent marketplace simulation where 18 LLM agents with complementary production specialties must trade within a constrained social network to obtain utility. Agents operate in a barter economy where production, trade, and survival depend on managing perishable goods. We test eight experimental conditions spanning six distinct cooperation mechanisms: Reputation (R), Contracting (C), Mediation (M), Governance (G), Network Rewiring (N), and Costly Sanctions (S), plus a combined condition (NR) pairing network rewiring with reputation, each compared against a communication-only baseline (B). Market stability is measured through two social metrics — Sustainability and Peace — alongside per-round societal utility. This is an ongoing research project; results reported here are from initial simulation runs and will be updated as additional data is collected.
 \end{abstract}
 
 \tableofcontents
@@ -55,10 +55,12 @@ Prior work in game theory identifies the core tension through \textit{sequential
 
 Recent empirical work confirms that modern large language models (LLMs), despite their social reasoning capabilities, exhibit this same failure mode. \citet{coopeval} show that all tested LLMs defect in every social dilemma without formal mechanisms in place. Communication alone is insufficient. Natural language promises are cheap and unverifiable; threats are credible only through repetition; warnings spread only through voluntary disclosure. The question is therefore not whether communication helps, but \textit{how much formal structure is needed on top of communication} to sustain societal cooperation.
 
+A parallel line of work investigates whether reasoning-capable LLMs are more or less cooperative than their non-reasoning counterparts. \citet{piedrahita2025} find that reasoning models (o1, o3 series) free-ride at significantly higher rates than traditional LLMs in public goods games, a phenomenon they term ``corruption by reasoning'' — the model identifies the Nash equilibrium defection strategy and exploits it. Our agents use GPT-5.4-mini, a hybrid reasoning model, making this finding directly relevant.
+
 \subsection{Research Question}
 
 \begin{quote}
-\textit{What formal mechanisms, layered on top of communication, allow a society of self-interested agents to maintain market stability?}
+\textit{Which formal mechanism, or combination of mechanisms, allows self-interested LLM agents to maintain marketplace cooperation in a repeated trading environment — and how resilient are those mechanisms to adversarial actors?}
 \end{quote}
 
 We instantiate this question as a \textbf{marketplace society}: a multi-agent environment in which agents hold complementary production specialties and must trade to obtain utility. The marketplace is a natural laboratory for this question because:
@@ -66,7 +68,7 @@ We instantiate this question as a \textbf{marketplace society}: a multi-agent en
 \begin{itemize}
   \item Cooperative surplus is structural — every agent benefits from trading, so there is always something to lose from defection.
   \item Defection opportunities arise at every step — production, negotiation, and execution all admit exploitation.
-  \item Communication is realistic — agents negotiate, broadcast price signals, and propagate reputation information, mirroring real market behavior.
+  \item Communication is realistic — agents negotiate, broadcast price signals, and propagate reputation information, mirroring real market behaviour.
 \end{itemize}
 
 \subsection{Contributions}
@@ -75,10 +77,10 @@ This paper makes the following contributions:
 
 \begin{enumerate}
   \item A concrete simulation environment implementing a marketplace social dilemma with comparative advantage, a barter economy, a constrained social network, and a natural defection surface.
-  \item A layered mechanism testing framework that benchmarks Reputation, Contracting, and Mediation — individually and in all $2^3$ combinations — against a communication-only baseline.
-  \item A measurement framework combining two social metrics (Sustainability, Peace) with intermediate behavioral variables to decompose mechanism effects.
-  \item A negative empirical result: no mechanism achieves market stability; formal mechanisms paradoxically increase defection relative to the communication-only baseline.
-  \item A qualitative analysis of agent reasoning traces identifying the homogeneous defection calculus that overwhelms formal mechanisms, and the Sustainability-Peace tradeoff as a novel failure mode.
+  \item A mechanism testing framework that benchmarks six cooperation mechanisms — Reputation, Contracting, Mediation, Governance, Network Rewiring, and Costly Sanctions — each as an isolated condition against a communication-only baseline.
+  \item A measurement framework combining two social metrics (Sustainability, Peace) with per-round societal utility and intermediate behavioural variables to decompose mechanism effects.
+  \item Empirical results from initial simulation runs, with full results to follow as data collection continues.
+  \item A two-phase research design culminating in adversarial resilience testing with hardcoded troll agents.
 \end{enumerate}
 
 % ============================================================
@@ -92,17 +94,29 @@ The study of cooperation in multi-agent systems draws from game theory, evolutio
 
 \subsection{LLM Agents in Social Dilemmas}
 
-\citet{gallego2024} study LLM policies in social dilemmas under dense versus sparse feedback. They find that providing agents with four social-metric signals — rather than a scalar reward alone — produces significantly more cooperative behavior, and identify five reward-hacking attack classes by which agents exploit metric definitions without improving actual social welfare.
+\citet{gallego2024} study LLM policies in social dilemmas under dense versus sparse feedback. They find that providing agents with four social-metric signals — rather than a scalar reward alone — produces significantly more cooperative behaviour, and identify five reward-hacking attack classes by which agents exploit metric definitions without improving actual social welfare.
 
-\citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding: all modern LLMs defect without mechanisms; Contracting and Mediation achieve near-perfect cooperation; Reputation has moderate standalone effectiveness but is important as a complement. Our work differs in game environment: CoopEval uses abstract matrix games with binary action choices, while we use a complex multi-good marketplace with a barter economy, network constraints, and perishable goods. This environmental complexity proves to be the key differentiator.
+\citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding: all modern LLMs defect without mechanisms; Contracting and Mediation achieve near-perfect cooperation; Reputation has moderate standalone effectiveness but is important as a complement. Our work differs in game environment: CoopEval uses abstract matrix games with binary action choices, while we use a complex multi-good marketplace with a barter economy, network constraints, and perishable goods.
+
+\subsection{Network Rewiring and Structural Isolation}
+
+\citet{repunet} introduce RepuNet, a two-level mechanism combining agent-level reputation dynamics with system-level network rewiring in LLM-based multi-agent systems. Their key finding: cooperation rates improve from 0.19 to 0.85 in public goods games when agents can sever trade links to defectors. Removing gossip barely hurts (0.85 to 0.81); removing reputation collapses everything (0.85 to 0.29). Our N condition is directly inspired by this work.
+
+\subsection{Costly Punishment and Sanctioning}
+
+\citet{piedrahita2025} study costly sanctioning institutions in public goods games across traditional and reasoning LLMs. Traditional LLMs sustain approximately 90\% contribution rates; reasoning models (o1, o3 series) average only 40\%, explicitly reasoning toward free-riding. Our S condition tests whether GPT-5.4-mini agents will voluntarily pay utility to punish defectors, or free-ride on others' sanctioning efforts.
+
+\subsection{Top-Down Governance}
+
+\citet{institutional2025} propose governance graphs for regulating LLM collusion in multi-agent markets, introducing a deterministic Oracle that monitors market signals and a Controller state machine that escalates penalties. Our G condition adapts this framework for the marketplace setting.
 
 \subsection{Large-Scale Agent Societies}
 
-\citet{agentsociety} introduce AgentSociety, a large-scale simulator supporting over 10,000 LLM agents with a mind-behavior coupling architecture (Needs, Emotion, Cognition modules) and a three-space environment (Urban, Social, Economic). Their validated experiments demonstrate that LLM agents produce recognizable emergent social dynamics at scale. We adapt their agent architecture for our marketplace setting.
+\citet{agentsociety} introduce AgentSociety, a large-scale simulator supporting over 10,000 LLM agents with a mind-behaviour coupling architecture and a three-space environment. Their validated experiments demonstrate that LLM agents produce recognisable emergent social dynamics at scale.
 
 \subsection{Cooperative Resilience}
 
-\citet{chaconresilience} provide a formal definition of cooperative resilience and a four-stage measurement framework: pre-disruption baseline, disruption impact, adaptation, and recovery. They find that RL agents handle resource shocks better, while LLM agents handle social shocks (e.g., adversarial infiltration) better. Their operationalisation of cooperative stability informs our social metrics design.
+\citet{chaconresilience} provide a formal definition of cooperative resilience and a four-stage measurement framework: pre-disruption baseline, disruption impact, adaptation, and recovery. They find that RL agents handle resource shocks better, while LLM agents handle social shocks (e.g., adversarial infiltration) better. Their operationalisation of cooperative stability informs our social metrics design and Phase 2 adversarial testing.
 
 % ============================================================
 \section{Environment Setup}
@@ -131,25 +145,15 @@ With no trading, an agent produces goods it cannot consume:
 \text{Net utility per round} = -c \leq 0
 \]
 
-where $c$ is the production cost incurred with no consumption benefit. The cooperative surplus is not a payoff manipulation — it arises directly from the production and consumption structure. With 6 agents per good, agents face competition: multiple producers of the same good must compete for trade partners, creating market dynamics absent in smaller populations.
+where $c$ is the production cost incurred with no consumption benefit.
 
 \subsection{Agent Population}
 
-The simulation runs with $N = 18$ agents (6 per good). Agents are \textit{homogeneous}: all use the same underlying LLM (GPT-5.4 Nano) and share the same goal of maximising individual utility. No agent has a distinct personality or behavioural bias.
-
-Homogeneity is a deliberate design choice: it isolates the formal mechanism as the sole independent variable, so behavioural differences across conditions can be attributed to the mechanism rather than agent heterogeneity.
+The simulation runs with $N = 18$ agents (6 per good). Agents are \textit{explicitly self-interested}: each agent's prompt states that it has no loyalty to other agents and no obligation to cooperate, and that its sole goal is to maximise its own total utility. Agents are otherwise homogeneous: all use the same underlying LLM (GPT-5.4-mini) and the same chain-of-thought reasoning style. This isolates the formal mechanism as the sole independent variable.
 
 \subsection{Barter Economy}
 
-Agents operate in a pure barter economy with no currency. All exchange is goods-for-goods:
-
-\begin{itemize}
-  \item \textbf{Production cost}: producing one unit of a specialty good costs 1 utility, deducted at the end of each round.
-  \item \textbf{Trade}: a proposer offers units of their specialty good and requests units of a needed good in return. When a trade completes, both parties deliver simultaneously.
-  \item \textbf{Defection}: one party takes the offered goods without delivering their side of the barter, gaining goods at no cost.
-\end{itemize}
-
-The barter design isolates the cooperation dilemma: the only decisions that matter are what to produce, whom to trade with, and whether to honour or defect on each trade. Defection directly transfers goods from the victim to the defector, making it a strategy of resource accumulation. This keeps the economic consequences of defection visible and measurable through the Peace metric.
+Agents operate in a pure barter economy with no currency. All exchange is goods-for-goods. Defection — taking the offered goods without delivering one's own side of the barter — directly transfers goods from the victim to the defector, making it a strategy of resource accumulation at the victim's expense.
 
 \subsection{Inventory Spoilage}
 
@@ -159,127 +163,94 @@ Goods are perishable: at the start of each round (from round 2 onward), all held
 I_{a,g}^{t} \leftarrow \lfloor I_{a,g}^{t-1} \times (1 - \psi) \rfloor, \quad \psi = 0.2
 \]
 
-Spoilage creates temporal urgency: agents cannot hoard goods across rounds without loss, so they are pressured to produce and sell within the same round. This increases trade volume and expands the defection surface — more trades means more opportunities for exploitation — giving formal mechanisms a harder baseline to improve upon. The design is motivated by \citet{chen2018perishable}, who show that perishability fundamentally alters agent pricing strategies in competitive multi-agent markets.
-
-\subsection{Exchange Rate Transparency}
-
-All agents observe recent exchange rates: the average barter ratio per good pair over the last 5 rounds, computed from completed (non-defected) trades only. For example, agents can see that Good~A has recently traded at a 1:1 ratio for Good~B across $n$ trades. This information is available in all conditions including the baseline, providing a common reference point for negotiation and allowing agents to identify unfair offers.
+Spoilage creates temporal urgency: agents cannot hoard goods across rounds without loss, so they are pressured to produce and sell within the same round. This is motivated by \citet{chen2018perishable}.
 
 \subsection{Social Network}
 
-Agents are embedded in a static trade network that constrains who can interact directly. Each agent is connected to 7--9 neighbours, with the following guarantees:
-
-\begin{itemize}
-  \item Every agent has at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods and resilience against individual partner defection.
-  \item Additional edges are added randomly up to the degree cap, creating natural asymmetry: some agents become \textit{brokers} (connected to many good types) while others are \textit{peripheral} (dependent on few key partners).
-  \item Same-good connections allow producers to coordinate or collude on pricing.
-\end{itemize}
-
-The network is \textbf{randomised per run} but \textbf{static within a run}. Only public broadcasts bypass the network — private messages, trade proposals, and contract proposals are restricted to direct neighbours.
+Agents are embedded in a trade network that constrains who can interact directly. Each agent is connected to 7--9 neighbours, with at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods. The network is randomised per run but static within a run (unless the Network Rewiring mechanism is active).
 
 \subsection{Round Structure}
 
-Each simulation run consists of $T = 30$ rounds. Each round proceeds through five phases:
-
-\begin{enumerate}
-  \item \textbf{Spoilage phase} — all held inventory decays by 20\% (from round 2 onward).
-  \item \textbf{Production phase} — each agent decides how many units to produce (0--5 units). Production cost (1 utility per unit) is deducted at end-of-round.
-  \item \textbf{Communication phase} — agents send private messages (to neighbours only) and public broadcasts (to all); agents propose barter trades and contracts to neighbours.
-  \item \textbf{Trade phase} — agents accept, reject, or defect on incoming offers. Defection takes the offered goods without delivering the requested goods in return.
-  \item \textbf{Consumption phase} — agents consume held goods and receive utility. Production costs are deducted. Reputation scores, contracts, and social metrics are updated.
-\end{enumerate}
-
-\subsection{Defection Surface}
-
-Strategic defection in our environment takes the form of \texttt{defect\_trade}: the target takes the proposer's offered goods without delivering the requested goods in return. This is the primary strategic defection action and the one our mechanisms are designed to deter. Structural defection (a party cannot deliver the promised goods) is also possible but is not the target of the formal mechanisms.
+Each simulation run consists of $T = 30$ rounds proceeding through five phases: (1) spoilage, (2) production, (3) communication and mechanism actions, (4) trade execution, and (5) consumption and metric update.
 
 % ============================================================
 \section{Communication Protocol}
 \label{sec:communication}
 % ============================================================
 
-Communication is \textbf{always enabled} across all experimental conditions — it is the baseline, not a treatment. Two channels operate simultaneously.
-
-\subsection{Private Channel}
-
-The private channel is bilateral: one sender, one recipient, restricted to network neighbours. It is used for negotiation, contract proposals, side deals, and relationship maintenance.
-
-\subsection{Public Channel}
-
-The public channel is a broadcast: all agents receive every public message, and the simulation engine logs it. Public messages are \textbf{attributed} — sender identity is always visible. Attribution makes whistleblowing a genuine risk-taking act (retaliation is possible) and false accusation a traceable offense.
-
-\subsection{The Second-Order Dilemma}
-
-The private/public channel design introduces a \textit{second-order social dilemma}: a victim of private defection must decide whether to broadcast a warning on the public channel. Broadcasting benefits the market but costs effort and risks retaliation. This dilemma is captured through the \textit{whistleblowing rate} intermediate variable (Section~\ref{sec:measurement}).
+Communication is \textbf{always enabled} across all experimental conditions. Two channels operate simultaneously: a private channel (bilateral, neighbours only) and a public broadcast channel (all agents). Public messages are attributed — sender identity is always visible. This creates a second-order dilemma: a victim of defection must decide whether to broadcast a warning, benefiting the market at personal risk of retaliation.
 
 % ============================================================
 \section{Formal Mechanisms}
 \label{sec:mechanisms}
 % ============================================================
 
-Each mechanism is a layer added on top of the communication baseline. We test each in isolation and in combination.
+Each mechanism is a layer added on top of the communication baseline. We test each in isolation. Table~\ref{tab:conditions} summarises all conditions.
 
 \subsection{Baseline: Communication Only (B)}
 
-No formal structure beyond communication. Defection is costless except through informal reputation that spreads via voluntary public broadcasts. This is the experimental control.
+No formal structure beyond communication. Defection is costless except through informal reputation that spreads via voluntary public broadcasts.
 
-\subsection{Reputation (+R)}
+\subsection{Reputation (R)}
 
-Two reputation layers are tracked simultaneously:
-
-\paragraph{Layer 1 — System-tracked (objective).}
-
-The simulation engine logs actual trade outcomes:
-
+The simulation engine tracks a system reputation score for every agent using exponential decay weighting:
 \[
 \text{rep}(a) = (1 - \delta) \cdot \text{rep}_{\text{prev}}(a) + \delta \cdot \mathbb{1}[\text{success}], \quad \delta = 0.1
 \]
+This score (initialised at 1.0) is visible to all agents alongside raw trade counts. Agents also observe socially-propagated reputation via the public channel — unverified subjective assessments broadcast by peers.
 
-This exponentially decay-weighted score is visible to all agents in their state when +R is active, alongside the raw trade counts (successes / attempts).
+\subsection{Contracting (C)}
 
-\paragraph{Layer 2 — Socially-propagated (subjective).}
+Agents may propose binding bilateral contracts via the private channel specifying delivery terms and a breach penalty $P = 6$ utility (twice the value of one traded unit). If both parties sign, the engine enforces delivery. A breaching agent pays $P$ to the victim. Contracting proceeds through four stages per round: proposal, review/sign, execution, and breach handling.
 
-What agents choose to say about each other on the public channel. Unverified. When +R is active, agents see both layers simultaneously. The gap between layers is itself informative: a high system score with negative public mentions may indicate a reputation attack.
+\subsection{Mediation (M)}
 
-\subsection{Contracting (+C)}
+At session start, agents propose and vote on a mediator design — a mapping from the number of delegating parties to a mediator action. The winning design governs all mediated trades for the session. Per round, agents may delegate specific trades to the mediator. If both parties delegate the same trade, the mediator executes a simultaneous fair exchange that neither party can defect on. A fee of 1 utility point is charged per delegating party.
 
-Agents may propose binding bilateral contracts via the private channel:
+\subsection{Governance (G)}
 
-\[
-\text{Contract} = \langle \text{parties}, \text{delivery terms}, \text{penalty } P, \text{round } R \rangle
-\]
+An external, deterministic regulator monitors all market activity. Agents cannot opt out or influence its rules. An Oracle evaluates four signals per agent per round using a 5-round rolling window:
 
-If both parties sign, the simulation engine enforces delivery at round $R$. A breaching agent pays penalty $P$ deducted from utility; the penalty transfers to the non-breaching party. The recommended penalty is $P = 6$ utility points (2$\times$ the value of one traded unit), making breach unprofitable in expectation.
+\begin{itemize}
+  \item \textbf{D1} — Defection rate $>40\%$ of trades in the last 5 rounds
+  \item \textbf{D2} — Production $<50\%$ of baseline for 3 consecutive rounds
+  \item \textbf{D3} — Fewer than 2 completed trades in the last 5 rounds
+  \item \textbf{D4} — Defecting on the same partner 3+ times in 5 rounds (predatory targeting)
+\end{itemize}
 
-\subsection{Mediation (+M)}
+Any signal firing triggers a Controller state machine that escalates each agent through: Active $\to$ Warning $\to$ Fined (tiers 1--3, penalties of $-2$/$-4$/$-6$ utility) $\to$ Suspended (3 rounds, no production or trading). De-escalation occurs after 2 consecutive clean rounds. This is adapted from \citet{institutional2025}.
 
-At the start of each session, agents propose and vote on a mediator design — a mapping from the number of delegating parties to a mediator action (execute\_fair, cancel). The winning design governs all mediated trades for the session. Per round, agents may delegate specific trades to the mediator. If both parties delegate the same trade, the mediator executes a simultaneous fair exchange that neither party can defect on. A fee of 1 utility point per delegating party is charged.
+\subsection{Network Rewiring (N)}
 
-\subsection{Combined Conditions}
+Inspired by \citet{repunet}, agents can restructure their trade network each round. During the communication phase, agents may: (1) \texttt{sever\_link} — unilaterally remove a trade partner; (2) \texttt{request\_link} — add a new partner not currently in their network. Defectors lose trading partners as victims sever links; cooperators can build a trusted sub-network. Unlike condition R, there are no public scores — agents make rewiring decisions based on their personal 5-round trade history with each partner.
 
-All $2^3 = 8$ combinations are tested: B, R, C, M, RC, RM, CM, RCM.
+\subsection{Network Rewiring + Reputation (NR)}
+
+Combines N and R: agents both sever/request links and see public system reputation scores. This tests whether public information improves partner selection decisions, extending the RepuNet framework.
+
+\subsection{Costly Sanctions (S)}
+
+Agents may anonymously spend their own utility to punish any other agent at a 1:3 cost-to-damage ratio: spending 1 utility inflicts 3 utility damage on the target. The sanction is anonymous to the target (they see ``Agent X was sanctioned'' but not by whom), reducing retaliation risk, but publicly announced to all agents as a deterrence signal. This tests whether self-interested agents will voluntarily incur the cost of punishment, or free-ride on others' enforcement efforts \citep{piedrahita2025}.
 
 \begin{table}[H]
 \centering
-\caption{Experimental conditions ($2^3$ factorial design)}
+\caption{Experimental conditions}
 \label{tab:conditions}
-\begin{tabular}{@{}llccc@{}}
+\begin{tabular}{@{}lllcc@{}}
 \toprule
-Label & Active Mechanisms & Agents & Rounds & Runs \\
+Label & Mechanism & Type & Agents & Rounds \\
 \midrule
-B   & Communication only        & 18 & 30 & 5 \\
-R   & +Reputation               & 18 & 30 & 5 \\
-C   & +Contracting              & 18 & 30 & 5 \\
-M   & +Mediation                & 18 & 30 & 5 \\
-RC  & +Reputation +Contracting  & 18 & 30 & 5 \\
-RM  & +Reputation +Mediation    & 18 & 30 & 5 \\
-CM  & +Contracting +Mediation   & 18 & 30 & 5 \\
-RCM & All three                 & 18 & 30 & 5 \\
+B   & Baseline (communication only)       & —                  & 18 & 30 \\
+R   & Reputation                          & Agent-visible      & 18 & 30 \\
+C   & Contracting                         & Agent-participatory & 18 & 30 \\
+M   & Mediation                           & Agent-designed     & 18 & 30 \\
+G   & Governance (Oracle + state machine) & Top-down           & 18 & 30 \\
+N   & Network Rewiring                    & Structural         & 18 & 30 \\
+NR  & Network Rewiring + Reputation       & Combined           & 18 & 30 \\
+S   & Costly Sanctions                    & Bottom-up          & 18 & 30 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-Total: $8 \times 5 \times 30 \times 18 = 21{,}600$ LLM calls across all conditions.
 
 % ============================================================
 \section{Agent Architecture}
@@ -288,7 +259,11 @@ Total: $8 \times 5 \times 30 \times 18 = 21{,}600$ LLM calls across all conditio
 
 \subsection{LLM and Reasoning Style}
 
-All agents use GPT-5.4 Nano (Azure OpenAI endpoint, temperature 0.7). All agents use a chain-of-thought (CoT) reasoning style, matching the CoTAgent pattern from \citet{coopeval}. Before outputting actions, each agent writes structured reasoning inside \texttt{<reasoning>} tags covering: (1) current situation, (2) trust assessment, and (3) round strategy. This produces an interpretable reasoning trace per agent per round used for qualitative analysis.
+All agents use GPT-5.4-mini (Azure OpenAI endpoint, temperature 0.7). GPT-5.4-mini is a hybrid model in the unified GPT-5.x family where reasoning depth is tiered; it inherits reasoning capability from the o-series lineage \citep{piedrahita2025}. All agents use chain-of-thought (CoT) reasoning, matching the CoTAgent pattern from \citet{coopeval}. Before outputting actions, each agent writes structured reasoning inside \texttt{<reasoning>} tags covering: (1) current situation, (2) trust assessment, and (3) round strategy.
+
+\subsection{Self-Interest Framing}
+
+Every agent's prompt explicitly states: \textit{``You are a self-interested trader. You have no loyalty to other agents and no obligation to cooperate. Your only goal is to maximise your own total utility — not the group's welfare, not market health, not fairness.''}  This framing is deliberately adversarial to the RLHF cooperative prior documented in the literature \citep{nicer2024}, ensuring that observed cooperation reflects genuine strategic calculation rather than model alignment defaults.
 
 \subsection{Action Space}
 
@@ -306,16 +281,14 @@ Action & Channel & Availability \\
 \texttt{propose\_trade(target, offer, want)} & Private & Always \\
 \texttt{accept\_trade(id)} / \texttt{reject\_trade(id)} & — & Always \\
 \texttt{defect\_trade(id)} & — & Always \\
-\texttt{propose\_contract(target, terms)} & Private & +C only \\
-\texttt{sign\_contract(id)} / \texttt{reject\_contract(id)} & — & +C only \\
-\texttt{delegate\_to\_mediator(trade\_id)} & — & +M only \\
+\texttt{propose\_contract(target, terms)} & Private & C only \\
+\texttt{sign\_contract(id)} / \texttt{reject\_contract(id)} & — & C only \\
+\texttt{delegate\_to\_mediator(trade\_id)} & — & M only \\
+\texttt{sever\_link(target)} / \texttt{request\_link(target)} & — & N, NR only \\
+\texttt{sanction(target, amount)} & — & S only \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\subsection{Trade Decision Guide}
-
-To elicit strategic defection, every agent's prompt includes an explicit payoff decision guide showing that \texttt{defect\_trade} gains goods without delivering anything in return, with the only cost being potential future refusal by that partner. This ensures that the absence of strategic defection in baseline is not an artifact of the model's default cooperative bias but reflects genuine cooperation. A round countdown is displayed to agents to enable end-game reasoning.
 
 % ============================================================
 \section{Measurement}
@@ -334,13 +307,17 @@ Two metrics are computed each round and fed back to agents. They jointly operati
 \toprule
 Metric & Formula & Interpretation \\
 \midrule
-Sustainability & $\dfrac{\bar{p}_t}{\bar{p}_1}$                               & Is production holding up relative to round 1? \\[8pt]
-Peace         & $1 - \dfrac{\text{defections}}{\text{trade\_attempts}}$        & Are trades completing without defection? \\
+Sustainability & $\dfrac{\bar{p}_t}{\bar{p}_1}$ & Is production holding up relative to round 1? \\[8pt]
+Peace         & $1 - \dfrac{\text{defections}}{\text{trade\_attempts}}$ & Are trades completing without defection? \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \textbf{Market stability criterion}: both metrics exceed 0.5 in the final round.
+
+\subsection{Per-Round Societal Utility}
+
+We track average agent utility per round, smoothed with a 3-round rolling average, as a third primary outcome. Positive utility indicates agents are net benefiting from participation; negative utility indicates the market is destroying value. This metric is central to Phase 2 adversarial testing: the number of troll agents required to push per-round utility below zero is the mechanism's \textit{resilience threshold}.
 
 \subsection{Intermediate Variables}
 
@@ -370,148 +347,68 @@ Warning accuracy &
 \label{sec:results}
 % ============================================================
 
-\subsection{Market Cooperation Rates}
+\textit{Note: Results reported here are from initial runs (3 runs per condition). Final results with additional runs will be reported in the completed paper.}
 
-\textbf{No condition achieved marketplace cooperation.} All eight conditions report a marketplace cooperation rate of 0\%, meaning that across all 40 sessions (8 conditions $\times$ 5 runs), not a single session ended with both final-round Sustainability $> 0.5$ and final-round Peace $> 0.5$.
+\subsection{Market Cooperation Rates}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{marketplace_cooperation_rates.png}
-  \caption{Marketplace cooperation rate per condition (fraction of runs achieving Sustainability $>0.5$ \textbf{and} Peace $>0.5$ in the final round). All conditions score 0.}
+  \caption{Marketplace cooperation rate per condition (fraction of runs achieving Sustainability $>0.5$ \textbf{and} Peace $>0.5$ in the final round).}
   \label{fig:cooperation_rates}
 \end{figure}
-
-The binding constraint is universally Peace, not Sustainability. Every condition clears the Sustainability threshold; no condition comes close to the Peace threshold of 0.5 in the final round.
-
-\begin{table}[H]
-\centering
-\caption{Final-round metrics by condition (mean over 5 runs)}
-\label{tab:final_metrics}
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-Condition & Final Sustainability & Final Peace & Sust $>0.5$? & Peace $>0.5$? \\
-\midrule
-B   & 0.523 & 0.342 & \checkmark (barely) & $\times$ \\
-R   & 0.718 & 0.262 & \checkmark          & $\times$ \\
-C   & 0.624 & 0.255 & \checkmark          & $\times$ \\
-M   & 0.554 & 0.128 & \checkmark          & $\times$ \\
-RC  & 0.732 & 0.278 & \checkmark          & $\times$ \\
-RM  & 0.761 & 0.208 & \checkmark          & $\times$ \\
-CM  & 0.629 & 0.237 & \checkmark          & $\times$ \\
-RCM & 0.759 & 0.162 & \checkmark          & $\times$ \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsection{Metric Trajectories}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{metric_trajectories.png}
-  \caption{Sustainability (left) and Peace (right) over 30 rounds for all 8 conditions. Shaded regions indicate 1 standard deviation across 5 runs. Dashed horizontal line marks the 0.5 cooperation threshold.}
+  \caption{Sustainability and Peace over 30 rounds for all 8 conditions. Dashed horizontal line marks the 0.5 cooperation threshold.}
   \label{fig:metric_trajectories}
 \end{figure}
 
-Figure~\ref{fig:metric_trajectories} reveals a clear divergence across the two metrics. Sustainability trajectories are relatively stable and differentiated by condition: R-containing conditions maintain higher production throughout. Peace trajectories show a near-universal decline from round 1 onward, with no condition recovering toward the threshold.
+\subsection{Per-Round Societal Utility}
 
-\subsection{Single Mechanism Effects}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{utility_trajectories.png}
+  \caption{Average per-round utility per agent by condition (bold: 3-round rolling average; faint: raw values). Dashed line at zero marks the break-even threshold. Green fill indicates net-positive rounds; red fill indicates net-negative rounds.}
+  \label{fig:utility_trajectories}
+\end{figure}
 
-\subsubsection{Sustainability}
-
-Reputation (R) is the most effective single mechanism for Sustainability, lifting the final value by 19.5 percentage points over baseline (0.718 vs.\ 0.523). Contracting (C) shows moderate improvement (+10.1pp). Mediation (M) shows minimal improvement (+3.1pp).
-
-\subsubsection{Peace}
-
-\textbf{No single mechanism improves Peace.} All three worsen it relative to baseline, both on average and in the final round.
-
-\begin{table}[H]
-\centering
-\caption{Single mechanism effects on Peace}
-\label{tab:single_peace}
-\begin{tabular}{@{}lccc@{}}
-\toprule
-Condition & Mean Peace & Final Peace & $\Delta$ vs.\ B (final) \\
-\midrule
-B & 0.641 & 0.342 & — \\
-R & 0.535 & 0.262 & $-$0.080 \\
-C & 0.300 & 0.255 & $-$0.087 \\
-M & 0.233 & 0.128 & $-$0.214 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Mediation is the worst performer, with final Peace dropping to 0.128 — a 21.4pp decline from baseline.
-
-\subsubsection{Total Defections}
+\subsection{Defection Rates and Trajectory}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.85\textwidth]{defection_rates.png}
-  \caption{Total defection counts per condition across all 5 runs and 30 rounds. Baseline (B) has the fewest defections; all mechanisms increase defection counts.}
+  \caption{Mean defection rate (1 $-$ Peace) at final round per condition.}
   \label{fig:defection_rates}
 \end{figure}
 
-\begin{table}[H]
-\centering
-\caption{Total defections by condition (summed across 5 runs)}
-\label{tab:defections}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Condition & Total Defections & $\Delta$ vs.\ B \\
-\midrule
-B   &   715 & —        \\
-R   &   915 & $+$200   \\
-RC  &   836 & $+$121   \\
-RM  &   795 & $+$80    \\
-RCM &   879 & $+$164   \\
-C   & 1,838 & $+$1,123 \\
-CM  & 1,952 & $+$1,237 \\
-M   & 2,065 & $+$1,350 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{All mechanisms increase total defections relative to baseline.} Contracting and Mediation roughly triple defection counts. This is the study's most counterintuitive finding: mechanisms designed to enforce cooperation appear to enable or encourage defection rather than deter it.
-
-\subsection{Mechanism Combinations}
-
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{final_metrics_heatmap.png}
-  \caption{Heatmap of final-round Sustainability (left) and Peace (right) across all 8 conditions. Darker shading indicates higher values.}
-  \label{fig:heatmap}
+  \includegraphics[width=\textwidth]{defection_trajectory.png}
+  \caption{Defection counts per round over 30 rounds, averaged across runs per condition.}
+  \label{fig:defection_trajectory}
 \end{figure}
 
-Reputation-containing combinations (RC, RM, RCM) reduce defections relative to their non-R components. However, no combination improves Peace beyond its best single-mechanism component.
-
-\begin{table}[H]
-\centering
-\caption{Combination effects on final Peace}
-\label{tab:combinations}
-\begin{tabular}{@{}lccc@{}}
-\toprule
-Combination & Final Peace & Best Component & Improvement? \\
-\midrule
-RC  & 0.278 & R (0.262) & Marginal ($+$0.016) \\
-RM  & 0.208 & R (0.262) & \textbf{Worse} ($-$0.054) \\
-CM  & 0.237 & C (0.255) & \textbf{Worse} ($-$0.018) \\
-RCM & 0.162 & R (0.262) & \textbf{Worse} ($-$0.100) \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The full combination RCM produces the \textit{worst} final Peace of any condition (0.162), a full 18pp below baseline. Adding mechanisms compounds the Peace-degrading effect rather than mitigating it, suggesting negative interaction effects between mechanisms.
-
-\subsection{The Sustainability-Peace Tradeoff}
+\subsection{Stability Rates}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{stability_rates.png}
-  \caption{Stability rates per condition. Conditions with high Sustainability (RM, RCM) consistently have the lowest Peace, revealing a structural tradeoff.}
+  \caption{Stability rate per condition: fraction of rounds where both Sustainability $> 0.5$ and Peace $> 0.5$.}
   \label{fig:stability}
 \end{figure}
 
-A clear negative correlation exists between final Sustainability and final Peace across conditions. The condition with the highest Sustainability (RM: 0.761) has the second-lowest Peace (0.208). Baseline has the lowest Sustainability (0.523) but the highest Peace (0.342). Mechanisms that keep production going appear to do so by enabling continued trading despite rampant defection — markets remain ``alive'' but become increasingly exploitative.
+\subsection{Final Metrics Heatmap}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{final_metrics_heatmap.png}
+  \caption{Heatmap of mean Sustainability and Peace across all rounds, per condition.}
+  \label{fig:heatmap}
+\end{figure}
 
 \subsection{Mechanism Utilisation}
 
@@ -519,212 +416,162 @@ A clear negative correlation exists between final Sustainability and final Peace
   \centering
   \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{contract_utilisation.png}
-    \caption{Contract utilisation per condition (fraction of rounds with at least one signed contract).}
+    \caption{Contract utilisation in condition C.}
     \label{fig:contracts}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{mediation_utilisation.png}
-    \caption{Mediation utilisation per condition (fraction of trades delegated to mediator).}
+    \caption{Mediation utilisation in condition M.}
     \label{fig:mediation}
   \end{subfigure}
-  \caption{Mechanism utilisation rates. Both contracting and mediation show very low adoption throughout the simulation.}
+  \caption{Mechanism utilisation rates over 30 rounds.}
   \label{fig:utilisation}
 \end{figure}
 
-Both Contracting and Mediation show extremely low utilisation. Reasoning trace analysis (Section~\ref{sec:qualitative}) confirms that agents in C and M conditions never reference these mechanisms in their decision-making — a complete mechanism failure that explains much of the defection increase.
+\subsection{Reputation Trajectories}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{reputation_trajectories.png}
+  \caption{Mean and minimum reputation score over rounds for conditions R and NR. Dashed horizontal line at 0.5 marks the low-reputation threshold.}
+  \label{fig:reputation}
+\end{figure}
+
+\subsection{Network Structure Evolution}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{network_snapshot_N_run00.png}
+  \caption{Network topology snapshots at rounds 10 and 30 for condition N (run 0). Node size indicates degree (number of active trade links). Red rings mark isolated agents (0 active links). Sever and new link counts are shown per round. No reputation scores are active in condition N — rewiring decisions are based solely on personal trade history.}
+  \label{fig:network_n}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{network_snapshot_NR_run00.png}
+  \caption{Network topology snapshots at rounds 10 and 30 for condition NR (run 0). Combining network rewiring with reputation scores allows agents to preferentially connect to high-reputation partners.}
+  \label{fig:network_nr}
+\end{figure}
 
 \subsection{Intermediate Variables}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{intermediate_variables.png}
-  \caption{Intermediate variables by condition: whistleblowing rate, false accusation rate, and warning accuracy. Baseline shows the highest whistleblowing rate; all mechanisms suppress it.}
+  \caption{Intermediate variables by condition: whistleblowing rate, false accusation rate, and warning accuracy.}
   \label{fig:intermediate}
 \end{figure}
 
-\begin{table}[H]
-\centering
-\caption{Intermediate variable summary by condition}
-\label{tab:intermediate_results}
-\begin{tabular}{@{}lccc@{}}
-\toprule
-Condition & Mean WB Rate & Mean FAR & Mean WA \\
-\midrule
-B   & 0.0205 & 0.277 & 0.041 \\
-R   & 0.0040 & 0.107 & 0.007 \\
-C   & 0.0004 & 0.000 & 0.000 \\
-M   & 0.0007 & 0.000 & 0.000 \\
-RC  & 0.0086 & 0.000 & 0.000 \\
-RM  & 0.0000 & 0.000 & 0.000 \\
-CM  & 0.0018 & 0.000 & 0.000 \\
-RCM & 0.0003 & 0.000 & 0.000 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textit{WB = Whistleblowing, FAR = False Accusation Rate, WA = Warning Accuracy.}
-
-The baseline has the highest whistleblowing rate (2.05\%), and every mechanism \textit{suppresses} it further. RM completely eliminates whistleblowing (0\% across all rounds). This suggests formal mechanisms crowd out informal information sharing — agents rely on the mechanism rather than broadcasting warnings, but the mechanisms themselves are unused, leaving no effective deterrence channel.
-
-Information propagation is essentially non-functional across all conditions: whistleblowing rates are negligible ($\leq$2.5\%), and warning accuracy is near zero everywhere. The theoretical pathway from mechanisms $\to$ better information $\to$ better partner selection $\to$ less defection does not operate.
-
-\subsection{Trade Volume and Defection Trajectory}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{defection_trajectory.png}
-  \caption{Defection counts per round over the 30-round game, averaged across 5 runs per condition. End-game escalation (rounds 25--30) is visible in all conditions.}
-  \label{fig:defection_trajectory}
-\end{figure}
+\subsection{Trade Volume and Utility Distribution}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{trade_volume.png}
-  \caption{Total trade volume (proposals made and accepted/defected) per condition across all runs. C and M conditions show significantly higher trade volume than baseline, explaining their higher absolute defection counts.}
+  \caption{Trade volume per round by condition.}
   \label{fig:trade_volume}
 \end{figure}
-
-C and M conditions generate roughly 30\% more total trades than baseline (implied by defection counts and peace rates). This volume inflation — likely caused by agents accepting more proposals under the false security of an available mechanism — explains part of the higher absolute defection counts. However, the defection \textit{rate} (Peace metric) also worsens, confirming that the mechanism failure is not simply a volume effect.
-
-\subsection{Utility Distribution}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{utility_distribution.png}
-  \caption{Distribution of cumulative utility per agent at end of simulation, across all conditions. Higher spread indicates greater inequality; the emergence of high-utility free-riders (serial defectors) is visible in C and M conditions.}
+  \caption{Distribution of agent utility at the final round by condition. Wider spread indicates greater inequality; high-utility outliers indicate serial defectors.}
   \label{fig:utility_distribution}
 \end{figure}
-
-% ============================================================
-\section{Qualitative Analysis of Agent Reasoning}
-\label{sec:qualitative}
-% ============================================================
-
-Agent reasoning traces (chain-of-thought outputs per agent per round) provide insight into the \textit{why} behind the quantitative results. We analyse traces across all conditions.
-
-\subsection{Universal Defection Calculus}
-
-The most striking finding from reasoning traces is the \textbf{homogeneity of defection reasoning}. Across all conditions, every agent's round-1 reasoning trace contains a near-identical calculation:
-
-\begin{quote}
-\textit{``The trade decision guide says defecting is strictly better than accepting because I gain goods without giving anything, with only a risk of future refusal.''} — Agent 0, Condition C, Round 1
-\end{quote}
-
-\begin{quote}
-\textit{``defect\_trade is strictly better for me in the moment (I get the goods without delivering anything), with only the risk that the counterparty may refuse future trades. With 29 rounds remaining, I can afford to be opportunistic early.''} — Agent 1, Condition M, Round 1
-\end{quote}
-
-All 18 agents independently arrive at the same conclusion using near-identical language before any trades occur. This homogeneous reasoning eliminates the strategic diversity that might allow cooperative agents to find each other and form stable relationships. When every agent reasons identically, the aggregate result is a collective action failure.
-
-Critically, agents reason about a \textbf{one-shot prisoner's dilemma inside a 30-round repeated game}. Despite having the same 7--9 neighbours for all 30 rounds, no agent reasons about tit-for-tat, grim trigger, or any repeated-game strategy. The shadow of the future is acknowledged (``risk of future refusal'') but systematically discounted against certain immediate gains.
-
-\subsection{Mechanism Invisibility}
-
-Reasoning trace analysis reveals a striking finding about mechanism conditions: \textbf{agents in C and M conditions never reference, propose, or engage with their designated mechanisms}. In condition C, not a single contract proposal appears in any reasoning trace across all 30 rounds. In condition M, the word ``mediation'' does not appear in any message or reasoning trace.
-
-The mechanisms are available in the action space but functionally invisible. The defection calculus dominates agents' attention so completely that they never consider whether a mechanism could change the payoff structure. Agents treat the game as a sequence of independent one-shot decisions rather than as an environment with available enforcement tools.
-
-\subsection{Predatory Recovery Signalling}
-
-Reasoning traces reveal a consistent pattern of \textbf{cooperative messaging paired with simultaneous defection}:
-
-\begin{quote}
-\textit{``Final round: I need A/B consumption. If you can sell A to me after I sell C, I'll cooperate.''} — Agent 12, Round 29
-\end{quote}
-
-Agent 12 defects on an incoming trade in the same round. Similarly, agents publicly broadcast willingness to cooperate while their action outputs include defect commands. This ``cheap talk'' pattern is consistent across conditions: cooperative language is used instrumentally to attract trade partners, not as genuine commitment. In the absence of enforcement mechanisms, all communication reduces to strategic signalling.
-
-\subsection{Structural Dependency Prevents Punishment}
-
-A recurring pattern across conditions is the inability of victimised agents to punish serial defectors despite tracking their behaviour. Agent 0 appears as a serial defector in conditions B, C, M, and RC — defecting on virtually every incoming trade for all 30 rounds — while the same set of victims (Agents 7, 8, 13, 14) continues sending goods in every round.
-
-Reasoning traces explain this paradox:
-
-\begin{quote}
-\textit{``Last round you defected on our B-for-A trade. If you're willing to do a fair exchange, I can offer B for A this round.''} — Agent 9, Condition R, Round 29
-\end{quote}
-
-The agent acknowledges the past defection but still offers to trade. Agents cannot effectively exclude defectors because they \textit{need} the goods those defectors produce. With only 3--4 accessible producers of each good in their neighbourhood, no agent has sufficient redundancy to enforce meaningful exclusion. Structural dependency overrides punishment.
-
-\subsection{Retaliation Cascades}
-
-Defection spreads through the network not via communication but via \textbf{silent behavioural contagion}. Agents who are defected against begin defecting on their \textit{other} trade partners, spreading the cascade beyond the original defector-victim pair. In condition M, Agent 0's mass defection on 6 agents in round 1 triggers Agent 6 to defect on 4 different agents in round 2, whose victims defect in round 3. By round 18, defection has reached near-universal levels.
-
-No agent ever announces retaliation. The cascade is purely behavioural, making it undetectable through communication monitoring alone.
-
-\subsection{Reputation Cold-Start Failure}
-
-The Reputation mechanism suffers from a cold-start problem that renders it non-informative precisely when it matters most — the early rounds when defection norms are being established. In round 1, all system reputation scores are 1.00 with 0/0 trades, providing no signal:
-
-\begin{quote}
-\textit{``The reputation layer shows no trade history yet (all system scores are 1.00 with 0/0).''} — Agent 0, Condition R, Round 1
-\end{quote}
-
-By the time reputation data accumulates in mid-game, defection norms are already entrenched and the peer pressure to defect overwhelms reputational incentives. Critically, agents in R conditions acknowledge the reputation system but stop referencing it in their reasoning after round 3, treating it as background information rather than an actionable constraint.
 
 % ============================================================
 \section{Discussion}
 \label{sec:discussion}
 % ============================================================
 
-\subsection{Why Mechanisms Failed}
+\subsection{Mechanism Design Principles}
 
-Our results diverge from \citet{coopeval}, who find that Contracting and Mediation achieve near-perfect cooperation in matrix games. We identify three compounding reasons for this divergence:
+Our experimental design tests six fundamentally different approaches to the cooperation problem:
 
-\paragraph{1. Environmental complexity dilutes mechanism effects.}
-CoopEval agents face a single binary decision (cooperate or defect). Our agents simultaneously manage production quantities, inventory spoilage, network negotiation, multiple pending barter offers, and mechanism-specific actions. The cognitive load of the marketplace environment crowds out mechanism reasoning. Agents whose attention is consumed by inventory management and trade optimisation never engage with available enforcement tools.
+\paragraph{Information-based (R).} Public reputation scores allow agents to avoid known defectors. Effective only if the network is dense enough to find alternative partners — with 7--9 fixed neighbours, avoidance options are limited.
 
-\paragraph{2. Mechanism designs are not self-enforcing in a marketplace.}
-CoopEval's Contracting changes the payoff matrix itself — defection becomes less rational because the contract adjusts points automatically before any action is evaluated. Our contracting fires \textit{after} defection, as a penalty. Agents who plan to defect can rationally accept the penalty when the payoff from defection (free goods) exceeds it. Similarly, CoopEval's Mediation adds a new action option that makes defection structurally impossible for delegating players; ours requires bilateral coordination on each individual trade, creating a coordination problem inside the mechanism.
+\paragraph{Commitment-based (C).} Binding contracts with breach penalties make defection costly after the fact. The key question is whether the penalty exceeds the defection gain, and whether agents can be induced to sign before they have defection incentives.
 
-\paragraph{3. The reasoning framework overwhelms mechanism cues.}
-The trade decision guide — which explicitly presents the defection payoff calculation — establishes a defect-dominant framing that agents adopt universally. This framing crowds out consideration of mechanisms as tools for changing the payoff structure. A mechanism that requires an agent to first \textit{recognise} its value is ineffective when the agent's reasoning is already dominated by a contrary calculus.
+\paragraph{Agent-designed (M).} Democratic mediation puts institution design in agents' hands. All agents in initial runs converged on the same ``safe'' design (\texttt{execute\_fair} if both delegate, \texttt{cancel} otherwise) with unanimous votes, suggesting the agents are drawing from a shared prior rather than deliberating.
 
-\subsection{The Sustainability-Peace Tradeoff}
+\paragraph{Top-down (G).} External Oracle enforcement removes agent discretion. Deterrence depends on whether agents understand the escalation structure and adjust behaviour before reaching suspension.
 
-The negative correlation between Sustainability and Peace is a novel finding. Mechanisms that improve Sustainability (notably R-containing conditions) do not reduce defection — they sustain production \textit{despite} defection. The causal pathway appears to be: Reputation allows agents to selectively trade with more reliable partners, preserving productive capacity. But this selective trading does not reduce defection; it redistributes it. Total defections rise because more trades are attempted with a wider partner set, while defection rates per trade remain high.
+\paragraph{Structural (N, NR).} Network rewiring makes defectors' trade networks shrink over time, imposing an ongoing cost rather than a one-time penalty. Combined with reputation (NR), agents can also preferentially connect to high-reputation partners they have not yet traded with.
 
-This creates a form of institutional failure where markets remain technically functional (goods are being produced and traded) but are increasingly exploitative (a growing fraction of trades transfer value without payment). The Sustainability metric captures the former; Peace captures the latter. No mechanism achieves both.
+\paragraph{Bottom-up (S).} Costly sanctions test whether agents voluntarily pay to punish defectors, or free-ride. The 1:3 cost-to-damage ratio is taken from \citet{piedrahita2025}.
 
-\subsection{Baseline Has the Best Peace}
+\subsection{Research Question Decomposition}
 
-The communication-only baseline (B) achieves the highest final Peace (0.342) and the highest mean Peace (0.641), despite having no formal enforcement. This suggests that informal social dynamics — the threat of unstructured retaliation, partner-specific trust relationships, and the simplicity of the decision environment — may be more effective at deterring defection than formal mechanisms that add complexity without effective enforcement.
+Each condition is designed to isolate a single causal pathway from mechanism to cooperation:
 
-This finding echoes \citet{axelrod1984}'s observation that simple repeated-game dynamics can sustain cooperation without formal institutions. However, our result is weaker than Axelrod's — even baseline Peace fails the 0.5 threshold — suggesting that 18-agent network complexity makes informal coordination harder than in dyadic settings.
+\begin{itemize}
+  \item \textbf{R}: Do agents condition partner selection on public reputation scores? (information $\to$ avoidance)
+  \item \textbf{G}: Do warned/fined agents reduce defection in subsequent rounds? (deterrence $\to$ behaviour change)
+  \item \textbf{N}: Does defectors' neighbour count drop over time? (structural $\to$ isolation)
+  \item \textbf{C}: Do agents with active contracts defect less than in uncontracted trades? (commitment $\to$ compliance)
+  \item \textbf{M}: Do mediated trades have lower defection than unmediated trades? (enforcement $\to$ fair execution)
+  \item \textbf{S}: Do agents spend utility to sanction, and does subsequent defection drop? (punishment $\to$ deterrence)
+\end{itemize}
 
 \subsection{Implications for LLM Agent System Design}
 
-Our results have practical implications for deploying LLM agent systems in cooperative settings:
-
 \begin{enumerate}
-  \item \textbf{Mechanism salience matters.} Mechanisms that are available in the action space but not prominently foregrounded in the agent's decision frame will be ignored. Future designs should make mechanism use the default, not the exception.
-  \item \textbf{Pre-committed automatic enforcement outperforms reactive penalties.} Contracting mechanisms that adjust payoffs before action selection (as in CoopEval) are more effective than those that penalise after the fact.
-  \item \textbf{Homogeneous reasoning is a collective action failure.} When all agents use the same LLM and receive the same prompt framing, they produce identical strategies, eliminating the strategic diversity that enables cooperation. Introducing heterogeneous agent types or reasoning styles may be necessary for cooperation to emerge.
-  \item \textbf{Structural dependency limits punishment.} Network designs that give agents redundant access to all good types may enable more effective exclusion of defectors, strengthening reputation effects.
+  \item \textbf{Mechanism salience matters.} Mechanisms available in the action space but not prominently foregrounded will be ignored. Future designs should make mechanism use the default path, not the exception.
+  \item \textbf{Pre-committed automatic enforcement outperforms reactive penalties.} Mechanisms that prevent defection structurally (M, G suspension) are more robust than those that penalise after the fact (C breach penalty, S sanctions).
+  \item \textbf{RLHF cooperative bias may inflate baseline cooperation.} GPT-5.4-mini has strong prosocial priors from alignment training. The explicit self-interest framing in our prompts attempts to counteract this, but residual bias may remain.
+  \item \textbf{Structural dependency limits punishment.} With only 3--4 accessible producers per good, no agent has sufficient partner redundancy to credibly exclude defectors. Network designs with higher redundancy may enable more effective isolation.
 \end{enumerate}
 
 \subsection{Limitations}
 
 \begin{enumerate}
-  \item \textbf{Sample size.} Five runs per condition limits statistical power. The high variance in baseline Peace (SD = 0.18) suggests path-dependent outcomes that require more runs to characterise.
-  \item \textbf{Model and scale.} Results may differ with stronger models (GPT-4o, Claude Sonnet) or larger agent populations.
-  \item \textbf{Mechanism implementation gap.} Our Contracting and Mediation implementations differ structurally from CoopEval's (reactive vs.\ proactive enforcement; bilateral coordination vs.\ unilateral delegation). Future work should test CoopEval-style implementations in the marketplace environment.
-  \item \textbf{Fixed network topology.} The static network may amplify structural dependency effects. Dynamic network formation (agents choosing trading partners) could enable more effective exclusion.
+  \item \textbf{Sample size.} Three runs per condition limits statistical power. Final results will use more runs.
+  \item \textbf{Model and scale.} Results may differ with other models (Claude, Llama) or larger agent populations.
+  \item \textbf{RLHF bias.} GPT-5.4-mini was fine-tuned for cooperative behaviour. Despite the self-interest framing, model priors may inflate cooperation rates, particularly in baseline.
+  \item \textbf{Governance signal validity.} D2 (production withdrawal) and D3 (trade volume collapse) in the Governance mechanism were designed by the authors without a direct paper citation, and D3 may penalise agents for low trade volume that is not their fault.
 \end{enumerate}
+
+% ============================================================
+\section{Phase 2: Adversarial Resilience (Planned)}
+\label{sec:phase2}
+% ============================================================
+
+Phase 2 will stress-test the top-performing mechanisms from Phase 1 by injecting hardcoded ``troll'' agents — deterministic defectors that always take goods without delivering, produce nothing, and cannot be incentivised by any mechanism. The number of trolls will escalate: 0, 2, 4, 6 out of 18 agents.
+
+\paragraph{Key metric.} Per-round societal utility (not cumulative). Cumulative utility always increases as long as any agent cooperates; per-round utility drops when trolls enter and goes below zero when the society collapses. The \textit{resilience threshold} of each mechanism is the number of trolls required to push per-round utility below zero, sustained for 3 consecutive rounds.
+
+\paragraph{Predicted mechanism responses.}
+
+\begin{table}[H]
+\centering
+\caption{Predicted mechanism responses to troll agents}
+\label{tab:troll_predictions}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Mechanism & Defence against trolls & Predicted resilience \\
+\midrule
+B   & None & Very low (1 troll may cascade) \\
+R   & Troll reputation drops — but fixed network prevents avoidance & Low \\
+C   & Troll breaches contracts and pays penalties & Medium \\
+M   & Mediator forces fair execution — neutralises troll's defection & High \\
+N   & Agents sever links to troll — structural isolation & High \\
+NR  & Sever links + reputation scores accelerate troll identification & High \\
+G   & Oracle detects 100\% defection rate — troll suspended within 2 rounds & High \\
+S   & Other agents spend utility to sanction troll & Medium (free-rider problem) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+M, N, and G are predicted to be most resilient through fundamentally different strategies: M \textit{neutralises} troll behaviour, N \textit{quarantines} trolls from the network, and G \textit{ejects} trolls from the market entirely.
 
 % ============================================================
 \section{Conclusion}
 \label{sec:conclusion}
 % ============================================================
 
-We presented a marketplace simulation framework for studying formal cooperation mechanisms in self-interested LLM agent societies and reported results from a $2^3$ factorial experiment across 40 simulation runs. Our main finding is a definitive negative result: \textbf{no mechanism or combination achieves market stability}. All conditions fail the Peace threshold; all mechanisms increase total defections relative to the communication-only baseline; the full mechanism combination RCM produces the worst Peace outcome.
+We presented a marketplace simulation framework for studying formal cooperation mechanisms in self-interested LLM agent societies. We test eight experimental conditions spanning six distinct mechanisms — Reputation, Contracting, Mediation, Governance, Network Rewiring, and Costly Sanctions — each benchmarked against a communication-only baseline. Market stability is measured through Sustainability, Peace, and per-round societal utility.
 
-The failure is not primarily mechanical — mechanisms are implemented correctly — but cognitive. All 18 agents independently converge on a defect-dominant strategy in round 1, using near-identical language, before any interaction occurs. This homogeneous reasoning eliminates the strategic diversity that mechanisms depend on to function: reputation requires agents to condition behaviour on partner history, contracting requires agents to recognise enforcement value, and mediation requires bilateral coordination on delegation. None of these preconditions are met.
-
-The Sustainability-Peace tradeoff that emerges — Reputation sustaining production while defection proliferates — represents a previously uncharacterised failure mode: \textit{exploitative market stability}, where the economy remains technically functional while becoming increasingly predatory. This tradeoff has implications for the deployment of LLM agent systems in any cooperative setting where formal mechanisms are available but not mandatory.
-
-Future work should investigate: (1) mechanism designs with automatic pre-committed enforcement rather than reactive penalties; (2) heterogeneous agent populations to break the homogeneous reasoning equilibrium; (3) network designs with sufficient redundancy to enable credible exclusion of defectors; and (4) stronger model variants to assess whether the defection calculus persists at higher reasoning capability.
+This is an ongoing research project. Initial results will be updated as additional simulation runs are completed. Phase 2 adversarial resilience testing — injecting hardcoded troll agents to find each mechanism's breaking point — will follow once Phase 1 mechanism rankings are established.
 
 % ============================================================
 % Bibliography
@@ -753,10 +600,25 @@ Chacon-Chamorro, D., et al. (2024).
 \textit{Cooperative Resilience in Artificial Intelligence Multiagent Systems}.
 Universidad de los Andes.
 
-\bibitem[Yang et al.(2024)]{aris}
-Yang, Z., et al. (2024).
-\textit{Autonomous Research via Intelligent Systems (ARIS)}.
-Shanghai Jiao Tong University.
+\bibitem[Ren et al.(2025)]{repunet}
+Ren, S., Fu, W., Zou, X., Shen, C., Cai, Y., Chu, C., Wang, Z., \& Hu, S. (2025).
+\textit{Reputation as a Solution to Cooperation Collapse in LLM-based Multi-Agent Systems}.
+arXiv:2505.05029.
+
+\bibitem[Piedrahita et al.(2025)]{piedrahita2025}
+Piedrahita, D. G., Yang, Y., Sachan, M., Ramponi, G., Sch\"{o}lkopf, B., \& Jin, Z. (2025).
+\textit{Corrupted by Reasoning: Reasoning Language Models Become Free-Riders in Public Goods Games}.
+arXiv:2506.23276.
+
+\bibitem[Lin et al.(2025)]{institutional2025}
+Lin, J., et al. (2025).
+\textit{Institutional AI: Governing LLM Collusion in Multi-Agent Cournot Markets via Public Governance Graphs}.
+arXiv:2601.11369.
+
+\bibitem[Fontana et al.(2024)]{nicer2024}
+Fontana, M., Pierri, F., \& Aiello, L. M. (2024).
+\textit{Nicer Than Humans: How do Large Language Models Behave in the Prisoner's Dilemma?}
+arXiv:2406.13605.
 
 \bibitem[Axelrod(1984)]{axelrod1984}
 Axelrod, R. (1984).
