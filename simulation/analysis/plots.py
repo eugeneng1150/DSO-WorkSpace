@@ -737,6 +737,59 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
         _maybe_save(fig, f"network_snapshot_{cond}_run{run_idx:02d}.png", save)
 
 
+def plot_utility_trajectories(save: bool = True) -> None:
+    """2×4 grid — one panel per condition, average per-round utility with 3-round rolling average."""
+    n_cols = 4
+    n_rows = 2
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True)
+    axes_flat = axes.flatten()
+
+    for ax, condition in zip(axes_flat, CONDITIONS):
+        runs = _load_runs(condition)
+        if runs:
+            n_rounds = max(len(run["rounds"]) for run in runs)
+            raw = []
+            for r in range(n_rounds):
+                round_vals = []
+                for run in runs:
+                    if r < len(run["rounds"]):
+                        utilities = run["rounds"][r].get("utilities", {})
+                        if utilities:
+                            round_vals.append(np.mean([float(v) for v in utilities.values()]))
+                raw.append(np.mean(round_vals) if round_vals else 0.0)
+
+            # 3-round rolling average
+            smoothed = np.convolve(raw, np.ones(3) / 3, mode="same")
+            # fix edges: use raw values for first and last point
+            smoothed[0] = raw[0]
+            smoothed[-1] = raw[-1]
+
+            rounds = list(range(1, n_rounds + 1))
+            ax.plot(rounds, raw, color=COLORS[condition], linewidth=0.8, alpha=0.3)
+            ax.plot(rounds, smoothed, color=COLORS[condition], linewidth=2.0, label="3-round avg")
+            ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.6)
+            ax.fill_between(rounds, smoothed, 0,
+                            where=[v >= 0 for v in smoothed], alpha=0.12, color="green")
+            ax.fill_between(rounds, smoothed, 0,
+                            where=[v < 0 for v in smoothed], alpha=0.12, color="red")
+
+        ax.set_title(condition, fontweight="bold")
+        ax.grid(True, alpha=0.3)
+
+    for ax in axes_flat[len(CONDITIONS):]:
+        ax.set_visible(False)
+
+    for ax in axes[-1]:
+        ax.set_xlabel("Round")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Avg utility per agent")
+
+    fig.suptitle("Average Per-Round Utility by Condition (3-round rolling average)\nGreen = net positive, Red = net negative",
+                 fontsize=13, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "utility_trajectories.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
@@ -750,6 +803,7 @@ def plot_all(save: bool = True) -> None:
     plot_mediation_utilisation(save)
     plot_reputation_trajectories(save)
     plot_utility_distribution(save)
+    plot_utility_trajectories(save)
     plot_signal_timelines(save)
     plot_lead_lag_heatmap(save)
     plot_network_snapshots(save)
