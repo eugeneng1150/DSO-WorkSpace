@@ -98,7 +98,8 @@ class _BaseAgent:
                 print(f"[Agent {self.agent_id}] Rate limited — waiting {wait:.1f}s (attempt {attempt+1}/{MAX_RETRIES})")
                 await asyncio.sleep(wait)
             except BadRequestError as e:
-                if "flagged" in str(e).lower() or "usage policy" in str(e).lower():
+                err_str = str(e).lower()
+                if "flagged" in err_str or "usage policy" in err_str or "content_filter" in err_str:
                     wait = backoff * (2 ** attempt)
                     print(f"[Agent {self.agent_id}] Content filter triggered — retrying in {wait:.1f}s (attempt {attempt+1}/{MAX_RETRIES})")
                     await asyncio.sleep(wait)
