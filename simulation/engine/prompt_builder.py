@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 from ..config import (
     MEDIATION_FEE, MEMORY_WINDOW, GOV_WARNING_EXPIRY,
     GOV_CLEAN_ROUNDS_TO_DEESCALATE,
-    NET_MAX_SEVER_PER_ROUND, NET_MAX_REQUEST_PER_ROUND,
     SANCTION_COST_RATIO,
 )
 
@@ -398,8 +397,6 @@ def _build_mechanism_block(
         elif mech == "network_rewiring":
             block = _NETWORK_REWIRING
             block = block.replace("{neighbor_count}", str(len(market.network.get(agent_id, set()))))
-            block = block.replace("{net_max_sever}", str(NET_MAX_SEVER_PER_ROUND))
-            block = block.replace("{net_max_request}", str(NET_MAX_REQUEST_PER_ROUND))
             blocks.append(block)
 
         elif mech == "sanction":
