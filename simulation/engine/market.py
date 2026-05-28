@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 import re
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 
@@ -157,6 +157,9 @@ class Market:
         self.governance_states: dict = {}
         self.governance_log: list[dict] = []
 
+        # Troll agent IDs (set by Game after construction)
+        self.troll_ids: list[int] = []
+
         # Network rewiring state (network_rewiring mechanism)
         self.network_events: list[dict] = []
         self.network_degree_history: list[dict] = []
@@ -281,6 +284,31 @@ class Market:
                 partner = t.target_id if t.proposer_id == agent_id else t.proposer_id
                 history.setdefault(partner, []).append(t)
         return history
+
+    def get_partner_summary(self, agent_id: int) -> dict[int, dict]:
+        """Lifetime per-partner stats from full trade history."""
+        summary: dict[int, dict] = {}
+        for t in self.trade_history:
+            if t.status == "rejected":
+                continue
+            if t.proposer_id != agent_id and t.target_id != agent_id:
+                continue
+            partner = t.target_id if t.proposer_id == agent_id else t.proposer_id
+            if partner not in summary:
+                summary[partner] = {
+                    "trades": 0,
+                    "defections_by_them": 0,
+                    "defections_by_me": 0,
+                    "last_defection_round": None,
+                }
+            s = summary[partner]
+            s["trades"] += 1
+            if t.defected_by == partner:
+                s["defections_by_them"] += 1
+                s["last_defection_round"] = t.round_num
+            elif t.defected_by == agent_id:
+                s["defections_by_me"] += 1
+        return summary
 
     def get_exchange_rates(self, window: int = 5) -> dict[str, dict]:
         recent = [t for t in self.trade_history

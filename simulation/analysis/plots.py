@@ -47,7 +47,12 @@ def _mean_round_field(runs: list[dict], field: str) -> list[float]:
     return values
 
 
-# ── Existing plots (updated for 8 conditions) ────────────────────────────────
+def _get_troll_ids(run: dict) -> set[str]:
+    """Extract troll agent IDs from a run's session log (as strings for utilities dict keys)."""
+    return set(str(tid) for tid in run.get("session_log", {}).get("troll_ids", []))
+
+
+# ── Plots ─────────────────────────────────────────────────────────────────────
 
 def plot_metric_trajectories(save: bool = True) -> None:
     """2×4 grid — one panel per condition, each showing Sustainability and Peace over rounds."""
@@ -395,7 +400,7 @@ def plot_reputation_trajectories(save: bool = True) -> None:
 
 
 def plot_utility_distribution(save: bool = True) -> None:
-    """Boxplot: final round utility distribution across agents per condition."""
+    """Boxplot: final round utility distribution across agents per condition (trolls excluded)."""
     labels, all_utils = [], []
     for condition in CONDITIONS:
         runs = _load_runs(condition)
@@ -403,8 +408,10 @@ def plot_utility_distribution(save: bool = True) -> None:
             continue
         utils = []
         for run in runs:
+            troll_ids = _get_troll_ids(run)
             final_round = run["rounds"][-1]
-            utils.extend(final_round.get("utilities", {}).values())
+            utilities = final_round.get("utilities", {})
+            utils.extend(float(v) for k, v in utilities.items() if k not in troll_ids)
         labels.append(condition)
         all_utils.append(utils)
 
@@ -753,9 +760,11 @@ def plot_utility_trajectories(save: bool = True) -> None:
                 round_vals = []
                 for run in runs:
                     if r < len(run["rounds"]):
+                        troll_ids = _get_troll_ids(run)
                         utilities = run["rounds"][r].get("utilities", {})
-                        if utilities:
-                            round_vals.append(np.mean([float(v) for v in utilities.values()]))
+                        non_troll = {k: v for k, v in utilities.items() if k not in troll_ids}
+                        if non_troll:
+                            round_vals.append(np.mean([float(v) for v in non_troll.values()]))
                 raw.append(np.mean(round_vals) if round_vals else 0.0)
 
             # 3-round rolling average
@@ -790,6 +799,91 @@ def plot_utility_trajectories(save: bool = True) -> None:
     _maybe_save(fig, "utility_trajectories.png", save)
 
 
+def _load_runs_from(data_dir: Path, condition: str) -> list[dict]:
+    """Load runs from a specific data directory (not config.DATA_DIR)."""
+    files = sorted(data_dir.glob(f"{condition}_run_*.json"))
+    runs = []
+    for f in files:
+        with open(f) as fp:
+            runs.append(json.load(fp))
+    return runs
+
+
+def plot_model_comparison(save: bool = True) -> None:
+    """Side-by-side comparison of per-round utility trajectories across models.
+
+    Top row: gpt-5.4-mini, bottom row: deepseek-v3 (or whichever models have data).
+    One column per condition. Allows visual comparison of whether mechanisms are
+    robust to model choice.
+    """
+    base_dir = Path(__file__).parent.parent / "data" / "runs"
+    model_dirs = sorted([d for d in base_dir.iterdir() if d.is_dir() and any(d.glob("*_run_*.json"))])
+
+    if len(model_dirs) < 2:
+        print("  [model_comparison] Need data from at least 2 models. Skipping.")
+        return
+
+    model_names = [d.name for d in model_dirs]
+    conditions_with_data = []
+    for cond in CONDITIONS:
+        if all(any(d.glob(f"{cond}_run_*.json")) for d in model_dirs):
+            conditions_with_data.append(cond)
+
+    if not conditions_with_data:
+        print("  [model_comparison] No conditions have data across all models. Skipping.")
+        return
+
+    n_models = len(model_dirs)
+    n_conds = len(conditions_with_data)
+    fig, axes = plt.subplots(n_models, n_conds, figsize=(4 * n_conds, 4 * n_models),
+                              sharex=True, sharey=True, squeeze=False)
+
+    for row, (model_dir, model_name) in enumerate(zip(model_dirs, model_names)):
+        for col, condition in enumerate(conditions_with_data):
+            ax = axes[row][col]
+            runs = _load_runs_from(model_dir, condition)
+
+            if runs:
+                n_rounds = max(len(run["rounds"]) for run in runs)
+                raw = []
+                for r in range(n_rounds):
+                    round_vals = []
+                    for run in runs:
+                        if r < len(run["rounds"]):
+                            troll_ids = _get_troll_ids(run)
+                            utilities = run["rounds"][r].get("utilities", {})
+                            non_troll = {k: v for k, v in utilities.items() if k not in troll_ids}
+                            if non_troll:
+                                round_vals.append(np.mean([float(v) for v in non_troll.values()]))
+                    raw.append(np.mean(round_vals) if round_vals else 0.0)
+
+                smoothed = np.convolve(raw, np.ones(3) / 3, mode="same")
+                smoothed[0] = raw[0]
+                smoothed[-1] = raw[-1]
+
+                rounds = list(range(1, n_rounds + 1))
+                ax.plot(rounds, raw, color=COLORS[condition], linewidth=0.8, alpha=0.3)
+                ax.plot(rounds, smoothed, color=COLORS[condition], linewidth=2.0)
+                ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.6)
+                ax.fill_between(rounds, smoothed, 0,
+                                where=[v >= 0 for v in smoothed], alpha=0.12, color="green")
+                ax.fill_between(rounds, smoothed, 0,
+                                where=[v < 0 for v in smoothed], alpha=0.12, color="red")
+
+            ax.grid(True, alpha=0.3)
+            if row == 0:
+                ax.set_title(condition, fontweight="bold")
+            if col == 0:
+                ax.set_ylabel(model_name, fontsize=10, fontweight="bold")
+            if row == n_models - 1:
+                ax.set_xlabel("Round")
+
+    fig.suptitle("Per-Round Utility by Condition — Model Comparison\n(3-round rolling average; green = positive, red = negative)",
+                 fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "model_comparison.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
@@ -807,6 +901,7 @@ def plot_all(save: bool = True) -> None:
     plot_signal_timelines(save)
     plot_lead_lag_heatmap(save)
     plot_network_snapshots(save)
+    plot_model_comparison(save)
     print(f"Plots saved to {OUT_DIR}")
 
 

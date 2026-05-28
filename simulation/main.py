@@ -28,9 +28,13 @@ def main():
     parser.add_argument("--extract-signals", action="store_true", help="Extract social signals from agent messages/CoT")
     parser.add_argument("--all-runs", action="store_true", help="Process all runs (not just run 0)")
     parser.add_argument("--run-idx", type=int, default=0, help="Run index to analyse (default 0)")
+    parser.add_argument("--trolls", type=int, default=0,
+                        help="Number of troll agents — deterministic defectors (default 0)")
+    parser.add_argument("--rounds", type=int, default=None,
+                        help="Override number of rounds (default 30)")
     parser.add_argument("--model", type=str, default=None,
-                        choices=["gpt-5.4-mini", "oss-120b"],
-                        help="Agent LLM backend: gpt-5.4-mini (Azure, default) or oss-120b (local Docker)")
+                        choices=["gpt-5.4-mini", "oss-120b", "deepseek-v3"],
+                        help="Agent LLM backend: gpt-5.4-mini (Azure, default), oss-120b (local Docker), or deepseek-v3 (Azure)")
     args = parser.parse_args()
 
     model_tag = args.model or "gpt-5.4-mini"
@@ -42,6 +46,14 @@ def main():
         from .engine.agent import configure_llm
         configure_llm(base_url=DOCKER_ENDPOINT, api_key=DOCKER_API_KEY, model=DOCKER_MODEL)
         print(f"Using local Docker model: {DOCKER_MODEL}")
+    elif args.model == "deepseek-v3":
+        if not os.environ.get("AZURE_OPENAI_API_KEY"):
+            print("ERROR: AZURE_OPENAI_API_KEY not set. Add it to .env or export it.")
+            return
+        from .config import DEEPSEEK_ENDPOINT, DEEPSEEK_MODEL
+        from .engine.agent import configure_llm
+        configure_llm(base_url=DEEPSEEK_ENDPOINT, api_key=os.environ.get("AZURE_OPENAI_API_KEY"), model=DEEPSEEK_MODEL)
+        print(f"Using DeepSeek: {DEEPSEEK_MODEL}")
     else:
         if not os.environ.get("AZURE_OPENAI_API_KEY"):
             print("ERROR: AZURE_OPENAI_API_KEY not set. Add it to .env or export it.")
@@ -49,13 +61,24 @@ def main():
 
     from . import config as _cfg
     print(f"Data directory: {_cfg.DATA_DIR}")
+    if args.trolls:
+        print(f"Troll agents: {args.trolls}")
+    if args.rounds:
+        print(f"Rounds override: {args.rounds}")
+
+    run_kwargs: dict = {}
+    if args.runs:
+        run_kwargs["runs"] = args.runs
+    if args.trolls:
+        run_kwargs["n_trolls"] = args.trolls
+    if args.rounds:
+        run_kwargs["total_rounds"] = args.rounds
 
     if args.condition:
-        kwargs = {"runs": args.runs} if args.runs else {}
-        run_condition(args.condition, **kwargs)
+        run_condition(args.condition, **run_kwargs)
 
     elif args.all:
-        run_all(runs=args.runs if args.runs else None)
+        run_all(**run_kwargs)
 
     if args.plot:
         from .analysis.plots import plot_all

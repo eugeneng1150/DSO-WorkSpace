@@ -124,15 +124,50 @@ class CoTAgent(_BaseAgent):
         return _COT_SUFFIX
 
 
-def make_agents() -> list[_BaseAgent]:
-    """Create agents (AGENTS_PER_GOOD per good), using CoT or IO style."""
+class TrollAgent(_BaseAgent):
+    """Deterministic adversary: never produces, always defects, lies in messages."""
+
+    def _suffix(self) -> str:
+        return ""
+
+    async def call(self, prompt: str) -> list[dict]:
+        self.last_raw_response = "[TROLL — deterministic, no LLM call]"
+        return [
+            {
+                "action": "send_public",
+                "text": f"Agent {self.agent_id}: I'm committed to fair trading this round. Let's cooperate for mutual benefit!",
+            }
+        ]
+
+
+def make_agents(n_trolls: int = 0) -> list[_BaseAgent]:
+    """Create agents (AGENTS_PER_GOOD per good), using CoT or IO style.
+
+    If n_trolls > 0, replace that many agents with deterministic TrollAgents,
+    distributed round-robin across goods.
+    """
+    troll_indices: set[int] = set()
+    if n_trolls > 0:
+        placed = 0
+        agent_offset = 0
+        while placed < n_trolls:
+            for good_idx in range(len(GOODS)):
+                if placed >= n_trolls:
+                    break
+                troll_indices.add(good_idx * AGENTS_PER_GOOD + agent_offset)
+                placed += 1
+            agent_offset += 1
+
     agents = []
     idx = 0
     for good in GOODS:
         others = [g for g in GOODS if g != good]
         needs = (others[0], others[1])
         for _ in range(AGENTS_PER_GOOD):
-            cls = CoTAgent if idx in COT_AGENT_IDS else IOAgent
-            agents.append(cls(agent_id=idx, specialty=good, needs=needs))
+            if idx in troll_indices:
+                agents.append(TrollAgent(agent_id=idx, specialty=good, needs=needs))
+            else:
+                cls = CoTAgent if idx in COT_AGENT_IDS else IOAgent
+                agents.append(cls(agent_id=idx, specialty=good, needs=needs))
             idx += 1
     return agents

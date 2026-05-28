@@ -7,6 +7,7 @@ from tqdm import tqdm
 from .market import Market, Message, TradeOffer, Contract, generate_network
 from .prompt_builder import build_prompt
 from ..metrics.social import compute_metrics
+from .agent import TrollAgent
 from ..config import (
     GOODS, ROUNDS, UTILITY_CONSUME, COST_PRODUCE, MEDIATION_FEE,
     DEFAULT_BREACH_PENALTY, MAX_PRODUCE, MIN_NEIGHBORS, MAX_NEIGHBORS,
@@ -25,23 +26,36 @@ class Game:
         mechanisms: list["Mechanism"],
         condition_label: str,
         run_idx: int,
+        total_rounds: int = ROUNDS,
     ):
         self.agents = agents
         self.mechanisms = mechanisms
         self.condition_label = condition_label
         self.run_idx = run_idx
+        self.total_rounds = total_rounds
         self.mechanism_names = [m.name for m in mechanisms]
 
         agent_ids = [a.agent_id for a in agents]
         self.specialties = {a.agent_id: a.specialty for a in agents}
+        self.troll_ids = [a.agent_id for a in agents if isinstance(a, TrollAgent)]
         network = generate_network(agent_ids, self.specialties, MIN_NEIGHBORS, MAX_NEIGHBORS)
+
+        # Trolls are connected to ALL other agents (maximally exposed)
+        for tid in self.troll_ids:
+            for aid in agent_ids:
+                if aid != tid:
+                    network[tid].add(aid)
+                    network[aid].add(tid)
+
         self.market = Market(agent_ids=agent_ids, goods=GOODS, network=network)
+        self.market.troll_ids = self.troll_ids
 
         self.round_logs: list[dict] = []
         self.trace_log: list[dict] = []
         self.session_log: dict = {
             "network": {str(k): sorted(v) for k, v in self.market.network.items()},
             "specialties": {str(k): v for k, v in self.specialties.items()},
+            "troll_ids": self.troll_ids,
         }
         self._pre_consumption_penalties: dict[int, float] = {}
 
@@ -84,7 +98,7 @@ class Game:
                     "approval_votes": approval_counts.get(m.designer_id, 0),
                 }
 
-        pbar = tqdm(range(1, ROUNDS + 1), desc=f"[{self.condition_label}] Run {self.run_idx}", unit="round", leave=True)
+        pbar = tqdm(range(1, self.total_rounds + 1), desc=f"[{self.condition_label}] Run {self.run_idx}", unit="round", leave=True)
         for round_num in pbar:
             self.market.new_round(round_num)
             for mech in self.mechanisms:
@@ -95,8 +109,9 @@ class Game:
             # Set production baseline after round 1
             if round_num == 1:
                 prod = self.market.production_per_round[-1] if self.market.production_per_round else {}
-                n = len(self.agents)
-                self.market._production_baseline = sum(prod.values()) / max(n, 1)
+                non_troll_prod = {k: v for k, v in prod.items() if k not in self.troll_ids}
+                n = len(non_troll_prod) or 1
+                self.market._production_baseline = sum(non_troll_prod.values()) / n
 
             metrics = compute_metrics(self.market, round_utilities)
             self.market.metrics_log.append({"round": round_num, **metrics})
@@ -292,6 +307,15 @@ class Game:
 
         # --- Phase 3: Trade ---
         trade_actions = await self._call_agents_phase("trade", round_num)
+
+        # Troll agents: override with defect-all on every pending offer
+        for agent in self.agents:
+            if isinstance(agent, TrollAgent):
+                trade_actions[agent.agent_id] = [
+                    {"action": "defect_trade", "trade_id": o.trade_id}
+                    for o in self.market.pending_offers.get(agent.agent_id, [])
+                ]
+
         for agent in self.agents:
             actions = trade_actions.get(agent.agent_id, [])
             self._process_trade_decisions(agent.agent_id, actions, round_num)
@@ -365,7 +389,7 @@ class Game:
                 stage_overrides=stage_overrides,
                 specialties=self.specialties,
                 round_num=round_num,
-                total_rounds=ROUNDS,
+                total_rounds=self.total_rounds,
             )
             prompts[agent.agent_id] = (agent, prompt)
 
@@ -594,7 +618,7 @@ class Game:
     ) -> None:
         if defect:
             # Target takes proposer's goods without delivering their own
-            transferred = self.market.transfer_goods(
+            self.market.transfer_goods(
                 offer.proposer_id, accepting_agent, offer.offer_good, offer.offer_qty
             )
             self.market.record_trade_outcome(offer, defected_by=accepting_agent)

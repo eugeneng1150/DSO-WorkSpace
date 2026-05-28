@@ -69,6 +69,21 @@ def _fmt_inventory(market: "Market", agent_id: int) -> tuple[str, str, str]:
     return str(inv.get("A", 0)), str(inv.get("B", 0)), str(inv.get("C", 0))
 
 
+def _fmt_partner_summary(market: "Market", agent_id: int) -> str:
+    summary = market.get_partner_summary(agent_id)
+    if not summary:
+        return "  No trade history yet."
+    lines = []
+    for partner_id, s in sorted(summary.items()):
+        total = s["trades"]
+        theirs = s["defections_by_them"]
+        rate = f"{theirs}/{total}"
+        pct = f" ({100 * theirs // total}%)" if total > 0 else ""
+        last = f", last defection round {s['last_defection_round']}" if s["last_defection_round"] else ""
+        lines.append(f"  Agent {partner_id}: {total} trades, {rate} defections by them{pct}{last}")
+    return "\n".join(lines)
+
+
 def _fmt_partner_history(market: "Market", agent_id: int) -> str:
     history = market.get_partner_history(agent_id, window=MEMORY_WINDOW)
     if not history:
@@ -458,6 +473,7 @@ def build_prompt(
     prompt = prompt.replace("{round_num}", str(round_num))
     prompt = prompt.replace("{total_rounds}", str(total_rounds))
     prompt = prompt.replace("{rounds_remaining}", str(total_rounds - round_num))
+    prompt = prompt.replace("{partner_summary}", _fmt_partner_summary(market, agent_id))
     prompt = prompt.replace("{partner_history}", _fmt_partner_history(market, agent_id))
     prompt = prompt.replace("{private_inbox}", _fmt_inbox(market, agent_id))
     prompt = prompt.replace("{public_feed}", _fmt_public_feed(market))

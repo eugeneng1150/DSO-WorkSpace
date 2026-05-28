@@ -37,8 +37,7 @@ _MECHANISM_LABELS = {
     "RMG":  "reputation + mediation + governance",
     "CMG":  "contracting + mediation + governance",
     "RCMG": "reputation + contracting + mediation + governance",
-    "N":    "network rewiring (RepuNet-inspired)",
-    "NR":   "network rewiring + reputation",
+    "NR":   "network rewiring + reputation (RepuNet-inspired)",
     "S":    "costly sanctions (agent-initiated punishment)",
 }
 

@@ -56,6 +56,10 @@ COOPERATION_THRESHOLD = 0.5
 AZURE_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/openai/v1"
 MODEL = "gpt-5.4-mini-BQ-Cohort"
 
+# LLM — DeepSeek-V3.2 via Azure
+DEEPSEEK_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/openai/v1"
+DEEPSEEK_MODEL = "DeepSeek-V3.2-BQ-Cohort"
+
 # LLM — local Docker (oss-120b via llama.cpp)
 DOCKER_ENDPOINT = "http://localhost:12434/engines/llama.cpp/v1"
 DOCKER_MODEL = "hf.co/unsloth/gpt-oss-120b-GGUF:Q4_K_M"
@@ -73,9 +77,9 @@ COT_AGENT_IDS = set(range(18))   # all agents
 MIN_NEIGHBORS = 7
 MAX_NEIGHBORS = 99
 
-# Experimental conditions (2^4 factorial: R, C, M, G)
+# Experimental conditions
 CONDITIONS = [
-    "B", "R", "C", "M", "G", "N", "NR", "S",
+    "B", "R", "C", "M", "G", "NR", "S",
     # Combinations (disabled for initial test runs):
     # "RC", "RM", "RG", "CM", "CG", "MG",
     # "RCM", "RCG", "RMG", "CMG",
@@ -99,7 +103,7 @@ CONDITION_MECHANISMS = {
     "RMG":  ["reputation", "mediation", "governance"],
     "CMG":  ["contracting", "mediation", "governance"],
     "RCMG": ["reputation", "contracting", "mediation", "governance"],
-    "N":    ["network_rewiring"],
+    "N":    ["network_rewiring"],  # removed from CONDITIONS; kept here for loading old N_run_*.json logs
     "NR":   ["network_rewiring", "reputation"],
     "S":    ["sanction"],
 }

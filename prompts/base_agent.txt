@@ -40,7 +40,11 @@ You can only trade with and send private messages to your direct neighbors:
 
 You CANNOT trade with agents not listed above. Public broadcasts are visible to all agents.
 
-=== RECENT TRADE HISTORY (your last 5 rounds per partner) ===
+=== LIFETIME PARTNER SUMMARY (all rounds) ===
+
+{partner_summary}
+
+=== RECENT TRADE DETAIL (last 5 rounds) ===
 
 {partner_history}
 

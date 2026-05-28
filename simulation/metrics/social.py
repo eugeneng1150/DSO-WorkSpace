@@ -10,38 +10,39 @@ def compute_metrics(market: "Market", round_utilities: dict[int, float]) -> dict
     """
     round_utilities: {agent_id: utility_this_round}
     Returns dict with sustainability, peace + intermediate variables.
+    Troll agents are excluded from all metrics to avoid skewing results.
     """
-    agent_ids = market.agent_ids
+    troll_ids = set(getattr(market, "troll_ids", []))
+    agent_ids = [a for a in market.agent_ids if a not in troll_ids]
     n = len(agent_ids)
 
-    # Sustainability: avg production this round / avg production round 1
+    # Sustainability: avg production this round / avg production round 1 (trolls excluded)
     current_prod = market.production_per_round[-1] if market.production_per_round else {}
-    avg_current = sum(current_prod.values()) / max(n, 1)
+    non_troll_prod = {k: v for k, v in current_prod.items() if k not in troll_ids}
+    avg_current = sum(non_troll_prod.values()) / max(n, 1)
     if market._production_baseline is None or market._production_baseline == 0:
         sustainability = 1.0
     else:
         sustainability = min(1.0, avg_current / market._production_baseline)
 
-    # Peace: 1 - defection rate among all attempted trades so far (cumulative)
-    attempted = len(market.trade_history)
-    defected = sum(1 for t in market.trade_history if t.status == "defected")
+    # Peace: 1 - defection rate (exclude trades where a troll is the defector)
+    non_troll_trades = [t for t in market.trade_history if t.proposer_id not in troll_ids and t.target_id not in troll_ids]
+    attempted = len(non_troll_trades)
+    defected = sum(1 for t in non_troll_trades if t.status == "defected")
     peace = 1.0 - (defected / attempted) if attempted > 0 else 1.0
 
-    # Intermediate variables
-    total_defections = sum(market.defections_suffered.values())
-    total_warnings = sum(market.warnings_broadcast.values())
+    # Intermediate variables (exclude trolls)
+    total_defections = sum(v for k, v in market.defections_suffered.items() if k not in troll_ids)
+    total_warnings = sum(v for k, v in market.warnings_broadcast.items() if k not in troll_ids)
     whistleblowing_rate = total_warnings / max(total_defections, 1)
 
-    # False accusation rate: negative mentions that don't match low system reputation
-    # Heuristic: mention is "false" if target has system_reputation > 0.7
-    neg_mentions = market.negative_mentions
+    neg_mentions = [m for m in market.negative_mentions if m.get("sender") not in troll_ids]
     false_accusations = sum(
         1 for m in neg_mentions
         if market.system_reputation.get(m.get("target"), 1.0) > 0.7
     )
     false_accusation_rate = false_accusations / max(len(neg_mentions), 1)
 
-    # Warning accuracy: warnings about agents with low reputation (< 0.5 = confirmed defector)
     accurate_warnings = sum(
         1 for m in neg_mentions
         if market.system_reputation.get(m.get("target"), 1.0) < 0.5
