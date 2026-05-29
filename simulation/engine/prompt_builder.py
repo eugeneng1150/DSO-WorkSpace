@@ -32,6 +32,7 @@ _MEDIATION = _load("mediation.txt")
 _GOVERNANCE = _load("governance.txt")
 _NETWORK_REWIRING = _load("network_rewiring.txt")
 _SANCTION = _load("sanction.txt")
+_LOCAL_REPUTATION = _load("local_reputation.txt")
 
 
 def _extract_stage(template: str, stage_label: str) -> str:
@@ -184,6 +185,20 @@ def _fmt_public_mentions(market: "Market", agent_id: int) -> str:
         lines.append(f"  Agent {aid}:")
         lines.extend(stmts[-3:])
     return "\n".join(lines)
+
+
+def _fmt_message_history(market: "Market", agent_id: int) -> str:
+    """Format rolling public message history (last N rounds) for local reputation."""
+    messages = market.get_message_history()
+    if not messages:
+        return "  (no public messages yet)"
+    lines = []
+    for msg in messages:
+        if msg.sender_id == agent_id:
+            continue
+        sender = f"Agent {msg.sender_id}" if msg.sender_id >= 0 else "System"
+        lines.append(f"  [Round {msg.round_num}, {sender}]: \"{msg.text}\"")
+    return "\n".join(lines) if lines else "  (no public messages from other agents)"
 
 
 def _fmt_recent_sanctions(market: "Market") -> str:
@@ -405,6 +420,11 @@ def _build_mechanism_block(
             block = block.replace("{recent_sanctions_log}", _fmt_recent_sanctions(market))
             blocks.append(block)
 
+        elif mech == "local_reputation":
+            block = _LOCAL_REPUTATION
+            block = block.replace("{message_history}", _fmt_message_history(market, agent_id))
+            blocks.append(block)
+
     return "\n\n".join(blocks)
 
 
@@ -465,11 +485,7 @@ def build_prompt(
     prompt = prompt.replace("{inv_C}", inv_c)
     prompt = prompt.replace("{last_utility}", f"{last_utility:.1f}")
     prompt = prompt.replace("{total_utility}", f"{total_utility:.1f}")
-    prompt = prompt.replace("{sustainability:.2f}", f"{metrics.get('sustainability', 0):.2f}")
-    prompt = prompt.replace("{peace:.2f}", f"{metrics.get('peace', 0):.2f}")
     prompt = prompt.replace("{round_num}", str(round_num))
-    prompt = prompt.replace("{total_rounds}", str(total_rounds))
-    prompt = prompt.replace("{rounds_remaining}", str(total_rounds - round_num))
     prompt = prompt.replace("{partner_summary}", _fmt_partner_summary(market, agent_id))
     prompt = prompt.replace("{partner_history}", _fmt_partner_history(market, agent_id))
     prompt = prompt.replace("{private_inbox}", _fmt_inbox(market, agent_id))

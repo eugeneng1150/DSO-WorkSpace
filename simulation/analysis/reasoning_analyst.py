@@ -22,6 +22,7 @@ OUT_DIR = Path(__file__).parent.parent / "data"
 
 _MECHANISM_LABELS = {
     "B":    "no mechanisms (baseline)",
+    "GR":   "global reputation (system-computed scores)",
     "R":    "reputation system",
     "C":    "contracting",
     "M":    "mediation",
@@ -37,7 +38,7 @@ _MECHANISM_LABELS = {
     "RMG":  "reputation + mediation + governance",
     "CMG":  "contracting + mediation + governance",
     "RCMG": "reputation + contracting + mediation + governance",
-    "NR":   "network rewiring + reputation (RepuNet-inspired)",
+    "NR":   "network rewiring + local reputation (gossip-based)",
     "S":    "costly sanctions (agent-initiated punishment)",
 }
 

@@ -40,8 +40,10 @@ _COT_SUFFIX = (
     "\nBefore choosing actions, write your reasoning:\n\n"
     "<reasoning>\n"
     "1. My situation: (inventory, utility, what happened last round)\n"
-    "2. My assessment: (who can I trust, what are the risks)\n"
-    "3. My strategy: (what I will do this round and why)\n"
+    "2. Self-reflection: (have I been cooperating? how might others perceive me?)\n"
+    "3. Gossip evaluation: (which warnings from others seem credible? who has reason to lie?)\n"
+    "4. My assessment: (who can I trust, what are the risks)\n"
+    "5. My strategy: (what I will do this round and why)\n"
     "</reasoning>\n\n"
     "Then output your chosen actions in a ```json\n...\n``` block."
 )

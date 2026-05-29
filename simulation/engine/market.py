@@ -119,6 +119,7 @@ class Market:
         # Message queues (reset each round)
         self.private_inboxes: dict[int, list[Message]] = {aid: [] for aid in agent_ids}
         self.public_feed: list[Message] = []
+        self.public_message_history: list[list[Message]] = []  # rolling buffer of past rounds' public messages
 
         # Trade ledger
         self.pending_offers: dict[int, list[TradeOffer]] = {aid: [] for aid in agent_ids}
@@ -165,11 +166,22 @@ class Market:
         self.network_degree_history: list[dict] = []
 
     def new_round(self, round_num: int):
+        from ..config import MESSAGE_HISTORY_WINDOW
+        # Archive current round's public messages before clearing
+        if self.public_feed:
+            self.public_message_history.append(list(self.public_feed))
+        while len(self.public_message_history) > MESSAGE_HISTORY_WINDOW:
+            self.public_message_history.pop(0)
+
         self.round_num = round_num
         for aid in self.agent_ids:
             self.private_inboxes[aid] = []
             self.pending_offers[aid] = []
         self.public_feed = []
+
+    def get_message_history(self) -> list[Message]:
+        """Return flattened list of public messages from the rolling history buffer."""
+        return [msg for round_msgs in self.public_message_history for msg in round_msgs]
 
     def post_message(self, msg: Message):
         if msg.channel == "public":

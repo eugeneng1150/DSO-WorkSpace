@@ -19,11 +19,6 @@ Inventory:
 Last round utility:  {last_utility}
 Cumulative utility:  {total_utility}
 
-=== MARKET HEALTH (all agents see this) ===
-
-  Sustainability:{sustainability:.2f}  — whether agents are still willing to produce (1 = same as round 1)
-  Peace:         {peace:.2f}        — fraction of attempted trades completing without defection
-
 === RECENT EXCHANGE RATES (average over last 5 rounds) ===
 
 {exchange_rates}
@@ -62,7 +57,7 @@ Public broadcasts (all agents received these):
 
 === TRADE DECISION GUIDE ===
 
-Round {round_num} of {total_rounds} — {rounds_remaining} rounds remaining.
+Round {round_num}.
 
 For a pending offer where a partner offers Q units of Good X and wants R units of Good Y from you:
 
@@ -71,8 +66,8 @@ For a pending offer where a partner offers Q units of Good X and wants R units o
   reject_trade  →  no exchange happens
 
 Defecting saves you R units of Good Y — the only cost is that this partner may refuse
-future trades with you. With {rounds_remaining} rounds left, weigh how much you need
-this partner versus the goods saved from defecting now.
+future trades with you. Weigh how much you need this partner versus the goods saved
+from defecting now.
 
 ================================================================================
 {mechanism_block}

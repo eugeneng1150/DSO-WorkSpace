@@ -1,0 +1,16 @@
+=== GOSSIP CHANNEL (active this session) ===
+
+Public messages from the last 10 rounds are shown below. Other agents may
+warn about defectors or vouch for good partners. These reports are
+UNVERIFIED — agents may lie, exaggerate, or falsely accuse others for
+strategic reasons.
+
+=== PUBLIC MESSAGE HISTORY (last 10 rounds) ===
+
+{message_history}
+
+Use both your direct experience and gossip critically. A warning from an
+agent you trust is more credible than one from a stranger. If multiple
+independent agents warn about the same person, that signal is stronger.
+If someone you've traded with successfully is being accused, consider that
+the accuser may have ulterior motives.

@@ -78,8 +78,11 @@ MIN_NEIGHBORS = 7
 MAX_NEIGHBORS = 99
 
 # Experimental conditions
+MESSAGE_HISTORY_WINDOW = 10  # rounds of public message history for local reputation (gossip)
+
+# Experimental conditions
 CONDITIONS = [
-    "B", "R", "C", "M", "G", "NR", "S",
+    "B", "GR", "C", "M", "G", "NR", "S",
     # Combinations (disabled for initial test runs):
     # "RC", "RM", "RG", "CM", "CG", "MG",
     # "RCM", "RCG", "RMG", "CMG",
@@ -88,7 +91,8 @@ CONDITIONS = [
 
 CONDITION_MECHANISMS = {
     "B":    [],
-    "R":    ["reputation"],
+    "GR":   ["reputation"],
+    "R":    ["reputation"],  # removed from CONDITIONS; kept for loading old R_run_*.json logs
     "C":    ["contracting"],
     "M":    ["mediation"],
     "G":    ["governance"],
@@ -104,6 +108,6 @@ CONDITION_MECHANISMS = {
     "CMG":  ["contracting", "mediation", "governance"],
     "RCMG": ["reputation", "contracting", "mediation", "governance"],
     "N":    ["network_rewiring"],  # removed from CONDITIONS; kept here for loading old N_run_*.json logs
-    "NR":   ["network_rewiring", "reputation"],
+    "NR":   ["network_rewiring", "local_reputation"],
     "S":    ["sanction"],
 }

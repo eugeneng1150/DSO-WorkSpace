@@ -361,7 +361,7 @@ def plot_mediation_utilisation(save: bool = True) -> None:
 
 def plot_reputation_trajectories(save: bool = True) -> None:
     """For reputation conditions: mean and min reputation score over rounds."""
-    reputation_conditions = [c for c in CONDITIONS if "R" in c]
+    reputation_conditions = [c for c in CONDITIONS if "reputation" in CONDITION_MECHANISMS.get(c, [])]
     if not reputation_conditions:
         return
 

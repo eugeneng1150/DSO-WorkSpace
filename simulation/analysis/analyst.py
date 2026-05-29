@@ -118,11 +118,11 @@ def _build_analyst_prompt(summary: dict, round_table: str) -> str:
     return f"""You are a research analyst reviewing the results of a multi-agent marketplace simulation.
 
 The simulation tests {n_conditions} conditions: {conditions_list}.
-Mechanisms: R=reputation, C=contracting, M=mediation, G=governance, N=network rewiring,
-NR=network rewiring + reputation, S=costly sanctions (agent-initiated punishment).
+Mechanisms: GR=global reputation (system-computed scores), C=contracting, M=mediation, G=governance,
+NR=network rewiring + local reputation (gossip-based), S=costly sanctions (agent-initiated punishment).
 Single-letter conditions isolate one mechanism; multi-letter conditions combine them; B=baseline (none).
-N is a standalone condition inspired by RepuNet — agents can sever and request trade links each round.
-NR combines network rewiring with reputation scores. S lets agents spend utility to punish others (1:3 ratio).
+GR exposes engine-tracked reputation scores to all agents. NR lets agents sever/request trade links each round
+and see a rolling history of public gossip (last 10 rounds) — no system scores. S lets agents spend utility to punish others (1:3 ratio).
 
 Each condition runs multiple independent sessions of 30 rounds with 18 LLM agents trading 3 goods.
 
@@ -152,9 +152,10 @@ Write a structured findings report covering:
 2. **Which single mechanism was most effective?** Compare each isolated mechanism vs baseline B.
 3. **Do mechanism combinations outperform single mechanisms?** (Only if combination data is present.)
 4. **What is the minimum sufficient mechanism set?**
-5. **How does N (network rewiring) compare?** Did structural partner selection outperform or underperform
-   institutional mechanisms (R, C, M, G)?
-6. **How does NR (network rewiring + reputation) compare to N alone?** Does adding reputation improve outcomes?
+5. **How does NR (network rewiring + local gossip) compare?** Did structural partner selection combined with
+   gossip-based reputation outperform or underperform institutional mechanisms (GR, C, M, G)?
+6. **How does GR (global reputation) compare to NR (local gossip)?** Does giving agents system-computed scores
+   improve outcomes vs making them rely on gossip and their own experience?
 7. **How does S (sanctions) compare?** Did agents actually spend utility to punish, and did it deter defection?
 8. **Round-by-round trends**: Using the per-round table, identify which conditions show cooperation
    improving over time vs deteriorating. Note any turning points or phase transitions.
