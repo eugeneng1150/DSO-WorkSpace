@@ -1,48 +1,85 @@
 # Idea Dump
 
 > These are exploratory ideas and notes — not committed to implementation.
-> Last updated: 2026-05-28
+> Last updated: 2026-05-29
 
 ---
 
 ## Current Setup Summary
 
-- **18 LLM agents**, 6 per good (A, B, C), all CoT reasoning
+- **18 LLM agents**, 6 per good (A, B, C), all CoT reasoning (5-step: situation, self-reflection, gossip evaluation, assessment, strategy)
 - **Models**: GPT-5.4-mini (Azure, default) and DeepSeek-V3.2 (Azure) — `--model` flag switches between them. Each model logs to its own folder (`data/runs/gpt-5.4-mini/`, `data/runs/deepseek-v3/`). Cross-model comparison plot implemented.
 - **Barter economy**: no tokens, goods-for-goods trade, cost 1 utility to produce, 3 utility per consumed unit, 20% spoilage
 - **Phase 1**: 30 rounds, 3 runs per condition. **Phase 2**: 100 rounds, 1 run, with `--trolls N` and `--rounds N` CLI flags
 - **Two-tier trade history**: lifetime partner summary (all rounds, never forgotten) + recent detail window (last 5 rounds). Agents see "Agent 5: 12 trades, 12/12 defections by them (100%)" — prevents trolls being "forgiven" when evidence scrolls out of the detail window.
 - **Self-interest framing**: explicit prompt language ("Your only goal is to maximise your own total utility") counteracting RLHF cooperative prior
+- **No end-game information**: agents see only "Round N" — no total rounds, no rounds remaining. Prevents backward induction and end-game defection collapse.
+- **No market health metrics in prompt**: agents do NOT see peace/sustainability scores. They must assess market state through their own experience and gossip.
 - **5 core metrics** — see "Metrics Provenance" and "Gini Coefficient" sections below:
   - Production Stability (our construct), Cooperation Rate (our construct), Gini coefficient (citeable), Per-round mean utility, Rawlsian min utility
 - **Cooperation threshold**: both Production Stability and Cooperation Rate > 0.5
 
-### Implemented Mechanisms (8 conditions)
+### Implemented Mechanisms (7 conditions)
 
-| Code | Mechanism | Type | Status | Description |
-|------|-----------|------|--------|-------------|
-| B | Baseline | — | Implemented | No mechanism. Pure self-interest dynamics |
-| R | Reputation | Agent-participatory | Implemented | System-tracked reputation (exponential decay: 0.9 * old + 0.1 * observation), visible to agents, initial = 1.0 |
-| C | Contracting | Agent-participatory | Implemented | Formal binding contracts: propose → sign/reject → enforce. Breach penalty = 6 utility |
-| M | Mediation | Agent-participatory | Implemented | Democratic: agents propose mediator rules, vote, then delegate trades. Fee = 1 utility |
-| G | Governance | External-deterministic | Implemented | Oracle detects defection patterns (4 signals, 5-round window) → escalates: Active → Warning → Fined → Suspended. See "Governance Signal Validity" section for D2/D3 concerns |
-| NR | Network Rewiring + Reputation | Agent-participatory | Implemented | Agents sever/request links + system reputation score. Adapted from RepuNet (arXiv:2505.05029). Full isolation allowed |
-| S | Sanctions | Agent-participatory | Implemented | Costly punishment: spend 1 utility → target loses 3. Anonymous, public announcement. Based on Piedrahita et al. 2025 |
+| Code | Mechanism | Type | Description |
+|------|-----------|------|-------------|
+| B | Baseline | — | No mechanism. Pure self-interest dynamics. Fixed network. |
+| GR | Global Reputation | Agent-participatory | System-tracked reputation (exponential decay: 0.9 * old + 0.1 * observation), visible to agents, initial = 1.0. Fixed network. Upper-bound test — unrealistically powerful (trolls isolated in ~2 rounds). |
+| C | Contracting | Agent-participatory | Formal binding contracts: propose → sign/reject → enforce. Breach penalty = 6 utility. Fixed network. |
+| M | Mediation | Agent-participatory | Democratic: agents propose mediator rules, vote, then delegate trades. Fee = 1 utility. Fixed network. |
+| G | Governance | External-deterministic | Oracle detects defection patterns (4 signals, 5-round window) → escalates: Active → Warning → Fined → Suspended. Fixed network. |
+| NR | Network Rewiring + Local Reputation | Agent-participatory | Agents sever/request links + 10-round rolling gossip history. No system scores — agents form own trust assessments from direct experience and unverified public messages. Inspired by RepuNet (arXiv:2505.05029). |
+| S | Sanctions | Agent-participatory | Costly punishment: spend 1 utility → target loses 3. Anonymous, public announcement. Fixed network. Based on Piedrahita et al. 2025. |
 
 Full factorial combinations (RC, RM, etc.) disabled until initial results reviewed.
 
-### Troll Agents (Phase 2) — IMPLEMENTED
+### Information Gradient: B → NR → GR
+
+| | B | NR | GR |
+|---|---|---|---|
+| Private experience | Lifetime summary + last 5 rounds | Same | Same |
+| Current round public messages | Yes | Yes | Yes |
+| Historical gossip (last 10 rounds) | No | **Yes** | No |
+| Network reshaping | No | **Yes (sever/request)** | No |
+| System reputation scores | No | No | **Yes** |
+| End-game info | No | No | No |
+| Market health metrics | No | No | No |
+
+B agents can only warn others in the moment — those warnings vanish next round. NR agents accumulate gossip over 10 rounds, so a warning about a troll in round 5 is still visible in round 14. Combined with the ability to sever links, NR agents can both *remember* and *act on* collective intelligence. GR gives agents a global, system-computed signal — unrealistically powerful but useful as an upper bound.
+
+### Troll Agents (Phase 2)
 
 - **Deterministic**: no LLM calls, zero cost per round
 - **Does NOT produce**: 0 production every round (pure parasite)
-- **Defects on ALL incoming trades**: takes proposer's goods, delivers nothing
+- **Actively proposes trades**: trolls propose trades to ALL neighbors every round (offering 2 units of their specialty for 2 units of a needed good)
+- **Defects on ALL trades**: whether they proposed or the other agent proposed, trolls take goods and deliver nothing
 - **Lies in messages**: sends public messages claiming fair cooperation ("I'm committed to fair trading!"). Tests whether agents learn to weigh actions over words
-- **Passive**: does NOT propose trades — can only defect on offers sent TO them. If no agents propose trades to a troll, the troll's defection count drops to zero
-- **Fully connected**: trolls are connected to ALL other agents in the network (maximally exposed — every non-troll can encounter them)
-- **Round-robin distribution**: 2 trolls = agents 0 (Good A) + 6 (Good B); 4 = 0, 6, 12, 1; 6 = 0, 6, 12, 1, 7, 13
-- **Excluded from metrics**: trolls are excluded from sustainability (production), peace (trade defection rate), utility averages, and distribution plots. Only non-troll-to-non-troll trades count. This prevents troll behavior from skewing aggregate metrics — we measure how well the remaining agents cooperate despite the trolls, not the trolls' own performance.
+- **Fully connected**: trolls are connected to ALL other agents in the network initially (maximally exposed)
+- **Round-robin distribution**: 2 trolls = agents 0 (Good A) + 6 (Good B)
+- **Excluded from metrics**: trolls are excluded from sustainability, peace, utility averages, and distribution plots. Only non-troll-to-non-troll trades count.
 - **CLI**: `--trolls N` flag, `--rounds N` for longer games
 - **File naming**: `{condition}_t{n_trolls}_run_{idx:02d}.json`
+
+---
+
+## NR Design — Local Gossip Reputation
+
+**Based on**: RepuNet (arXiv:2505.05029, May 2025, AAMAS 2026) — Siyue Ren et al.
+
+**Why not global reputation?** Our original R condition gave agents a system-computed score visible to all — trolls were isolated in ~2 rounds, far faster than RepuNet's 60-100 rounds. This was unrealistically powerful. RepuNet uses local/decentralized reputation where agents form their own assessments through direct experience and gossip.
+
+**Our NR implementation:**
+- **Network rewiring**: agents can sever links (unlimited per round) and request new links (auto-accepted). Full isolation allowed.
+- **Gossip channel**: agents see a rolling 10-round history of all public messages from other agents. Messages are unverified — agents must judge credibility themselves.
+- **No system scores**: agents are NOT told there is no global score — they simply don't receive one. Trust assessment comes from (1) lifetime partner summary, (2) recent trade detail, and (3) gossip.
+- **Enhanced CoT reasoning**: all agents (not just NR) use 5-step reasoning including self-reflection ("how might others perceive me?") and gossip evaluation ("which warnings seem credible?").
+
+**What NR tests**: Can decentralized information (gossip) + structural power (link severing) achieve cooperation comparable to a centralized system (GR)? RepuNet says yes, but slower. We expect troll isolation to take 5-10+ rounds in NR vs ~2 in GR.
+
+**RepuNet key results** (for reference):
+- Public goods game: cooperation 0.19 → 0.85 (4.5x improvement)
+- Trust game: cooperation 0.17 → 0.98 (5.8x improvement)
+- Ablation: removing gossip barely hurts (0.85→0.81); removing reputation collapses everything (0.85→0.29)
 
 ---
 
@@ -62,28 +99,6 @@ Full factorial combinations (RC, RM, etc.) disabled until initial results review
 | Cite a paper for D2/D3 | Find a governance/market regulation framework that justifies monitoring production and trade volume | Preferred if a citation exists |
 
 **Decision needed**: Keep, fix, or remove D2/D3?
-
----
-
-## Network Rewiring + Reputation (NR) — Design Notes
-
-**Based on**: RepuNet (arXiv:2505.05029, May 2025, AAMAS 2026) — Siyue Ren et al.
-
-RepuNet uses network rewiring **with** reputation — the paper's mechanism is inherently a combined approach. We implement this as condition NR (not N alone), matching the literature.
-
-**RepuNet key results** (for reference):
-- Public goods game: cooperation 0.19 → 0.85 (4.5x improvement)
-- Trust game: cooperation 0.17 → 0.98 (5.8x improvement)
-- Ablation: removing gossip barely hurts (0.85→0.81); removing reputation collapses everything (0.85→0.29)
-
-**Our NR implementation** (simplified from RepuNet):
-- Sparse starting graph (4-6 neighbors per agent, cross-good guarantees)
-- Each round: agents can **sever** links (max 1/round) and **request** new links (max 2/round, auto-accepted if target has capacity)
-- Full isolation allowed (no minimum neighbor floor)
-- System reputation score visible to all agents (same as R mechanism)
-- Network evolves over rounds — defectors lose partners, cooperators gain them
-
-**What NR tests vs R alone**: R gives agents information (public reputation score) but no structural power (fixed network). NR gives agents BOTH — the public score AND the ability to act on it by severing/requesting links. Does adding structural power to information improve outcomes?
 
 ---
 
@@ -125,7 +140,7 @@ All agents are **self-interested**, not good-faith cooperators. Mechanisms work 
 
 **Goal**: Which mechanisms make cooperation the rational choice for self-interested agents?
 
-- All 7 conditions: B, R, C, M, G, NR, S
+- All 7 conditions: B, GR, C, M, G, NR, S
 - 0 trolls — pure self-interest dynamics
 - **3 runs** per condition, **30 rounds** each
 - **Metrics**: Production Stability, Cooperation Rate, Gini, per-round mean utility, Rawlsian min utility
@@ -142,7 +157,7 @@ All agents are **self-interested**, not good-faith cooperators. Mechanisms work 
 - **Trolls**: 2, 4, 6 (out of 18 agents) — find each mechanism's **breaking point**
 - **CLI**: `python -m simulation.main --condition B --trolls 2 --rounds 100 --runs 1`
 
-**Troll design** — see "Troll Agents" section above. Key: trolls **lie in public messages** claiming cooperation while defecting on all trades. This tests whether agents learn to weigh actions over words. Trolls are passive parasites — they can only defect on offers sent TO them. If all agents stop proposing trades to a troll, its defection count drops to zero.
+**Troll design** — see "Troll Agents" section above. Key: trolls **actively propose trades** to all neighbors and **lie in public messages** while defecting on everything. This tests whether agents learn to weigh actions over words.
 
 **Collapse definition** (decided): per-round mean utility < 0 sustained for **3+ consecutive rounds**.
 
@@ -157,38 +172,25 @@ All agents are **self-interested**, not good-faith cooperators. Mechanisms work 
 | Top mechanism 3 | ? | ? | ? |
 | Top mechanism 4 | ? | ? | ? |
 
-**Target graph** (the paper figure):
-```
-plot_troll_sweep():
-  X-axis: Number of trolls (0, 2, 4, 6)
-  Y-axis: Final-round mean utility (averaged across runs)
-  Lines:  One per condition (B, R, C, M, G, NR, S)
-  Horizontal line at y=0 (collapse threshold)
-  Shows: which mechanisms hold positive utility longest as trolls increase
-```
-
 **How each mechanism handles trolls (predicted):**
 
 | Mechanism | Troll defense | Strategy type | Predicted resilience |
 |---|---|---|---|
 | B (baseline) | None — troll defects, victims retaliate, cascade collapse | — | Very low |
-| R | Troll's reputation drops, agents see they're bad — but can't avoid them (fixed network) | Information without action | Low |
+| GR | Troll's reputation drops, agents see they're bad — but can't avoid them (fixed network) | Information without action | Low-Medium |
 | C | Troll breaches contracts, pays utility penalties — but trust damage done | Penalty | Medium |
 | M | If troll delegates to mediator, mediator forces fair execution | **Neutralization** | High |
 | G | Oracle detects 100% defection rate, escalates to fines/suspension | **Ejection** | High |
-| NR | Agents sever links to troll + reputation drops — coordinated isolation | **Hard isolation + information** | High |
+| NR | Agents sever links to troll + gossip spreads warnings — decentralized isolation | **Structural isolation + gossip** | Medium-High |
 | S | Agents spend utility to punish troll; troll loses 3× per sanction | **Costly punishment** | Medium-High |
-| B/R/C/S (all fixed-network) | Agents stop *proposing* trades to known defectors | **Soft boycott** | Varies |
 
-**Key insight**: Troll isolation happens in ALL mechanisms, not just N. The difference is the mechanism:
-- **Soft boycott** (B, R, C, S): agents learn from lifetime partner summary and stop proposing trades. Slower, depends on agents processing history correctly
-- **Hard isolation** (NR): agents sever network links. Structural, permanent, visible to all
+**Key insight**: Troll isolation happens in ALL mechanisms, not just NR. The difference is the mechanism:
+- **Soft boycott** (B, GR, C, S): agents learn from lifetime partner summary and stop proposing/accepting trades. Slower, depends on agents processing history correctly. GR adds a public signal that speeds detection.
+- **Structural isolation** (NR): agents sever network links based on experience + gossip. Permanent, visible to all, but slower than GR because information is decentralized.
 - **Neutralization** (M): mediator overrides defection on delegated trades
 - **Ejection** (G): oracle detects and suspends troll from market
 
 M, NR, and G are predicted most resilient, but for fundamentally different reasons. This is a publishable finding if confirmed.
-
-**B vs R — does public reputation add anything?** The lifetime partner summary (available in ALL conditions including B) gives agents **private first-hand knowledge**: you see defection stats only for partners you've personally traded with. R adds a **public aggregate signal**: a system-computed reputation score derived from ALL of an agent's trades across all partners. An agent who has never traded with a troll can still see its low reputation in R, but would have a blank slate in B. However, with small networks (4-6 neighbors), most agents gain direct experience with a troll within a few rounds — so R's advantage may only be a few rounds of faster detection. If experiments show B and R converge quickly, that's itself a finding: public reputation adds little when agents have long memory and small networks. It would matter more with larger networks or shorter memory windows.
 
 **Differentiating mechanisms that all isolate trolls** — if every mechanism eventually contains trolls, the question shifts from *whether* to *how well*:
 
@@ -212,22 +214,22 @@ Note: 3 runs gives limited statistical power — sufficient for directional evid
 
 **2. Causal pathway evidence (mechanism of action)**
 Show the mechanism worked THROUGH its intended channel:
-- **R**: agents with low reputation received fewer trade proposals (information → avoidance)
+- **GR**: agents with low reputation received fewer trade proposals (information → avoidance)
 - **G**: warned/fined agents reduced defection rate in subsequent rounds (deterrence → behavior change)
-- **NR**: defectors' neighbor count dropped over time, cooperators' held stable (structural → isolation)
+- **NR**: defectors' neighbor count dropped over time, cooperators' held stable (structural → isolation); gossip warnings preceded link severing (information → action)
 - **C**: agents with active contracts defected less than in uncontracted trades (commitment → compliance)
 - **M**: mediated trades had lower defection than unmediated trades (enforcement → fair execution)
 - **S**: sanctioned agents reduced defection in subsequent rounds (punishment → behavior change)
 All derivable from existing logged data — no new simulation runs needed, just post-hoc analysis.
 
 **3. Controlled adversarial test (troll sweep)**
-Inject hardcoded defectors (0, 2, 4, 6 trolls) and show which mechanisms maintain positive utility. Strongest evidence: the troll is a known ground-truth defector — if G suspends it, if N isolates it, that's proof the mechanism detected and contained a real adversary.
+Inject hardcoded defectors (0, 2, 4, 6 trolls) and show which mechanisms maintain positive utility. Strongest evidence: the troll is a known ground-truth defector — if G suspends it, if NR isolates it, that's proof the mechanism detected and contained a real adversary.
 
 ### Open Design Questions
 
 - **Timing**: trolls from round 1 (decided) or injected mid-game? Round-1 injection is simpler and tests steady-state resilience
 - **Troll placement**: round-robin across goods (decided). Targeted placement (hub agent) could be a future extension
-- **Troll awareness**: agents do NOT know trolls exist — they discover it through experience and lifetime partner summary
+- **Troll awareness**: agents do NOT know trolls exist — they discover it through experience and gossip
 - **Mixed trolls**: all 100% defection rate (decided). Variable defection rates (50%, 75%) could be a future extension
 - **Cross-model comparison**: run same conditions on GPT-5.4-mini and DeepSeek-V3.2. If both agree, mechanisms are robust to model choice. If they diverge, high baseline cooperation may be model-specific RLHF bias
 
@@ -235,7 +237,7 @@ Inject hardcoded defectors (0, 2, 4, 6 trolls) and show which mechanisms maintai
 
 ## Metrics Provenance — "Sustainability" and "Peace" Are Our Own Constructs
 
-**Issue**: The codebase currently uses metrics named "sustainability" and "peace." These names overlap with established definitions in the literature, but our formulas do not match. We cannot cite those papers for our metrics.
+**Issue**: The codebase uses metrics named "sustainability" and "peace" internally. These names overlap with established definitions in the literature, but our formulas do not match. We cannot cite those papers for our metrics.
 
 ### What the literature defines
 
@@ -248,20 +250,15 @@ Inject hardcoded defectors (0, 2, 4, 6 trolls) and show which mechanisms maintai
 | **Equality** | `1 − Gini` over total agent rewards | Not yet implemented | — |
 | **Efficiency** | Total reward per timestep | `mean_utility` per round | Closest match |
 
-**GovSim** (Piatti et al., NeurIPS 2024, arXiv:2404.16698) defines sustainability as **survival rate** — the proportion of runs where the shared resource pool stays above a collapse threshold. This is resource-stock survival in a common-pool resource game, not a production ratio. GovSim does not define "peace" at all. GovSim does use `1 − Gini` as an equality metric.
+**GovSim** (Piatti et al., NeurIPS 2024, arXiv:2404.16698) defines sustainability as **survival rate** — the proportion of runs where the shared resource pool stays above a collapse threshold. GovSim does use `1 − Gini` as an equality metric.
 
-### Decision: rename, don't force-fit
+### Decision: rename in paper, keep internal keys
 
-Perolat's formulas are designed for gridworld environments (Melting Pot / Gathering / Cleanup) with tagging beams, apple spawning, and continuous timesteps. They don't translate meaningfully to a barter economy with discrete rounds and trade-level defection.
-
-**Action**:
-- Rename "sustainability" → **"production stability"** in the paper (and optionally in code)
-- Rename "peace" → **"cooperation rate"** in the paper (and optionally in code)
+- Display as **"Production Stability"** in paper and plot titles
+- Display as **"Cooperation Rate"** in paper and plot titles
+- Internal keys remain `sustainability` and `peace` to avoid breaking existing logs
 - Define both clearly as our own constructs — no citation needed, just a clear formula in the methodology section
-- Add **Gini coefficient** (citeable — used by both GovSim and Gallego/Perolat) as a third core metric
-- Add **per-round mean utility** as a fourth core metric (standard welfare measure)
-
-This avoids confusion with established definitions while keeping metrics that make sense for our barter economy.
+- Add **Gini coefficient** (citeable) and **Rawlsian min utility** as additional metrics (not yet implemented)
 
 ### Proposed core metric set
 
@@ -277,44 +274,23 @@ This avoids confusion with established definitions while keeping metrics that ma
 
 ## Gini Coefficient as an Inequality Metric
 
-**Problem**: Mean utility can be misleading. If one agent extracts most of the utility (e.g., consistently defects and takes goods without delivering), the group mean looks healthy while 17/18 agents are suffering. Mean utility is a **utilitarian** metric — it maximises the aggregate and ignores distribution.
-
-**Proposed metric**: Gini coefficient per round, computed from per-agent utilities.
+**Problem**: Mean utility can be misleading. If one agent extracts most of the utility (e.g., consistently defects and takes goods without delivering), the group mean looks healthy while 17/18 agents are suffering.
 
 **Formula**:
 ```
 G = Σᵢ Σⱼ |uᵢ − uⱼ| / (2n² · mean(u))
 ```
-- G = 0: perfect equality (all agents earn the same utility)
-- G = 1: maximum inequality (one agent gets everything)
+- G = 0: perfect equality; G = 1: maximum inequality
 
-**Negative utility caveat**: Standard Gini requires all values ≥ 0. Since our utilities can be negative (production costs, penalties, sanctions), shift all values by `|min(u)|` before computing. Alternatively, use the absolute-mean Gini variant.
+**Negative utility caveat**: Standard Gini requires all values ≥ 0. Since our utilities can be negative, shift all values by `|min(u)|` before computing.
 
-**Key paper**: Shi et al. 2025, *"Social Welfare Function Leaderboard: When LLM Agents Allocate Social Welfare"* (arXiv:2510.01164)
-- Setup: one LLM allocator distributes tasks to 12 recipient agents of varying capability; 20 LLMs tested (GPT-5, Claude Opus 4, Gemini 2.5 Pro, DeepSeek-V3)
-- Uses `SWF Score = (1 − Gini) × ROI` as a composite metric combining fairness and efficiency
-- Finding: most LLMs are strongly **utilitarian** by default — they maximise aggregate efficiency at the expense of severe inequality. 14/20 LLMs were less fair than a simple "assign to whoever has fewest tasks" heuristic
-- GPT-5-High ranked #2 on Arena but dead last (#20) on SWF; DeepSeek-V3 went from Arena rank 25 to SWF rank 1
-- No LLM beat the fairness-oriented heuristic baseline
+**Key paper**: Shi et al. 2025, *"Social Welfare Function Leaderboard"* (arXiv:2510.01164) — finding: most LLMs are strongly utilitarian by default, maximising aggregate efficiency at the expense of severe inequality.
 
-**Relevance to our work**: Their paper measures inequality of task allocation from a central allocator. Our setup is stronger — 18 autonomous LLM agents making their own decisions, so inequality arises emergently rather than by central allocation. If GPT-5.4-mini has the same utilitarian bias, we should see some agents consistently exploiting others, and Gini would capture this where mean utility would not.
-
-**Companion metrics to consider alongside Gini**:
-- **Rawlsian min utility** (`min(uᵢ)` per round): no shifting needed, directly measures worst-off agent
-- **Geometric mean** (`(∏ uᵢ)^(1/n)` after shifting): Nash Social Welfare proxy — collapses toward zero if any single agent has near-zero utility (ILLC/AAMAS 2008/2010)
-- **Jain's Fairness Index** (`(Σu)² / (n·Σu²)`): bounded [1/n, 1], simpler than Gini but less sensitive to distributional shape
-
-**Implementation**: All computable post-hoc from existing per-agent `utilities` dict logged every round. No simulation re-run needed. Add to `stats.py` and `plots.py`.
-
-**Files to change**:
-- `simulation/analysis/stats.py` — add `gini`, `min_utility`, `geo_mean_utility` to METRICS
-- `simulation/analysis/plots.py` — add `plot_inequality_trajectories()` (2×4 grid, Gini + Rawlsian min over rounds per condition)
+**Implementation**: Computable post-hoc from existing per-agent `utilities` dict. No simulation re-run needed.
 
 ---
 
 ## Key Behavioral Findings from Literature
-
-These findings should inform which mechanisms we prioritize:
 
 1. **Cooperation collapse is the default** — GovSim: 43/45 scenarios collapsed (NeurIPS 2024)
 2. **One defection triggers permanent retaliation** — LLMs are extremely unforgiving (Nature Human Behaviour 2025). Mechanisms need forgiveness/restoration paths, not just punishment
@@ -329,6 +305,7 @@ These findings should inform which mechanisms we prioritize:
 
 - GovSim — Piatti et al., NeurIPS 2024 (arXiv:2404.16698)
 - RepuNet — arXiv:2505.05029 (May 2025)
+- CoopEval — arXiv:2505.00754 (cooperation evaluation framework)
 - Playing Repeated Games with LLMs — Nature Human Behaviour 2025
 - Institutional AI: Governance Graphs — arXiv:2601.11369 (Jan 2025)
 - Corrupted by Reasoning — arXiv:2506.23276 (2025)
@@ -344,3 +321,4 @@ These findings should inform which mechanisms we prioritize:
 - Interpretable Automated Mechanism Design — arXiv:2502.12203 (Feb 2025)
 - Structuring Collective Action with LLM-Guided Evolution — arXiv:2509.20412 (Dec 2025)
 - Communication Enables Cooperation — arXiv:2510.05748
+- Social Welfare Function Leaderboard — Shi et al. 2025 (arXiv:2510.01164)

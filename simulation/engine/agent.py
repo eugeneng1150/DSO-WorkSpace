@@ -10,7 +10,7 @@ import asyncio
 import os
 from typing import Any
 
-from openai import AsyncOpenAI, RateLimitError, BadRequestError
+from openai import AsyncOpenAI, RateLimitError, BadRequestError, APITimeoutError
 
 from ..config import MODEL, MAX_RETRIES, COT_AGENT_IDS, GOODS, AGENTS_PER_GOOD, AZURE_ENDPOINT
 
@@ -21,7 +21,7 @@ _model = MODEL
 def configure_llm(base_url: str, api_key: str, model: str):
     """Override the LLM endpoint/model at runtime (called from main before any agents run)."""
     global _client, _model
-    _client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+    _client = AsyncOpenAI(api_key=api_key, base_url=base_url, timeout=120.0)
     _model = model
 
 
@@ -31,6 +31,7 @@ def _get_client() -> AsyncOpenAI:
         _client = AsyncOpenAI(
             api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
             base_url=AZURE_ENDPOINT,
+            timeout=120.0,
         )
     return _client
 
@@ -95,9 +96,10 @@ class _BaseAgent:
                 text = response.choices[0].message.content
                 self.last_raw_response = text
                 return _extract_json(text)
-            except RateLimitError:
+            except (RateLimitError, APITimeoutError) as e:
                 wait = backoff * (2 ** attempt)
-                print(f"[Agent {self.agent_id}] Rate limited — waiting {wait:.1f}s (attempt {attempt+1}/{MAX_RETRIES})")
+                label = "Rate limited" if isinstance(e, RateLimitError) else "Timed out"
+                print(f"[Agent {self.agent_id}] {label} — waiting {wait:.1f}s (attempt {attempt+1}/{MAX_RETRIES})")
                 await asyncio.sleep(wait)
             except BadRequestError as e:
                 err_str = str(e).lower()
