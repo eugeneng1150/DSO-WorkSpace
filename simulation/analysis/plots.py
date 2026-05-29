@@ -134,6 +134,10 @@ def plot_defection_rates(save: bool = True) -> None:
         stds.append(np.std(defection_vals))
         labels.append(condition)
 
+    if not labels:
+        print("  [defection_rates] No data found, skipping.")
+        return
+
     fig, ax = plt.subplots(figsize=(10, 5))
     x = np.arange(len(labels))
     ax.bar(x, means, yerr=stds, capsize=5, color=[COLORS[c] for c in labels], alpha=0.85)
@@ -196,6 +200,10 @@ def plot_marketplace_cooperation_rates(save: bool = True) -> None:
         )
         labels.append(condition)
         rates.append(cooperative / len(runs))
+
+    if not labels:
+        print("  [marketplace_cooperation_rates] No data found, skipping.")
+        return
 
     fig, ax = plt.subplots(figsize=(10, 5))
     x = np.arange(len(labels))
@@ -412,8 +420,13 @@ def plot_utility_distribution(save: bool = True) -> None:
             final_round = run["rounds"][-1]
             utilities = final_round.get("utilities", {})
             utils.extend(float(v) for k, v in utilities.items() if k not in troll_ids)
-        labels.append(condition)
-        all_utils.append(utils)
+        if utils:
+            labels.append(condition)
+            all_utils.append(utils)
+
+    if not all_utils:
+        print("  [utility_distribution] No utility data found, skipping.")
+        return
 
     fig, ax = plt.subplots(figsize=(12, 6))
     bp = ax.boxplot(all_utils, labels=labels, patch_artist=True, notch=False)
@@ -595,6 +608,10 @@ def plot_stability_rates(save: bool = True) -> None:
 
         labels.append(condition)
         stable_fractions.append(stable_rounds / total_rounds if total_rounds > 0 else 0.0)
+
+    if not labels:
+        print("  [stability_rates] No data found, skipping.")
+        return
 
     fig, ax = plt.subplots(figsize=(10, 5))
     x = np.arange(len(labels))
