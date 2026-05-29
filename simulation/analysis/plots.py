@@ -901,13 +901,23 @@ def plot_model_comparison(save: bool = True) -> None:
     _maybe_save(fig, "model_comparison.png", save)
 
 
+def _load_troll_runs(condition: str) -> list[dict]:
+    """Load troll run files: {condition}_t*_run_*.json"""
+    files = sorted(config.DATA_DIR.glob(f"{condition}_t*_run_*.json"))
+    runs = []
+    for f in files:
+        with open(f) as fp:
+            runs.append(json.load(fp))
+    return runs
+
+
 def plot_troll_trade_volume(save: bool = True) -> None:
     """Line chart: trades with trolls per round, one line per condition."""
     fig, ax = plt.subplots(figsize=(12, 6))
     found_any = False
 
     for condition in CONDITIONS:
-        runs = _load_runs(condition)
+        runs = _load_troll_runs(condition)
         if not runs:
             continue
         troll_ids = _get_troll_ids(runs[0])
