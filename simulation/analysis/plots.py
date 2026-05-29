@@ -884,6 +884,54 @@ def plot_model_comparison(save: bool = True) -> None:
     _maybe_save(fig, "model_comparison.png", save)
 
 
+def plot_troll_trade_volume(save: bool = True) -> None:
+    """Line chart: trades with trolls per round, one line per condition."""
+    fig, ax = plt.subplots(figsize=(12, 6))
+    found_any = False
+
+    for condition in CONDITIONS:
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+        troll_ids = _get_troll_ids(runs[0])
+        if not troll_ids:
+            continue
+
+        n_rounds = len(runs[0]["rounds"])
+        troll_trades_per_round = []
+        for r in range(n_rounds):
+            counts = []
+            for run in runs:
+                if r >= len(run["rounds"]):
+                    continue
+                trades = run["rounds"][r].get("trades", [])
+                count = sum(
+                    1 for t in trades
+                    if str(t["proposer"]) in troll_ids or str(t["target"]) in troll_ids
+                )
+                counts.append(count)
+            troll_trades_per_round.append(np.mean(counts) if counts else 0.0)
+
+        rounds = list(range(1, n_rounds + 1))
+        ax.plot(rounds, troll_trades_per_round, label=condition,
+                color=COLORS[condition], linewidth=2.0)
+        found_any = True
+
+    if not found_any:
+        plt.close(fig)
+        print("  [troll_trade_volume] No troll runs found, skipping.")
+        return
+
+    ax.set_xlabel("Round", fontsize=12)
+    ax.set_ylabel("Trades with trolls per round", fontsize=12)
+    ax.set_title("Troll Isolation: Trade Volume with Trolls Over Rounds", fontweight="bold", fontsize=14)
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3)
+    ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
+    plt.tight_layout()
+    _maybe_save(fig, "troll_trade_volume.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
@@ -901,6 +949,7 @@ def plot_all(save: bool = True) -> None:
     plot_signal_timelines(save)
     plot_lead_lag_heatmap(save)
     plot_network_snapshots(save)
+    plot_troll_trade_volume(save)
     plot_model_comparison(save)
     print(f"Plots saved to {OUT_DIR}")
 
