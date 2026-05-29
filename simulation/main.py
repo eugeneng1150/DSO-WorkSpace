@@ -23,6 +23,8 @@ def main():
     parser.add_argument("--all", action="store_true", help="Run all conditions")
     parser.add_argument("--runs", type=int, default=None, help="Override number of runs per condition")
     parser.add_argument("--plot", action="store_true", help="Generate plots after simulation")
+    parser.add_argument("--interactive", action="store_true",
+                        help="Generate interactive Plotly network animations (requires troll runs)")
     parser.add_argument("--analyse", action="store_true", help="Run analyst agent after simulation")
     parser.add_argument("--reason-analyse", action="store_true", help="Run reasoning analyst on CoT traces")
     parser.add_argument("--extract-signals", action="store_true", help="Extract social signals from agent messages/CoT")
@@ -83,6 +85,12 @@ def main():
     if args.plot:
         from .analysis.plots import plot_all
         plot_all()
+
+    if args.interactive:
+        from .analysis.interactive_network import plot_interactive_networks
+        troll_suffix = f"_t{args.trolls}" if args.trolls else "_t2"
+        cond_list = [args.condition] if args.condition else None
+        plot_interactive_networks(conditions=cond_list, troll_suffix=troll_suffix)
 
     if args.analyse:
         from .analysis.analyst import run_analyst
