@@ -290,6 +290,11 @@ class Game:
             if "contracting" in self.mechanism_names:
                 self._process_contract_proposals(agent.agent_id, actions, round_num)
 
+        # Troll agents: propose trades to ALL neighbors (they'll defect on delivery)
+        for agent in self.agents:
+            if isinstance(agent, TrollAgent):
+                self._inject_troll_proposals(agent, round_num)
+
         # Network rewiring (after messages/proposals, before trade phase)
         if "network_rewiring" in self.mechanism_names:
             self._process_network_actions(comm_actions, round_num)
@@ -436,6 +441,26 @@ class Game:
                     sender_id=sender_id, text=act.get("text", ""),
                     round_num=round_num, channel="public"
                 ))
+
+    def _inject_troll_proposals(self, agent: TrollAgent, round_num: int) -> None:
+        """Trolls propose trades to every neighbor, offering their specialty good."""
+        neighbors = self.market.network.get(agent.agent_id, set())
+        other_goods = [g for g in GOODS if g != agent.specialty]
+        for target_id in neighbors:
+            if target_id in self.troll_ids:
+                continue
+            want_good = other_goods[target_id % len(other_goods)]
+            trade = TradeOffer(
+                trade_id=self.market.new_trade_id(),
+                proposer_id=agent.agent_id,
+                target_id=target_id,
+                offer_good=agent.specialty,
+                offer_qty=2,
+                want_good=want_good,
+                want_qty=2,
+                round_num=round_num,
+            )
+            self.market.post_trade_offer(trade)
 
     def _process_trade_proposals(self, proposer_id: int, actions: list[dict], round_num: int) -> None:
         # Track committed inventory to prevent over-promising
