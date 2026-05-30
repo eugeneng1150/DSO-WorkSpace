@@ -10,7 +10,7 @@ import asyncio
 import os
 from typing import Any
 
-from openai import AsyncOpenAI, RateLimitError, BadRequestError, APITimeoutError
+from openai import AsyncOpenAI, RateLimitError, BadRequestError, APITimeoutError, InternalServerError
 
 from ..config import MODEL, MAX_RETRIES, COT_AGENT_IDS, GOODS, AGENTS_PER_GOOD, AZURE_ENDPOINT
 
@@ -96,9 +96,9 @@ class _BaseAgent:
                 text = response.choices[0].message.content
                 self.last_raw_response = text
                 return _extract_json(text)
-            except (RateLimitError, APITimeoutError) as e:
+            except (RateLimitError, APITimeoutError, InternalServerError) as e:
                 wait = backoff * (2 ** attempt)
-                label = "Rate limited" if isinstance(e, RateLimitError) else "Timed out"
+                label = "Rate limited" if isinstance(e, RateLimitError) else "Timed out" if isinstance(e, APITimeoutError) else "Server error (500)"
                 print(f"[Agent {self.agent_id}] {label} — waiting {wait:.1f}s (attempt {attempt+1}/{MAX_RETRIES})")
                 await asyncio.sleep(wait)
             except BadRequestError as e:
