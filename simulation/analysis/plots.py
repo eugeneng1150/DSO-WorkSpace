@@ -9,7 +9,12 @@ import numpy as np
 from .. import config
 from ..config import COOPERATION_THRESHOLD, CONDITIONS, CONDITION_MECHANISMS
 
-OUT_DIR = Path(__file__).parent.parent / "data" / "plots"
+def _get_out_dir() -> Path:
+    """Plots output directory, mirroring the model subfolder from DATA_DIR."""
+    model_tag = config.DATA_DIR.name
+    return Path(__file__).parent.parent / "data" / "plots" / model_tag
+
+OUT_DIR = Path(__file__).parent.parent / "data" / "plots"  # updated dynamically in plot_all
 
 METRICS = ["sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
@@ -1286,6 +1291,8 @@ def plot_gini_trajectory(save: bool = True) -> None:
 
 
 def plot_all(save: bool = True) -> None:
+    global OUT_DIR
+    OUT_DIR = _get_out_dir()
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
     plot_defection_rates(save)
