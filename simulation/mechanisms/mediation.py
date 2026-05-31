@@ -20,8 +20,6 @@ class MediationMechanism(Mechanism):
     async def _design_and_vote(self, market: "Market", agents: list["_BaseAgent"]) -> None:
         from ..engine.prompt_builder import build_prompt
 
-        metrics = {k: 1.0 for k in ["sustainability", "peace"]}
-
         # Stage 1: all agents propose a design
         design_prompts = [
             build_prompt(
@@ -30,7 +28,6 @@ class MediationMechanism(Mechanism):
                 needs=a.needs,
                 last_utility=a.last_utility,
                 total_utility=a.total_utility,
-                metrics=metrics,
                 market=market,
                 mechanisms=["mediation"],
                 stage_overrides={"mediation": "1"},
@@ -62,7 +59,6 @@ class MediationMechanism(Mechanism):
                 needs=a.needs,
                 last_utility=a.last_utility,
                 total_utility=a.total_utility,
-                metrics=metrics,
                 market=market,
                 mechanisms=["mediation"],
                 stage_overrides={"mediation": "2"},

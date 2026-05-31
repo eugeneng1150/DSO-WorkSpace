@@ -301,12 +301,78 @@ G = Σᵢ Σⱼ |uᵢ − uⱼ| / (2n² · mean(u))
 
 ---
 
+## Positioning: Distributional AGI Safety
+
+### The Papers
+
+1. **Distributional AGI Safety** — Tomašev et al. (Google DeepMind), Dec 2025 (arXiv:2512.16856)
+2. **Institutional AI: A Governance Framework for Distributional AGI Safety** — Pierucci et al., Jan 2026 (arXiv:2601.10599)
+
+### Their Core Thesis
+
+AGI may emerge not as a monolithic entity but as a **"Patchwork AGI"** — coordinated groups of sub-AGI agents with complementary skills. Safety therefore requires governing inter-agent interactions, not just aligning individual models. They propose a defence-in-depth framework centered on market mechanisms, reputation, contracts, governance, and sanctions.
+
+**Critical gap: both papers are purely conceptual — no experiments, no simulations, no empirical validation.** They explicitly call for "prototyping and evaluating multiple steerable market designs" and "rapid development of benchmarks, test environments."
+
+### How Our Work Maps Onto Their Framework
+
+| Their Framework Component | Our Condition | What We Test |
+|---|---|---|
+| Reputation and Trust (§3.1.6) | GR, NR | Global vs. local/gossip-based reputation |
+| Smart Contracts (§3.1.7) | C | Binding bilateral contracts with breach penalties |
+| Mediation / AI Judges | M | Agent-designed mediator, delegation |
+| Regulatory Mechanisms (§3.4) | G | Oracle detection (D1, D4), escalating sanctions |
+| Stake-based sanctions | S | Costly punishment (spend 1 → target loses 3) |
+| Adversarial agents / Red teaming (§3.3.4) | Trolls | Deterministic defectors stress-testing mechanisms |
+| Circuit breakers (§3.1.4) | G (suspension) | Automatic suspension after repeated violations |
+| Anti-monopoly / Inequality (§3.4.4) | Gini metric | Utility inequality measurement |
+| Incentive alignment (§3.1.2) | All conditions | Which mechanism makes cooperation rational? |
+
+### What We Uniquely Contribute
+
+1. **Empirical evidence for mechanism comparison.** They propose all these mechanisms but can't say which works. We run head-to-head comparisons across 7 conditions with the same agents, same economy, same metrics.
+
+2. **The information gradient (B → NR → GR).** They discuss reputation but don't distinguish between global system scores vs. local gossip. We show this matters enormously — GR isolates trolls in ~2 rounds, NR agents don't naturally gossip at all.
+
+3. **Mechanism adoption failure.** They assume agents will use available mechanisms. We found agents unanimously design a mediator but nobody delegates — a critical finding about the gap between mechanism availability and mechanism use.
+
+4. **Natural vs. scaffolded behavior.** RepuNet requires a 5-stage pipeline to get agents to gossip. Our agents don't gossip naturally. This challenges the assumption that reputation systems "just work" in multi-agent settings.
+
+5. **Adversarial resilience with escalating trolls.** They call for red teaming of agent collectives. Our troll agents are exactly this — deterministic adversaries stress-testing each mechanism's resilience. Phase 2 escalates (2, 4, 6 trolls) to find each mechanism's breaking point.
+
+6. **Inequality dynamics (Gini).** They worry about power concentration and monopolization (§3.4.4). We measure utility inequality directly per round.
+
+### Possible Paper Framing
+
+> "An empirical evaluation of institutional mechanisms for multi-agent cooperation in LLM marketplaces, operationalizing the distributional safety framework proposed by Tomašev et al. (2025)"
+
+**Strongest selling points:**
+- Not all mechanisms are equal — reputation type matters (global vs. local)
+- Mechanism availability ≠ mechanism adoption (mediation finding)
+- LLM agents don't naturally develop prosocial behaviors like gossip without scaffolding
+- Information gradient creates a spectrum of troll resilience
+- Empirical data fills the main gap in both DeepMind and Institutional AI papers
+
+### Their Framework Components We Do NOT Cover (Potential Limitations)
+
+- **Insulation / Sandboxing** (§3.1.1) — our agents operate in a closed economy by design
+- **Identity / Sybil resistance** (§3.1.5) — agents have fixed IDs, no identity manipulation
+- **Mechanistic interpretability** (§3.2.5) — we analyze CoT traces but not internal representations
+- **International coordination** (§3.4.5) — out of scope
+- **Recursive self-improvement** (§3.1.10) — agents don't modify themselves or spawn sub-agents
+
+These are reasonable scope boundaries for a first empirical study.
+
+---
+
 ## Research Paper References
 
 - GovSim — Piatti et al., NeurIPS 2024 (arXiv:2404.16698)
 - RepuNet — arXiv:2505.05029 (May 2025)
 - CoopEval — arXiv:2505.00754 (cooperation evaluation framework)
 - Playing Repeated Games with LLMs — Nature Human Behaviour 2025
+- Distributional AGI Safety — Tomašev et al. (DeepMind), Dec 2025 (arXiv:2512.16856)
+- Institutional AI — Pierucci et al., Jan 2026 (arXiv:2601.10599)
 - Institutional AI: Governance Graphs — arXiv:2601.11369 (Jan 2025)
 - Corrupted by Reasoning — arXiv:2506.23276 (2025)
 - Evolution of Social Norms in LLM Agents — arXiv:2409.00993 (Sep 2024)
