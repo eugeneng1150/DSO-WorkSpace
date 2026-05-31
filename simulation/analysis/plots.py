@@ -959,6 +959,242 @@ def plot_troll_trade_volume(save: bool = True) -> None:
     _maybe_save(fig, "troll_trade_volume.png", save)
 
 
+def plot_troll_resilience_table(save: bool = True) -> None:
+    """Table comparing troll containment across conditions.
+
+    Columns: total troll defections, avg troll trades/round (last half),
+    non-troll defection rate, mean non-troll utility.
+    """
+    rows = []
+    for condition in CONDITIONS:
+        runs = _load_troll_runs(condition)
+        if not runs:
+            continue
+
+        troll_ids = _get_troll_ids(runs[0])
+        if not troll_ids:
+            continue
+
+        n_rounds = len(runs[0]["rounds"])
+        half = n_rounds // 2
+
+        total_troll_defections = 0
+        troll_trades_last_half = []
+        non_troll_defections = 0
+        non_troll_trades_total = 0
+        non_troll_utilities = []
+
+        for run in runs:
+            for r, rnd in enumerate(run["rounds"]):
+                trades = rnd.get("trades", [])
+                utilities = rnd.get("utilities", {})
+
+                for t in trades:
+                    involves_troll = str(t["proposer"]) in troll_ids or str(t["target"]) in troll_ids
+                    if involves_troll:
+                        if t.get("defected_by") is not None:
+                            total_troll_defections += 1
+                        if r >= half:
+                            troll_trades_last_half.append(1)
+                    else:
+                        non_troll_trades_total += 1
+                        if t.get("defected_by") is not None:
+                            non_troll_defections += 1
+
+                for aid, util in utilities.items():
+                    if aid not in troll_ids:
+                        non_troll_utilities.append(float(util))
+
+            # Count rounds in last half for averaging
+            if not troll_trades_last_half:
+                troll_trades_last_half = [0]
+
+        n_runs = len(runs)
+        last_half_rounds = (n_rounds - half) * n_runs
+        avg_troll_last_half = sum(troll_trades_last_half) / max(last_half_rounds, 1)
+        non_troll_def_rate = non_troll_defections / max(non_troll_trades_total, 1)
+        mean_utility = np.mean(non_troll_utilities) if non_troll_utilities else 0.0
+
+        rows.append({
+            "condition": condition,
+            "total_troll_defections": total_troll_defections,
+            "avg_troll_trades_last_half": avg_troll_last_half,
+            "non_troll_defection_rate": non_troll_def_rate,
+            "mean_utility": mean_utility,
+        })
+
+    if not rows:
+        print("  [troll_resilience_table] No troll runs found, skipping.")
+        return
+
+    # Render as a matplotlib table figure
+    fig, ax = plt.subplots(figsize=(14, 2 + 0.5 * len(rows)))
+    ax.axis("off")
+
+    col_labels = [
+        "Condition",
+        "Total Troll\nDefections",
+        "Avg Troll Trades/Round\n(last half)",
+        "Non-Troll\nDefection Rate",
+        "Mean Non-Troll\nUtility",
+    ]
+    cell_text = []
+    for r in rows:
+        cell_text.append([
+            r["condition"],
+            str(r["total_troll_defections"]),
+            f"{r['avg_troll_trades_last_half']:.2f}",
+            f"{r['non_troll_defection_rate']:.1%}",
+            f"{r['mean_utility']:.2f}",
+        ])
+
+    table = ax.table(
+        cellText=cell_text,
+        colLabels=col_labels,
+        loc="center",
+        cellLoc="center",
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1, 1.6)
+
+    # Style header
+    for j in range(len(col_labels)):
+        table[0, j].set_facecolor("#4472C4")
+        table[0, j].set_text_props(color="white", fontweight="bold")
+
+    # Alternate row colors
+    for i in range(len(rows)):
+        color = "#D9E2F3" if i % 2 == 0 else "white"
+        for j in range(len(col_labels)):
+            table[i + 1, j].set_facecolor(color)
+
+    ax.set_title("Troll Resilience Comparison Across Mechanisms",
+                 fontweight="bold", fontsize=13, pad=20)
+    plt.tight_layout()
+    _maybe_save(fig, "troll_resilience_table.png", save)
+
+    # Also print to console
+    print("\n  Troll Resilience Table:")
+    print(f"  {'Condition':<10} {'Troll Def':>10} {'Avg Troll/Rnd':>14} {'NonTroll Def%':>14} {'Mean Util':>10}")
+    print(f"  {'-'*10} {'-'*10} {'-'*14} {'-'*14} {'-'*10}")
+    for r in rows:
+        print(f"  {r['condition']:<10} {r['total_troll_defections']:>10} "
+              f"{r['avg_troll_trades_last_half']:>14.2f} "
+              f"{r['non_troll_defection_rate']:>13.1%} "
+              f"{r['mean_utility']:>10.2f}")
+    print()
+
+
+def plot_troll_metric_trajectories(save: bool = True) -> None:
+    """2×4 grid — peace and sustainability over rounds for troll runs."""
+    troll_conditions = [c for c in CONDITIONS if _load_troll_runs(c)]
+    if not troll_conditions:
+        print("  [troll_metric_trajectories] No troll runs found, skipping.")
+        return
+
+    n_cols = 4
+    n_rows = max(1, (len(troll_conditions) + n_cols - 1) // n_cols)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 4 * n_rows), sharex=True, sharey=True)
+    if n_rows == 1:
+        axes = axes.reshape(1, -1)
+    axes_flat = axes.flatten()
+
+    for ax, condition in zip(axes_flat, troll_conditions):
+        runs = _load_troll_runs(condition)
+        for metric, color, label in zip(
+            METRICS,
+            ["tab:green", "tab:blue"],
+            ["Sustainability", "Peace"],
+        ):
+            trajectory = _mean_metric_over_rounds(runs, metric)
+            rounds = list(range(1, len(trajectory) + 1))
+            ax.plot(rounds, trajectory, label=label, color=color, linewidth=1.8)
+
+        ax.axhline(COOPERATION_THRESHOLD, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
+        ax.set_title(condition, fontweight="bold")
+        ax.set_ylim(0, 1.05)
+        ax.grid(True, alpha=0.3)
+
+    for ax in axes_flat[len(troll_conditions):]:
+        ax.set_visible(False)
+
+    for ax in axes[-1]:
+        ax.set_xlabel("Round")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Metric value")
+
+    handles, labels = axes_flat[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=2, fontsize=9, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle("Sustainability and Peace Over Rounds (Troll Runs)", fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "troll_metric_trajectories.png", save)
+
+
+def plot_utility_per_agent(save: bool = True) -> None:
+    """Bar chart: final-round utility per agent, one panel per condition (trolls excluded).
+
+    Shows how equally utility is distributed across agents.
+    """
+    troll_conditions = [c for c in CONDITIONS if _load_troll_runs(c)]
+    non_troll_conditions = [c for c in CONDITIONS if _load_runs(c) and c not in troll_conditions]
+    all_conditions = non_troll_conditions + troll_conditions
+
+    if not all_conditions:
+        print("  [utility_per_agent] No runs found, skipping.")
+        return
+
+    n_cols = 4
+    n_rows = max(1, (len(all_conditions) + n_cols - 1) // n_cols)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 4 * n_rows), sharey=True)
+    if n_rows == 1:
+        axes = axes.reshape(1, -1)
+    axes_flat = axes.flatten()
+
+    for ax, condition in zip(axes_flat, all_conditions):
+        runs = _load_troll_runs(condition) or _load_runs(condition)
+        if not runs:
+            continue
+
+        run = runs[0]
+        troll_ids = _get_troll_ids(run)
+        final_round = run["rounds"][-1]
+        utilities = final_round.get("utilities", {})
+
+        agents = sorted(
+            [(int(k), float(v)) for k, v in utilities.items() if k not in troll_ids],
+            key=lambda x: x[0],
+        )
+        if not agents:
+            continue
+
+        agent_ids = [a[0] for a in agents]
+        utils = [a[1] for a in agents]
+        mean_util = np.mean(utils)
+
+        colors_bar = ["#4472C4" if u >= 0 else "#C44444" for u in utils]
+        ax.bar(range(len(agent_ids)), utils, color=colors_bar, alpha=0.8)
+        ax.axhline(mean_util, color="orange", linestyle="--", linewidth=1.5, alpha=0.8, label=f"Mean: {mean_util:.1f}")
+        ax.set_xticks(range(len(agent_ids)))
+        ax.set_xticklabels([str(a) for a in agent_ids], fontsize=7, rotation=45)
+        ax.set_title(condition, fontweight="bold")
+        ax.grid(axis="y", alpha=0.3)
+        ax.legend(fontsize=7)
+
+    for ax in axes_flat[len(all_conditions):]:
+        ax.set_visible(False)
+
+    for ax in axes[-1]:
+        ax.set_xlabel("Agent ID")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Utility (final round)")
+
+    fig.suptitle("Per-Agent Utility Distribution at Final Round\n(Blue = positive, Red = negative)",
+                 fontsize=13, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "utility_per_agent.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
@@ -977,6 +1213,9 @@ def plot_all(save: bool = True) -> None:
     plot_lead_lag_heatmap(save)
     plot_network_snapshots(save)
     plot_troll_trade_volume(save)
+    plot_troll_resilience_table(save)
+    plot_troll_metric_trajectories(save)
+    plot_utility_per_agent(save)
     plot_model_comparison(save)
     print(f"Plots saved to {OUT_DIR}")
 
