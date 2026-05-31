@@ -378,23 +378,17 @@ class Game:
                 if not has_pending:
                     continue
 
-            metrics = self.market.metrics_log[-1] if self.market.metrics_log else {
-                "sustainability": 1.0, "peace": 1.0
-            }
-
             prompt = build_prompt(
                 agent_id=agent.agent_id,
                 specialty=agent.specialty,
                 needs=agent.needs,
                 last_utility=agent.last_utility,
                 total_utility=agent.total_utility,
-                metrics=metrics,
                 market=self.market,
                 mechanisms=self.mechanism_names,
                 stage_overrides=stage_overrides,
                 specialties=self.specialties,
                 round_num=round_num,
-                total_rounds=self.total_rounds,
             )
             prompts[agent.agent_id] = (agent, prompt)
 

@@ -460,13 +460,11 @@ def build_prompt(
     needs: tuple[str, str],
     last_utility: float,
     total_utility: float,
-    metrics: dict[str, float],
     market: "Market",
     mechanisms: list[str],
     stage_overrides: dict[str, str] | None = None,
     specialties: dict[int, str] | None = None,
     round_num: int = 1,
-    total_rounds: int = 30,
 ) -> str:
     inv_a, inv_b, inv_c = _fmt_inventory(market, agent_id)
 
