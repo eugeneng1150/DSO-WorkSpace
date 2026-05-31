@@ -55,7 +55,7 @@ def _get_troll_ids(run: dict) -> set[str]:
 # ── Plots ─────────────────────────────────────────────────────────────────────
 
 def plot_metric_trajectories(save: bool = True) -> None:
-    """2×4 grid — one panel per condition, each showing Sustainability and Peace over rounds."""
+    """2×4 grid — one panel per condition, each showing Production Stability and Cooperation Rate over rounds."""
     n_cols = 4
     n_rows = 2
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
@@ -67,7 +67,7 @@ def plot_metric_trajectories(save: bool = True) -> None:
             for metric, color, label in zip(
                 METRICS,
                 ["tab:green", "tab:blue"],
-                ["Sustainability", "Peace"],
+                ["Production Stability", "Cooperation Rate"],
             ):
                 trajectory = _mean_metric_over_rounds(runs, metric)
                 rounds = list(range(1, len(trajectory) + 1))
@@ -88,7 +88,7 @@ def plot_metric_trajectories(save: bool = True) -> None:
 
     handles, labels = axes_flat[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="lower center", ncol=3, fontsize=9, bbox_to_anchor=(0.5, -0.02))
-    fig.suptitle("Sustainability and Peace Over Rounds by Condition", fontsize=14, fontweight="bold")
+    fig.suptitle("Production Stability and Cooperation Rate Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout()
     _maybe_save(fig, "metric_trajectories.png", save)
 
@@ -109,7 +109,8 @@ def plot_final_metrics_heatmap(save: bool = True) -> None:
     fig, ax = plt.subplots(figsize=(8, 6))
     im = ax.imshow(data, cmap="RdYlGn", vmin=0, vmax=1, aspect="auto")
     ax.set_xticks(range(len(METRICS)))
-    ax.set_xticklabels([m.capitalize() for m in METRICS])
+    metric_labels = {"sustainability": "Production Stability", "peace": "Cooperation Rate"}
+    ax.set_xticklabels([metric_labels.get(m, m.capitalize()) for m in METRICS])
     ax.set_yticks(range(len(CONDITIONS)))
     ax.set_yticklabels(CONDITIONS)
     plt.colorbar(im, ax=ax, label="Mean value (all rounds)")
@@ -143,7 +144,7 @@ def plot_defection_rates(save: bool = True) -> None:
     ax.bar(x, means, yerr=stds, capsize=5, color=[COLORS[c] for c in labels], alpha=0.85)
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    ax.set_ylabel("Defection rate (1 - Peace)")
+    ax.set_ylabel("Defection rate (1 - Cooperation Rate)")
     ax.set_ylim(0, 1)
     ax.set_title("Mean Defection Rate by Condition (Final Round)", fontweight="bold")
     ax.grid(axis="y", alpha=0.3)
@@ -216,7 +217,7 @@ def plot_marketplace_cooperation_rates(save: bool = True) -> None:
     for bar, rate in zip(bars, rates):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
                 f"{rate:.0%}", ha="center", va="bottom", fontsize=9, fontweight="bold")
-    ax.set_title("Marketplace Cooperation Rate by Condition\n(Sustainability and Peace > 0.5 at final round)", fontweight="bold")
+    ax.set_title("Marketplace Cooperation Rate by Condition\n(Production Stability and Cooperation Rate > 0.5 at final round)", fontweight="bold")
     ax.grid(axis="y", alpha=0.3)
     plt.tight_layout()
     _maybe_save(fig, "marketplace_cooperation_rates.png", save)
@@ -472,7 +473,7 @@ SIGNAL_COLORS = dict(zip(SIGNAL_NAMES, cm.Set2(np.linspace(0, 1, len(SIGNAL_NAME
 
 
 def plot_signal_timelines(save: bool = True) -> None:
-    """For each condition: signals over time (bottom) vs Peace/Sustainability (top)."""
+    """For each condition: signals over time (bottom) vs Cooperation Rate/Production Stability (top)."""
     signals_dir = Path(__file__).parent.parent / "data" / "signals"
     if not signals_dir.exists():
         print("No signal data found. Run --extract-signals first.")
@@ -495,8 +496,8 @@ def plot_signal_timelines(save: bool = True) -> None:
         ax_metric = axes[row][0]
         peace = _mean_metric_over_rounds(metric_runs, "peace")
         sust = _mean_metric_over_rounds(metric_runs, "sustainability")
-        ax_metric.plot(rounds, peace, label="Peace", linewidth=2, color="tab:blue")
-        ax_metric.plot(rounds, sust, label="Sustainability", linewidth=2, color="tab:green")
+        ax_metric.plot(rounds, peace, label="Cooperation Rate", linewidth=2, color="tab:blue")
+        ax_metric.plot(rounds, sust, label="Production Stability", linewidth=2, color="tab:green")
         ax_metric.axhline(COOPERATION_THRESHOLD, color="black", linestyle="--",
                           linewidth=0.8, alpha=0.5)
         ax_metric.set_ylim(0, 1.05)
@@ -626,7 +627,7 @@ def plot_stability_rates(save: bool = True) -> None:
                 f"{frac:.0%}", ha="center", va="bottom", fontsize=9, fontweight="bold")
     ax.set_title(
         "Stability Rate by Condition\n"
-        "(Fraction of rounds with Sustainability > 0.5 AND Peace > 0.5)",
+        "(Fraction of rounds with Production Stability > 0.5 AND Cooperation Rate > 0.5)",
         fontweight="bold",
     )
     ax.grid(axis="y", alpha=0.3)
@@ -1126,7 +1127,7 @@ def plot_troll_metric_trajectories(save: bool = True) -> None:
 
     handles, labels = axes_flat[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="lower center", ncol=2, fontsize=9, bbox_to_anchor=(0.5, -0.02))
-    fig.suptitle("Sustainability and Peace Over Rounds (Troll Runs)", fontsize=14, fontweight="bold")
+    fig.suptitle("Production Stability and Cooperation Rate Over Rounds (Troll Runs)", fontsize=14, fontweight="bold")
     plt.tight_layout()
     _maybe_save(fig, "troll_metric_trajectories.png", save)
 
@@ -1195,6 +1196,95 @@ def plot_utility_per_agent(save: bool = True) -> None:
     _maybe_save(fig, "utility_per_agent.png", save)
 
 
+def plot_cumulative_utility(save: bool = True) -> None:
+    """2×4 grid — cumulative mean utility over rounds per condition (trolls excluded)."""
+    n_cols = 4
+    n_rows = 2
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True)
+    axes_flat = axes.flatten()
+
+    for ax, condition in zip(axes_flat, CONDITIONS):
+        runs = _load_troll_runs(condition) or _load_runs(condition)
+        if not runs:
+            ax.set_title(condition, fontweight="bold")
+            ax.grid(True, alpha=0.3)
+            continue
+
+        n_rounds = max(len(run["rounds"]) for run in runs)
+        cumulative = []
+        running_sum = 0.0
+        for r in range(n_rounds):
+            round_vals = []
+            for run in runs:
+                if r < len(run["rounds"]):
+                    troll_ids = _get_troll_ids(run)
+                    utilities = run["rounds"][r].get("utilities", {})
+                    non_troll = [float(v) for k, v in utilities.items() if k not in troll_ids]
+                    if non_troll:
+                        round_vals.append(np.mean(non_troll))
+            running_sum += np.mean(round_vals) if round_vals else 0.0
+            cumulative.append(running_sum)
+
+        rounds = list(range(1, n_rounds + 1))
+        ax.plot(rounds, cumulative, color=COLORS[condition], linewidth=2.0)
+        ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.6)
+        ax.fill_between(rounds, cumulative, 0,
+                        where=[v >= 0 for v in cumulative], alpha=0.12, color="green")
+        ax.fill_between(rounds, cumulative, 0,
+                        where=[v < 0 for v in cumulative], alpha=0.12, color="red")
+        ax.set_title(condition, fontweight="bold")
+        ax.grid(True, alpha=0.3)
+
+    for ax in axes_flat[len(CONDITIONS):]:
+        ax.set_visible(False)
+    for ax in axes[-1]:
+        ax.set_xlabel("Round")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Cumulative avg utility")
+
+    fig.suptitle("Cumulative Average Utility Over Rounds by Condition",
+                 fontsize=13, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "cumulative_utility.png", save)
+
+
+def plot_gini_trajectory(save: bool = True) -> None:
+    """2×4 grid — Gini coefficient over rounds per condition."""
+    n_cols = 4
+    n_rows = 2
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
+    axes_flat = axes.flatten()
+
+    for ax, condition in zip(axes_flat, CONDITIONS):
+        runs = _load_troll_runs(condition) or _load_runs(condition)
+        if not runs:
+            ax.set_title(condition, fontweight="bold")
+            ax.grid(True, alpha=0.3)
+            continue
+
+        trajectory = _mean_metric_over_rounds(runs, "gini")
+        if trajectory:
+            rounds = list(range(1, len(trajectory) + 1))
+            ax.plot(rounds, trajectory, color=COLORS[condition], linewidth=2.0)
+            ax.fill_between(rounds, trajectory, alpha=0.15, color=COLORS[condition])
+
+        ax.set_title(condition, fontweight="bold")
+        ax.set_ylim(0, 1.05)
+        ax.grid(True, alpha=0.3)
+
+    for ax in axes_flat[len(CONDITIONS):]:
+        ax.set_visible(False)
+    for ax in axes[-1]:
+        ax.set_xlabel("Round")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Gini coefficient")
+
+    fig.suptitle("Inequality (Gini Coefficient) Over Rounds by Condition\n(0 = perfect equality, 1 = maximum inequality)",
+                 fontsize=13, fontweight="bold")
+    plt.tight_layout()
+    _maybe_save(fig, "gini_trajectory.png", save)
+
+
 def plot_all(save: bool = True) -> None:
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
@@ -1216,6 +1306,8 @@ def plot_all(save: bool = True) -> None:
     plot_troll_resilience_table(save)
     plot_troll_metric_trajectories(save)
     plot_utility_per_agent(save)
+    plot_cumulative_utility(save)
+    plot_gini_trajectory(save)
     plot_model_comparison(save)
     print(f"Plots saved to {OUT_DIR}")
 
