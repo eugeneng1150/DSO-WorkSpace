@@ -186,17 +186,16 @@ class Market:
     def post_message(self, msg: Message):
         if msg.channel == "public":
             self.public_feed.append(msg)
-            if self._is_negative_mention(msg.text):
+            target = self._extract_mentioned_agent(msg.text)
+            if self._is_negative_mention(msg.text) and target is not None:
                 self.warnings_broadcast[msg.sender_id] = (
                     self.warnings_broadcast.get(msg.sender_id, 0) + 1
                 )
-                target = self._extract_mentioned_agent(msg.text)
-                if target is not None:
-                    self.negative_mentions.append({
-                        "sender": msg.sender_id,
-                        "target": target,
-                        "round": msg.round_num,
-                    })
+                self.negative_mentions.append({
+                    "sender": msg.sender_id,
+                    "target": target,
+                    "round": msg.round_num,
+                })
         else:
             self.private_inboxes[msg.recipient_id].append(msg)
 
