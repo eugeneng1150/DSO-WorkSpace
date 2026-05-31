@@ -10,65 +10,85 @@ Which formal mechanism (or combination) allows self-interested LLM agents to mai
 
 ## Setup
 
-18 LLM agents trade 3 perishable goods (A, B, C) over 30 rounds. Each agent specialises in producing one good and needs the other two. Agents barter goods directly — no currency. All agents use chain-of-thought reasoning.
+18 LLM agents trade 3 perishable goods (A, B, C) in a barter economy. Each agent specialises in producing one good and needs the other two. All agents use chain-of-thought reasoning with 5-step reasoning (situation, self-reflection, gossip evaluation, assessment, strategy).
+
+Agents do NOT know when the game ends — they see only the current round number. They do NOT see aggregate market health metrics. Trust must be formed through direct experience, gossip, and mechanism-specific information.
 
 | Parameter | Value |
 |---|---|
-| Agents | 18 (6 per good) |
-| Rounds | 30 |
+| Agents | 18 (6 per good) + trolls added on top |
+| Rounds | 30 (Phase 1) or 100 (Phase 2) |
 | Goods | A, B, C (perishable, 20% spoilage/round) |
 | Production cost | 1 utility per unit |
 | Consumption gain | +3 utility per needed unit consumed |
-| Agent model | gpt-5.4-mini (Azure) or oss-120b (local Docker) |
-| Analyst model | claude-opus-4-6 |
+| Agent models | GPT-5.4-mini (Azure), DeepSeek-V3.2 (Azure) |
+| Analyst model | Claude Opus 4.6 |
 
 ## Conditions
 
-| Code | Mechanism | Type |
+| Code | Mechanism | Description |
 |---|---|---|
-| B | Baseline — no mechanism | — |
-| R | Reputation — public system-tracked scores | Agent-visible |
-| C | Contracting — binding bilateral contracts with breach penalties | Agent-participatory |
-| M | Mediation — agent-designed mediator, voted and elected before round 1 | Agent-designed |
-| G | Governance — external Oracle + escalating fines/suspension | Top-down |
-| N | Network Rewiring — agents sever/request trade links each round | Structural |
-| NR | Network Rewiring + Reputation | Combined |
-| S | Sanctions — agents spend utility to anonymously punish others (1:3 ratio) | Bottom-up |
+| B | Baseline | No mechanism. Fixed network. Trades unenforceable. |
+| GR | Global Reputation | System-computed reputation score (success/total) visible to all. Fixed network. |
+| C | Contracting | Binding bilateral contracts with breach penalties (6 utility). Fixed network. |
+| M | Mediation | Agent-designed mediator, voted pre-game. Free delegation guarantees fair execution. Fixed network. |
+| G | Governance | External oracle detects defection (D1: rate >40%, D4: predatory targeting). Escalates: Warning → Fined → Suspended. Fixed network. |
+| NR | Network Rewiring + Local Reputation | Dynamic network (sever/request links) + 10-round rolling gossip history. No system scores. |
+| S | Sanctions | Costly punishment: spend 1 utility → target loses 3. Anonymous, publicly announced. Fixed network. |
+
+### Information Gradient: B → NR → GR
+
+| | B | NR | GR |
+|---|---|---|---|
+| Lifetime partner summary | Yes | Yes | Yes |
+| Current round public messages | Yes | Yes | Yes |
+| Historical gossip (last 10 rounds) | No | Yes | No |
+| Network reshaping | No | Yes (sever/request) | No |
+| System reputation scores | No | No | Yes |
+
+## Troll Agents (Phase 2)
+
+Deterministic adversarial agents added on top of the 18 LLM agents (e.g., 2 trolls = 20 total agents). Trolls:
+- Propose trades to ALL neighbors every round, then defect on everything
+- Broadcast lies ("I'm committed to fair trading!")
+- Do not produce, connected to all agents initially
+- Excluded from all metrics
 
 ## Metrics
 
-**Primary (marketplace cooperation = both > 0.5 at final round):**
-- `sustainability` — avg production this round / avg production round 1
-- `peace` — fraction of attempted trades completing without defection (cumulative)
+**Primary (marketplace cooperation = both > 0.5):**
+- `sustainability` — Production Stability: avg production / round-1 baseline
+- `peace` — Cooperation Rate: fraction of non-troll trades without defection
+- `gini` — Gini coefficient: utility inequality among non-troll agents (0 = equal, 1 = max inequality)
 
 **Intermediate:**
-- `whistleblowing_rate` — warnings broadcast / defections suffered
-- `false_accusation_rate` — unverified negative mentions / total negative mentions
+- `whistleblowing_rate` — targeted warnings / defections suffered (requires naming a specific agent)
+- `false_accusation_rate` — false negative mentions / total negative mentions
 - `warning_accuracy` — accurate warnings / total warnings
 
 ## Usage
 
 ```bash
-# Run a single condition (3 runs)
+# Run a single condition (3 runs, 30 rounds)
 python3 -m simulation.main --condition B --runs 3
 
-# Run all 8 conditions
+# Run all 7 conditions
 python3 -m simulation.main --all --runs 3
 
-# Run with local oss-120b model (Docker must be running)
-python3 -m simulation.main --condition B --runs 3 --model oss-120b
+# Phase 2: trolls + longer games
+python3 -m simulation.main --condition NR --trolls 2 --rounds 100 --runs 1
+
+# Switch model
+python3 -m simulation.main --condition B --runs 1 --model deepseek-v3
 
 # Generate plots from existing logs
 python3 -m simulation.main --plot
 
+# Recompute warning metrics on existing logs (after detection tightening)
+python3 -m simulation.scripts.recompute_warnings --model gpt-5.4-mini
+
 # Run LLM analyst report
 python3 -m simulation.main --analyse
-
-# Run reasoning analyst on CoT traces
-python3 -m simulation.main --reason-analyse --condition B --run-idx 0
-
-# Full pipeline
-python3 -m simulation.main --all --runs 3 --plot --analyse
 ```
 
 Logs are saved to `simulation/data/runs/<model>/` — one folder per model backend.
@@ -80,25 +100,27 @@ simulation/
 ├── main.py                  # CLI entry point
 ├── config.py                # All parameters and condition definitions
 ├── engine/
-│   ├── agent.py             # IOAgent, CoTAgent, LLM client
+│   ├── agent.py             # CoTAgent, TrollAgent, LLM client
 │   ├── game.py              # Round loop, phase orchestration
-│   ├── market.py            # Market state, trade history, ledgers
+│   ├── market.py            # Market state, trade history, gossip buffer
 │   ├── prompt_builder.py    # Assembles per-agent prompts each round
 │   └── runner.py            # Runs N repetitions, saves JSON logs
 ├── mechanisms/
-│   ├── reputation.py        # R — public reputation scores
+│   ├── reputation.py        # GR — system-computed reputation scores
 │   ├── contracting.py       # C — propose/sign/enforce contracts
 │   ├── mediation.py         # M — design/vote/delegate mediator
-│   ├── governance.py        # G — Oracle + state machine
-│   ├── network_rewiring.py  # N — sever/request trade links
+│   ├── governance.py        # G — Oracle (D1, D4) + state machine
+│   ├── network_rewiring.py  # NR — sever/request trade links
+│   ├── local_reputation.py  # NR — gossip channel (10-round history)
 │   └── sanction.py          # S — costly anonymous punishment
 ├── metrics/
-│   └── social.py            # sustainability, peace, intermediate vars
+│   └── social.py            # sustainability, peace, gini, intermediate vars
 ├── analysis/
 │   ├── analyst.py           # LLM analyst report from run logs
 │   ├── reasoning_analyst.py # CoT trace analysis + lead-lag signals
-│   ├── plots.py             # All matplotlib visualisations
-│   └── stats.py             # Summary statistics
+│   └── plots.py             # All matplotlib visualisations
+├── scripts/
+│   └── recompute_warnings.py # Recompute warning metrics on existing logs
 └── data/
     ├── runs/                # JSON logs per condition/run/model
     └── plots/               # Generated figures
@@ -110,10 +132,10 @@ idea.md                      # Exploratory ideas and pending decisions
 
 ## Two-Phase Research Design
 
-**Phase 1 (current):** Which mechanisms achieve cooperation among self-interested agents? Run all 8 conditions, compare Peace/Sustainability/utility trajectories.
+**Phase 1:** Which mechanisms achieve cooperation among self-interested agents? Run all 7 conditions (B, GR, C, M, G, NR, S) with no trolls, 30 rounds, 3 runs each.
 
-**Phase 2 (planned):** Take the top mechanisms from Phase 1 and stress-test with escalating numbers of hardcoded troll agents (0, 2, 4, 6 out of 18). Find each mechanism's breaking point — when does per-round societal utility drop below 0?
+**Phase 2:** Stress-test with 2 troll agents (20 total), 100 rounds. Compare troll isolation speed, non-troll cooperation rate, and utility across all conditions.
 
 ## Environment
 
-Requires `AZURE_OPENAI_API_KEY` in `.env` for the default gpt-5.4-mini model. For oss-120b, start Docker model runner (`docker model serve`) — no API key needed.
+Requires `AZURE_OPENAI_API_KEY` environment variable for Azure-hosted models.
