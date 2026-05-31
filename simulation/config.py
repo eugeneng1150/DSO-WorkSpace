@@ -53,6 +53,9 @@ COOPERATION_THRESHOLD = 0.5
 AZURE_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/openai/v1"
 MODEL = "gpt-5.4-mini-BQ-Cohort"
 
+# LLM — GPT-5.4-nano via Azure (same endpoint)
+NANO_MODEL = "gpt-5.4-nano-BQ-Cohort"
+
 # LLM — DeepSeek-V3.2 via Azure
 DEEPSEEK_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.openai.azure.com/openai/v1"
 DEEPSEEK_MODEL = "DeepSeek-V3.2-BQ-Cohort"
