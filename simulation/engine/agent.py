@@ -146,33 +146,27 @@ class TrollAgent(_BaseAgent):
 
 
 def make_agents(n_trolls: int = 0) -> list[_BaseAgent]:
-    """Create agents (AGENTS_PER_GOOD per good), using CoT or IO style.
+    """Create 18 LLM agents (AGENTS_PER_GOOD per good), then append trolls on top.
 
-    If n_trolls > 0, replace that many agents with deterministic TrollAgents,
-    distributed round-robin across goods.
+    Trolls are added as extra agents (IDs 18, 19, ...) distributed round-robin
+    across goods. They never replace LLM agents.
     """
-    troll_indices: set[int] = set()
-    if n_trolls > 0:
-        placed = 0
-        agent_offset = 0
-        while placed < n_trolls:
-            for good_idx in range(len(GOODS)):
-                if placed >= n_trolls:
-                    break
-                troll_indices.add(good_idx * AGENTS_PER_GOOD + agent_offset)
-                placed += 1
-            agent_offset += 1
-
-    agents = []
+    agents: list[_BaseAgent] = []
     idx = 0
     for good in GOODS:
         others = [g for g in GOODS if g != good]
         needs = (others[0], others[1])
         for _ in range(AGENTS_PER_GOOD):
-            if idx in troll_indices:
-                agents.append(TrollAgent(agent_id=idx, specialty=good, needs=needs))
-            else:
-                cls = CoTAgent if idx in COT_AGENT_IDS else IOAgent
-                agents.append(cls(agent_id=idx, specialty=good, needs=needs))
+            cls = CoTAgent if idx in COT_AGENT_IDS else IOAgent
+            agents.append(cls(agent_id=idx, specialty=good, needs=needs))
             idx += 1
+
+    # Append trolls as extra agents
+    for t in range(n_trolls):
+        good = GOODS[t % len(GOODS)]
+        others = [g for g in GOODS if g != good]
+        needs = (others[0], others[1])
+        agents.append(TrollAgent(agent_id=idx, specialty=good, needs=needs))
+        idx += 1
+
     return agents
