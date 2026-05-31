@@ -35,9 +35,6 @@ is applied and neither party can defect — simultaneous exchange is guaranteed.
 If only one party delegates, that party's action is governed by the mediator
 but the other party acts freely (and could defect).
 
-A small mediation fee of {mediation_fee} utility points is charged to each
-delegating party per mediated trade.
-
 Design your proposed mediator now. Output as JSON:
   {
     "action": "propose_mediator",
@@ -109,21 +106,16 @@ executing it directly.
 Active mediator design (selected by vote, Round 1):
   2 delegating → {mediator_action_both}
   1 delegating → {mediator_action_one}
-  Mediation fee: {mediation_fee} utility points per delegating party
-
 If you and your counterparty BOTH delegate the same trade:
   → The mediator executes: {mediator_action_both}
   → Simultaneous exchange guaranteed. Neither party can defect.
-  → Each party pays the mediation fee.
 
 If only YOU delegate:
   → The mediator applies: {mediator_action_one}
   → Your counterparty acts freely — they could still defect.
-  → You pay the mediation fee.
 
 If NEITHER party delegates:
   → Normal unenforceable trade. Either party may defect.
-  → No fee.
 
 Your pending trades this round:
 
@@ -142,7 +134,7 @@ To accept a trade WITHOUT delegating (standard, unenforceable):
 To reject a trade:
   {"action": "reject_trade", "trade_id": "..."}
 
-Consider: is the mediation fee worth the defection protection?
-Check the system reputation score of your counterparty — if they have a
-high score, direct trade may be fine. If their score is low, mediation
-gives you guaranteed execution at the cost of the fee.
+Consider: delegating guarantees fair execution but requires your counterparty
+to also delegate for full protection. If you trust your counterparty based
+on past trades, direct acceptance may be fine. If they have a history of
+defection, delegation protects you.
