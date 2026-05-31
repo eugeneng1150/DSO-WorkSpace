@@ -8,8 +8,7 @@ Two layers shown: system-tracked (objective) and socially-propagated (subjective
 
 LAYER 1 — System-tracked scores (objective, engine-verified):
 These scores reflect actual trade outcomes logged by the simulation engine.
-They cannot be faked. Score = successful deliveries / total attempted trades,
-weighted toward recent rounds.
+They cannot be faked. Score = successful deliveries / total attempted trades.
 
   {system_reputation_table}
 

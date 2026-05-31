@@ -263,8 +263,6 @@ def _fmt_governance_notice(market: "Market", agent_id: int) -> tuple[str, str]:
 
     signal_names = {
         "D1_defection_rate": "D1: High defection rate",
-        "D2_production_withdrawal": "D2: Production withdrawal",
-        "D3_trade_volume_collapse": "D3: Trade volume collapse",
         "D4_predatory_targeting": "D4: Predatory targeting",
     }
     signal_list = ", ".join(signal_names.get(s, s) for s in state.triggered_signals) or "None"

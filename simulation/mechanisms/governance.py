@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING
 
 from .base import Mechanism
 from ..config import (
-    GOV_ORACLE_WINDOW, GOV_DEFECTION_THRESHOLD, GOV_PRODUCTION_THRESHOLD,
-    GOV_PRODUCTION_CONSEC, GOV_TRADE_VOLUME_MIN, GOV_PREDATORY_THRESHOLD,
+    GOV_ORACLE_WINDOW, GOV_DEFECTION_THRESHOLD, GOV_PREDATORY_THRESHOLD,
     GOV_FINE_SCHEDULE, GOV_SUSPENSION_DURATION, GOV_WARNING_EXPIRY,
     GOV_CLEAN_ROUNDS_TO_DEESCALATE,
 )
@@ -35,10 +34,6 @@ class Oracle:
         fired = []
         if self._check_defection_rate(agent_id, market, round_num):
             fired.append("D1_defection_rate")
-        if self._check_production_withdrawal(agent_id, market, round_num):
-            fired.append("D2_production_withdrawal")
-        if self._check_trade_volume_collapse(agent_id, market, round_num):
-            fired.append("D3_trade_volume_collapse")
         if self._check_predatory_targeting(agent_id, market, round_num):
             fired.append("D4_predatory_targeting")
         return fired
@@ -57,25 +52,6 @@ class Oracle:
             return False
         defections = sum(1 for t in trades if t.defected_by == agent_id)
         return defections / len(trades) > GOV_DEFECTION_THRESHOLD
-
-    def _check_production_withdrawal(self, agent_id: int, market: "Market", round_num: int) -> bool:
-        if market._production_baseline is None or market._production_baseline == 0:
-            return False
-        per_agent_baseline = market._production_baseline
-        threshold = per_agent_baseline * GOV_PRODUCTION_THRESHOLD
-
-        history = market.production_per_round
-        if len(history) < GOV_PRODUCTION_CONSEC:
-            return False
-        recent = history[-GOV_PRODUCTION_CONSEC:]
-        return all(r.get(agent_id, 0) < threshold for r in recent)
-
-    def _check_trade_volume_collapse(self, agent_id: int, market: "Market", round_num: int) -> bool:
-        if round_num < GOV_ORACLE_WINDOW:
-            return False
-        trades = self._recent_trades(agent_id, market, round_num)
-        completed = [t for t in trades if t.status in ("completed", "mediated")]
-        return len(completed) < GOV_TRADE_VOLUME_MIN
 
     def _check_predatory_targeting(self, agent_id: int, market: "Market", round_num: int) -> bool:
         trades = self._recent_trades(agent_id, market, round_num)

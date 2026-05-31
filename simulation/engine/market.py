@@ -277,15 +277,12 @@ class Market:
             self._update_reputation(trade.proposer_id, success=True)
             self._update_reputation(trade.target_id, success=True)
 
-    def _update_reputation(self, agent_id: int, success: bool, decay: float = 0.1):
+    def _update_reputation(self, agent_id: int, success: bool):
         counts = self._trade_counts[agent_id]
         counts["total"] += 1
         if success:
             counts["success"] += 1
-        # Exponential recency weighting: blend new outcome into running score
-        old = self.system_reputation[agent_id]
-        new_obs = 1.0 if success else 0.0
-        self.system_reputation[agent_id] = (1 - decay) * old + decay * new_obs
+        self.system_reputation[agent_id] = counts["success"] / counts["total"]
 
     def get_partner_history(self, agent_id: int, window: int = 5) -> dict[int, list[TradeOffer]]:
         recent = [t for t in self.trade_history if t.round_num > self.round_num - window]

@@ -9,10 +9,8 @@ External, deterministic regulator — agents cannot opt out or influence rules.
 An external regulator monitors all market activity. This is NOT something you
 can opt into or influence — it applies to every agent automatically.
 
-The regulator tracks four signals using a 5-round rolling window:
+The regulator tracks two signals using a 5-round rolling window:
   D1: Defection rate — defecting on >40% of your trades
-  D2: Production withdrawal — producing <50% of baseline for 3+ consecutive rounds
-  D3: Trade volume collapse — fewer than 2 completed trades per 5-round window
   D4: Predatory targeting — defecting 3+ times on the same partner in 5 rounds
 
 When signals fire, the regulator escalates through a governance graph:
