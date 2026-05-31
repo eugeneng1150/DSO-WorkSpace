@@ -949,26 +949,7 @@
         "16": 2,
         "17": 2
       },
-      "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 0,
-        "17": 0
-      },
+      "warnings_broadcast_cumulative": {},
       "negative_mentions": [],
       "governance": null,
       "network": null,
@@ -1831,26 +1812,7 @@
         "16": 4,
         "17": 2
       },
-      "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 0,
-        "17": 0
-      },
+      "warnings_broadcast_cumulative": {},
       "negative_mentions": [],
       "governance": null,
       "network": null,
@@ -2577,24 +2539,7 @@
         "17": 2
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 1,
-        "17": 0
+        "16": 1
       },
       "negative_mentions": [
         {
@@ -2714,7 +2659,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7912,
-        "whistleblowing_rate": 0.0444,
+        "whistleblowing_rate": 0.0222,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -3343,24 +3288,7 @@
         "17": 2
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 1,
-        "17": 1
+        "16": 1
       },
       "negative_mentions": [
         {
@@ -3475,7 +3403,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7426,
-        "whistleblowing_rate": 0.0328,
+        "whistleblowing_rate": 0.0164,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -4359,24 +4287,7 @@
         "17": 3
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 1,
-        "17": 1
+        "16": 1
       },
       "negative_mentions": [
         {
@@ -4456,7 +4367,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7456,
-        "whistleblowing_rate": 0.029,
+        "whistleblowing_rate": 0.0145,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -5160,24 +5071,7 @@
         "17": 5
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 1,
-        "17": 1
+        "16": 1
       },
       "negative_mentions": [
         {
@@ -5318,7 +5212,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7462,
-        "whistleblowing_rate": 0.0263,
+        "whistleblowing_rate": 0.0132,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -5947,24 +5841,7 @@
         "17": 5
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 1,
-        "17": 1
+        "16": 1
       },
       "negative_mentions": [
         {
@@ -6060,7 +5937,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.738,
-        "whistleblowing_rate": 0.0233,
+        "whistleblowing_rate": 0.0116,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -6749,24 +6626,7 @@
         "17": 6
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 1,
-        "17": 1
+        "16": 1
       },
       "negative_mentions": [
         {
@@ -6877,7 +6737,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7364,
-        "whistleblowing_rate": 0.0319,
+        "whistleblowing_rate": 0.0213,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -7521,24 +7381,8 @@
         "17": 6
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 1,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 0,
         "16": 1,
-        "17": 1
+        "2": 1
       },
       "negative_mentions": [
         {
@@ -7663,7 +7507,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7354,
-        "whistleblowing_rate": 0.0388,
+        "whistleblowing_rate": 0.0194,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -8367,24 +8211,8 @@
         "17": 6
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 1,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1
       },
       "negative_mentions": [
         {
@@ -8494,7 +8322,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7344,
-        "whistleblowing_rate": 0.036,
+        "whistleblowing_rate": 0.018,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -9138,24 +8966,8 @@
         "17": 7
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 1,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1
       },
       "negative_mentions": [
         {
@@ -9271,7 +9083,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7216,
-        "whistleblowing_rate": 0.0323,
+        "whistleblowing_rate": 0.0161,
         "false_accusation_rate": 1.0,
         "warning_accuracy": 0.0
       },
@@ -9960,24 +9772,8 @@
         "17": 8
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 1,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 0,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1
       },
       "negative_mentions": [
         {
@@ -10082,7 +9878,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7228,
-        "whistleblowing_rate": 0.0391,
+        "whistleblowing_rate": 0.0234,
         "false_accusation_rate": 0.6667,
         "warning_accuracy": 0.0
       },
@@ -10531,24 +10327,9 @@
         "17": 8
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 1,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 0,
-        "13": 0,
-        "14": 1,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1
       },
       "negative_mentions": [
         {
@@ -10688,7 +10469,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7231,
-        "whistleblowing_rate": 0.0522,
+        "whistleblowing_rate": 0.0299,
         "false_accusation_rate": 0.5,
         "warning_accuracy": 0.0
       },
@@ -11227,24 +11008,10 @@
         "17": 8
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 0,
-        "2": 1,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 1,
-        "13": 0,
-        "14": 2,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 1
       },
       "negative_mentions": [
         {
@@ -11378,7 +11145,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7105,
-        "whistleblowing_rate": 0.0544,
+        "whistleblowing_rate": 0.034,
         "false_accusation_rate": 0.6,
         "warning_accuracy": 0.0
       },
@@ -12007,24 +11774,11 @@
         "17": 9
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-        "10": 0,
-        "11": 0,
-        "12": 1,
-        "13": 0,
-        "14": 2,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 1,
+        "1": 1
       },
       "negative_mentions": [
         {
@@ -12169,7 +11923,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7074,
-        "whistleblowing_rate": 0.0588,
+        "whistleblowing_rate": 0.0392,
         "false_accusation_rate": 0.6667,
         "warning_accuracy": 0.0
       },
@@ -12618,24 +12372,12 @@
         "17": 9
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 1,
-        "10": 0,
-        "11": 0,
-        "12": 1,
-        "13": 0,
-        "14": 2,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 1,
+        "1": 1,
+        "9": 1
       },
       "negative_mentions": [
         {
@@ -12755,7 +12497,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.708,
-        "whistleblowing_rate": 0.0633,
+        "whistleblowing_rate": 0.0443,
         "false_accusation_rate": 0.7143,
         "warning_accuracy": 0.0
       },
@@ -13234,24 +12976,13 @@
         "17": 9
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 1,
-        "10": 0,
-        "11": 0,
-        "12": 1,
-        "13": 0,
-        "14": 2,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 1,
+        "1": 1,
+        "9": 1,
+        "3": 1
       },
       "negative_mentions": [
         {
@@ -13396,7 +13127,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7089,
-        "whistleblowing_rate": 0.0606,
+        "whistleblowing_rate": 0.0424,
         "false_accusation_rate": 0.7143,
         "warning_accuracy": 0.0
       },
@@ -13950,24 +13681,13 @@
         "17": 10
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 1,
-        "10": 0,
-        "11": 0,
-        "12": 1,
-        "13": 0,
-        "14": 2,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 1,
+        "1": 1,
+        "9": 1,
+        "3": 1
       },
       "negative_mentions": [
         {
@@ -14068,7 +13788,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.7117,
-        "whistleblowing_rate": 0.0647,
+        "whistleblowing_rate": 0.0471,
         "false_accusation_rate": 0.625,
         "warning_accuracy": 0.0
       },
@@ -14607,24 +14327,13 @@
         "17": 12
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 1,
-        "10": 0,
-        "11": 0,
-        "12": 2,
-        "13": 0,
-        "14": 2,
-        "15": 1,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 2,
+        "1": 1,
+        "9": 1,
+        "3": 1
       },
       "negative_mentions": [
         {
@@ -14739,7 +14448,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6994,
-        "whistleblowing_rate": 0.0656,
+        "whistleblowing_rate": 0.0492,
         "false_accusation_rate": 0.8889,
         "warning_accuracy": 0.0
       },
@@ -15293,24 +15002,14 @@
         "17": 13
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 1,
-        "10": 0,
-        "11": 0,
-        "12": 2,
-        "13": 0,
-        "14": 2,
-        "15": 2,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 2,
+        "1": 1,
+        "9": 1,
+        "3": 1,
+        "15": 1
       },
       "negative_mentions": [
         {
@@ -15494,7 +15193,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6926,
-        "whistleblowing_rate": 0.0674,
+        "whistleblowing_rate": 0.0518,
         "false_accusation_rate": 0.5,
         "warning_accuracy": 0.0
       },
@@ -16018,24 +15717,14 @@
         "17": 14
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 1,
-        "10": 0,
-        "11": 0,
-        "12": 3,
-        "13": 0,
-        "14": 2,
-        "15": 2,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 1,
+        "3": 1,
+        "15": 1
       },
       "negative_mentions": [
         {
@@ -16180,7 +15869,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6918,
-        "whistleblowing_rate": 0.0653,
+        "whistleblowing_rate": 0.0503,
         "false_accusation_rate": 0.5,
         "warning_accuracy": 0.0
       },
@@ -16659,24 +16348,14 @@
         "17": 15
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 1,
-        "10": 0,
-        "11": 0,
-        "12": 3,
-        "13": 0,
-        "14": 2,
-        "15": 2,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 1,
+        "3": 1,
+        "15": 1
       },
       "negative_mentions": [
         {
@@ -16827,7 +16506,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6876,
-        "whistleblowing_rate": 0.0631,
+        "whistleblowing_rate": 0.0485,
         "false_accusation_rate": 0.4,
         "warning_accuracy": 0.0
       },
@@ -17261,24 +16940,14 @@
         "17": 15
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 1,
-        "10": 0,
-        "11": 0,
-        "12": 3,
-        "13": 0,
-        "14": 2,
-        "15": 2,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 1,
+        "3": 1,
+        "15": 1
       },
       "negative_mentions": [
         {
@@ -17399,7 +17068,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6807,
-        "whistleblowing_rate": 0.0741,
+        "whistleblowing_rate": 0.0556,
         "false_accusation_rate": 0.25,
         "warning_accuracy": 0.0
       },
@@ -17893,24 +17562,15 @@
         "17": 16
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 1,
-        "12": 3,
-        "13": 0,
-        "14": 2,
-        "15": 3,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 2,
+        "3": 1,
+        "15": 1,
+        "11": 1
       },
       "negative_mentions": [
         {
@@ -18098,7 +17758,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6775,
-        "whistleblowing_rate": 0.0756,
+        "whistleblowing_rate": 0.0578,
         "false_accusation_rate": 0.1538,
         "warning_accuracy": 0.0
       },
@@ -18637,24 +18297,15 @@
         "17": 18
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 1,
-        "12": 3,
-        "13": 0,
-        "14": 2,
-        "15": 4,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 2,
+        "3": 1,
+        "15": 2,
+        "11": 1
       },
       "negative_mentions": [
         {
@@ -18809,7 +18460,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6719,
-        "whistleblowing_rate": 0.072,
+        "whistleblowing_rate": 0.0551,
         "false_accusation_rate": 0.2308,
         "warning_accuracy": 0.0
       },
@@ -19363,24 +19014,15 @@
         "17": 18
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 1,
-        "12": 3,
-        "13": 0,
-        "14": 2,
-        "15": 4,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 2,
+        "3": 1,
+        "15": 2,
+        "11": 1
       },
       "negative_mentions": [
         {
@@ -19546,7 +19188,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6738,
-        "whistleblowing_rate": 0.0785,
+        "whistleblowing_rate": 0.0579,
         "false_accusation_rate": 0.5,
         "warning_accuracy": 0.0
       },
@@ -20055,24 +19697,15 @@
         "17": 19
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 1,
-        "12": 3,
-        "13": 0,
-        "14": 3,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 2,
+        "3": 1,
+        "15": 3,
+        "11": 1
       },
       "negative_mentions": [
         {
@@ -20231,7 +19864,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6672,
-        "whistleblowing_rate": 0.0784,
+        "whistleblowing_rate": 0.0549,
         "false_accusation_rate": 0.2857,
         "warning_accuracy": 0.0
       },
@@ -20830,24 +20463,15 @@
         "17": 20
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 2,
-        "2": 1,
-        "3": 1,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 1,
-        "12": 3,
-        "13": 0,
-        "14": 3,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 2,
+        "3": 1,
+        "15": 3,
+        "11": 1
       },
       "negative_mentions": [
         {
@@ -21007,7 +20631,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6662,
-        "whistleblowing_rate": 0.0837,
+        "whistleblowing_rate": 0.057,
         "false_accusation_rate": 0.2667,
         "warning_accuracy": 0.0
       },
@@ -21546,24 +21170,15 @@
         "17": 20
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 2,
-        "2": 1,
-        "3": 2,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 2,
-        "12": 3,
-        "13": 0,
-        "14": 3,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 2,
+        "3": 1,
+        "15": 3,
+        "11": 2
       },
       "negative_mentions": [
         {
@@ -21727,7 +21342,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.663,
-        "whistleblowing_rate": 0.0846,
+        "whistleblowing_rate": 0.0551,
         "false_accusation_rate": 0.2667,
         "warning_accuracy": 0.0
       },
@@ -22236,24 +21851,15 @@
         "17": 21
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 2,
-        "2": 1,
-        "3": 2,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 2,
-        "12": 4,
-        "13": 0,
-        "14": 3,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 1,
+        "12": 3,
+        "1": 1,
+        "9": 2,
+        "3": 1,
+        "15": 3,
+        "11": 2
       },
       "negative_mentions": [
         {
@@ -22431,7 +22037,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6604,
-        "whistleblowing_rate": 0.0964,
+        "whistleblowing_rate": 0.0679,
         "false_accusation_rate": 0.4737,
         "warning_accuracy": 0.0
       },
@@ -22910,24 +22516,16 @@
         "17": 21
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 3,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 2,
-        "12": 4,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 2,
+        "12": 3,
+        "1": 2,
+        "9": 2,
+        "3": 2,
+        "15": 3,
+        "11": 2,
+        "13": 1
       },
       "negative_mentions": [
         {
@@ -23129,7 +22727,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.66,
-        "whistleblowing_rate": 0.1021,
+        "whistleblowing_rate": 0.0704,
         "false_accusation_rate": 0.45,
         "warning_accuracy": 0.0
       },
@@ -23503,24 +23101,16 @@
         "17": 21
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 4,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 2,
+        "9": 2,
+        "3": 2,
+        "15": 3,
+        "11": 2,
+        "13": 1
       },
       "negative_mentions": [
         {
@@ -23704,7 +23294,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6559,
-        "whistleblowing_rate": 0.102,
+        "whistleblowing_rate": 0.0714,
         "false_accusation_rate": 0.4762,
         "warning_accuracy": 0.0
       },
@@ -24213,24 +23803,16 @@
         "17": 21
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 5,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 2,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 2,
+        "9": 2,
+        "3": 3,
+        "15": 3,
+        "11": 2,
+        "13": 1
       },
       "negative_mentions": [
         {
@@ -24455,7 +24037,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6536,
-        "whistleblowing_rate": 0.106,
+        "whistleblowing_rate": 0.0762,
         "false_accusation_rate": 0.4348,
         "warning_accuracy": 0.0
       },
@@ -24934,24 +24516,17 @@
         "17": 21
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 5,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 2,
+        "9": 3,
+        "3": 3,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1
       },
       "negative_mentions": [
         {
@@ -25160,7 +24735,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6555,
-        "whistleblowing_rate": 0.1111,
+        "whistleblowing_rate": 0.0784,
         "false_accusation_rate": 0.5833,
         "warning_accuracy": 0.0
       },
@@ -25609,24 +25184,17 @@
         "17": 22
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 1
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 2,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1
       },
       "negative_mentions": [
         {
@@ -25870,7 +25438,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.655,
-        "whistleblowing_rate": 0.1118,
+        "whistleblowing_rate": 0.0799,
         "false_accusation_rate": 0.84,
         "warning_accuracy": 0.0
       },
@@ -26364,24 +25932,18 @@
         "17": 22
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 2
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 2,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -26566,7 +26128,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6514,
-        "whistleblowing_rate": 0.1077,
+        "whistleblowing_rate": 0.0769,
         "false_accusation_rate": 0.8,
         "warning_accuracy": 0.0
       },
@@ -27165,24 +26727,18 @@
         "17": 26
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 2
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 2,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -27418,7 +26974,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6497,
-        "whistleblowing_rate": 0.1057,
+        "whistleblowing_rate": 0.0755,
         "false_accusation_rate": 0.56,
         "warning_accuracy": 0.0
       },
@@ -27822,24 +27378,18 @@
         "17": 26
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 2
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 2,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -28055,7 +27605,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6498,
-        "whistleblowing_rate": 0.1032,
+        "whistleblowing_rate": 0.0737,
         "false_accusation_rate": 0.56,
         "warning_accuracy": 0.0
       },
@@ -28609,24 +28159,18 @@
         "17": 26
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 3,
-        "2": 1,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 5,
         "16": 1,
-        "17": 2
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 2,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -28872,7 +28416,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.645,
-        "whistleblowing_rate": 0.1057,
+        "whistleblowing_rate": 0.0743,
         "false_accusation_rate": 0.3846,
         "warning_accuracy": 0.0
       },
@@ -29366,24 +28910,18 @@
         "17": 26
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 4,
-        "2": 1,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 6,
         "16": 1,
-        "17": 2
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 3,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -29622,7 +29160,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.644,
-        "whistleblowing_rate": 0.1034,
+        "whistleblowing_rate": 0.0726,
         "false_accusation_rate": 0.3846,
         "warning_accuracy": 0.0
       },
@@ -30131,24 +29669,18 @@
         "17": 27
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 4,
-        "2": 1,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 6,
         "16": 1,
-        "17": 2
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 3,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -30374,7 +29906,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6411,
-        "whistleblowing_rate": 0.1,
+        "whistleblowing_rate": 0.0703,
         "false_accusation_rate": 0.4231,
         "warning_accuracy": 0.0
       },
@@ -30973,24 +30505,18 @@
         "17": 28
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 4,
-        "2": 1,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 6,
         "16": 1,
-        "17": 2
+        "2": 1,
+        "14": 2,
+        "12": 4,
+        "1": 3,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -31220,7 +30746,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6371,
-        "whistleblowing_rate": 0.1029,
+        "whistleblowing_rate": 0.0737,
         "false_accusation_rate": 0.5,
         "warning_accuracy": 0.0
       },
@@ -31684,24 +31210,18 @@
         "17": 30
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
-        "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 6,
         "16": 1,
-        "17": 2
+        "2": 2,
+        "14": 2,
+        "12": 4,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 1,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -31925,9 +31445,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6351,
-        "whistleblowing_rate": 0.1028,
+        "whistleblowing_rate": 0.0744,
         "false_accusation_rate": 0.6552,
-        "warning_accuracy": 0.025
+        "warning_accuracy": 0.0345
       },
       "utilities": {
         "0": 0.0,
@@ -32464,24 +31984,18 @@
         "17": 30
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
-        "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 0,
-        "6": 0,
-        "7": 2,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 6,
         "16": 1,
-        "17": 2
+        "2": 2,
+        "14": 2,
+        "12": 4,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 2,
+        "17": 1
       },
       "negative_mentions": [
         {
@@ -32736,9 +32250,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6337,
-        "whistleblowing_rate": 0.1033,
+        "whistleblowing_rate": 0.0754,
         "false_accusation_rate": 0.4667,
-        "warning_accuracy": 0.0244
+        "warning_accuracy": 0.0333
       },
       "utilities": {
         "0": 0.0,
@@ -33215,24 +32729,19 @@
         "17": 31
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
-        "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 2,
-        "8": 0,
-        "9": 3,
-        "10": 0,
-        "11": 2,
-        "12": 5,
-        "13": 1,
-        "14": 4,
-        "15": 6,
         "16": 1,
-        "17": 2
+        "2": 2,
+        "14": 2,
+        "12": 4,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
+        "11": 2,
+        "13": 1,
+        "7": 2,
+        "17": 1,
+        "5": 1
       },
       "negative_mentions": [
         {
@@ -33482,9 +32991,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.632,
-        "whistleblowing_rate": 0.1034,
+        "whistleblowing_rate": 0.0737,
         "false_accusation_rate": 0.5333,
-        "warning_accuracy": 0.0238
+        "warning_accuracy": 0.0333
       },
       "utilities": {
         "0": 0.0,
@@ -33991,24 +33500,19 @@
         "17": 31
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 2,
-        "8": 0,
+        "14": 2,
+        "12": 4,
+        "1": 4,
         "9": 3,
-        "10": 0,
+        "3": 4,
+        "15": 3,
         "11": 2,
-        "12": 5,
         "13": 1,
-        "14": 4,
-        "15": 6,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1
       },
       "negative_mentions": [
         {
@@ -34263,9 +33767,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6303,
-        "whistleblowing_rate": 0.1017,
+        "whistleblowing_rate": 0.0725,
         "false_accusation_rate": 0.4333,
-        "warning_accuracy": 0.0952
+        "warning_accuracy": 0.1333
       },
       "utilities": {
         "0": 0.0,
@@ -34682,24 +34186,19 @@
         "17": 32
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 2,
-        "8": 0,
+        "14": 2,
+        "12": 4,
+        "1": 4,
         "9": 3,
-        "10": 0,
+        "3": 4,
+        "15": 3,
         "11": 2,
-        "12": 5,
         "13": 1,
-        "14": 4,
-        "15": 6,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1
       },
       "negative_mentions": [
         {
@@ -34935,7 +34434,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6295,
-        "whistleblowing_rate": 0.1043,
+        "whistleblowing_rate": 0.0733,
         "false_accusation_rate": 0.6129,
         "warning_accuracy": 0.0
       },
@@ -35474,24 +34973,19 @@
         "17": 33
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 2,
-        "8": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
         "9": 3,
-        "10": 0,
+        "3": 4,
+        "15": 3,
         "11": 2,
-        "12": 5,
         "13": 1,
-        "14": 5,
-        "15": 6,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1
       },
       "negative_mentions": [
         {
@@ -35730,7 +35224,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6291,
-        "whistleblowing_rate": 0.1019,
+        "whistleblowing_rate": 0.0716,
         "false_accusation_rate": 0.6129,
         "warning_accuracy": 0.0
       },
@@ -36329,24 +35823,19 @@
         "17": 36
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 2,
-        "8": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
         "9": 3,
-        "10": 0,
+        "3": 4,
+        "15": 3,
         "11": 2,
-        "12": 5,
         "13": 1,
-        "14": 5,
-        "15": 6,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1
       },
       "negative_mentions": [
         {
@@ -36592,9 +36081,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6274,
-        "whistleblowing_rate": 0.1018,
+        "whistleblowing_rate": 0.07,
         "false_accusation_rate": 0.5806,
-        "warning_accuracy": 0.0667
+        "warning_accuracy": 0.0968
       },
       "utilities": {
         "0": 3.0,
@@ -37101,24 +36590,19 @@
         "17": 37
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 3,
-        "8": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
         "9": 3,
-        "10": 0,
+        "3": 4,
+        "15": 3,
         "11": 2,
-        "12": 5,
         "13": 1,
-        "14": 5,
-        "15": 6,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1
       },
       "negative_mentions": [
         {
@@ -37333,7 +36817,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6269,
-        "whistleblowing_rate": 0.1089,
+        "whistleblowing_rate": 0.0732,
         "false_accusation_rate": 0.5455,
         "warning_accuracy": 0.0
       },
@@ -37842,24 +37326,20 @@
         "17": 38
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 4,
-        "8": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
         "9": 3,
-        "10": 1,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 5,
         "13": 1,
-        "14": 5,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -38161,9 +37641,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6261,
-        "whistleblowing_rate": 0.107,
+        "whistleblowing_rate": 0.0719,
         "false_accusation_rate": 0.5152,
-        "warning_accuracy": 0.0204
+        "warning_accuracy": 0.0303
       },
       "utilities": {
         "0": 0.0,
@@ -38655,24 +38135,20 @@
         "17": 38
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 4,
-        "8": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
         "9": 3,
-        "10": 1,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 5,
         "13": 1,
-        "14": 5,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -38933,7 +38409,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6257,
-        "whistleblowing_rate": 0.1071,
+        "whistleblowing_rate": 0.0705,
         "false_accusation_rate": 0.5152,
         "warning_accuracy": 0.0
       },
@@ -39487,24 +38963,20 @@
         "17": 38
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 4,
-        "10": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 5,
         "13": 1,
-        "14": 5,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -39784,7 +39256,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6248,
-        "whistleblowing_rate": 0.1071,
+        "whistleblowing_rate": 0.0692,
         "false_accusation_rate": 0.4848,
         "warning_accuracy": 0.0
       },
@@ -40308,24 +39780,20 @@
         "17": 40
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 4,
-        "10": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 5,
         "13": 1,
-        "14": 6,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -40565,9 +40033,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6222,
-        "whistleblowing_rate": 0.1068,
+        "whistleblowing_rate": 0.0676,
         "false_accusation_rate": 0.5152,
-        "warning_accuracy": 0.0769
+        "warning_accuracy": 0.1212
       },
       "utilities": {
         "0": 0.0,
@@ -41089,24 +40557,20 @@
         "17": 41
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 1,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 5,
         "13": 1,
-        "14": 6,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 1,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -41341,9 +40805,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6202,
-        "whistleblowing_rate": 0.1062,
+        "whistleblowing_rate": 0.068,
         "false_accusation_rate": 0.3235,
-        "warning_accuracy": 0.0189
+        "warning_accuracy": 0.0294
       },
       "utilities": {
         "0": 6.0,
@@ -41880,24 +41344,20 @@
         "17": 42
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 5,
         "13": 1,
-        "14": 6,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -42152,9 +41612,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6183,
-        "whistleblowing_rate": 0.1037,
+        "whistleblowing_rate": 0.0664,
         "false_accusation_rate": 0.4118,
-        "warning_accuracy": 0.0189
+        "warning_accuracy": 0.0294
       },
       "utilities": {
         "0": 3.0,
@@ -42691,24 +42151,20 @@
         "17": 42
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 3,
+        "12": 4,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 5,
         "13": 1,
-        "14": 6,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -42983,7 +42439,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6188,
-        "whistleblowing_rate": 0.1042,
+        "whistleblowing_rate": 0.0674,
         "false_accusation_rate": 0.5143,
         "warning_accuracy": 0.0
       },
@@ -43492,24 +42948,20 @@
         "17": 44
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 3,
+        "12": 5,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 6,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -43794,9 +43246,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6169,
-        "whistleblowing_rate": 0.1019,
+        "whistleblowing_rate": 0.0659,
         "false_accusation_rate": 0.4571,
-        "warning_accuracy": 0.037
+        "warning_accuracy": 0.0571
       },
       "utilities": {
         "0": 0.0,
@@ -44378,24 +43830,20 @@
         "17": 47
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 5,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 3,
+        "12": 5,
+        "1": 4,
+        "9": 3,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 6,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -44706,9 +44154,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6151,
-        "whistleblowing_rate": 0.1015,
+        "whistleblowing_rate": 0.0663,
         "false_accusation_rate": 0.3333,
-        "warning_accuracy": 0.0364
+        "warning_accuracy": 0.0556
       },
       "utilities": {
         "0": 0.0,
@@ -45290,24 +44738,20 @@
         "17": 48
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 6,
+        "16": 1,
         "2": 2,
-        "3": 6,
-        "4": 1,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 3,
+        "12": 5,
+        "1": 5,
+        "9": 3,
+        "3": 4,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 6,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -45567,9 +45011,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6129,
-        "whistleblowing_rate": 0.1031,
+        "whistleblowing_rate": 0.0686,
         "false_accusation_rate": 0.3421,
-        "warning_accuracy": 0.0877
+        "warning_accuracy": 0.1316
       },
       "utilities": {
         "0": 0.0,
@@ -46091,24 +45535,20 @@
         "17": 48
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 6,
+        "16": 1,
         "2": 2,
-        "3": 7,
-        "4": 1,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 4,
+        "12": 5,
+        "1": 5,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 2
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -46382,9 +45822,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6107,
-        "whistleblowing_rate": 0.1027,
+        "whistleblowing_rate": 0.0671,
         "false_accusation_rate": 0.2105,
-        "warning_accuracy": 0.0862
+        "warning_accuracy": 0.1316
       },
       "utilities": {
         "0": 0.0,
@@ -46936,24 +46376,20 @@
         "17": 48
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 6,
+        "16": 1,
         "2": 2,
-        "3": 7,
-        "4": 1,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 4,
+        "12": 5,
+        "1": 5,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -47263,9 +46699,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6124,
-        "whistleblowing_rate": 0.1035,
+        "whistleblowing_rate": 0.0665,
         "false_accusation_rate": 0.2895,
-        "warning_accuracy": 0.0847
+        "warning_accuracy": 0.1316
       },
       "utilities": {
         "0": 0.0,
@@ -47757,24 +47193,20 @@
         "17": 48
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 7,
+        "16": 1,
         "2": 2,
-        "3": 7,
-        "4": 1,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 4,
+        "12": 5,
+        "1": 5,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1
       },
       "negative_mentions": [
         {
@@ -48039,9 +47471,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6099,
-        "whistleblowing_rate": 0.1029,
+        "whistleblowing_rate": 0.0668,
         "false_accusation_rate": 0.359,
-        "warning_accuracy": 0.0833
+        "warning_accuracy": 0.1282
       },
       "utilities": {
         "0": 0.0,
@@ -48593,24 +48025,21 @@
         "17": 48
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 7,
+        "16": 1,
         "2": 2,
-        "3": 7,
-        "4": 2,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 4,
+        "12": 5,
+        "1": 5,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1,
+        "4": 1
       },
       "negative_mentions": [
         {
@@ -48895,7 +48324,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6108,
-        "whistleblowing_rate": 0.1047,
+        "whistleblowing_rate": 0.0675,
         "false_accusation_rate": 0.4,
         "warning_accuracy": 0.0
       },
@@ -49449,24 +48878,21 @@
         "17": 48
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 7,
+        "16": 1,
         "2": 2,
-        "3": 8,
-        "4": 3,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 4,
+        "12": 5,
+        "1": 5,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -49775,7 +49201,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.612,
-        "whistleblowing_rate": 0.1037,
+        "whistleblowing_rate": 0.0668,
         "false_accusation_rate": 0.675,
         "warning_accuracy": 0.0
       },
@@ -50284,24 +49710,21 @@
         "17": 49
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 7,
+        "16": 1,
         "2": 2,
-        "3": 8,
-        "4": 3,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 4,
+        "12": 5,
+        "1": 5,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -50572,7 +49995,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6122,
-        "whistleblowing_rate": 0.1021,
+        "whistleblowing_rate": 0.0658,
         "false_accusation_rate": 0.7,
         "warning_accuracy": 0.0
       },
@@ -51141,24 +50564,21 @@
         "17": 51
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 7,
+        "16": 1,
         "2": 2,
-        "3": 8,
-        "4": 3,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 4,
+        "12": 5,
+        "1": 5,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -51459,7 +50879,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6119,
-        "whistleblowing_rate": 0.1019,
+        "whistleblowing_rate": 0.0662,
         "false_accusation_rate": 0.8049,
         "warning_accuracy": 0.0
       },
@@ -52073,24 +51493,21 @@
         "17": 52
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
+        "16": 1,
         "2": 2,
-        "3": 8,
-        "4": 3,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "14": 4,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -52395,7 +51812,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6121,
-        "whistleblowing_rate": 0.1024,
+        "whistleblowing_rate": 0.0655,
         "false_accusation_rate": 0.7805,
         "warning_accuracy": 0.0
       },
@@ -52889,24 +52306,21 @@
         "17": 53
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 8,
-        "4": 3,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "16": 1,
+        "2": 2,
+        "14": 4,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 1,
-        "14": 7,
-        "15": 7,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -53201,7 +52615,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.611,
-        "whistleblowing_rate": 0.1038,
+        "whistleblowing_rate": 0.0659,
         "false_accusation_rate": 0.6429,
         "warning_accuracy": 0.0
       },
@@ -53770,24 +53184,21 @@
         "17": 54
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 8,
-        "4": 3,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "16": 1,
+        "2": 2,
+        "14": 4,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 2,
-        "14": 7,
-        "15": 8,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -54116,7 +53527,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6087,
-        "whistleblowing_rate": 0.1051,
+        "whistleblowing_rate": 0.0679,
         "false_accusation_rate": 0.4091,
         "warning_accuracy": 0.0
       },
@@ -54610,24 +54021,21 @@
         "17": 55
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 8,
-        "4": 3,
-        "5": 2,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 1,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 3,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 2,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -54931,7 +54339,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6091,
-        "whistleblowing_rate": 0.1072,
+        "whistleblowing_rate": 0.0688,
         "false_accusation_rate": 0.4444,
         "warning_accuracy": 0.0
       },
@@ -55395,24 +54803,21 @@
         "17": 57
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 8,
-        "4": 3,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 3,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 3,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -55741,9 +55146,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6091,
-        "whistleblowing_rate": 0.1057,
+        "whistleblowing_rate": 0.0679,
         "false_accusation_rate": 0.6,
-        "warning_accuracy": 0.0143
+        "warning_accuracy": 0.0222
       },
       "utilities": {
         "0": 0.0,
@@ -56295,24 +55700,21 @@
         "17": 57
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 8,
-        "4": 3,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 3,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 3,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -56628,7 +56030,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6087,
-        "whistleblowing_rate": 0.1045,
+        "whistleblowing_rate": 0.0671,
         "false_accusation_rate": 0.4667,
         "warning_accuracy": 0.0
       },
@@ -57122,24 +56524,21 @@
         "17": 57
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 8,
-        "4": 3,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
         "13": 3,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 3
+        "7": 2,
+        "17": 1,
+        "5": 3,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -57470,7 +56869,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.61,
-        "whistleblowing_rate": 0.107,
+        "whistleblowing_rate": 0.0668,
         "false_accusation_rate": 0.7333,
         "warning_accuracy": 0.0
       },
@@ -57874,24 +57273,21 @@
         "17": 57
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 8,
-        "4": 3,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 4
+        "13": 3,
+        "7": 2,
+        "17": 1,
+        "5": 3,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -58220,7 +57616,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6106,
-        "whistleblowing_rate": 0.1057,
+        "whistleblowing_rate": 0.066,
         "false_accusation_rate": 0.7778,
         "warning_accuracy": 0.0
       },
@@ -58774,24 +58170,21 @@
         "17": 59
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 8,
-        "4": 3,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 5,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 4
+        "13": 3,
+        "7": 2,
+        "17": 1,
+        "5": 3,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -59122,7 +58515,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6119,
-        "whistleblowing_rate": 0.1077,
+        "whistleblowing_rate": 0.0683,
         "false_accusation_rate": 0.617,
         "warning_accuracy": 0.0
       },
@@ -59646,24 +59039,21 @@
         "17": 60
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 9,
-        "4": 3,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 1,
-        "9": 5,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 6,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 1,
+        "4": 2
       },
       "negative_mentions": [
         {
@@ -60002,7 +59392,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6122,
-        "whistleblowing_rate": 0.1094,
+        "whistleblowing_rate": 0.0704,
         "false_accusation_rate": 0.7755,
         "warning_accuracy": 0.0
       },
@@ -60541,24 +59931,22 @@
         "17": 61
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 9,
-        "4": 4,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 5,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 6,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 1,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -60932,7 +60320,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6109,
-        "whistleblowing_rate": 0.1092,
+        "whistleblowing_rate": 0.0694,
         "false_accusation_rate": 0.6122,
         "warning_accuracy": 0.0
       },
@@ -61441,24 +60829,22 @@
         "17": 61
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 9,
-        "4": 4,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 6,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 1,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -61818,9 +61204,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6071,
-        "whistleblowing_rate": 0.1068,
+        "whistleblowing_rate": 0.0679,
         "false_accusation_rate": 0.449,
-        "warning_accuracy": 0.0909
+        "warning_accuracy": 0.1429
       },
       "utilities": {
         "0": 0.0,
@@ -62387,24 +61773,22 @@
         "17": 65
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 9,
-        "4": 4,
-        "5": 3,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 2,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 6,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 1,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -62725,9 +62109,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6067,
-        "whistleblowing_rate": 0.1096,
+        "whistleblowing_rate": 0.0684,
         "false_accusation_rate": 0.54,
-        "warning_accuracy": 0.1
+        "warning_accuracy": 0.16
       },
       "utilities": {
         "0": 0.0,
@@ -63249,24 +62633,22 @@
         "17": 66
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 9,
-        "4": 5,
-        "5": 4,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 3,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 6,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -63629,9 +63011,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6057,
-        "whistleblowing_rate": 0.1081,
+        "whistleblowing_rate": 0.0675,
         "false_accusation_rate": 0.56,
-        "warning_accuracy": 0.0125
+        "warning_accuracy": 0.02
       },
       "utilities": {
         "0": 0.0,
@@ -64153,24 +63535,22 @@
         "17": 66
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 3,
-        "3": 9,
-        "4": 5,
-        "5": 4,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 3,
+        "16": 1,
+        "2": 2,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 6,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -64526,9 +63906,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6033,
-        "whistleblowing_rate": 0.1074,
+        "whistleblowing_rate": 0.0675,
         "false_accusation_rate": 0.451,
-        "warning_accuracy": 0.0247
+        "warning_accuracy": 0.0392
       },
       "utilities": {
         "0": 9.0,
@@ -65080,24 +64460,22 @@
         "17": 66
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 4,
-        "3": 9,
-        "4": 5,
-        "5": 4,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 3,
+        "16": 1,
+        "2": 3,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 6,
+        "15": 3,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 8,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -65447,9 +64825,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.6019,
-        "whistleblowing_rate": 0.1085,
+        "whistleblowing_rate": 0.0692,
         "false_accusation_rate": 0.3396,
-        "warning_accuracy": 0.012
+        "warning_accuracy": 0.0189
       },
       "utilities": {
         "0": 0.0,
@@ -65971,24 +65349,22 @@
         "17": 67
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 4,
-        "3": 10,
-        "4": 5,
-        "5": 4,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 3,
+        "16": 1,
+        "2": 3,
+        "14": 5,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 8,
-        "15": 9,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -66347,7 +65723,7 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5997,
-        "whistleblowing_rate": 0.1107,
+        "whistleblowing_rate": 0.0694,
         "false_accusation_rate": 0.3704,
         "warning_accuracy": 0.0
       },
@@ -66856,24 +66232,22 @@
         "17": 68
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 4,
-        "3": 10,
-        "4": 5,
-        "5": 5,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 3,
+        "16": 1,
+        "2": 3,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 2,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -67246,9 +66620,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5994,
-        "whistleblowing_rate": 0.1122,
+        "whistleblowing_rate": 0.0688,
         "false_accusation_rate": 0.4259,
-        "warning_accuracy": 0.0568
+        "warning_accuracy": 0.0926
       },
       "utilities": {
         "0": 0.0,
@@ -67695,24 +67069,22 @@
         "17": 70
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 5,
-        "3": 10,
-        "4": 5,
-        "5": 5,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 3,
+        "16": 1,
+        "2": 3,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 3,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 3,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -68086,9 +67458,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5977,
-        "whistleblowing_rate": 0.1121,
+        "whistleblowing_rate": 0.0692,
         "false_accusation_rate": 0.3273,
-        "warning_accuracy": 0.1011
+        "warning_accuracy": 0.1636
       },
       "utilities": {
         "0": 0.0,
@@ -68550,24 +67922,22 @@
         "17": 71
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 5,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 3,
+        "16": 1,
+        "2": 3,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 3,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -68897,9 +68267,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5962,
-        "whistleblowing_rate": 0.1104,
+        "whistleblowing_rate": 0.0682,
         "false_accusation_rate": 0.2364,
-        "warning_accuracy": 0.0449
+        "warning_accuracy": 0.0727
       },
       "utilities": {
         "0": 0.0,
@@ -69451,24 +68821,22 @@
         "17": 72
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 5,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 3,
+        "16": 1,
+        "2": 3,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 3,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -69849,9 +69217,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5934,
-        "whistleblowing_rate": 0.1095,
+        "whistleblowing_rate": 0.0668,
         "false_accusation_rate": 0.0909,
-        "warning_accuracy": 0.0889
+        "warning_accuracy": 0.1455
       },
       "utilities": {
         "0": 0.0,
@@ -70448,24 +69816,22 @@
         "17": 72
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 5,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 4,
+        "16": 1,
+        "2": 3,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 3,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -70844,9 +70210,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5926,
-        "whistleblowing_rate": 0.108,
+        "whistleblowing_rate": 0.0659,
         "false_accusation_rate": 0.2182,
-        "warning_accuracy": 0.0778
+        "warning_accuracy": 0.1273
       },
       "utilities": {
         "0": 3.0,
@@ -71383,24 +70749,22 @@
         "17": 72
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 5,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 4,
+        "16": 1,
+        "2": 3,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 3,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -71746,9 +71110,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5894,
-        "whistleblowing_rate": 0.1073,
+        "whistleblowing_rate": 0.0648,
         "false_accusation_rate": 0.1091,
-        "warning_accuracy": 0.0879
+        "warning_accuracy": 0.1455
       },
       "utilities": {
         "0": 0.0,
@@ -72270,24 +71634,22 @@
         "17": 74
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 5,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 5,
+        "16": 1,
+        "2": 3,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
         "11": 3,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 3,
-        "17": 5
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -72622,9 +71984,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5865,
-        "whistleblowing_rate": 0.1078,
+        "whistleblowing_rate": 0.0648,
         "false_accusation_rate": 0.125,
-        "warning_accuracy": 0.086
+        "warning_accuracy": 0.1429
       },
       "utilities": {
         "0": 6.0,
@@ -73146,24 +72508,22 @@
         "17": 76
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 5,
-        "11": 4,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 3,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -73520,9 +72880,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5823,
-        "whistleblowing_rate": 0.1056,
+        "whistleblowing_rate": 0.0635,
         "false_accusation_rate": 0.0179,
-        "warning_accuracy": 0.129
+        "warning_accuracy": 0.2143
       },
       "utilities": {
         "0": 6.0,
@@ -74059,24 +73419,22 @@
         "17": 76
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 5,
-        "11": 4,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 10,
-        "16": 3,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -74447,9 +73805,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5808,
-        "whistleblowing_rate": 0.1064,
+        "whistleblowing_rate": 0.0626,
         "false_accusation_rate": 0.0714,
-        "warning_accuracy": 0.1684
+        "warning_accuracy": 0.2857
       },
       "utilities": {
         "0": 15.0,
@@ -74956,24 +74314,22 @@
         "17": 76
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 5,
-        "11": 5,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 11,
-        "16": 3,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -75327,9 +74683,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5766,
-        "whistleblowing_rate": 0.1043,
+        "whistleblowing_rate": 0.0614,
         "false_accusation_rate": 0.0,
-        "warning_accuracy": 0.2421
+        "warning_accuracy": 0.4107
       },
       "utilities": {
         "0": 0.0,
@@ -75866,24 +75222,22 @@
         "17": 78
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 10,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 5,
-        "11": 5,
-        "12": 6,
-        "13": 4,
-        "14": 9,
-        "15": 11,
-        "16": 3,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -76263,9 +75617,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5733,
-        "whistleblowing_rate": 0.1058,
+        "whistleblowing_rate": 0.0604,
         "false_accusation_rate": 0.0536,
-        "warning_accuracy": 0.3673
+        "warning_accuracy": 0.6429
       },
       "utilities": {
         "0": 6.0,
@@ -76742,24 +76096,22 @@
         "17": 79
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 11,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 5,
-        "11": 5,
-        "12": 7,
-        "13": 5,
-        "14": 9,
-        "15": 11,
-        "16": 3,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 2,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -77142,9 +76494,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5687,
-        "whistleblowing_rate": 0.1057,
+        "whistleblowing_rate": 0.0602,
         "false_accusation_rate": 0.0,
-        "warning_accuracy": 0.38
+        "warning_accuracy": 0.6667
       },
       "utilities": {
         "0": 6.0,
@@ -77696,24 +77048,22 @@
         "17": 80
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 11,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 6,
-        "11": 5,
-        "12": 7,
-        "13": 5,
-        "14": 9,
-        "15": 11,
-        "16": 4,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 3,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -78107,9 +77457,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.565,
-        "whistleblowing_rate": 0.1035,
+        "whistleblowing_rate": 0.0589,
         "false_accusation_rate": 0.0,
-        "warning_accuracy": 0.48
+        "warning_accuracy": 0.8421
       },
       "utilities": {
         "0": 6.0,
@@ -78721,24 +78071,22 @@
         "17": 82
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 11,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 6,
-        "11": 5,
-        "12": 7,
-        "13": 5,
-        "14": 9,
-        "15": 11,
-        "16": 4,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 3,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -79166,9 +78514,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5566,
-        "whistleblowing_rate": 0.1,
+        "whistleblowing_rate": 0.0569,
         "false_accusation_rate": 0.0,
-        "warning_accuracy": 0.57
+        "warning_accuracy": 1.0
       },
       "utilities": {
         "0": 12.0,
@@ -79900,24 +79248,22 @@
         "17": 85
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 11,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 6,
-        "11": 5,
-        "12": 7,
-        "13": 5,
-        "14": 9,
-        "15": 11,
-        "16": 4,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 3,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
@@ -80258,9 +79604,9 @@
       "metrics": {
         "sustainability": 1.0,
         "peace": 0.5484,
-        "whistleblowing_rate": 0.0967,
+        "whistleblowing_rate": 0.0549,
         "false_accusation_rate": 0.0,
-        "warning_accuracy": 0.57
+        "warning_accuracy": 1.0
       },
       "utilities": {
         "0": 18.0,
@@ -81022,24 +80368,22 @@
         "17": 86
       },
       "warnings_broadcast_cumulative": {
-        "0": 0,
-        "1": 8,
-        "2": 6,
-        "3": 11,
-        "4": 5,
-        "5": 6,
-        "6": 0,
-        "7": 4,
-        "8": 2,
-        "9": 6,
-        "10": 6,
-        "11": 5,
-        "12": 7,
-        "13": 5,
-        "14": 9,
-        "15": 11,
-        "16": 4,
-        "17": 5
+        "16": 1,
+        "2": 4,
+        "14": 6,
+        "12": 5,
+        "1": 6,
+        "9": 3,
+        "3": 7,
+        "15": 4,
+        "11": 3,
+        "13": 3,
+        "7": 2,
+        "17": 2,
+        "5": 4,
+        "10": 3,
+        "4": 3,
+        "8": 1
       },
       "negative_mentions": [
         {
