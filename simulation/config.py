@@ -27,7 +27,7 @@ RUNS_PER_CONDITION = 3
 MEMORY_WINDOW = 5     # rounds of partner history shown to agent
 
 # Mechanism parameters
-MEDIATION_FEE = 1
+MEDIATION_FEE = 0
 DEFAULT_BREACH_PENALTY = 6   # 2x utility value of one unit
 
 # Governance mechanism parameters
