@@ -64,6 +64,34 @@ def _get_troll_ids(run: dict) -> set[str]:
     return set(str(tid) for tid in run.get("session_log", {}).get("troll_ids", []))
 
 
+def _non_troll_trade_stats(runs: list[dict]) -> tuple[list[float], list[float]]:
+    """Compute per-round non-troll trade count and defection count (excludes all troll trades).
+
+    Returns (trade_counts, defection_counts) as lists of per-round averages.
+    """
+    if not runs:
+        return [], []
+    n_rounds = len(runs[0]["rounds"])
+    trade_counts = []
+    defection_counts = []
+    for r in range(n_rounds):
+        round_trades = []
+        round_defections = []
+        for run in runs:
+            if r >= len(run["rounds"]):
+                continue
+            troll_ids = _get_troll_ids(run)
+            trades = run["rounds"][r].get("trades", [])
+            nt_trades = [t for t in trades
+                         if str(t["proposer"]) not in troll_ids
+                         and str(t["target"]) not in troll_ids]
+            round_trades.append(len(nt_trades))
+            round_defections.append(sum(1 for t in nt_trades if t.get("defected_by") is not None))
+        trade_counts.append(np.mean(round_trades) if round_trades else 0.0)
+        defection_counts.append(np.mean(round_defections) if round_defections else 0.0)
+    return trade_counts, defection_counts
+
+
 # ── Plots ─────────────────────────────────────────────────────────────────────
 
 def plot_metric_trajectories(save: bool = True) -> None:
@@ -248,10 +276,10 @@ def plot_defection_trajectory(save: bool = True) -> None:
     for ax, condition in zip(axes_flat, CONDITIONS):
         runs = _load_runs(condition)
         if runs:
-            trajectory = _mean_round_field(runs, "defections")
-            rounds = list(range(1, len(trajectory) + 1))
-            ax.plot(rounds, trajectory, color=COLORS[condition], linewidth=1.8)
-            ax.fill_between(rounds, trajectory, alpha=0.15, color=COLORS[condition])
+            _, defections = _non_troll_trade_stats(runs)
+            rounds = list(range(1, len(defections) + 1))
+            ax.plot(rounds, defections, color=COLORS[condition], linewidth=1.8)
+            ax.fill_between(rounds, defections, alpha=0.15, color=COLORS[condition])
         ax.set_title(condition, fontweight="bold")
         ax.grid(True, alpha=0.3)
 
@@ -261,9 +289,9 @@ def plot_defection_trajectory(save: bool = True) -> None:
     for ax in axes[-1]:
         ax.set_xlabel("Round")
     for ax in axes[:, 0]:
-        ax.set_ylabel("Defections per round")
+        ax.set_ylabel("Non-troll defections per round")
 
-    fig.suptitle("Defection Count Over Rounds by Condition", fontsize=14, fontweight="bold")
+    fig.suptitle("Non-Troll Defection Count Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "defection_trajectory.png", save)
 
@@ -278,10 +306,10 @@ def plot_trade_volume(save: bool = True) -> None:
     for ax, condition in zip(axes_flat, CONDITIONS):
         runs = _load_runs(condition)
         if runs:
-            trajectory = _mean_round_field(runs, "trade_count")
-            rounds = list(range(1, len(trajectory) + 1))
-            ax.plot(rounds, trajectory, color=COLORS[condition], linewidth=1.8)
-            ax.fill_between(rounds, trajectory, alpha=0.15, color=COLORS[condition])
+            trade_counts, _ = _non_troll_trade_stats(runs)
+            rounds = list(range(1, len(trade_counts) + 1))
+            ax.plot(rounds, trade_counts, color=COLORS[condition], linewidth=1.8)
+            ax.fill_between(rounds, trade_counts, alpha=0.15, color=COLORS[condition])
         ax.set_title(condition, fontweight="bold")
         ax.grid(True, alpha=0.3)
 
@@ -291,9 +319,9 @@ def plot_trade_volume(save: bool = True) -> None:
     for ax in axes[-1]:
         ax.set_xlabel("Round")
     for ax in axes[:, 0]:
-        ax.set_ylabel("Trades per round")
+        ax.set_ylabel("Non-troll trades per round")
 
-    fig.suptitle("Trade Volume Over Rounds by Condition", fontsize=14, fontweight="bold")
+    fig.suptitle("Non-Troll Trade Volume Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "trade_volume.png", save)
 
@@ -353,12 +381,12 @@ def plot_mediation_utilisation(save: bool = True) -> None:
         if not runs:
             continue
         n_rounds = len(runs[0]["rounds"])
+        trade_counts, _ = _non_troll_trade_stats(runs)
         fractions = []
         for r in range(n_rounds):
             mediated = np.mean([run["rounds"][r].get("mediated_trade_count", 0)
                                 for run in runs if r < len(run["rounds"])])
-            total = np.mean([run["rounds"][r].get("trade_count", 0)
-                             for run in runs if r < len(run["rounds"])])
+            total = trade_counts[r] if r < len(trade_counts) else 0
             fractions.append(mediated / total if total > 0 else 0.0)
         rounds = list(range(1, n_rounds + 1))
         ax.plot(rounds, fractions, label=condition, color=COLORS[condition], linewidth=1.8)
