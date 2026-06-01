@@ -704,6 +704,11 @@ def plot_utility_trajectories(save: bool = True) -> None:
             ax.fill_between(rounds, smoothed, 0,
                             where=[v < 0 for v in smoothed], alpha=0.12, color="red")
 
+            total_util = sum(raw)
+            ax.text(0.97, 0.97, f"Total: {total_util:.0f}", transform=ax.transAxes,
+                    ha="right", va="top", fontsize=9, fontweight="bold",
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
+
         ax.set_title(condition, fontweight="bold")
         ax.grid(True, alpha=0.3)
 
