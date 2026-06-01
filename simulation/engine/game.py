@@ -119,7 +119,7 @@ class Game:
 
             for mech in self.mechanisms:
                 if mech.name == "contracting":
-                    continue  # already enforced in Phase 3b inside _run_round
+                    continue  # already enforced in Phase 2b inside _run_round
                 mech.on_round_end(self.market, round_num)
 
             private_messages = [
@@ -310,7 +310,12 @@ class Game:
                 actions = review_actions.get(agent.agent_id, [])
                 self._process_contract_signing(agent.agent_id, actions)
 
-        # --- Phase 3: Trade ---
+        # --- Phase 2b: Contract enforcement (before barter so contracted goods transfer first) ---
+        for mech in self.mechanisms:
+            if mech.name == "contracting":
+                mech.on_round_end(self.market, round_num)
+
+        # --- Phase 3: Trade (agents see post-contract inventory) ---
         trade_actions = await self._call_agents_phase("trade", round_num)
 
         # Troll agents: override with defect-all on every pending offer
@@ -324,11 +329,6 @@ class Game:
         for agent in self.agents:
             actions = trade_actions.get(agent.agent_id, [])
             self._process_trade_decisions(agent.agent_id, actions, round_num)
-
-        # --- Phase 3b: Contract enforcement (before consumption so penalties apply same round) ---
-        for mech in self.mechanisms:
-            if mech.name == "contracting":
-                mech.on_round_end(self.market, round_num)
 
         # Snapshot penalties before consumption pops them
         self._pre_consumption_penalties = dict(self.market._penalty_ledger)
