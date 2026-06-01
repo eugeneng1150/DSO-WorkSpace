@@ -22,6 +22,8 @@ COLORS = dict(zip(CONDITIONS, cm.tab20(np.linspace(0, 1, len(CONDITIONS)))))
 
 def _load_runs(condition: str) -> list[dict]:
     files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
+    if not files:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_t*_run_*.json"))
     runs = []
     for f in files:
         with open(f) as fp:
@@ -1111,7 +1113,7 @@ def plot_troll_metric_trajectories(save: bool = True) -> None:
         for metric, color, label in zip(
             METRICS,
             ["tab:green", "tab:blue"],
-            ["Sustainability", "Peace"],
+            ["Production Stability", "Cooperation Rate"],
         ):
             trajectory = _mean_metric_over_rounds(runs, metric)
             rounds = list(range(1, len(trajectory) + 1))
