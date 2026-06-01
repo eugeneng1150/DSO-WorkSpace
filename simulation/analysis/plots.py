@@ -190,6 +190,9 @@ def plot_intermediate_variables(save: bool = True) -> None:
         ax.set_ylim(0, max(max(means) * 1.2, 0.1) if means else 1)
         ax.grid(axis="y", alpha=0.3)
 
+    if all(m == 0.0 for m in means):
+        fig.text(0.5, 0.45, "All values are zero — agents did not produce targeted warnings",
+                 ha="center", va="center", fontsize=14, color="gray", fontstyle="italic")
     fig.suptitle("Intermediate Variables by Condition", fontsize=13, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "intermediate_variables.png", save)
@@ -239,7 +242,7 @@ def plot_defection_trajectory(save: bool = True) -> None:
     """2×4 grid — one panel per condition showing defection count over rounds."""
     n_cols = 4
     n_rows = 2
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
     for ax, condition in zip(axes_flat, CONDITIONS):
@@ -269,7 +272,7 @@ def plot_trade_volume(save: bool = True) -> None:
     """2×4 grid — one panel per condition showing trade volume over rounds."""
     n_cols = 4
     n_rows = 2
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
     for ax, condition in zip(axes_flat, CONDITIONS):
@@ -321,13 +324,11 @@ def plot_contract_utilisation(save: bool = True) -> None:
 
         rounds = list(range(1, len(runs[0]["rounds"]) + 1))
         proposed  = _count_field(runs, "contracts_proposed")
-        active    = _count_field(runs, "contracts_active")
         executed  = _count_field(runs, "contracts_executed_this_round")
         breached  = _count_field(runs, "contracts_breached_this_round")
 
         ax.plot(rounds, proposed, label="Proposed", linewidth=1.5, linestyle="--")
-        ax.plot(rounds, active,   label="Active",   linewidth=1.5)
-        ax.plot(rounds, executed, label="Executed", linewidth=1.5)
+        ax.plot(rounds, executed, label="Executed", linewidth=1.5, color="tab:green")
         ax.plot(rounds, breached, label="Breached", linewidth=1.5, color="red")
         ax.set_title(f"Condition {condition}")
         ax.set_xlabel("Round")
@@ -782,7 +783,7 @@ def plot_utility_trajectories(save: bool = True) -> None:
     """2×4 grid — one panel per condition, average per-round utility with 3-round rolling average."""
     n_cols = 4
     n_rows = 2
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
     for ax, condition in zip(axes_flat, CONDITIONS):
@@ -1219,7 +1220,7 @@ def plot_cumulative_utility(save: bool = True) -> None:
     """2×4 grid — cumulative mean utility over rounds per condition (trolls excluded)."""
     n_cols = 4
     n_rows = 2
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
     for ax, condition in zip(axes_flat, CONDITIONS):
@@ -1310,7 +1311,6 @@ def plot_all(save: bool = True, n_trolls: int = 0) -> None:
     OUT_DIR = _get_out_dir(n_trolls)
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
-    plot_defection_rates(save)
     plot_intermediate_variables(save)
     plot_marketplace_cooperation_rates(save)
     plot_stability_rates(save)
