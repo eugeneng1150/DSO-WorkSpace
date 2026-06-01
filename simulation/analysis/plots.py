@@ -9,21 +9,26 @@ import numpy as np
 from .. import config
 from ..config import COOPERATION_THRESHOLD, CONDITIONS, CONDITION_MECHANISMS
 
-def _get_out_dir() -> Path:
-    """Plots output directory, mirroring the model subfolder from DATA_DIR."""
+def _get_out_dir(n_trolls: int = 0) -> Path:
+    """Plots output directory: plots/<model>/ or plots/<model>/troll_<N>/."""
     model_tag = config.DATA_DIR.name
-    return Path(__file__).parent.parent / "data" / "plots" / model_tag
+    base = Path(__file__).parent.parent / "data" / "plots" / model_tag
+    if n_trolls > 0:
+        return base / f"troll_{n_trolls}"
+    return base
 
 OUT_DIR = Path(__file__).parent.parent / "data" / "plots"  # updated dynamically in plot_all
+_N_TROLLS = 0  # set by plot_all(), controls which log files to load
 
 METRICS = ["sustainability", "peace"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 COLORS = dict(zip(CONDITIONS, cm.tab20(np.linspace(0, 1, len(CONDITIONS)))))
 
 def _load_runs(condition: str) -> list[dict]:
-    files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
-    if not files:
-        files = sorted(config.DATA_DIR.glob(f"{condition}_t*_run_*.json"))
+    if _N_TROLLS > 0:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_t{_N_TROLLS}_run_*.json"))
+    else:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
     runs = []
     for f in files:
         with open(f) as fp:
@@ -910,8 +915,11 @@ def plot_model_comparison(save: bool = True) -> None:
 
 
 def _load_troll_runs(condition: str) -> list[dict]:
-    """Load troll run files: {condition}_t*_run_*.json"""
-    files = sorted(config.DATA_DIR.glob(f"{condition}_t*_run_*.json"))
+    """Load troll run files. Uses _N_TROLLS if set, otherwise any troll count."""
+    if _N_TROLLS > 0:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_t{_N_TROLLS}_run_*.json"))
+    else:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_t*_run_*.json"))
     runs = []
     for f in files:
         with open(f) as fp:
@@ -1292,9 +1300,10 @@ def plot_gini_trajectory(save: bool = True) -> None:
     _maybe_save(fig, "gini_trajectory.png", save)
 
 
-def plot_all(save: bool = True) -> None:
-    global OUT_DIR
-    OUT_DIR = _get_out_dir()
+def plot_all(save: bool = True, n_trolls: int = 0) -> None:
+    global OUT_DIR, _N_TROLLS
+    _N_TROLLS = n_trolls
+    OUT_DIR = _get_out_dir(n_trolls)
     plot_metric_trajectories(save)
     plot_final_metrics_heatmap(save)
     plot_defection_rates(save)

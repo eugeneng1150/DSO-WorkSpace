@@ -92,7 +92,7 @@ def main():
 
     if args.plot:
         from .analysis.plots import plot_all
-        plot_all()
+        plot_all(n_trolls=args.trolls)
 
     if args.interactive:
         from .analysis.interactive_network import plot_interactive_networks
