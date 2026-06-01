@@ -101,7 +101,7 @@ def plot_metric_trajectories(save: bool = True) -> None:
     handles, labels = axes_flat[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="lower center", ncol=3, fontsize=9, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle("Production Stability and Cooperation Rate Over Rounds by Condition", fontsize=14, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     _maybe_save(fig, "metric_trajectories.png", save)
 
 
@@ -187,11 +187,11 @@ def plot_intermediate_variables(save: bool = True) -> None:
         ax.set_xticks(x)
         ax.set_xticklabels(labels)
         ax.set_title(var.replace("_", " ").title())
-        ax.set_ylim(0, max(means) * 1.2 if means else 1)
+        ax.set_ylim(0, max(max(means) * 1.2, 0.1) if means else 1)
         ax.grid(axis="y", alpha=0.3)
 
     fig.suptitle("Intermediate Variables by Condition", fontsize=13, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "intermediate_variables.png", save)
 
 
@@ -261,7 +261,7 @@ def plot_defection_trajectory(save: bool = True) -> None:
         ax.set_ylabel("Defections per round")
 
     fig.suptitle("Defection Count Over Rounds by Condition", fontsize=14, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "defection_trajectory.png", save)
 
 
@@ -291,7 +291,7 @@ def plot_trade_volume(save: bool = True) -> None:
         ax.set_ylabel("Trades per round")
 
     fig.suptitle("Trade Volume Over Rounds by Condition", fontsize=14, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "trade_volume.png", save)
 
 
@@ -336,7 +336,7 @@ def plot_contract_utilisation(save: bool = True) -> None:
 
     axes[0].set_ylabel("Mean contract count")
     fig.suptitle("Contract Utilisation by Round", fontsize=13, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "contract_utilisation.png", save)
 
 
@@ -368,6 +368,10 @@ def plot_mediation_utilisation(save: bool = True) -> None:
     ax.set_title("Mediation Utilisation Over Rounds", fontweight="bold")
     ax.legend(fontsize=9)
     ax.grid(True, alpha=0.3)
+    if all(f == 0.0 for f in fractions):
+        ax.text(0.5, 0.5, "No agents delegated to the mediator",
+                ha="center", va="center", transform=ax.transAxes,
+                fontsize=14, color="gray", fontstyle="italic")
     plt.tight_layout()
     _maybe_save(fig, "mediation_utilisation.png", save)
 
@@ -416,7 +420,7 @@ def plot_reputation_trajectories(save: bool = True) -> None:
 
     axes[0].set_ylabel("Reputation score")
     fig.suptitle("Reputation Score Trajectories", fontsize=13, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "reputation_trajectories.png", save)
 
 
@@ -536,7 +540,7 @@ def plot_signal_timelines(save: bool = True) -> None:
     axes[-1][1].set_xlabel("Round")
     fig.suptitle("Social Signals vs Behavioral Metrics Over Time",
                  fontsize=14, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
     _maybe_save(fig, "signal_timelines.png", save)
 
 
@@ -825,7 +829,7 @@ def plot_utility_trajectories(save: bool = True) -> None:
 
     fig.suptitle("Average Per-Round Utility by Condition (3-round rolling average)\nGreen = net positive, Red = net negative",
                  fontsize=13, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
     _maybe_save(fig, "utility_trajectories.png", save)
 
 
@@ -910,7 +914,7 @@ def plot_model_comparison(save: bool = True) -> None:
 
     fig.suptitle("Per-Round Utility by Condition — Model Comparison\n(3-round rolling average; green = positive, red = negative)",
                  fontsize=14, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
     _maybe_save(fig, "model_comparison.png", save)
 
 
@@ -1143,7 +1147,7 @@ def plot_troll_metric_trajectories(save: bool = True) -> None:
     handles, labels = axes_flat[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="lower center", ncol=2, fontsize=9, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle("Production Stability and Cooperation Rate Over Rounds (Troll Runs)", fontsize=14, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     _maybe_save(fig, "troll_metric_trajectories.png", save)
 
 
@@ -1207,7 +1211,7 @@ def plot_utility_per_agent(save: bool = True) -> None:
 
     fig.suptitle("Per-Agent Utility Distribution at Final Round\n(Blue = positive, Red = negative)",
                  fontsize=13, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
     _maybe_save(fig, "utility_per_agent.png", save)
 
 
@@ -1259,7 +1263,7 @@ def plot_cumulative_utility(save: bool = True) -> None:
 
     fig.suptitle("Cumulative Average Utility Over Rounds by Condition",
                  fontsize=13, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "cumulative_utility.png", save)
 
 
@@ -1296,7 +1300,7 @@ def plot_gini_trajectory(save: bool = True) -> None:
 
     fig.suptitle("Inequality (Gini Coefficient) Over Rounds by Condition\n(0 = perfect equality, 1 = maximum inequality)",
                  fontsize=13, fontweight="bold")
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
     _maybe_save(fig, "gini_trajectory.png", save)
 
 
