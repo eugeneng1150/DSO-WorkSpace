@@ -859,8 +859,8 @@ def plot_troll_resilience_table(save: bool = True) -> None:
         n_rounds = len(runs[0]["rounds"])
         half = n_rounds // 2
 
-        total_troll_defections = 0
-        troll_trades_last_half = []
+        damaging_troll_trades = 0
+        damaging_last_half = []
         non_troll_defections = 0
         non_troll_trades_total = 0
         non_troll_utilities = []
@@ -871,12 +871,13 @@ def plot_troll_resilience_table(save: bool = True) -> None:
                 utilities = rnd.get("utilities", {})
 
                 for t in trades:
-                    damaging = str(t["proposer"]) not in troll_ids and str(t["target"]) in troll_ids
-                    if damaging:
-                        total_troll_defections += 1
+                    proposer_is_troll = str(t["proposer"]) in troll_ids
+                    target_is_troll = str(t["target"]) in troll_ids
+                    if not proposer_is_troll and target_is_troll:
+                        damaging_troll_trades += 1
                         if r >= half:
-                            troll_trades_last_half.append(1)
-                    else:
+                            damaging_last_half.append(1)
+                    elif not proposer_is_troll and not target_is_troll:
                         non_troll_trades_total += 1
                         if t.get("defected_by") is not None:
                             non_troll_defections += 1
@@ -885,20 +886,21 @@ def plot_troll_resilience_table(save: bool = True) -> None:
                     if aid not in troll_ids:
                         non_troll_utilities.append(float(util))
 
-            # Count rounds in last half for averaging
-            if not troll_trades_last_half:
-                troll_trades_last_half = [0]
+            if not damaging_last_half:
+                damaging_last_half = [0]
 
         n_runs = len(runs)
         last_half_rounds = (n_rounds - half) * n_runs
-        avg_troll_last_half = sum(troll_trades_last_half) / max(last_half_rounds, 1)
+        avg_damaging_last_half = sum(damaging_last_half) / max(last_half_rounds, 1)
         non_troll_def_rate = non_troll_defections / max(non_troll_trades_total, 1)
         mean_utility = np.mean(non_troll_utilities) if non_troll_utilities else 0.0
 
         rows.append({
             "condition": condition,
-            "total_troll_defections": total_troll_defections,
-            "avg_troll_trades_last_half": avg_troll_last_half,
+            "damaging_troll_trades": damaging_troll_trades,
+            "avg_damaging_last_half": avg_damaging_last_half,
+            "non_troll_trades": non_troll_trades_total,
+            "non_troll_defections": non_troll_defections,
             "non_troll_defection_rate": non_troll_def_rate,
             "mean_utility": mean_utility,
         })
@@ -908,22 +910,26 @@ def plot_troll_resilience_table(save: bool = True) -> None:
         return
 
     # Render as a matplotlib table figure
-    fig, ax = plt.subplots(figsize=(14, 2 + 0.5 * len(rows)))
+    fig, ax = plt.subplots(figsize=(18, 2 + 0.5 * len(rows)))
     ax.axis("off")
 
     col_labels = [
         "Condition",
-        "Damaging Troll\nTrades",
-        "Avg Damaging/Round\n(last half)",
-        "Non-Troll\nDefection Rate",
-        "Mean Non-Troll\nUtility",
+        "Damaging\nTroll Trades",
+        "Avg Damaging/Rnd\n(last half)",
+        "Non-Troll\nTrades",
+        "Non-Troll\nDefections",
+        "Non-Troll\nDefect Rate",
+        "Mean\nUtility",
     ]
     cell_text = []
     for r in rows:
         cell_text.append([
             r["condition"],
-            str(r["total_troll_defections"]),
-            f"{r['avg_troll_trades_last_half']:.2f}",
+            str(r["damaging_troll_trades"]),
+            f"{r['avg_damaging_last_half']:.2f}",
+            str(r["non_troll_trades"]),
+            str(r["non_troll_defections"]),
             f"{r['non_troll_defection_rate']:.1%}",
             f"{r['mean_utility']:.2f}",
         ])
@@ -956,13 +962,15 @@ def plot_troll_resilience_table(save: bool = True) -> None:
 
     # Also print to console
     print("\n  Troll Resilience Table:")
-    print(f"  {'Condition':<10} {'Troll Def':>10} {'Avg Troll/Rnd':>14} {'NonTroll Def%':>14} {'Mean Util':>10}")
-    print(f"  {'-'*10} {'-'*10} {'-'*14} {'-'*14} {'-'*10}")
+    print(f"  {'Cond':<6} {'DmgTroll':>8} {'Avg/Rnd':>8} {'NTTrades':>8} {'NTDefect':>8} {'NTDef%':>7} {'Util':>6}")
+    print(f"  {'-'*6} {'-'*8} {'-'*8} {'-'*8} {'-'*8} {'-'*7} {'-'*6}")
     for r in rows:
-        print(f"  {r['condition']:<10} {r['total_troll_defections']:>10} "
-              f"{r['avg_troll_trades_last_half']:>14.2f} "
-              f"{r['non_troll_defection_rate']:>13.1%} "
-              f"{r['mean_utility']:>10.2f}")
+        print(f"  {r['condition']:<6} {r['damaging_troll_trades']:>8} "
+              f"{r['avg_damaging_last_half']:>8.2f} "
+              f"{r['non_troll_trades']:>8} "
+              f"{r['non_troll_defections']:>8} "
+              f"{r['non_troll_defection_rate']:>6.1%} "
+              f"{r['mean_utility']:>6.2f}")
     print()
 
 
@@ -1052,12 +1060,14 @@ def plot_utility_per_agent(save: bool = True) -> None:
         utils = [a[1] for a in agents]
         mean_util = np.mean(utils)
 
+        gini = final_round.get("metrics", {}).get("gini", 0.0)
+
         colors_bar = ["#4472C4" if u >= 0 else "#C44444" for u in utils]
         ax.bar(range(len(agent_ids)), utils, color=colors_bar, alpha=0.8)
         ax.axhline(mean_util, color="orange", linestyle="--", linewidth=1.5, alpha=0.8, label=f"Mean: {mean_util:.1f}")
         ax.set_xticks(range(len(agent_ids)))
         ax.set_xticklabels([str(a) for a in agent_ids], fontsize=7, rotation=45)
-        ax.set_title(condition, fontweight="bold")
+        ax.set_title(f"{condition}  (Gini: {gini:.3f})", fontweight="bold")
         ax.grid(axis="y", alpha=0.3)
         ax.legend(fontsize=7)
 
@@ -1186,7 +1196,6 @@ def plot_all(save: bool = True, n_trolls: int = 0) -> None:
     plot_troll_metric_trajectories(save)
     plot_utility_per_agent(save)
     plot_cumulative_utility(save)
-    plot_gini_trajectory(save)
     plot_model_comparison(save)
     print(f"Plots saved to {OUT_DIR}")
 
