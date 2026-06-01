@@ -1,13 +1,12 @@
-"""Unified analyst: cross-condition comparison + behavioral deep-dive with traces.
+"""Unified analyst: cross-condition, cross-troll-count comparison with behavioral traces.
 
-Produces one holistic report combining:
-1. Summary statistics across all conditions
-2. Troll resilience metrics
-3. Sampled CoT traces and quotes showing interesting behaviors
+Auto-detects all troll counts (0, 2, 4, 6...) in the data directory and produces
+one holistic report comparing how mechanisms degrade under escalating adversarial pressure.
 """
 from __future__ import annotations
 import json
 import os
+import re
 from pathlib import Path
 from datetime import datetime
 
@@ -39,10 +38,26 @@ client = anthropic.Anthropic(
 
 # ── Data loading ─────────────────────────────────────────────────────────────
 
-def _load_runs(condition: str) -> list[dict]:
-    files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
-    if not files:
-        files = sorted(config.DATA_DIR.glob(f"{condition}_t*_run_*.json"))
+def _detect_troll_counts() -> list[int]:
+    """Scan DATA_DIR and return sorted list of troll counts found (e.g. [0, 2, 4])."""
+    counts = set()
+    for f in config.DATA_DIR.glob("*_run_*.json"):
+        if "traces" in f.name:
+            continue
+        m = re.search(r"_t(\d+)_run_", f.name)
+        if m:
+            counts.add(int(m.group(1)))
+        else:
+            counts.add(0)
+    return sorted(counts)
+
+
+def _load_runs_for_troll_count(condition: str, n_trolls: int) -> list[dict]:
+    if n_trolls == 0:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
+    else:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_t{n_trolls}_run_*.json"))
+    files = [f for f in files if "traces" not in f.name]
     runs = []
     for f in files:
         with open(f) as fp:
@@ -50,9 +65,11 @@ def _load_runs(condition: str) -> list[dict]:
     return runs
 
 
-def _load_traces(condition: str) -> list[dict]:
-    """Load traces from all matching trace files for a condition."""
-    files = sorted(config.DATA_DIR.glob(f"{condition}_*_traces.jsonl"))
+def _load_traces_for_troll_count(condition: str, n_trolls: int) -> list[dict]:
+    if n_trolls == 0:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_run_*_traces.jsonl"))
+    else:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_t{n_trolls}_run_*_traces.jsonl"))
     traces = []
     for f in files:
         with open(f) as fp:
@@ -68,72 +85,62 @@ def _get_troll_ids(run: dict) -> set[str]:
 
 # ── Summary statistics ───────────────────────────────────────────────────────
 
-def _summarize_all() -> dict:
-    summary = {}
-    for condition in CONDITIONS:
-        runs = _load_runs(condition)
-        if not runs:
-            continue
-        cond = {}
+def _summarize_condition(condition: str, runs: list[dict]) -> dict:
+    cond = {}
+    troll_ids = _get_troll_ids(runs[0])
+    n_trolls = len(troll_ids)
 
-        for metric in METRICS + INTERMEDIATE:
-            all_vals = [
-                rnd["metrics"].get(metric, 0)
-                for run in runs for rnd in run["rounds"]
-                if rnd["metrics"].get(metric) is not None
-            ]
-            cond[metric] = {
-                "mean": round(float(np.mean(all_vals)), 4) if all_vals else None,
-                "final": round(float(np.mean([
-                    run["rounds"][-1]["metrics"].get(metric, 0) for run in runs
-                ])), 4),
-            }
+    for metric in METRICS + INTERMEDIATE:
+        all_vals = [
+            rnd["metrics"].get(metric, 0)
+            for run in runs for rnd in run["rounds"]
+            if rnd["metrics"].get(metric) is not None
+        ]
+        cond[metric] = {
+            "mean": round(float(np.mean(all_vals)), 4) if all_vals else None,
+            "final": round(float(np.mean([
+                run["rounds"][-1]["metrics"].get(metric, 0) for run in runs
+            ])), 4),
+        }
 
-        cooperative = sum(
-            1 for run in runs
-            if all(run["rounds"][-1]["metrics"].get(m, 0) > COOPERATION_THRESHOLD for m in ["sustainability", "peace"])
-        )
-        cond["cooperation_achieved"] = f"{cooperative}/{len(runs)} runs"
+    cooperative = sum(
+        1 for run in runs
+        if all(run["rounds"][-1]["metrics"].get(m, 0) > COOPERATION_THRESHOLD for m in ["sustainability", "peace"])
+    )
+    cond["cooperation_achieved"] = f"{cooperative}/{len(runs)} runs"
 
-        # Troll metrics
-        troll_ids = _get_troll_ids(runs[0])
-        if troll_ids:
-            n_rounds = len(runs[0]["rounds"])
-            half = n_rounds // 2
-            troll_trades_last_half = 0
-            last_half_rounds = 0
-            total_troll_def = 0
-            for run in runs:
-                for r, rnd in enumerate(run["rounds"]):
-                    trades = rnd.get("trades", [])
-                    for t in trades:
-                        involves_troll = str(t["proposer"]) in troll_ids or str(t["target"]) in troll_ids
-                        if involves_troll:
-                            if t.get("defected_by") is not None:
-                                total_troll_def += 1
-                            if r >= half:
-                                troll_trades_last_half += 1
-                last_half_rounds += (n_rounds - half)
-            cond["troll_defections"] = total_troll_def
-            cond["avg_troll_trades_last_half"] = round(troll_trades_last_half / max(last_half_rounds, 1), 2)
-
-        # Per-round utility (non-troll)
-        util_vals = []
+    if troll_ids:
+        n_rounds = len(runs[0]["rounds"])
+        half = n_rounds // 2
+        damaging_trades = 0
+        damaging_last_half = 0
         for run in runs:
-            tids = _get_troll_ids(run)
-            for rnd in run["rounds"]:
-                utils = rnd.get("utilities", {})
-                non_troll = [float(v) for k, v in utils.items() if k not in tids]
-                if non_troll:
-                    util_vals.append(np.mean(non_troll))
-        cond["mean_utility"] = round(float(np.mean(util_vals)), 2) if util_vals else 0.0
+            for r, rnd in enumerate(run["rounds"]):
+                trades = rnd.get("trades", [])
+                t_ids = _get_troll_ids(run)
+                for t in trades:
+                    if str(t["proposer"]) not in t_ids and str(t["target"]) in t_ids:
+                        damaging_trades += 1
+                        if r >= half:
+                            damaging_last_half += 1
+        last_half_rounds = (n_rounds - half) * len(runs)
+        cond["damaging_troll_trades"] = damaging_trades
+        cond["avg_damaging_last_half"] = round(damaging_last_half / max(last_half_rounds, 1), 2)
 
-        summary[condition] = cond
-    return summary
+    util_vals = []
+    for run in runs:
+        tids = _get_troll_ids(run)
+        for rnd in run["rounds"]:
+            utils = rnd.get("utilities", {})
+            non_troll = [float(v) for k, v in utils.items() if k not in tids]
+            if non_troll:
+                util_vals.append(np.mean(non_troll))
+    cond["mean_utility"] = round(float(np.mean(util_vals)), 2) if util_vals else 0.0
+
+    return cond
 
 
 def _build_round_table(condition: str, runs: list[dict]) -> str:
-    """Compact per-round table for one condition."""
     n_rounds = len(runs[0]["rounds"])
     troll_ids = _get_troll_ids(runs[0])
     lines = [f"{'Rnd':>3} | {'Peace':>6} | {'Sustain':>7} | {'Gini':>5} | {'Defect':>6} | {'Trades':>6} | {'AvgUtil':>7}"]
@@ -162,16 +169,14 @@ def _build_round_table(condition: str, runs: list[dict]) -> str:
 
 # ── Trace sampling ───────────────────────────────────────────────────────────
 
-def _sample_interesting_traces(condition: str, runs: list[dict], max_per_condition: int = 8) -> list[str]:
-    """Sample interesting CoT traces: first defection, troll encounters, late-game behavior."""
-    traces = _load_traces(condition)
+def _sample_interesting_traces(condition: str, runs: list[dict], n_trolls: int, max_per_condition: int = 6) -> list[str]:
+    traces = _load_traces_for_troll_count(condition, n_trolls)
     if not traces:
         return []
 
     troll_ids = _get_troll_ids(runs[0]) if runs else set()
     n_rounds = len(runs[0]["rounds"]) if runs else 30
 
-    # Priority: round 1, first big defection round, mid-game, final rounds
     rounds_data = runs[0]["rounds"] if runs else []
     defection_rounds = sorted(
         [(r["round"], r.get("defections", 0)) for r in rounds_data if r.get("defections", 0) > 2],
@@ -182,7 +187,6 @@ def _sample_interesting_traces(condition: str, runs: list[dict], max_per_conditi
         priority_rounds.add(defection_rounds[0][0])
     priority_rounds.add(n_rounds // 2)
 
-    # Find traces mentioning trolls or defection
     interesting = []
     regular = []
     for t in traces:
@@ -207,7 +211,6 @@ def _sample_interesting_traces(condition: str, runs: list[dict], max_per_conditi
         else:
             regular.append((t["round"], entry))
 
-    # Deduplicate by round — max 2 per round
     seen_rounds: dict[int, int] = {}
     selected = []
     for rnd, entry in sorted(interesting, key=lambda x: x[0]):
@@ -227,31 +230,56 @@ def _sample_interesting_traces(condition: str, runs: list[dict], max_per_conditi
 
 # ── Prompt construction ──────────────────────────────────────────────────────
 
-def _build_analyst_prompt(summary: dict, round_tables: dict[str, str], traces: dict[str, list[str]]) -> str:
-    summary_text = json.dumps(summary, indent=2)
+def _build_analyst_prompt(
+    troll_counts: list[int],
+    summaries: dict[int, dict[str, dict]],
+    round_tables: dict[int, dict[str, str]],
+    traces: dict[int, dict[str, list[str]]],
+) -> str:
+    # Build summary block organized by troll count
+    summary_block = ""
+    for n_trolls in troll_counts:
+        if n_trolls not in summaries:
+            continue
+        label = f"{n_trolls} trolls ({18 + n_trolls} total agents)" if n_trolls > 0 else "0 trolls (18 agents, no adversaries)"
+        summary_block += f"\n### {label}\n{json.dumps(summaries[n_trolls], indent=2)}\n"
 
+    # Build round tables block
     tables_block = ""
-    for cond in CONDITIONS:
-        if cond in round_tables:
-            label = _MECHANISM_LABELS.get(cond, cond)
-            tables_block += f"\n### {cond} — {label}\n{round_tables[cond]}\n"
+    for n_trolls in troll_counts:
+        if n_trolls not in round_tables:
+            continue
+        label = f"{n_trolls} trolls" if n_trolls > 0 else "0 trolls"
+        for cond in CONDITIONS:
+            if cond in round_tables[n_trolls]:
+                mech_label = _MECHANISM_LABELS.get(cond, cond)
+                tables_block += f"\n### {cond} — {mech_label} ({label})\n{round_tables[n_trolls][cond]}\n"
 
+    # Build traces block
     traces_block = ""
-    for cond in CONDITIONS:
-        if cond in traces and traces[cond]:
-            traces_block += f"\n### {cond} — Sample Agent Reasoning\n"
-            traces_block += "\n\n".join(traces[cond])
-            traces_block += "\n"
+    for n_trolls in troll_counts:
+        if n_trolls not in traces:
+            continue
+        label = f"{n_trolls} trolls" if n_trolls > 0 else "0 trolls"
+        for cond in CONDITIONS:
+            if cond in traces[n_trolls] and traces[n_trolls][cond]:
+                traces_block += f"\n### {cond} ({label}) — Sample Agent Reasoning\n"
+                traces_block += "\n\n".join(traces[n_trolls][cond])
+                traces_block += "\n"
 
-    return f"""You are a research analyst reviewing a multi-agent marketplace simulation comparing 7 institutional mechanisms for sustaining cooperation among self-interested LLM agents.
+    troll_counts_str = ", ".join(str(t) for t in troll_counts)
+
+    return f"""You are a research analyst reviewing a multi-agent marketplace simulation comparing 7 institutional mechanisms for sustaining cooperation among self-interested LLM agents under escalating adversarial pressure.
 
 SETUP:
-- 18 LLM agents (GPT-5.4-nano) + 2 troll agents (deterministic defectors, IDs 18-19) = 20 total
+- 18 LLM agents (GPT-5.4-nano) + trolls added on top (IDs 18+)
+- Troll counts tested: {troll_counts_str}
 - 3 perishable goods (A, B, C), barter economy, 30 rounds
 - Production cost: 1 utility/unit, consumption gain: +3 utility/needed unit, 20% spoilage/round
 - Agents see only "Round N" — no total rounds, no market health metrics
 - Trolls defect on ALL trades, propose trades to all neighbors, broadcast lies
 - All metrics exclude trolls
+- "Damaging troll trades" = trades where a non-troll proposed to a troll and the troll stole goods
 
 CONDITIONS:
 {json.dumps(_MECHANISM_LABELS, indent=2)}
@@ -261,35 +289,39 @@ INFORMATION GRADIENT (B → NR → GR):
 - NR: private experience + 10-round gossip history + network reshaping (sever/request links)
 - GR: private experience + system-computed reputation scores visible to all
 
-SUMMARY STATISTICS:
-{summary_text}
+SUMMARY STATISTICS (by troll count):
+{summary_block}
 
 PER-ROUND TABLES:
 {tables_block}
 
-AGENT REASONING TRACES (sampled for interesting behavior — defection decisions, troll encounters, trust reasoning):
+AGENT REASONING TRACES (sampled for interesting behavior):
 {traces_block}
 
 Write a single comprehensive report with these sections:
 
-1. **EXECUTIVE SUMMARY** (3-4 sentences): Which mechanisms worked, which failed, what's the headline finding?
+1. **EXECUTIVE SUMMARY** (3-4 sentences): Headline findings across all troll counts.
 
-2. **MECHANISM RANKING**: Rank all 7 conditions by overall effectiveness. For each, state: cooperation rate, mean utility, troll isolation (if applicable), and one-line verdict.
+2. **MECHANISM RANKING**: Rank all 7 conditions by overall effectiveness. For each, state cooperation rate, mean utility, troll isolation, and one-line verdict.
 
-3. **TROLL RESILIENCE**: Which mechanisms actually isolated trolls? How fast? Compare avg troll trades/round in the last half across conditions. Why did some mechanisms fail to isolate trolls despite having information?
+3. **ESCALATION ANALYSIS**: How does each mechanism degrade as troll count increases ({troll_counts_str})? Which mechanisms are robust vs fragile? Present as a comparison table or structured comparison showing the trajectory for each mechanism.
 
-4. **INFORMATION GRADIENT (B → NR → GR)**: Does more information lead to better outcomes? GR gives a system score, NR gives gossip + structural power, B gives nothing. What do the results show?
+4. **TROLL RESILIENCE**: Which mechanisms actually isolated trolls? Compare damaging troll trades across conditions and troll counts. Why did some mechanisms fail despite having information?
 
-5. **BEHAVIORAL INSIGHTS** (use the CoT traces): Quote specific agent reasoning that shows:
+5. **INFORMATION GRADIENT (B → NR → GR)**: Does more information lead to better outcomes? How does this change under escalating adversarial pressure?
+
+6. **BEHAVIORAL INSIGHTS** (use the CoT traces): Quote specific agent reasoning showing:
    - How agents decide to cooperate vs defect
-   - How agents react to being defected on (especially by trolls)
-   - Whether agents use available mechanisms strategically or ignore them
-   - Any surprising behaviors, emergent norms, or interesting failures
-   Use exact quotes from the traces, citing round and agent ID.
+   - How agents react to troll encounters
+   - Whether agents use available mechanisms strategically
+   - How behavior changes between 2-troll and 4-troll scenarios
+   Use exact quotes, citing round, agent ID, and troll count.
 
-6. **MECHANISM-SPECIFIC FINDINGS**: For each condition, what worked and what didn't? Why did C (contracting) produce such low utility? Why didn't M (mediation) agents delegate? Did S (sanctions) agents actually punish?
+7. **MECHANISM-SPECIFIC FINDINGS**: For each condition, what worked and what didn't?
 
-7. **IMPLICATIONS**: What does this mean for the research question "which mechanism sustains cooperation under adversarial pressure?" What should be tested next?
+8. **BREAKING POINTS**: At what troll count does each mechanism fail? Which mechanisms have the highest breaking point?
+
+9. **IMPLICATIONS**: What does this mean for the research question? What should be tested next?
 
 Be specific — cite numbers and quote traces. Flag where 1 run is insufficient for statistical claims.
 """
@@ -297,33 +329,35 @@ Be specific — cite numbers and quote traces. Flag where 1 run is insufficient 
 
 def run_analyst(model: str = ANALYST_MODEL, save: bool = True) -> str:
     print("Loading run logs...")
-    all_data: dict[str, list[dict]] = {}
-    for condition in CONDITIONS:
-        runs = _load_runs(condition)
-        if runs:
-            all_data[condition] = runs
 
-    if not all_data:
+    troll_counts = _detect_troll_counts()
+    if not troll_counts:
         return "No run logs found. Run the simulation first."
+    print(f"Troll counts detected: {troll_counts}")
 
-    print(f"Loaded: {list(all_data.keys())}")
+    summaries: dict[int, dict[str, dict]] = {}
+    round_tables: dict[int, dict[str, str]] = {}
+    traces: dict[int, dict[str, list[str]]] = {}
 
-    summary = _summarize_all()
-    print("Summary computed.")
+    for n_trolls in troll_counts:
+        summaries[n_trolls] = {}
+        round_tables[n_trolls] = {}
+        traces[n_trolls] = {}
 
-    round_tables = {}
-    for cond, runs in all_data.items():
-        round_tables[cond] = _build_round_table(cond, runs)
+        for condition in CONDITIONS:
+            runs = _load_runs_for_troll_count(condition, n_trolls)
+            if not runs:
+                continue
 
-    traces = {}
-    for cond, runs in all_data.items():
-        traces[cond] = _sample_interesting_traces(cond, runs)
-        n = len(traces[cond])
-        if n:
-            print(f"  [{cond}] {n} interesting traces sampled")
+            summaries[n_trolls][condition] = _summarize_condition(condition, runs)
+            round_tables[n_trolls][condition] = _build_round_table(condition, runs)
+            sampled = _sample_interesting_traces(condition, runs, n_trolls)
+            if sampled:
+                traces[n_trolls][condition] = sampled
+                print(f"  [{condition}, {n_trolls} trolls] {len(sampled)} traces sampled")
 
     print("Calling analyst LLM...")
-    prompt = _build_analyst_prompt(summary, round_tables, traces)
+    prompt = _build_analyst_prompt(troll_counts, summaries, round_tables, traces)
 
     response = client.messages.create(
         model=model,
@@ -336,10 +370,12 @@ def run_analyst(model: str = ANALYST_MODEL, save: bool = True) -> str:
     if save:
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         model_tag = config.DATA_DIR.name
-        out_path = OUT_DIR / f"analyst_report_{model_tag}_{timestamp}.md"
+        trolls_label = "_".join(f"t{t}" for t in troll_counts)
+        out_path = OUT_DIR / f"analyst_report_{model_tag}_{trolls_label}_{timestamp}.md"
         with open(out_path, "w") as f:
             f.write(f"# Analyst Report — {model_tag}\n\n")
-            f.write(f"Generated: {datetime.utcnow().isoformat()}\n\n")
+            f.write(f"Generated: {datetime.utcnow().isoformat()}\n")
+            f.write(f"Troll counts: {troll_counts}\n\n")
             f.write(report)
         print(f"Report saved → {out_path}")
 
