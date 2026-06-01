@@ -17,7 +17,7 @@ class ContractingMechanism(Mechanism):
             if contract.status != "signed" or contract.execution_round != round_num:
                 continue
 
-            proposer_breached = not market.can_deliver_asset(
+            proposer_breached = not market.can_deliver_asset( # just to check if they have the asset, not actually transferring yet
                 contract.proposer_id,
                 contract.proposer_delivers_good,
                 contract.proposer_delivers_qty,
@@ -52,13 +52,12 @@ class ContractingMechanism(Mechanism):
 
     def _apply_breach(self, market: "Market", breacher_id: int, victim_id: int, penalty: int) -> None:
         market._penalty_ledger[breacher_id] = (
-            market._penalty_ledger.get(breacher_id, 0) + penalty
+            market._penalty_ledger.get(breacher_id, 0) + penalty # add penalty to breacher's ledger entry 
         )
         # Negative entry: consumed_utility -= negative_value adds penalty as compensation
-        market._penalty_ledger[victim_id] = (
+        market._penalty_ledger[victim_id] = ( # subtract penalty from victim's ledger entry, which will be added to their utility as compensation
             market._penalty_ledger.get(victim_id, 0) - penalty
         )
-        market._update_reputation(breacher_id, success=False)
 
     def get_stage_override(self, agent: "_BaseAgent", market: "Market") -> dict[str, str]:
         aid = agent.agent_id

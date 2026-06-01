@@ -792,7 +792,7 @@ def _load_troll_runs(condition: str) -> list[dict]:
 
 
 def plot_troll_trade_volume(save: bool = True) -> None:
-    """Line chart: trades with trolls per round, one line per condition."""
+    """Line chart: damaging troll trades per round (non-troll proposed → troll defected)."""
     fig, ax = plt.subplots(figsize=(12, 6))
     found_any = False
 
@@ -814,7 +814,8 @@ def plot_troll_trade_volume(save: bool = True) -> None:
                 trades = run["rounds"][r].get("trades", [])
                 count = sum(
                     1 for t in trades
-                    if str(t["proposer"]) in troll_ids or str(t["target"]) in troll_ids
+                    if str(t["proposer"]) not in troll_ids
+                    and str(t["target"]) in troll_ids
                 )
                 counts.append(count)
             troll_trades_per_round.append(np.mean(counts) if counts else 0.0)
@@ -830,8 +831,8 @@ def plot_troll_trade_volume(save: bool = True) -> None:
         return
 
     ax.set_xlabel("Round", fontsize=12)
-    ax.set_ylabel("Trades with trolls per round", fontsize=12)
-    ax.set_title("Troll Isolation: Trade Volume with Trolls Over Rounds", fontweight="bold", fontsize=14)
+    ax.set_ylabel("Damaging troll trades per round", fontsize=12)
+    ax.set_title("Troll Isolation: Non-Troll Proposals to Trolls Over Rounds", fontweight="bold", fontsize=14)
     ax.legend(fontsize=10)
     ax.grid(True, alpha=0.3)
     ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
@@ -870,10 +871,9 @@ def plot_troll_resilience_table(save: bool = True) -> None:
                 utilities = rnd.get("utilities", {})
 
                 for t in trades:
-                    involves_troll = str(t["proposer"]) in troll_ids or str(t["target"]) in troll_ids
-                    if involves_troll:
-                        if t.get("defected_by") is not None:
-                            total_troll_defections += 1
+                    damaging = str(t["proposer"]) not in troll_ids and str(t["target"]) in troll_ids
+                    if damaging:
+                        total_troll_defections += 1
                         if r >= half:
                             troll_trades_last_half.append(1)
                     else:
@@ -913,8 +913,8 @@ def plot_troll_resilience_table(save: bool = True) -> None:
 
     col_labels = [
         "Condition",
-        "Total Troll\nDefections",
-        "Avg Troll Trades/Round\n(last half)",
+        "Damaging Troll\nTrades",
+        "Avg Damaging/Round\n(last half)",
         "Non-Troll\nDefection Rate",
         "Mean Non-Troll\nUtility",
     ]

@@ -22,7 +22,10 @@
       "Bash(mv C:/Users/NYiSheng/Documents/DSO-WorkSpace/simulation/data/runs/*.json C:/Users/NYiSheng/Documents/DSO-WorkSpace/simulation/data/runs/gpt-5.4-mini/)",
       "Bash(mv C:/Users/NYiSheng/Documents/DSO-WorkSpace/simulation/data/runs/*.jsonl C:/Users/NYiSheng/Documents/DSO-WorkSpace/simulation/data/runs/gpt-5.4-mini/)",
       "WebFetch(domain:papers.ssrn.com)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "WebFetch(domain:world.emergence.ai)",
+      "Bash(rm -f \"C:\\\\Users\\\\NYiSheng\\\\Documents\\\\DSO-WorkSpace\\\\simulation\\\\data\\\\plots\"/*.png)",
+      "Bash(rm -f \"C:\\\\Users\\\\NYiSheng\\\\Documents\\\\DSO-WorkSpace\\\\simulation\\\\data\\\\plots\\\\gpt-5.4-nano\"/*.png)"
     ]
   }
 }
