@@ -26,10 +26,6 @@ def main():
     parser.add_argument("--interactive", action="store_true",
                         help="Generate interactive Plotly network animations (requires troll runs)")
     parser.add_argument("--analyse", action="store_true", help="Run analyst agent after simulation")
-    parser.add_argument("--reason-analyse", action="store_true", help="Run reasoning analyst on CoT traces")
-    parser.add_argument("--extract-signals", action="store_true", help="Extract social signals from agent messages/CoT")
-    parser.add_argument("--all-runs", action="store_true", help="Process all runs (not just run 0)")
-    parser.add_argument("--run-idx", type=int, default=0, help="Run index to analyse (default 0)")
     parser.add_argument("--trolls", type=int, default=0,
                         help="Number of troll agents — deterministic defectors (default 0)")
     parser.add_argument("--rounds", type=int, default=None,
@@ -106,17 +102,6 @@ def main():
         print("\n" + "=" * 60)
         print(report)
 
-    if args.extract_signals:
-        from .analysis.reasoning_analyst import extract_all_signals
-        cond = args.condition if args.condition else None
-        extract_all_signals(condition=cond, all_runs=args.all_runs)
-
-    if args.reason_analyse:
-        from .analysis.reasoning_analyst import run_reasoning_analyst
-        cond = args.condition if args.condition else None
-        report = run_reasoning_analyst(condition=cond, run_idx=args.run_idx)
-        print("\n" + "=" * 60)
-        print(report)
 
 
 if __name__ == "__main__":
