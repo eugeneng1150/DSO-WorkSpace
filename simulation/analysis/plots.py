@@ -1178,6 +1178,115 @@ def plot_model_comparison_bars(save: bool = True) -> None:
     _maybe_save(fig, "model_comparison_bars.png", save)
 
 
+def plot_composite_ranking(save: bool = True) -> None:
+    """Heatmap: normalized 4-metric composite score per condition.
+
+    Metrics: mean utility, cooperation rate (peace), equality (1-gini),
+    production stability (sustainability). Each is min-max normalized to [0,1]
+    across conditions. Shows per-metric normalized scores plus average and min
+    (Rawlsian) composite.
+    """
+    rows = []
+    for condition in CONDITIONS:
+        runs = _load_runs(condition)
+        if not runs:
+            continue
+        run = runs[0]
+        troll_ids = set(str(t) for t in run.get("session_log", {}).get("troll_ids", []))
+        all_rounds = run["rounds"]
+
+        sust_vals = [r["metrics"]["sustainability"] for r in all_rounds]
+        peace_vals = [r["metrics"]["peace"] for r in all_rounds]
+        gini_vals = [r["metrics"]["gini"] for r in all_rounds]
+        util_vals = []
+        for r in all_rounds:
+            non_troll = [float(v) for k, v in r["utilities"].items() if k not in troll_ids]
+            util_vals.append(np.mean(non_troll) if non_troll else 0.0)
+
+        rows.append({
+            "condition": condition,
+            "utility": np.mean(util_vals),
+            "peace": np.mean(peace_vals),
+            "equality": 1.0 - np.mean(gini_vals),
+            "sustainability": np.mean(sust_vals),
+        })
+
+    if not rows:
+        print("  [composite_ranking] No data found, skipping.")
+        return
+
+    metrics = ["utility", "peace", "equality", "sustainability"]
+    display_names = ["Mean\nUtility", "Cooperation\nRate", "Equality\n(1−Gini)", "Production\nStability"]
+
+    raw = {m: np.array([r[m] for r in rows]) for m in metrics}
+    normed = {}
+    for m in metrics:
+        mn, mx = raw[m].min(), raw[m].max()
+        if mx - mn < 1e-9:
+            normed[m] = np.full_like(raw[m], 0.5)
+        else:
+            normed[m] = (raw[m] - mn) / (mx - mn)
+
+    n_cond = len(rows)
+    avg_scores = np.mean([normed[m] for m in metrics], axis=0)
+    min_scores = np.min([normed[m] for m in metrics], axis=0)
+
+    col_labels = display_names + ["Average\n(Composite)", "Min\n(Rawlsian)"]
+    data = np.column_stack([normed[m] for m in metrics] + [avg_scores, min_scores])
+    row_labels = [r["condition"] for r in rows]
+
+    sort_idx = np.argsort(-avg_scores)
+    data = data[sort_idx]
+    row_labels = [row_labels[i] for i in sort_idx]
+
+    fig, ax = plt.subplots(figsize=(12, max(4, n_cond * 0.7 + 1)))
+    green = np.array(mcolors.to_rgba("#2e7d32", alpha=0.5))
+    pale = np.array([1.0, 1.0, 1.0, 0.0])
+
+    cell_text = []
+    cell_colors = []
+    for i in range(n_cond):
+        tr, cr = [], []
+        for j in range(data.shape[1]):
+            v = data[i, j]
+            t = v
+            color = tuple(pale * (1 - t) + green * t)
+            tr.append(f"{v:.2f}")
+            cr.append(color)
+        cell_text.append(tr)
+        cell_colors.append(cr)
+
+    ax.axis("off")
+    table = ax.table(
+        cellText=cell_text,
+        rowLabels=row_labels,
+        colLabels=col_labels,
+        cellColours=cell_colors,
+        loc="center",
+        cellLoc="center",
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1.0, 1.8)
+
+    for (r, c), cell in table.get_celld().items():
+        if r == 0:
+            cell.set_text_props(fontweight="bold", fontsize=10)
+            cell.set_facecolor("#4a7c59")
+            cell.set_text_props(color="white", fontweight="bold", fontsize=10)
+        if c == -1:
+            cell.set_text_props(fontweight="bold", fontsize=11)
+
+    troll_tag = f"{_N_TROLLS} trolls" if _N_TROLLS > 0 else "no trolls"
+    ax.set_title(
+        f"Composite Mechanism Ranking ({troll_tag})\n"
+        "Min-max normalized [0,1] per metric; sorted by average composite",
+        fontsize=13, fontweight="bold", pad=20,
+    )
+    plt.tight_layout()
+    _maybe_save(fig, "composite_ranking.png", save)
+
+
 def plot_all(save: bool = True, n_trolls: int = 0) -> None:
     global OUT_DIR, _N_TROLLS
     _N_TROLLS = n_trolls
@@ -1199,6 +1308,7 @@ def plot_all(save: bool = True, n_trolls: int = 0) -> None:
     plot_model_comparison(save)
     plot_model_summary_table(save)
     plot_model_comparison_bars(save)
+    plot_composite_ranking(save)
     print(f"Plots saved to {OUT_DIR}")
 
 

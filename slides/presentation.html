@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Marketplace Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #ede8e0;
+            --bg-secondary: #e2dbd1;
+            --text-primary: #1a1a1a;
+            --text-secondary: #5a5a5a;
+            --accent: #8a8178;
+            --line: #b8b0a4;
+            --red: #9b2c2c;
+            --green: #276749;
+            --blue: #2b6cb0;
+            --amber: #975a16;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 5vh 5vw;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: fixed;
+            right: 2vw;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--line);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--text-primary);
+            transform: scale(1.3);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 3vh;
+            right: 3vw;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            z-index: 100;
+        }
+
+        .nav-arrows {
+            position: fixed;
+            bottom: 3vh;
+            left: 3vw;
+            display: flex;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        .nav-arrow {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--line);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-arrow:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            line-height: 1.15;
+        }
+
+        h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); }
+        h2 { font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 3vh; }
+        h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); }
+
+        p, li {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.85rem, 1.1vw, 1.05rem);
+            line-height: 1.65;
+            color: var(--text-secondary);
+        }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 1.5vh;
+        }
+
+        ul { list-style: none; }
+
+        ul li {
+            padding: 0.8vh 0 0.8vh 1.5vw;
+            position: relative;
+        }
+
+        ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 1.3em;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--line);
+        }
+
+        strong { color: var(--text-primary); }
+        em { color: var(--accent); font-style: italic; }
+
+        .cite {
+            font-size: 0.8em;
+            color: var(--line);
+            font-style: normal;
+        }
+
+        /* Geometric decorations */
+        .geo-decoration {
+            position: absolute;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+        }
+
+        .geo-decoration::before {
+            content: '';
+            position: absolute;
+            top: 12%;
+            left: 12%;
+            width: 76%;
+            height: 76%;
+            border: 1px dashed var(--line);
+            border-radius: 50%;
+        }
+
+        .vertical-line {
+            position: absolute;
+            left: 8vw;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background: var(--line);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        /* ========== SLIDE: Title ========== */
+        .slide-title {
+            justify-content: center;
+        }
+
+        .slide-title .content {
+            position: relative;
+            z-index: 1;
+            max-width: 65vw;
+        }
+
+        .slide-title h1 {
+            font-size: clamp(3rem, 5.5vw, 5rem);
+            margin-bottom: 2vh;
+        }
+
+        .slide-title .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1rem, 1.4vw, 1.25rem);
+            color: var(--text-secondary);
+            max-width: 40vw;
+        }
+
+        .slide-title .geo-decoration {
+            right: 5vw;
+            bottom: 8vh;
+            width: 28vw;
+            height: 28vw;
+        }
+
+        /* ========== SLIDE: Statement ========== */
+        .slide-statement {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .slide-statement .content {
+            max-width: 60vw;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-statement .quote-mark {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            line-height: 1;
+            color: var(--line);
+            opacity: 0.5;
+        }
+
+        /* ========== SLIDE: Content (default) ========== */
+        .slide-content .content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-content .content ul li {
+            padding: 1vh 0 1vh 1.8vw;
+            font-size: clamp(0.9rem, 1.15vw, 1.1rem);
+        }
+
+        /* ========== SLIDE: Two columns ========== */
+        .slide-twocol .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4vw;
+            align-items: center;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== SLIDE: Image + text ========== */
+        .slide-imgtext .content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .plot-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .plot-container img {
+            max-width: 100%;
+            max-height: 48vh;
+            border: 1px solid var(--line);
+        }
+
+        /* ========== Callout boxes ========== */
+        .callout {
+            border-left: 3px solid var(--line);
+            padding: 2vh 2vw;
+            margin: 2vh 0;
+            background: rgba(0,0,0,0.03);
+        }
+
+        .callout p {
+            font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .callout.red { border-left-color: var(--red); }
+        .callout.red p { color: var(--red); }
+        .callout.blue { border-left-color: var(--blue); }
+        .callout.green { border-left-color: var(--green); }
+
+        /* ========== Cards ========== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2vw;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            padding: 3vh 2vw;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .card h3 {
+            margin-bottom: 1.5vh;
+            font-size: 1.3rem;
+        }
+
+        .card ul li { font-size: 0.95rem; }
+
+        .card.card-red { border-color: var(--red); }
+        .card.card-red h3 { color: var(--red); }
+        .card.card-green { border-color: var(--green); }
+        .card.card-green h3 { color: var(--green); }
+
+        /* ========== Takeaway cards ========== */
+        .takeaway-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2vw;
+        }
+
+        .takeaway-card {
+            border: 1px solid var(--line);
+            padding: 3vh 2vw;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .takeaway-card.full-width { grid-column: 1 / -1; }
+
+        .takeaway-card .tk-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 1vh;
+            font-weight: 500;
+        }
+
+        .takeaway-card p {
+            font-size: clamp(0.95rem, 1.15vw, 1.1rem);
+            color: var(--text-primary);
+        }
+
+        .takeaway-card.tk-green { border-color: var(--green); }
+        .takeaway-card.tk-green .tk-label { color: var(--green); }
+        .takeaway-card.tk-amber { border-color: var(--amber); }
+        .takeaway-card.tk-amber .tk-label { color: var(--amber); }
+        .takeaway-card.tk-red { border-color: var(--red); }
+        .takeaway-card.tk-red .tk-label { color: var(--red); }
+        .takeaway-card.tk-blue { border-color: var(--blue); }
+        .takeaway-card.tk-blue .tk-label { color: var(--blue); }
+
+        /* ========== Mechanism list ========== */
+        .mechanism-list li {
+            padding: 1.2vh 0 1.2vh 0;
+            border-bottom: 1px solid rgba(184,176,164,0.4);
+            display: flex;
+            align-items: baseline;
+            gap: 1.5vw;
+        }
+
+        .mechanism-list li::before { display: none; }
+
+        .mechanism-list .abbrev {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            min-width: 2.5vw;
+            font-weight: 600;
+        }
+
+        /* ========== Agenda numbered list ========== */
+        .agenda-list li {
+            padding: 2vh 0;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: baseline;
+            gap: 2vw;
+        }
+
+        .agenda-list li::before { display: none; }
+
+        .agenda-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--accent);
+            min-width: 2.5vw;
+        }
+
+        /* ========== Timeline (next steps) ========== */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            padding-top: 3vh;
+            margin-top: 2vh;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--line);
+        }
+
+        .timeline-item {
+            flex: 1;
+            padding-right: 2vw;
+        }
+
+        .timeline-item .phase-label {
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1vh;
+        }
+
+        .timeline-item h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 1vh;
+        }
+
+        .timeline-item p { font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+<div class="presentation">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide slide-title active">
+        <div class="geo-decoration"></div>
+        <div class="content">
+            <div class="label">Progress Update &mdash; 2 June 2026</div>
+            <h1>Multi-Agent Marketplace Simulation</h1>
+            <p class="subtitle">Comparing institutional cooperation mechanisms for self-interested LLM agents under adversarial stress.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: Research Question -->
+    <div class="slide slide-statement">
+        <div class="geo-decoration" style="left:-10vw; top:10vh; width:35vw; height:35vw; opacity:0.2;"></div>
+        <div class="content">
+            <span class="quote-mark">&ldquo;</span>
+            <h2>Can institutional mechanisms help self-interested LLM agents sustain cooperation in adversarial environments?</h2>
+            <div style="margin-top:4vh;">
+                <p style="color:var(--accent); letter-spacing:1px;">Do different mechanisms produce different outcomes under stress?<br>
+                Which designs are robust to adversarial actors?<br>
+                How does effectiveness vary across LLM models?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: Literature Context -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Background</div>
+        <h2>Literature Context</h2>
+        <div class="content">
+            <ul>
+                <li>Without mechanisms, <strong>all modern LLMs defect</strong> in social dilemmas <span class="cite">(CoopEval)</span></li>
+                <li>Contracting &amp; Mediation ranked most effective in controlled experiments <span class="cite">(CoopEval)</span></li>
+                <li>More capable reasoning LLMs become <em>better free-riders</em>, not more cooperative <span class="cite">(Corrupted by Reasoning)</span></li>
+                <li>Reputation + dynamic networks + gossip yields 85&ndash;98% cooperation <span class="cite">(RepuNet)</span></li>
+                <li>Prompt-level governance (<em>&ldquo;be honest&rdquo;</em>) is indistinguishable from no governance <span class="cite">(Institutional AI)</span></li>
+                <li>A single defector can collapse the system in 1&ndash;7 rounds <span class="cite">(Subtle Art of Defection)</span></li>
+            </ul>
+            <div class="callout blue" style="margin-top:3vh;">
+                <p><strong>Gap:</strong> Most studies test one mechanism in isolation &mdash; we compare <strong>7 head-to-head</strong> under adversarial stress.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: The Environment -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Setup</div>
+        <h2>The Environment</h2>
+        <div class="content">
+            <ul>
+                <li><strong>18 LLM agents</strong> in a marketplace over <strong>30 rounds</strong></li>
+                <li>Each round: produce goods, communicate, trade, consume</li>
+                <li>Agents need <strong>diverse goods</strong> to earn utility &mdash; incentivizes trade</li>
+                <li><strong>20% spoilage</strong> per round &mdash; hoarding is penalized</li>
+                <li>Adversarial stress test: inject <em>troll agents</em> (2T and 4T) who always defect</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: Game Design Visual -->
+    <div class="slide slide-content">
+        <div class="label">Game Design</div>
+        <h2>The Marketplace</h2>
+        <div class="content" style="justify-content:center; align-items:center;">
+            <svg viewBox="0 0 700 540" style="width:100%; max-height:68vh;" font-family="Inter, sans-serif">
+                <defs>
+                    <marker id="arr2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+                        <path d="M0,0 L0,7 L7,3.5 z" fill="#8a8178"/>
+                    </marker>
+                    <marker id="arr2r" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto-start-reverse">
+                        <path d="M0,0 L0,7 L7,3.5 z" fill="#8a8178"/>
+                    </marker>
+                </defs>
+
+                <!-- Group A — top centre -->
+                <rect x="230" y="20" width="240" height="170" rx="12" fill="#f5f1eb" stroke="#b8b0a4" stroke-width="1.5"/>
+                <text x="350" y="14" text-anchor="middle" font-family="Playfair Display, serif" font-size="16" fill="#1a1a1a">Good A</text>
+                <text x="350" y="42" text-anchor="middle" font-size="10" fill="#8a8178" letter-spacing="1">PRODUCES A · needs B &amp; C</text>
+                <circle cx="285" cy="85"  r="20" fill="#d4c9b8" stroke="#8a8178" stroke-width="1.2"/><text x="285" y="85"  text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">A</text>
+                <circle cx="350" cy="85"  r="20" fill="#d4c9b8" stroke="#8a8178" stroke-width="1.2"/><text x="350" y="85"  text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">A</text>
+                <circle cx="415" cy="85"  r="20" fill="#d4c9b8" stroke="#8a8178" stroke-width="1.2"/><text x="415" y="85"  text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">A</text>
+                <circle cx="285" cy="140" r="20" fill="#d4c9b8" stroke="#8a8178" stroke-width="1.2"/><text x="285" y="140" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">A</text>
+                <circle cx="350" cy="140" r="20" fill="#d4c9b8" stroke="#8a8178" stroke-width="1.2"/><text x="350" y="140" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">A</text>
+                <circle cx="415" cy="140" r="20" fill="#d4c9b8" stroke="#8a8178" stroke-width="1.2"/><text x="415" y="140" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">A</text>
+                <text x="350" y="180" text-anchor="middle" font-size="10" fill="#b8b0a4">6 agents</text>
+
+                <!-- Trade arrows: A <-> B -->
+                <line x1="265" y1="200" x2="180" y2="280" stroke="#8a8178" stroke-width="1.5" marker-end="url(#arr2)" marker-start="url(#arr2r)"/>
+
+                <!-- Trade arrows: A <-> C -->
+                <line x1="435" y1="200" x2="520" y2="280" stroke="#8a8178" stroke-width="1.5" marker-end="url(#arr2)" marker-start="url(#arr2r)"/>
+
+                <!-- Group B — bottom left -->
+                <rect x="20" y="290" width="240" height="170" rx="12" fill="#f5f1eb" stroke="#b8b0a4" stroke-width="1.5"/>
+                <text x="140" y="284" text-anchor="middle" font-family="Playfair Display, serif" font-size="16" fill="#1a1a1a">Good B</text>
+                <text x="140" y="310" text-anchor="middle" font-size="10" fill="#8a8178" letter-spacing="1">PRODUCES B · needs A &amp; C</text>
+                <circle cx="75"  cy="350" r="20" fill="#c9d4c0" stroke="#8a8178" stroke-width="1.2"/><text x="75"  y="350" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">B</text>
+                <circle cx="140" cy="350" r="20" fill="#c9d4c0" stroke="#8a8178" stroke-width="1.2"/><text x="140" y="350" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">B</text>
+                <circle cx="205" cy="350" r="20" fill="#c9d4c0" stroke="#8a8178" stroke-width="1.2"/><text x="205" y="350" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">B</text>
+                <circle cx="75"  cy="405" r="20" fill="#c9d4c0" stroke="#8a8178" stroke-width="1.2"/><text x="75"  y="405" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">B</text>
+                <circle cx="140" cy="405" r="20" fill="#c9d4c0" stroke="#8a8178" stroke-width="1.2"/><text x="140" y="405" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">B</text>
+                <circle cx="205" cy="405" r="20" fill="#c9d4c0" stroke="#8a8178" stroke-width="1.2"/><text x="205" y="405" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">B</text>
+                <text x="140" y="450" text-anchor="middle" font-size="10" fill="#b8b0a4">6 agents</text>
+
+                <!-- Group C — bottom right -->
+                <rect x="440" y="290" width="240" height="170" rx="12" fill="#f5f1eb" stroke="#b8b0a4" stroke-width="1.5"/>
+                <text x="560" y="284" text-anchor="middle" font-family="Playfair Display, serif" font-size="16" fill="#1a1a1a">Good C</text>
+                <text x="560" y="310" text-anchor="middle" font-size="10" fill="#8a8178" letter-spacing="1">PRODUCES C · needs A &amp; B</text>
+                <circle cx="495" cy="350" r="20" fill="#c9c4d4" stroke="#8a8178" stroke-width="1.2"/><text x="495" y="350" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">C</text>
+                <circle cx="560" cy="350" r="20" fill="#c9c4d4" stroke="#8a8178" stroke-width="1.2"/><text x="560" y="350" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">C</text>
+                <circle cx="625" cy="350" r="20" fill="#c9c4d4" stroke="#8a8178" stroke-width="1.2"/><text x="625" y="350" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">C</text>
+                <circle cx="495" cy="405" r="20" fill="#c9c4d4" stroke="#8a8178" stroke-width="1.2"/><text x="495" y="405" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">C</text>
+                <circle cx="560" cy="405" r="20" fill="#c9c4d4" stroke="#8a8178" stroke-width="1.2"/><text x="560" y="405" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">C</text>
+                <circle cx="625" cy="405" r="20" fill="#c9c4d4" stroke="#8a8178" stroke-width="1.2"/><text x="625" y="405" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#1a1a1a">C</text>
+                <text x="560" y="450" text-anchor="middle" font-size="10" fill="#b8b0a4">6 agents</text>
+
+                <!-- Trade arrows: B <-> C (bottom) -->
+                <line x1="262" y1="380" x2="438" y2="380" stroke="#8a8178" stroke-width="1.5" marker-end="url(#arr2)" marker-start="url(#arr2r)"/>
+
+                <!-- Round label at bottom -->
+                <text x="350" y="520" text-anchor="middle" font-size="12" font-weight="500" fill="#1a1a1a">Each round: Produce → Communicate → Trade → Consume</text>
+
+            </svg>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: Architecture -->
+    <div class="slide slide-content">
+        <div class="label">Architecture</div>
+        <h2>Simulation Architecture</h2>
+        <div class="content" style="justify-content:center; align-items:center;">
+            <pre class="mermaid" style="width:85%;">
+flowchart LR
+    CLI["CLI"] --> Runner
+    Runner --> Game
+
+    subgraph Game["Game Loop &times; 30 rounds"]
+        direction LR
+        P1["Spoilage<br/>&amp; Produce"] --> P2["Communicate<br/>&amp; Contract"] --> P3["Trade"] --> P4["Consume<br/>&amp; Score"]
+    end
+
+    Game --> Mechs
+    Game --> LLM["LLM Agent<br/>&times; 18"]
+    LLM --> Prompt["Prompt<br/>Builder"]
+    Prompt --> Market["Market State"]
+    Market --> Game
+
+    subgraph Mechs["Mechanisms"]
+        direction TB
+        m1["GR &bull; C &bull; M"]
+        m2["G &bull; NR &bull; S"]
+    end
+
+    Runner -->|JSON| Analysis["Plots &amp;<br/>Analyst"]
+            </pre>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: The 7 Mechanisms -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Conditions</div>
+        <h2>The 7 Mechanisms</h2>
+        <div class="content">
+            <ul class="mechanism-list">
+                <li><span class="abbrev">B</span> <span>Baseline &mdash; no mechanism, pure barter</span></li>
+                <li><span class="abbrev">GR</span> <span>Global Reputation &mdash; system-computed trust scores visible to all</span></li>
+                <li><span class="abbrev">C</span> <span>Contracting &mdash; binding agreements with breach penalties</span></li>
+                <li><span class="abbrev">M</span> <span>Monitoring &mdash; public trade audit log</span></li>
+                <li><span class="abbrev">G</span> <span>Governance &mdash; community voting on trade rules</span></li>
+                <li><span class="abbrev">NR</span> <span>Network Rewiring + Local Reputation &mdash; gossip + link severing</span></li>
+                <li><span class="abbrev">S</span> <span>Sanctioning &mdash; collective punishment for defectors</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: Experiment Setup -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Parameters</div>
+        <h2>Experiment Setup</h2>
+        <div class="content">
+            <ul>
+                <li><strong>Models:</strong> gpt-5.4-nano, DeepSeek-V3</li>
+                <li><strong>Troll counts:</strong> 0 (baseline), 2 (10%), 4 (20%) out of 18+troll agents</li>
+                <li><strong>Duration:</strong> 30 rounds per run</li>
+                <li><strong>Metrics:</strong> total utility, trade volume, defection rate, production stability</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: RESULTS OVERVIEW ============ -->
+
+    <!-- SLIDE 8: Utility Trajectories -->
+    <div class="slide slide-imgtext">
+        <div class="label">Results</div>
+        <h2>Utility Trajectories &mdash; 4 Trolls</h2>
+        <div class="content">
+            <div class="plot-container">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/utility_trajectories.png" alt="Utility Trajectories">
+            </div>
+            <ul style="margin-top:2vh;">
+                <li><strong>G leads</strong> (112 total), <strong>S</strong> close behind (105), <strong>NR</strong> solid (99)</li>
+                <li><strong>GR &asymp; Baseline</strong> (53 vs 55) &mdash; reputation alone doesn&rsquo;t help</li>
+                <li><strong>C is the only condition going negative</strong> (16) &mdash; <em>worse than no mechanism</em></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: Troll Resilience Table -->
+    <div class="slide slide-imgtext">
+        <div class="label">Results</div>
+        <h2>Troll Resilience &mdash; 4 Trolls</h2>
+        <div class="content">
+            <div class="plot-container">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/troll_resilience_table.png" alt="Troll Resilience Table">
+            </div>
+            <div class="callout red" style="margin-top:2vh;">
+                <p>C shows only <strong>9</strong> damaging troll trades vs S&rsquo;s <strong>78</strong> &mdash; but C only has <strong>163</strong> total trades vs S&rsquo;s <strong>689</strong>. Low troll damage is a side effect of low trade volume, not active exclusion.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: KEY INSIGHT ============ -->
+
+    <!-- SLIDE 10: Troll Isolation vs Cooperation -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Key Insight</div>
+        <h2>Troll Isolation &ne; Cooperation</h2>
+        <div class="content">
+            <ul>
+                <li>All mechanisms eventually reduce damaging troll trades over 30 rounds</li>
+                <li>The <strong>harder problem</strong> is getting self-interested agents to cooperate with <em>each other</em></li>
+                <li>C isolates trolls but freezes the entire market &mdash; agents stop trading altogether</li>
+                <li>GR agents identify trolls (0.00 reputation) but still can&rsquo;t sustain cooperation among honest agents</li>
+                <li>G and S succeed because they both isolate trolls <strong>and</strong> create incentives for honest agents to keep trading</li>
+            </ul>
+            <div class="callout blue" style="margin-top:3vh;">
+                <p><strong>The real benchmark is not &ldquo;can we stop trolls?&rdquo; but &ldquo;can honest agents still thrive despite them?&rdquo;</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: ESCALATION & FAILURE MODES ============ -->
+
+    <!-- SLIDE 11: Escalation 2T → 4T -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Escalation</div>
+        <h2>2 Trolls &rarr; 4 Trolls</h2>
+        <div class="content">
+            <ul>
+                <li><strong>G is the only mechanism that improved</strong> &mdash; sustainability <em>+11.8%</em>, utility <em>+1.9%</em>. Oracle detection gets easier with more trolls (clearer patterns).</li>
+                <li><strong>NR nearly flat</strong> &mdash; sustainability -0.6%, utility +3.1%. Structural exclusion scales naturally.</li>
+                <li><strong>GR collapsed</strong> &mdash; sustainability <em>-31.6%</em>, utility <em>-37.4%</em>. Performed <strong>worse than Baseline</strong> at 4T (1.76 vs 1.83 utility). Information without tools was counterproductive.</li>
+                <li><strong>S stayed resilient on sustainability</strong> (-2.6%) but damaging troll trades doubled (39&rarr;78).</li>
+                <li><strong>C already broken at 2T</strong> &mdash; utility 0.82, leaving little room to fall further.</li>
+            </ul>
+            <div class="callout" style="margin-top:2vh;">
+                <p><strong>Caveat:</strong> Based on 1 run per condition. These trends are hypothesis-generating &mdash; statistical replication (3+ runs) is needed to confirm.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: Two Opposite Failure Modes -->
+    <div class="slide slide-twocol">
+        <div class="label">Failure Modes</div>
+        <h2>Two Opposite Failure Modes</h2>
+        <div class="content">
+            <div class="card card-red">
+                <h3>C &mdash; Over-Deterrence</h3>
+                <ul>
+                    <li>Best troll isolation (9 damaging trades)</li>
+                    <li>But only 163 total trades &mdash; <strong>market freeze</strong></li>
+                    <li>Penalty fear deters <em>all</em> trade, not just troll trade</li>
+                    <li>Utility: <strong>0.55</strong> (worst)</li>
+                </ul>
+            </div>
+            <div class="card" style="border-color: var(--amber);">
+                <h3 style="color: var(--amber);">S &mdash; Under-Deterrence</h3>
+                <ul>
+                    <li>Worst troll isolation (78 damaging trades)</li>
+                    <li>But 689 total trades &mdash; <strong>vibrant market</strong></li>
+                    <li>Sanctions create false security &mdash; agents trade broadly, including with trolls</li>
+                    <li>Utility: <strong>3.49</strong> (strong)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="callout" style="position:relative; z-index:1; margin-top:1vh;">
+            <p>S deters honest-to-honest defection but trolls don&rsquo;t care about punishment. C deters everyone. <strong>Neither achieves targeted exclusion.</strong></p>
+        </div>
+    </div>
+
+    <!-- SLIDE 13: Why Contracting Fails -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Deep Dive</div>
+        <h2>Why Contracting (C) Fails</h2>
+        <div class="content">
+            <ul>
+                <li>Agents fear they cannot fulfill contracts (spoilage, competing trades)</li>
+                <li>They avoid the mechanism even when they <em>can</em> deliver &mdash; inherently risk-averse</li>
+                <li>Agents reason incorrectly: <em>&ldquo;a contract could backfire if the counterparty rejects&rdquo;</em> &mdash; but rejection costs nothing</li>
+                <li>Breach penalties reduce production capacity (negative utility), fewer trades, <strong>market freeze</strong></li>
+            </ul>
+            <div class="callout red" style="margin-top:3vh;">
+                <p><strong>Death spiral:</strong> penalty fear &rarr; mechanism avoidance &rarr; unprotected barter &rarr; troll exploitation &rarr; utility loss &rarr; less production &rarr; fewer trades</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 14: Defections & Trade Volume -->
+    <div class="slide slide-twocol">
+        <div class="label">Evidence</div>
+        <h2>Defections &amp; Trade Volume</h2>
+        <div class="content">
+            <div style="text-align:center;">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/defection_trajectory.png" alt="Defection Trajectory" style="max-width:100%; max-height:34vh; border:1px solid var(--line);">
+                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">G defections decline over time &mdash; governance deters repeat offenders</p>
+            </div>
+            <div style="text-align:center;">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/trade_volume.png" alt="Trade Volume" style="max-width:100%; max-height:34vh; border:1px solid var(--line);">
+                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">C trade volume near zero &mdash; market freeze visualized</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: NR DEEP DIVE ============ -->
+
+    <!-- SLIDE 15: NR Cross-Model -->
+    <div class="slide slide-twocol">
+        <div class="label">Cross-Model</div>
+        <h2>NR &mdash; Cross-Model Behavioral Difference</h2>
+        <div class="content">
+            <div class="card">
+                <h3>gpt-5.4-nano</h3>
+                <ul>
+                    <li>Generic messages: <em>&ldquo;Open to new trades this round&rdquo;</em></li>
+                    <li>No specific warnings about trolls</li>
+                    <li>Gossip channel underutilized</li>
+                </ul>
+            </div>
+            <div class="card card-green">
+                <h3>DeepSeek-V3</h3>
+                <ul>
+                    <li>Active warnings: <em>&ldquo;Warning: Agent 6 defected on me twice&rdquo;</em></li>
+                    <li>Cross-referencing reports from multiple agents</li>
+                    <li>Public apologies for past defections</li>
+                </ul>
+            </div>
+        </div>
+        <div class="callout blue" style="position:relative; z-index:1; margin-top:1vh;">
+            <p><strong>Implication:</strong> Same mechanism, very different emergent behavior. Mechanism effectiveness is model-dependent.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 16: NR Network Snapshot -->
+    <div class="slide slide-imgtext">
+        <div class="label">Evidence</div>
+        <h2>NR Network Rewiring in Action</h2>
+        <div class="content">
+            <div class="plot-container">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/network_snapshot_NR_run00.png" alt="NR Network Topology">
+            </div>
+            <ul style="margin-top:2vh;">
+                <li><strong>Round 10 &rarr; Round 30:</strong> trolls (red, small) progressively isolated at the periphery</li>
+                <li>Honest agents (blue, large) <strong>rebuild denser connections</strong> among themselves</li>
+                <li>Network gets <em>more</em> connected over time, not less &mdash; agents sever bad links and form new good ones</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: INFORMATION GAP ============ -->
+
+    <!-- SLIDE 17: Information-Action Gap -->
+    <div class="slide slide-twocol">
+        <div class="label">Insight</div>
+        <h2>GR vs NR &mdash; The Information-Action Gap</h2>
+        <div class="content">
+            <div class="card card-red">
+                <h3>GR &mdash; Global Reputation</h3>
+                <ul>
+                    <li>Agents <strong>see</strong> trolls have 0.00 reputation</li>
+                    <li>But <strong>cannot</strong> structurally exclude them</li>
+                    <li>Perfect information, no enforcement</li>
+                    <li>Result: GR &asymp; Baseline</li>
+                </ul>
+            </div>
+            <div class="card card-green">
+                <h3>NR &mdash; Network Rewiring</h3>
+                <ul>
+                    <li>Worse information (unverified gossip)</li>
+                    <li>But <strong>can sever links</strong> to bad actors</li>
+                    <li>Actionable tools &gt; perfect information</li>
+                    <li>Result: NR outperforms GR</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: WRAP-UP ============ -->
+
+    <!-- SLIDE 18: Key Takeaways -->
+    <div class="slide slide-content">
+        <div class="label">Summary</div>
+        <h2>Key Takeaways</h2>
+        <div class="content" style="justify-content:center;">
+            <div class="takeaway-grid">
+                <div class="takeaway-card tk-green">
+                    <div class="tk-label">Top Performers</div>
+                    <p><strong>Governance (G)</strong> and <strong>Sanctioning (S)</strong> are most troll-resilient</p>
+                </div>
+                <div class="takeaway-card tk-amber">
+                    <div class="tk-label">Model-Dependent</div>
+                    <p><strong>NR</strong> is effective but gossip quality varies across LLMs</p>
+                </div>
+                <div class="takeaway-card tk-red">
+                    <div class="tk-label">Backfire</div>
+                    <p><strong>Contracting</strong> causes market freeze &mdash; penalty fear deters all trade</p>
+                </div>
+                <div class="takeaway-card tk-blue">
+                    <div class="tk-label">Insight</div>
+                    <p><strong>GR &asymp; Baseline</strong> &mdash; information without enforcement is insufficient</p>
+                </div>
+                <div class="takeaway-card tk-blue full-width">
+                    <div class="tk-label">Core Finding</div>
+                    <p>Mechanism design matters more than information quality &mdash; actionable tools beat perfect data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 19: Next Steps -->
+    <div class="slide slide-content">
+        <div class="label">Roadmap</div>
+        <h2>Next Steps</h2>
+        <div class="content" style="justify-content:center;">
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="phase-label">Short Term</div>
+                    <h4>Cross-Model</h4>
+                    <p>Run DeepSeek across all 7 conditions for direct comparison with nano</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="phase-label">Experiment</div>
+                    <h4>C_low Variant</h4>
+                    <p>Test lower breach penalty to check if agents adopt contracts</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="phase-label">Scale</div>
+                    <h4>Stress Test</h4>
+                    <p>Higher troll counts (6, 8) to find mechanism breaking points</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="phase-label">Rigor</div>
+                    <h4>Significance</h4>
+                    <p>3 runs per condition for statistical confidence</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-dots" id="navDots"></div>
+
+<div class="nav-arrows">
+    <button class="nav-arrow" id="prevBtn">&#8592;</button>
+    <button class="nav-arrow" id="nextBtn">&#8594;</button>
+</div>
+
+<div class="slide-counter">
+    <span id="currentSlide">01</span> / <span id="totalSlides">13</span>
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        themeVariables: {
+            primaryColor: '#e2dbd1',
+            primaryTextColor: '#1a1a1a',
+            primaryBorderColor: '#b8b0a4',
+            lineColor: '#8a8178',
+            secondaryColor: '#ede8e0',
+            tertiaryColor: '#f5f1eb',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '13px',
+        },
+        flowchart: { curve: 'basis', padding: 12 },
+    });
+
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    document.getElementById('totalSlides').textContent = String(totalSlides).padStart(2, '0');
+
+    // Build nav dots
+    const dotsContainer = document.getElementById('navDots');
+    for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+        dot.dataset.slide = i;
+        dot.addEventListener('click', () => showSlide(i));
+        dotsContainer.appendChild(dot);
+    }
+
+    function showSlide(index) {
+        slides.forEach((s, i) => s.classList.toggle('active', i === index));
+        dotsContainer.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+        document.getElementById('currentSlide').textContent = String(index + 1).padStart(2, '0');
+        currentSlide = index;
+    }
+
+    function nextSlide() { showSlide((currentSlide + 1) % totalSlides); }
+    function prevSlide() { showSlide((currentSlide - 1 + totalSlides) % totalSlides); }
+
+    document.getElementById('nextBtn').addEventListener('click', nextSlide);
+    document.getElementById('prevBtn').addEventListener('click', prevSlide);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === 'f' || e.key === 'F') {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+    });
+</script>
+
+</body>
+</html>
