@@ -765,7 +765,7 @@ flowchart LR
         <div class="label">Key Finding</div>
         <h2>Model Capability &gt; Mechanism Choice</h2>
         <div class="content">
-            <p style="margin-bottom:2vh; color:var(--text-secondary);">Marginal benefit of each mechanism vs that model&rsquo;s own baseline (&Delta; sustainability, 4 trolls):</p>
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Marginal benefit of each mechanism vs that model&rsquo;s own baseline (&Delta; mean utility, 4 trolls):</p>
             <table style="width:100%; border-collapse:collapse; font-family:'Inter',sans-serif; font-size:clamp(0.8rem,1vw,0.95rem);">
                 <thead>
                     <tr style="border-bottom:2px solid var(--line);">
@@ -776,16 +776,16 @@ flowchart LR
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">G</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.000</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.195</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.207</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">S</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.001</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.036</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.241</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">NR</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.026</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.051</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.053</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">GR</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.020</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.069</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.128</td></tr>
-                    <tr><td style="padding:0.8vh 1vw; font-weight:600;">C</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.110</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.040</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.247</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">G</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.02</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.61</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.89</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">S</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;1.05</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.46</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.66</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">NR</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.33</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.34</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.48</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">GR</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.20</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.27</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.07</td></tr>
+                    <tr><td style="padding:0.8vh 1vw; font-weight:600;">C</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.33</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;1.05</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;1.28</td></tr>
                 </tbody>
             </table>
-            <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">M excluded (delegation bug). Baseline sustainability: DeepSeek 0.999, Mini 0.474, Nano 0.659.</p>
+            <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">M excluded (delegation bug). Baseline mean utility: DeepSeek 5.35, Mini 1.42, Nano 1.83.</p>
             <div class="callout blue" style="margin-top:2vh;">
-                <p><strong>The model is a bigger lever than the mechanism.</strong> Formal enforcement (G) helps weak models; information-based mechanisms (GR, NR) hurt them.</p>
+                <p><strong>The model is a bigger lever than the mechanism.</strong> Baseline utility spread across models (1.42&ndash;5.35) dwarfs mechanism effects. G and NR add value; C consistently destroys it.</p>
             </div>
         </div>
     </div>
