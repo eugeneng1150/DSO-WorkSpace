@@ -200,9 +200,9 @@ def plot_defection_trajectory(save: bool = True) -> None:
     for ax in axes[-1]:
         ax.set_xlabel("Round")
     for ax in axes[:, 0]:
-        ax.set_ylabel("Non-troll defections per round")
+        ax.set_ylabel("Self-interested agent defections per round")
 
-    fig.suptitle("Non-Troll Defection Count Over Rounds by Condition", fontsize=14, fontweight="bold")
+    fig.suptitle("Self-Interested Agent Defection Count Over Rounds (Excluding Trolls)", fontsize=14, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "defection_trajectory.png", save)
 
@@ -230,9 +230,9 @@ def plot_trade_volume(save: bool = True) -> None:
     for ax in axes[-1]:
         ax.set_xlabel("Round")
     for ax in axes[:, 0]:
-        ax.set_ylabel("Non-troll trades per round")
+        ax.set_ylabel("Self-interested agent trades per round")
 
-    fig.suptitle("Non-Troll Trade Volume Over Rounds by Condition", fontsize=14, fontweight="bold")
+    fig.suptitle("Self-Interested Agent Trade Volume Over Rounds (Excluding Trolls)", fontsize=14, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "trade_volume.png", save)
 
@@ -742,7 +742,7 @@ def plot_troll_trade_volume(save: bool = True) -> None:
 
     ax.set_xlabel("Round", fontsize=12)
     ax.set_ylabel("Damaging troll trades per round", fontsize=12)
-    ax.set_title("Troll Isolation: Non-Troll Proposals to Trolls Over Rounds", fontweight="bold", fontsize=14)
+    ax.set_title("Troll Isolation: Self-Interested Agent Proposals to Trolls Over Rounds", fontweight="bold", fontsize=14)
     ax.legend(fontsize=10)
     ax.grid(True, alpha=0.3)
     ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
@@ -827,9 +827,9 @@ def plot_troll_resilience_table(save: bool = True) -> None:
         "Condition",
         "Damaging\nTroll Trades",
         "Avg Damaging/Rnd\n(last half)",
-        "Non-Troll\nTrades",
-        "Non-Troll\nDefections",
-        "Non-Troll\nDefect Rate",
+        "Self-Interested\nTrades",
+        "Self-Interested\nDefections",
+        "Self-Interested\nDefect Rate",
         "Mean\nUtility",
     ]
     cell_text = []
@@ -865,7 +865,7 @@ def plot_troll_resilience_table(save: bool = True) -> None:
         for j in range(len(col_labels)):
             table[i + 1, j].set_facecolor(color)
 
-    ax.set_title("Troll Resilience Comparison Across Mechanisms",
+    ax.set_title("Troll Resilience Comparison Across Mechanisms (Excluding Trolls)",
                  fontweight="bold", fontsize=13, pad=20)
     plt.tight_layout()
     _maybe_save(fig, "troll_resilience_table.png", save)
@@ -944,7 +944,7 @@ def plot_utility_per_agent(save: bool = True) -> None:
     for ax in axes[:, 0]:
         ax.set_ylabel("Utility (final round)")
 
-    fig.suptitle("Per-Agent Utility Distribution at Final Round\n(Blue = positive, Red = negative)",
+    fig.suptitle("Per-Agent Utility Distribution at Final Round\n(Self-interested agents only, excluding trolls)",
                  fontsize=13, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.93])
     _maybe_save(fig, "utility_per_agent.png", save)
