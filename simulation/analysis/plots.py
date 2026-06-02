@@ -1008,12 +1008,29 @@ def _load_run_from_dir(model_dir: Path, condition: str, n_trolls: int) -> dict |
 
 
 def _extract_summary_metrics(run: dict) -> dict[str, float]:
-    fm = dict(run.get("final_metrics", {}))
+    """Compute mean of each metric across ALL rounds (not just the final round)."""
     troll_ids = set(str(t) for t in run.get("session_log", {}).get("troll_ids", []))
-    utilities = run["rounds"][-1].get("utilities", {})
-    non_troll = [float(v) for k, v in utilities.items() if k not in troll_ids]
-    fm["mean_utility"] = np.mean(non_troll) if non_troll else 0.0
-    return fm
+    all_rounds = run.get("rounds", [])
+    if not all_rounds:
+        return {}
+
+    sust_vals = [r["metrics"]["sustainability"] for r in all_rounds]
+    peace_vals = [r["metrics"]["peace"] for r in all_rounds]
+    gini_vals = [r["metrics"]["gini"] for r in all_rounds]
+    util_vals = []
+    for r in all_rounds:
+        non_troll = [float(v) for k, v in r.get("utilities", {}).items() if k not in troll_ids]
+        util_vals.append(np.mean(non_troll) if non_troll else 0.0)
+
+    return {
+        "sustainability": np.mean(sust_vals),
+        "peace": np.mean(peace_vals),
+        "gini": np.mean(gini_vals),
+        "whistleblowing_rate": np.mean([r["metrics"].get("whistleblowing_rate", 0) for r in all_rounds]),
+        "false_accusation_rate": np.mean([r["metrics"].get("false_accusation_rate", 0) for r in all_rounds]),
+        "warning_accuracy": np.mean([r["metrics"].get("warning_accuracy", 0) for r in all_rounds]),
+        "mean_utility": np.mean(util_vals),
+    }
 
 
 def _cell_color(value: float, direction: str, vmin: float, vmax: float):
@@ -1158,7 +1175,7 @@ def plot_model_summary_table(save: bool = True) -> None:
 
     troll_tag = f"{_N_TROLLS}-troll" if _N_TROLLS > 0 else "no-troll"
     ax.set_title(
-        f"Final-Round Metrics — Model Comparison ({troll_tag})\n"
+        f"Mean Metrics Across All Rounds — Model Comparison ({troll_tag})\n"
         "Composite = mean(Sustainability, Peace, 1−Gini, NormUtility)  ·  "
         "Gold border = best mechanism per model",
         fontweight="bold", fontsize=12, pad=20)
@@ -1245,7 +1262,7 @@ def plot_model_comparison_bars(save: bool = True) -> None:
         ax.set_visible(False)
 
     troll_tag = f"{_N_TROLLS}-troll" if _N_TROLLS > 0 else "no-troll"
-    fig.suptitle(f"Final-Round Metrics by Condition & Model ({troll_tag})\n"
+    fig.suptitle(f"Mean Metrics Across All Rounds by Condition & Model ({troll_tag})\n"
                  "Composite = mean(Sustainability, Peace, 1−Gini, NormUtility)",
                  fontsize=14, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.93])
