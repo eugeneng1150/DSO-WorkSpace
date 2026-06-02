@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.colors as mcolors
 import numpy as np
 
 from .. import config
@@ -133,65 +134,6 @@ def plot_metric_trajectories(save: bool = True) -> None:
     _maybe_save(fig, "metric_trajectories.png", save)
 
 
-def plot_final_metrics_heatmap(save: bool = True) -> None:
-    """Heatmap: conditions × metrics, value = mean over all rounds (not just final round)."""
-    data = np.zeros((len(CONDITIONS), len(METRICS)))
-    for i, condition in enumerate(CONDITIONS):
-        runs = _load_runs(condition)
-        for j, metric in enumerate(METRICS):
-            vals = [
-                rnd["metrics"].get(metric, 0)
-                for run in runs
-                for rnd in run["rounds"]
-            ]
-            data[i, j] = np.mean(vals) if vals else 0.0
-
-    fig, ax = plt.subplots(figsize=(8, 6))
-    im = ax.imshow(data, cmap="RdYlGn", vmin=0, vmax=1, aspect="auto")
-    ax.set_xticks(range(len(METRICS)))
-    metric_labels = {"sustainability": "Production Stability", "peace": "Cooperation Rate"}
-    ax.set_xticklabels([metric_labels.get(m, m.capitalize()) for m in METRICS])
-    ax.set_yticks(range(len(CONDITIONS)))
-    ax.set_yticklabels(CONDITIONS)
-    plt.colorbar(im, ax=ax, label="Mean value (all rounds)")
-    for i in range(len(CONDITIONS)):
-        for j in range(len(METRICS)):
-            ax.text(j, i, f"{data[i, j]:.2f}", ha="center", va="center", fontsize=9)
-    ax.set_title("Mean Metrics Over All Rounds by Condition", fontweight="bold")
-    plt.tight_layout()
-    _maybe_save(fig, "final_metrics_heatmap.png", save)
-
-
-def plot_defection_rates(save: bool = True) -> None:
-    """Bar chart: mean defection rate per condition at final round."""
-    means, stds, labels = [], [], []
-    for condition in CONDITIONS:
-        runs = _load_runs(condition)
-        if not runs:
-            continue
-        peace_vals = [r["final_metrics"].get("peace", 0) for r in runs]
-        defection_vals = [1 - p for p in peace_vals]
-        means.append(np.mean(defection_vals))
-        stds.append(np.std(defection_vals))
-        labels.append(condition)
-
-    if not labels:
-        print("  [defection_rates] No data found, skipping.")
-        return
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-    x = np.arange(len(labels))
-    ax.bar(x, means, yerr=stds, capsize=5, color=[COLORS[c] for c in labels], alpha=0.85)
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.set_ylabel("Defection rate (1 - Cooperation Rate)")
-    ax.set_ylim(0, 1)
-    ax.set_title("Mean Defection Rate by Condition (Final Round)", fontweight="bold")
-    ax.grid(axis="y", alpha=0.3)
-    plt.tight_layout()
-    _maybe_save(fig, "defection_rates.png", save)
-
-
 def plot_intermediate_variables(save: bool = True) -> None:
     """Bar chart: whistleblowing, false accusation, warning accuracy per condition."""
     fig, axes = plt.subplots(1, 3, figsize=(14, 5))
@@ -227,44 +169,6 @@ def plot_intermediate_variables(save: bool = True) -> None:
 
 
 # ── New plots ─────────────────────────────────────────────────────────────────
-
-def plot_marketplace_cooperation_rates(save: bool = True) -> None:
-    """Bar chart: fraction of runs achieving marketplace cooperation per condition."""
-    labels, rates = [], []
-    for condition in CONDITIONS:
-        runs = _load_runs(condition)
-        if not runs:
-            continue
-        cooperative = sum(
-            1 for run in runs
-            if all(
-                run["rounds"][-1]["metrics"].get(m, 0) > COOPERATION_THRESHOLD
-                for m in METRICS
-            )
-        )
-        labels.append(condition)
-        rates.append(cooperative / len(runs))
-
-    if not labels:
-        print("  [marketplace_cooperation_rates] No data found, skipping.")
-        return
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-    x = np.arange(len(labels))
-    bars = ax.bar(x, rates, color=[COLORS[c] for c in labels], alpha=0.85)
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.set_ylabel("Marketplace cooperation rate")
-    ax.set_ylim(0, 1.1)
-    ax.axhline(1.0, color="green", linestyle="--", linewidth=0.8, alpha=0.5)
-    for bar, rate in zip(bars, rates):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
-                f"{rate:.0%}", ha="center", va="bottom", fontsize=9, fontweight="bold")
-    ax.set_title("Marketplace Cooperation Rate by Condition\n(Production Stability and Cooperation Rate > 0.5 at final round)", fontweight="bold")
-    ax.grid(axis="y", alpha=0.3)
-    plt.tight_layout()
-    _maybe_save(fig, "marketplace_cooperation_rates.png", save)
-
 
 def plot_defection_trajectory(save: bool = True) -> None:
     """2×4 grid — one panel per condition showing defection count over rounds."""
@@ -451,40 +355,6 @@ def plot_reputation_trajectories(save: bool = True) -> None:
     fig.suptitle("Reputation Score Trajectories", fontsize=13, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "reputation_trajectories.png", save)
-
-
-def plot_utility_distribution(save: bool = True) -> None:
-    """Boxplot: final round utility distribution across agents per condition (trolls excluded)."""
-    labels, all_utils = [], []
-    for condition in CONDITIONS:
-        runs = _load_runs(condition)
-        if not runs:
-            continue
-        utils = []
-        for run in runs:
-            troll_ids = _get_troll_ids(run)
-            final_round = run["rounds"][-1]
-            utilities = final_round.get("utilities", {})
-            utils.extend(float(v) for k, v in utilities.items() if k not in troll_ids)
-        if utils:
-            labels.append(condition)
-            all_utils.append(utils)
-
-    if not all_utils:
-        print("  [utility_distribution] No utility data found, skipping.")
-        return
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    bp = ax.boxplot(all_utils, labels=labels, patch_artist=True, notch=False)
-    for patch, condition in zip(bp["boxes"], labels):
-        patch.set_facecolor(COLORS[condition])
-        patch.set_alpha(0.7)
-    ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.4)
-    ax.set_ylabel("Agent utility (final round)")
-    ax.set_title("Utility Distribution Across Agents by Condition (Final Round)", fontweight="bold")
-    ax.grid(axis="y", alpha=0.3)
-    plt.tight_layout()
-    _maybe_save(fig, "utility_distribution.png", save)
 
 
 def plot_stability_rates(save: bool = True) -> None:
@@ -1007,51 +877,6 @@ def plot_troll_resilience_table(save: bool = True) -> None:
     print()
 
 
-def plot_troll_metric_trajectories(save: bool = True) -> None:
-    """2×4 grid — peace and sustainability over rounds for troll runs."""
-    troll_conditions = [c for c in CONDITIONS if _load_troll_runs(c)]
-    if not troll_conditions:
-        print("  [troll_metric_trajectories] No troll runs found, skipping.")
-        return
-
-    n_cols = 4
-    n_rows = max(1, (len(troll_conditions) + n_cols - 1) // n_cols)
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 4 * n_rows), sharex=True, sharey=True)
-    if n_rows == 1:
-        axes = axes.reshape(1, -1)
-    axes_flat = axes.flatten()
-
-    for ax, condition in zip(axes_flat, troll_conditions):
-        runs = _load_troll_runs(condition)
-        for metric, color, label in zip(
-            METRICS,
-            ["tab:green", "tab:blue"],
-            ["Production Stability", "Cooperation Rate"],
-        ):
-            trajectory = _mean_metric_over_rounds(runs, metric)
-            rounds = list(range(1, len(trajectory) + 1))
-            ax.plot(rounds, trajectory, label=label, color=color, linewidth=1.8)
-
-        ax.axhline(COOPERATION_THRESHOLD, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
-        ax.set_title(condition, fontweight="bold")
-        ax.set_ylim(0, 1.05)
-        ax.grid(True, alpha=0.3)
-
-    for ax in axes_flat[len(troll_conditions):]:
-        ax.set_visible(False)
-
-    for ax in axes[-1]:
-        ax.set_xlabel("Round")
-    for ax in axes[:, 0]:
-        ax.set_ylabel("Metric value")
-
-    handles, labels = axes_flat[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=2, fontsize=9, bbox_to_anchor=(0.5, -0.02))
-    fig.suptitle("Production Stability and Cooperation Rate Over Rounds (Troll Runs)", fontsize=14, fontweight="bold")
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    _maybe_save(fig, "troll_metric_trajectories.png", save)
-
-
 def plot_utility_per_agent(save: bool = True) -> None:
     """Bar chart: final-round utility per agent, one panel per condition (trolls excluded).
 
@@ -1118,58 +943,6 @@ def plot_utility_per_agent(save: bool = True) -> None:
     _maybe_save(fig, "utility_per_agent.png", save)
 
 
-def plot_cumulative_utility(save: bool = True) -> None:
-    """2×4 grid — cumulative mean utility over rounds per condition (trolls excluded)."""
-    n_cols = 4
-    n_rows = 2
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
-    axes_flat = axes.flatten()
-
-    for ax, condition in zip(axes_flat, CONDITIONS):
-        runs = _load_troll_runs(condition) or _load_runs(condition)
-        if not runs:
-            ax.set_title(condition, fontweight="bold")
-            ax.grid(True, alpha=0.3)
-            continue
-
-        n_rounds = max(len(run["rounds"]) for run in runs)
-        cumulative = []
-        running_sum = 0.0
-        for r in range(n_rounds):
-            round_vals = []
-            for run in runs:
-                if r < len(run["rounds"]):
-                    troll_ids = _get_troll_ids(run)
-                    utilities = run["rounds"][r].get("utilities", {})
-                    non_troll = [float(v) for k, v in utilities.items() if k not in troll_ids]
-                    if non_troll:
-                        round_vals.append(np.mean(non_troll))
-            running_sum += np.mean(round_vals) if round_vals else 0.0
-            cumulative.append(running_sum)
-
-        rounds = list(range(1, n_rounds + 1))
-        ax.plot(rounds, cumulative, color=COLORS[condition], linewidth=2.0)
-        ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.6)
-        ax.fill_between(rounds, cumulative, 0,
-                        where=[v >= 0 for v in cumulative], alpha=0.12, color="green")
-        ax.fill_between(rounds, cumulative, 0,
-                        where=[v < 0 for v in cumulative], alpha=0.12, color="red")
-        ax.set_title(condition, fontweight="bold")
-        ax.grid(True, alpha=0.3)
-
-    for ax in axes_flat[len(CONDITIONS):]:
-        ax.set_visible(False)
-    for ax in axes[-1]:
-        ax.set_xlabel("Round")
-    for ax in axes[:, 0]:
-        ax.set_ylabel("Cumulative avg utility")
-
-    fig.suptitle("Cumulative Average Utility Over Rounds by Condition",
-                 fontsize=13, fontweight="bold")
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
-    _maybe_save(fig, "cumulative_utility.png", save)
-
-
 def plot_gini_trajectory(save: bool = True) -> None:
     """2×4 grid — Gini coefficient over rounds per condition."""
     n_cols = 4
@@ -1207,29 +980,225 @@ def plot_gini_trajectory(save: bool = True) -> None:
     _maybe_save(fig, "gini_trajectory.png", save)
 
 
+# ── Model-comparison summary table & grouped bars ────────────────────────────
+
+_SUMMARY_METRICS = [
+    ("sustainability", "Sustainability", "higher"),
+    ("peace", "Cooperation\nRate", "higher"),
+    ("gini", "Gini\n(Inequality)", "lower"),
+    ("mean_utility", "Mean\nUtility", "higher"),
+    ("whistleblowing_rate", "Whistleblowing\nRate", "higher"),
+    ("false_accusation_rate", "False Accusation\nRate", "lower"),
+    ("warning_accuracy", "Warning\nAccuracy", "higher"),
+]
+
+
+def _discover_models() -> list[str]:
+    base = Path(__file__).parent.parent / "data" / "runs"
+    return sorted(d.name for d in base.iterdir()
+                  if d.is_dir() and any(d.glob("*_run_*.json")))
+
+
+def _load_run_from_dir(model_dir: Path, condition: str, n_trolls: int) -> dict | None:
+    if n_trolls > 0:
+        files = sorted(model_dir.glob(f"{condition}_t{n_trolls}_run_*.json"))
+    else:
+        files = sorted(model_dir.glob(f"{condition}_run_*.json"))
+    if not files:
+        return None
+    with open(files[0]) as fp:
+        return json.load(fp)
+
+
+def _extract_summary_metrics(run: dict) -> dict[str, float]:
+    fm = dict(run.get("final_metrics", {}))
+    troll_ids = set(str(t) for t in run.get("session_log", {}).get("troll_ids", []))
+    utilities = run["rounds"][-1].get("utilities", {})
+    non_troll = [float(v) for k, v in utilities.items() if k not in troll_ids]
+    fm["mean_utility"] = np.mean(non_troll) if non_troll else 0.0
+    return fm
+
+
+def _cell_color(value: float, direction: str, vmin: float, vmax: float):
+    if vmax == vmin:
+        norm = 0.5
+    else:
+        norm = (value - vmin) / (vmax - vmin)
+    if direction == "lower":
+        norm = 1.0 - norm
+    green = np.array(mcolors.to_rgba("#2e7d32", alpha=0.35))
+    red = np.array(mcolors.to_rgba("#c62828", alpha=0.35))
+    white = np.array([1.0, 1.0, 1.0, 0.0])
+    if norm >= 0.5:
+        t = (norm - 0.5) * 2
+        c = white * (1 - t) + green * t
+    else:
+        t = (0.5 - norm) * 2
+        c = white * (1 - t) + red * t
+    c[3] = max(c[3], 0.15)
+    return tuple(c)
+
+
+def plot_model_summary_table(save: bool = True) -> None:
+    """Table: final-round metrics for every model × condition, color-coded."""
+    base = Path(__file__).parent.parent / "data" / "runs"
+    models = _discover_models()
+    if len(models) < 2:
+        print("  [model_summary_table] Need ≥2 models. Skipping.")
+        return
+
+    row_labels, cell_values = [], []
+    for model in models:
+        model_dir = base / model
+        for cond in CONDITIONS:
+            run = _load_run_from_dir(model_dir, cond, _N_TROLLS)
+            if run is None:
+                continue
+            metrics = _extract_summary_metrics(run)
+            row_labels.append(f"{model}  |  {cond}")
+            cell_values.append([metrics.get(k) for k, _, _ in _SUMMARY_METRICS])
+
+    if not row_labels:
+        print("  [model_summary_table] No data. Skipping.")
+        return
+
+    n_rows = len(row_labels)
+    n_cols = len(_SUMMARY_METRICS)
+
+    col_mins, col_maxs = [], []
+    for j in range(n_cols):
+        vals = [cell_values[i][j] for i in range(n_rows) if cell_values[i][j] is not None]
+        col_mins.append(min(vals) if vals else 0)
+        col_maxs.append(max(vals) if vals else 1)
+
+    cell_text, cell_colors = [], []
+    for i in range(n_rows):
+        tr, cr = [], []
+        for j in range(n_cols):
+            v = cell_values[i][j]
+            if v is None:
+                tr.append("—")
+                cr.append("#f5f5f5")
+            else:
+                tr.append(f"{v:.3f}")
+                cr.append(_cell_color(v, _SUMMARY_METRICS[j][2], col_mins[j], col_maxs[j]))
+        cell_text.append(tr)
+        cell_colors.append(cr)
+
+    fig_h = 1.5 + 0.45 * n_rows
+    fig, ax = plt.subplots(figsize=(16, fig_h))
+    ax.axis("off")
+
+    col_labels = [m[1] for m in _SUMMARY_METRICS]
+    table = ax.table(cellText=cell_text, rowLabels=row_labels, colLabels=col_labels,
+                     loc="center", cellLoc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(9)
+    table.scale(1.0, 1.8)
+
+    for j in range(n_cols):
+        table[0, j].set_facecolor("#37474f")
+        table[0, j].set_text_props(color="white", fontweight="bold", fontsize=9)
+
+    for i in range(n_rows):
+        table[i + 1, -1].set_text_props(fontweight="bold", fontsize=8)
+        for j in range(n_cols):
+            table[i + 1, j].set_facecolor(cell_colors[i][j])
+
+    # bold separator between models
+    prev_model = None
+    for i, label in enumerate(row_labels):
+        model_name = label.split("  |  ")[0]
+        if prev_model and model_name != prev_model:
+            for j in range(-1, n_cols):
+                table[i + 1, j].set_edgecolor("black")
+                table[i + 1, j].set_linewidth(2.5)
+        prev_model = model_name
+
+    troll_tag = f"{_N_TROLLS}-troll" if _N_TROLLS > 0 else "no-troll"
+    ax.set_title(
+        f"Final-Round Metrics — Model Comparison ({troll_tag})\n"
+        "Green = better · Red = worse  (column-normalised)",
+        fontweight="bold", fontsize=13, pad=20)
+    plt.tight_layout()
+    _maybe_save(fig, "model_summary_table.png", save)
+
+
+def plot_model_comparison_bars(save: bool = True) -> None:
+    """Grouped bar chart: one subplot per metric, bars grouped by condition, coloured by model."""
+    base = Path(__file__).parent.parent / "data" / "runs"
+    models = _discover_models()
+    if len(models) < 2:
+        print("  [model_comparison_bars] Need ≥2 models. Skipping.")
+        return
+
+    data: dict[str, dict[str, dict[str, float]]] = {}
+    for model in models:
+        data[model] = {}
+        for cond in CONDITIONS:
+            run = _load_run_from_dir(base / model, cond, _N_TROLLS)
+            if run is None:
+                continue
+            data[model][cond] = _extract_summary_metrics(run)
+
+    n_metrics = len(_SUMMARY_METRICS)
+    fig, axes = plt.subplots(2, 4, figsize=(20, 10))
+    axes_flat = axes.flatten()
+
+    model_cmap = plt.cm.Set2
+    model_colors = {m: model_cmap(i / max(len(models) - 1, 1)) for i, m in enumerate(models)}
+    bar_w = 0.8 / max(len(models), 1)
+
+    for idx, (key, label, _) in enumerate(_SUMMARY_METRICS):
+        ax = axes_flat[idx]
+        x = np.arange(len(CONDITIONS))
+        for mi, model in enumerate(models):
+            vals = [data.get(model, {}).get(c, {}).get(key, 0) for c in CONDITIONS]
+            offset = (mi - len(models) / 2 + 0.5) * bar_w
+            bars = ax.bar(x + offset, vals, bar_w * 0.9,
+                          label=model, color=model_colors[model], alpha=0.85)
+            for bar, v in zip(bars, vals):
+                if v != 0:
+                    ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                            f"{v:.2f}", ha="center", va="bottom", fontsize=6, rotation=45)
+        ax.set_xticks(x)
+        ax.set_xticklabels(CONDITIONS, fontsize=9)
+        ax.set_title(label.replace("\n", " "), fontweight="bold", fontsize=10)
+        ax.grid(axis="y", alpha=0.3)
+        if idx == 0:
+            ax.legend(fontsize=7, loc="lower left")
+
+    for ax in axes_flat[n_metrics:]:
+        ax.set_visible(False)
+
+    troll_tag = f"{_N_TROLLS}-troll" if _N_TROLLS > 0 else "no-troll"
+    fig.suptitle(f"Final-Round Metrics by Condition & Model ({troll_tag})",
+                 fontsize=14, fontweight="bold")
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    _maybe_save(fig, "model_comparison_bars.png", save)
+
+
 def plot_all(save: bool = True, n_trolls: int = 0) -> None:
     global OUT_DIR, _N_TROLLS
     _N_TROLLS = n_trolls
     OUT_DIR = _get_out_dir(n_trolls)
     plot_metric_trajectories(save)
-    plot_final_metrics_heatmap(save)
     plot_intermediate_variables(save)
-    plot_marketplace_cooperation_rates(save)
     plot_stability_rates(save)
     plot_defection_trajectory(save)
     plot_trade_volume(save)
     plot_contract_utilisation(save)
     plot_mediation_utilisation(save)
     plot_reputation_trajectories(save)
-    plot_utility_distribution(save)
     plot_utility_trajectories(save)
     plot_network_snapshots(save)
     plot_troll_trade_volume(save)
     plot_troll_resilience_table(save)
-    plot_troll_metric_trajectories(save)
     plot_utility_per_agent(save)
-    plot_cumulative_utility(save)
+    plot_gini_trajectory(save)
     plot_model_comparison(save)
+    plot_model_summary_table(save)
+    plot_model_comparison_bars(save)
     print(f"Plots saved to {OUT_DIR}")
 
 

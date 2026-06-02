@@ -102,6 +102,40 @@ B agents can only warn others in the moment — those warnings vanish next round
 
 ---
 
+## Governance Oracle Fairness (OPEN QUESTION)
+
+**Issue**: G uses a deterministic, omniscient Oracle — it reads perfect ground-truth trade history and automatically escalates penalties. No agent voting, no appeals, no possibility of gaming the detection. This is qualitatively different from all other mechanisms (NR, S, C, M) where agents must *choose* to act on information.
+
+**Why it matters**: G's strong performance (highest utility, best production stability) may be partly an artifact of having the most powerful detection + enforcement combo. It's closer to a **centralized regulator** (e.g. SEC, exchange commission) than a peer-to-peer mechanism like NR or S.
+
+**What G has that others don't:**
+- **Perfect information** — no gossip bias, no reputation lag, no agent misjudgment
+- **Automatic enforcement** — agents don't vote on whether to punish; the Oracle decides
+- **Suspension power** — trolls are literally removed from the game for 3 rounds (no other mechanism can do this)
+
+**Counterargument**: G doesn't kick in instantly — it takes ~5-6 rounds of sustained defection to escalate to suspension (active → warning → fine tiers 1-3 → suspend). Also applies to honest agents who defect occasionally.
+
+**Possible future experiments:**
+1. **Agent-driven governance**: replace the Oracle with agent voting — agents propose investigations, vote to punish. Tests whether G's success requires omniscience or just enforcement power.
+2. **Noisy Oracle**: add false positives/negatives to the Oracle's detection (e.g. 80% accuracy instead of 100%). Tests whether G degrades gracefully.
+3. **G vs S direct comparison**: G (centralized, automatic) vs S (decentralized, agent-chosen). Both have enforcement power, different information sources. Frame as centralized vs decentralized regulation.
+
+**Current decision**: Leave as-is. Frame G as "centralized regulation upper bound" — a valid real-world analogy (markets have regulators). The interesting finding is the *comparison* between G (centralized) and S (decentralized) — both work, through different means.
+
+---
+
+## Mediation Prompt Anchoring (MINOR)
+
+**Issue**: Stage 1 (mediator design) prompt includes a JSON example with specific values (`"2": "execute_fair"`, `"1": "cancel"`), anchoring agents toward that design. Most agents will propose nearly identical mediators, making the vote meaningless.
+
+**Fix options:**
+1. Replace with placeholders: `"2": "<your choice>"`, `"1": "<your choice>"`
+2. Show multiple contrasting examples upfront (like Stage 2 already does)
+
+**Priority**: Low — the design space is small (9 possible designs) and the example is arguably the most rational choice. The real agent decision is in Stage 3 (whether to delegate).
+
+---
+
 ## Candidate Mechanisms NOT Implemented
 
 ### Taxation / Redistribution (T)
@@ -232,6 +266,43 @@ Inject hardcoded defectors (0, 2, 4, 6 trolls) and show which mechanisms maintai
 - **Troll awareness**: agents do NOT know trolls exist — they discover it through experience and gossip
 - **Mixed trolls**: all 100% defection rate (decided). Variable defection rates (50%, 75%) could be a future extension
 - **Cross-model comparison**: run same conditions on GPT-5.4-mini and DeepSeek-V3.2. If both agree, mechanisms are robust to model choice. If they diverge, high baseline cooperation may be model-specific RLHF bias
+
+---
+
+## Composite Mechanism Ranking — How to Define "Best"
+
+**Problem**: We have 4 metrics (utility, cooperation rate/peace, equality/1-Gini, production stability/sustainability) and no single mechanism wins on all four. We need a principled way to produce a single ranking.
+
+**Why utility alone is insufficient**: S achieves high utility (3.49) despite 52% defection rate and 78 damaging troll trades. The high utility comes from sheer trade volume — even when half the trades are theft, enough succeed to generate value. But a 50% defection-rate marketplace is not a "good" outcome. Utility rewards volume-over-quality.
+
+**CoT evidence**: S agents explicitly reason about defecting: *"I prefer defecting on trades to avoid giving up A at all"* (Agent 2, R15, defects on 7 trades in one round). Agents rarely reason about using sanctions — *"I will not sanction this round because the immediate utility cost is likely not worth it"* (Agent 1, R15). Sanctions exist in theory but are too costly for agents to use. S's high utility is a byproduct of high-volume chaotic trading, not mechanism effectiveness.
+
+**Approach: Min-max normalization + aggregation**
+
+1. Normalize each metric to [0, 1] across all conditions (best = 1.0, worst = 0.0)
+2. Aggregate using one of two methods:
+   - **Average**: balanced view, treats all dimensions equally
+   - **Min** (Rawlsian): mechanism is only as good as its weakest metric — penalizes mechanisms with one failing dimension
+
+**Normalized scores (4T data):**
+
+| | Utility | Peace | Equality (1-Gini) | Sustainability | **Avg** | **Min** |
+|---|---|---|---|---|---|---|
+| G | **1.00** | **1.00** | 0.63 | 0.92 | **0.89** | **0.63** |
+| NR | 0.87 | 0.20 | **1.00** | 0.54 | 0.65 | 0.20 |
+| S | 0.91 | 0.00 | 0.35 | **1.00** | 0.57 | 0.00 |
+| M | 0.42 | 0.52 | 0.53 | 0.29 | 0.44 | 0.29 |
+| GR | 0.38 | 0.26 | 0.85 | 0.09 | 0.40 | 0.09 |
+| B | 0.40 | 0.05 | 0.47 | 0.41 | 0.33 | 0.05 |
+| C | 0.00 | 0.37 | 0.00 | 0.00 | 0.09 | 0.00 |
+
+**Both methods rank G first.** Under average: G > NR > S > M > GR > B > C. Under min: G > M > NR > GR > B > S > C. The key difference is S — average keeps it 3rd (carried by utility + sustainability), min drops it to 6th (peace score is 0.0, the worst).
+
+**Recommendation**: Use min-score (Rawlsian) as primary ranking in the paper. Rationale: a mechanism that achieves high utility through a 50% defection rate is not a functioning marketplace — the min-score captures this. Report average as secondary for transparency.
+
+**Alternative considered**: Weight cooperation rate as primary metric since the research question is about cooperation. This is simpler but harder to defend — "why that weight?" Min-score avoids arbitrary weighting while still penalizing weak dimensions.
+
+**Caveat**: All based on 1 run per condition. Need 3+ runs to confirm these rankings are stable.
 
 ---
 

@@ -19,7 +19,7 @@ _model = MODEL
 
 
 def configure_llm(base_url: str, api_key: str, model: str):
-    """Override the LLM endpoint/model at runtime (called from main before any agents run)."""
+    """Swap in a different LLM client/model at runtime (e.g. for Azure deployment)."""
     global _client, _model
     _client = AsyncOpenAI(api_key=api_key, base_url=base_url, timeout=120.0)
     _model = model
@@ -81,6 +81,7 @@ class _BaseAgent:
         self.last_raw_response: str = ""
 
     def _suffix(self) -> str:
+        # Subclasses override this to add instructions to the prompt after the main description.
         raise NotImplementedError
 
     async def call(self, prompt: str) -> list[dict[str, Any]]:

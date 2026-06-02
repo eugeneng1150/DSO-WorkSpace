@@ -181,7 +181,7 @@ class Game:
                 },
                 # --- Reputation ---
                 "reputation": reputation_now,
-                "reputation_delta": reputation_delta,
+                "reputation_delta": reputation_delta, # how much did reputation change this round vs last round?
                 # --- Trades ---
                 "trades": [
                     {

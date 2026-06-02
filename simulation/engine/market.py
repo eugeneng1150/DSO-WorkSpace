@@ -61,7 +61,7 @@ def generate_network(
 ) -> dict[int, set[int]]:
     """Generate a static trade network guaranteeing each agent can reach both other goods."""
     goods_to_agents: dict[str, list[int]] = {}
-    for aid, good in specialties.items():
+    for aid, good in specialties.items(): # Build reverse index of goods to agent IDs
         goods_to_agents.setdefault(good, []).append(aid)
 
     all_goods = list(goods_to_agents.keys())
