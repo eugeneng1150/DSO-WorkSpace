@@ -363,7 +363,6 @@ def run_analyst(model: str = ANALYST_MODEL, save: bool = True) -> str:
         model=model,
         max_tokens=8192,
         messages=[{"role": "user", "content": prompt}],
-        temperature=0.3,
     )
     report = response.content[0].text
 
