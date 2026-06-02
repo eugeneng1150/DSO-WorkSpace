@@ -131,11 +131,8 @@ def _summarize_condition(condition: str, runs: list[dict]) -> dict:
             ])), 4),
         }
 
-    cooperative = sum(
-        1 for run in runs
-        if all(run["rounds"][-1]["metrics"].get(m, run["rounds"][-1]["metrics"].get("peace", 0)) > COOPERATION_THRESHOLD for m in ["sustainability", "cooperation_rate"])
-    )
-    cond["cooperation_achieved"] = f"{cooperative}/{len(runs)} runs"
+    # cooperation_rate is already captured above via METRICS loop as cond["cooperation_rate"]["mean"]
+    # No binary cooperation_achieved field — use raw numbers throughout
 
     if troll_ids:
         n_rounds = len(runs[0]["rounds"])
@@ -374,9 +371,9 @@ Write a single comprehensive report with these sections:
 
 2. **DATA COVERAGE**: Briefly state what data exists and what is missing. Flag any conclusions that are limited by single-run or single-model evidence.
 
-3. **CROSS-MODEL MECHANISM RANKING (4 trolls)**: This is the one troll count with complete data across all models. Rank all 7 conditions. For each, compare performance across models. Highlight which mechanisms are consistent winners vs model-dependent. Present as a comparison table.
+3. **CROSS-MODEL MECHANISM RANKING (4 trolls)**: This is the one troll count with complete data across all models. Rank all 7 conditions. For each, show raw numeric values for sustainability, mean_utility, and cooperation_rate["mean"] across all models. Do NOT use ✓/✗ or binary pass/fail — use the actual numbers from the summary data. Present as a comparison table with columns: Condition | Model1 (sust / util / coop_rate) | Model2 | Model3 | Verdict.
 
-4. **MODEL COMPARISON**: How do the models differ in baseline cooperative behavior? Which models need mechanisms more? How does the marginal benefit of each mechanism change across models?
+4. **MODEL COMPARISON**: How do the models differ in baseline cooperative behavior? Which models need mechanisms more? How does the marginal benefit of each mechanism change across models? Use raw numeric values (sustainability, mean_utility, cooperation_rate) throughout — no ✓/✗ symbols.
 
 5. **ESCALATION ANALYSIS**: Where troll escalation data exists (primarily nano: t2→t4), how does each mechanism degrade? Which mechanisms are robust vs fragile? Note data gaps.
 
