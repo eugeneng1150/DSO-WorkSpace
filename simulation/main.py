@@ -101,6 +101,8 @@ def main():
         report = run_analyst()
         print("\n" + "=" * 60)
         print(report)
+        print("\nNote: analyst now runs cross-model analysis automatically.")
+        print("It scans all model directories under data/runs/ — no --model flag needed.")
 
 
 
