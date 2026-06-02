@@ -641,7 +641,7 @@ flowchart LR
                 <li><span class="abbrev">B</span> <span>Baseline &mdash; no mechanism, pure barter</span></li>
                 <li><span class="abbrev">GR</span> <span>Global Reputation &mdash; system-computed trust scores visible to all</span></li>
                 <li><span class="abbrev">C</span> <span>Contracting &mdash; binding agreements with breach penalties</span></li>
-                <li><span class="abbrev">M</span> <span>Monitoring &mdash; public trade audit log</span></li>
+                <li><span class="abbrev">M</span> <span>Mediation &mdash; agent-designed mediator, delegation</span></li>
                 <li><span class="abbrev">G</span> <span>Governance &mdash; community voting on trade rules</span></li>
                 <li><span class="abbrev">NR</span> <span>Network Rewiring + Local Reputation &mdash; gossip + link severing</span></li>
                 <li><span class="abbrev">S</span> <span>Sanctioning &mdash; collective punishment for defectors</span></li>
@@ -669,7 +669,7 @@ flowchart LR
     <!-- SLIDE 8: Utility Trajectories -->
     <div class="slide slide-imgtext">
         <div class="label">Results</div>
-        <h2>Utility Trajectories &mdash; 4 Trolls</h2>
+        <h2>Utility Trajectories &mdash; Nano, 4 Trolls</h2>
         <div class="content">
             <div class="plot-container">
                 <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/utility_trajectories.png" alt="Utility Trajectories">
@@ -685,7 +685,7 @@ flowchart LR
     <!-- SLIDE 9: Troll Resilience Table -->
     <div class="slide slide-imgtext">
         <div class="label">Results</div>
-        <h2>Troll Resilience &mdash; 4 Trolls</h2>
+        <h2>Troll Resilience &mdash; Nano, 4 Trolls</h2>
         <div class="content">
             <div class="plot-container">
                 <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/troll_resilience_table.png" alt="Troll Resilience Table">
@@ -723,7 +723,7 @@ flowchart LR
     <div class="slide slide-content">
         <div class="vertical-line"></div>
         <div class="label">Escalation</div>
-        <h2>2 Trolls &rarr; 4 Trolls</h2>
+        <h2>2 Trolls &rarr; 4 Trolls (Nano)</h2>
         <div class="content">
             <ul>
                 <li><strong>G is the only mechanism that improved</strong> &mdash; sustainability <em>+11.8%</em>, utility <em>+1.9%</em>. Oracle detection gets easier with more trolls (clearer patterns).</li>
@@ -859,7 +859,7 @@ flowchart LR
                     <li>Agents <strong>see</strong> trolls have 0.00 reputation</li>
                     <li>But <strong>cannot</strong> structurally exclude them</li>
                     <li>Perfect information, no enforcement</li>
-                    <li>Result: GR &asymp; Baseline</li>
+                    <li>Result: GR &asymp; Baseline on nano; marginally better on DeepSeek</li>
                 </ul>
             </div>
             <div class="card card-green">
@@ -874,33 +874,87 @@ flowchart LR
         </div>
     </div>
 
+    <!-- ============ SECTION: CROSS-MODEL ============ -->
+
+    <!-- SLIDE 18: Cross-Model Composite -->
+    <div class="slide slide-twocol">
+        <div class="label">Cross-Model</div>
+        <h2>Composite Ranking &mdash; Nano vs DeepSeek</h2>
+        <div class="content">
+            <div style="text-align:center;">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/composite_ranking.png" alt="Nano Composite" style="max-width:100%; max-height:36vh; border:1px solid var(--line);">
+                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">gpt-5.4-nano (4 trolls)</p>
+            </div>
+            <div style="text-align:center;">
+                <img src="../simulation/data/plots/deepseek-v3/troll_4/composite_ranking.png" alt="DeepSeek Composite" style="max-width:100%; max-height:36vh; border:1px solid var(--line);">
+                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">DeepSeek-V3 (4 trolls)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 19: Cross-Model Key Differences -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Cross-Model</div>
+        <h2>What Changes Across Models</h2>
+        <div class="content">
+            <ul>
+                <li><strong>G is #1 on both models</strong> &mdash; the only consistent finding across nano and DeepSeek</li>
+                <li><strong>DeepSeek baseline is stubbornly strong</strong> &mdash; B utility 5.35 vs G&rsquo;s 6.37. Most mechanisms barely improve on it. In nano, B was 1.83 vs G&rsquo;s 3.72 &mdash; mechanisms matter far more</li>
+                <li><strong>M catastrophically fails in DeepSeek</strong> &mdash; utility <em>&minus;1.22</em>, agents hoard and reject trades (&ldquo;peaceful graveyard&rdquo;). In nano, M was middling but functional</li>
+                <li><strong>NR rises to #2 in DeepSeek</strong> &mdash; DeepSeek agents use gossip strategically (active warnings, cross-referencing) while nano agents don&rsquo;t</li>
+                <li><strong>S drops from #2 (nano) to #5 (DeepSeek)</strong> &mdash; sanction costs drain utility more when baseline cooperation is already high</li>
+            </ul>
+            <div class="callout" style="margin-top:2vh;">
+                <p><strong>Implication:</strong> Mechanism effectiveness is model-dependent. A mechanism that helps weaker models may hurt stronger ones. Design must account for the agent&rsquo;s baseline capability.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 20: DeepSeek Utility Trajectories -->
+    <div class="slide slide-imgtext">
+        <div class="label">DeepSeek</div>
+        <h2>DeepSeek Utility Trajectories &mdash; 4 Trolls</h2>
+        <div class="content">
+            <div class="plot-container">
+                <img src="../simulation/data/plots/deepseek-v3/troll_4/utility_trajectories.png" alt="DeepSeek Utility Trajectories">
+            </div>
+            <ul style="margin-top:2vh;">
+                <li><strong>NR</strong> (200) and <strong>G</strong> (191) lead &mdash; both above baseline B (181)</li>
+                <li><strong>M collapses to &minus;37</strong> &mdash; the only condition going deeply negative</li>
+                <li><strong>S</strong> (129) underperforms baseline &mdash; sanction costs are a net drag</li>
+                <li>Overall utilities much higher than nano (B: 181 vs nano B: 55) &mdash; stronger cooperative prior</li>
+            </ul>
+        </div>
+    </div>
+
     <!-- ============ SECTION: WRAP-UP ============ -->
 
-    <!-- SLIDE 18: Key Takeaways -->
+    <!-- SLIDE 21: Key Takeaways -->
     <div class="slide slide-content">
         <div class="label">Summary</div>
         <h2>Key Takeaways</h2>
         <div class="content" style="justify-content:center;">
             <div class="takeaway-grid">
                 <div class="takeaway-card tk-green">
-                    <div class="tk-label">Top Performers</div>
-                    <p><strong>Governance (G)</strong> and <strong>Sanctioning (S)</strong> are most troll-resilient</p>
+                    <div class="tk-label">Robust across models</div>
+                    <p><strong>Governance (G)</strong> ranks #1 on both nano and DeepSeek &mdash; the only consistent winner</p>
                 </div>
                 <div class="takeaway-card tk-amber">
                     <div class="tk-label">Model-Dependent</div>
-                    <p><strong>NR</strong> is effective but gossip quality varies across LLMs</p>
+                    <p>Mechanism rankings shift across models &mdash; S is #2 on nano but #5 on DeepSeek; M works on nano but collapses on DeepSeek</p>
                 </div>
                 <div class="takeaway-card tk-red">
-                    <div class="tk-label">Backfire</div>
-                    <p><strong>Contracting</strong> causes market freeze &mdash; penalty fear deters all trade</p>
+                    <div class="tk-label">Mechanisms can backfire</div>
+                    <p>C freezes markets (nano), M creates a &ldquo;peaceful graveyard&rdquo; (DeepSeek), S drains the commons &mdash; more mechanism &ne; better outcome</p>
                 </div>
                 <div class="takeaway-card tk-blue">
-                    <div class="tk-label">Insight</div>
-                    <p><strong>GR &asymp; Baseline</strong> &mdash; information without enforcement is insufficient</p>
+                    <div class="tk-label">Baseline matters</div>
+                    <p>Stronger models cooperate well by default &mdash; mechanisms must be evaluated on <strong>marginal</strong> benefit, not absolute performance</p>
                 </div>
                 <div class="takeaway-card tk-blue full-width">
                     <div class="tk-label">Core Finding</div>
-                    <p>Mechanism design matters more than information quality &mdash; actionable tools beat perfect data</p>
+                    <p>Actionable enforcement (G, NR) beats information-only (GR) and per-trade friction (C, S, M) &mdash; but all conclusions are provisional pending replication</p>
                 </div>
             </div>
         </div>
@@ -913,14 +967,9 @@ flowchart LR
         <div class="content" style="justify-content:center;">
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="phase-label">Short Term</div>
-                    <h4>Cross-Model</h4>
-                    <p>Run DeepSeek across all 7 conditions for direct comparison with nano</p>
-                </div>
-                <div class="timeline-item">
-                    <div class="phase-label">Experiment</div>
-                    <h4>C_low Variant</h4>
-                    <p>Test lower breach penalty to check if agents adopt contracts</p>
+                    <div class="phase-label">Investigate</div>
+                    <h4>M Failure</h4>
+                    <p>Why does Mediation collapse on DeepSeek but not nano? Mechanism-design flaw or model-specific?</p>
                 </div>
                 <div class="timeline-item">
                     <div class="phase-label">Scale</div>
@@ -929,8 +978,13 @@ flowchart LR
                 </div>
                 <div class="timeline-item">
                     <div class="phase-label">Rigor</div>
-                    <h4>Significance</h4>
-                    <p>3 runs per condition for statistical confidence</p>
+                    <h4>Replication</h4>
+                    <p>3 runs per condition for statistical confidence &mdash; all findings are single-run</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="phase-label">Explore</div>
+                    <h4>Combinations</h4>
+                    <p>Test G+NR, G+S &mdash; the top performers may have complementary strengths</p>
                 </div>
             </div>
         </div>

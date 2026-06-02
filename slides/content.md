@@ -31,7 +31,7 @@
 - B — Baseline (no mechanism, pure barter)
 - GR — Global Reputation (system-computed trust scores visible to all)
 - C — Contracting (binding agreements with breach penalties)
-- M — Monitoring (public trade audit log)
+- M — Mediation (agent-designed mediator, delegation)
 - G — Governance (community voting on trade rules)
 - NR — Network Rewiring + Local Reputation (gossip + link severing)
 - S — Sanctioning (collective punishment for defectors)
@@ -106,17 +106,37 @@
 - NR: worse info but CAN sever links → NR outperforms GR
 - Actionable tools > perfect information
 
+--- CROSS-MODEL ---
+
+# Slide 19: Composite Ranking — Nano vs DeepSeek
+- [IMAGE: nano composite_ranking.png side-by-side with deepseek composite_ranking.png]
+
+# Slide 20: What Changes Across Models
+- G is #1 on both models — the only consistent finding
+- DeepSeek baseline is stubbornly strong — B: 5.35 vs G: 6.37 (in nano, B: 1.83 vs G: 3.72)
+- M catastrophically fails in DeepSeek — utility -1.22, "peaceful graveyard"
+- NR rises to #2 in DeepSeek — DeepSeek agents use gossip strategically
+- S drops from #2 (nano) to #5 (DeepSeek) — sanction costs drain utility when baseline is already high
+- Implication: mechanism effectiveness is model-dependent
+
+# Slide 21: DeepSeek Utility Trajectories — 4 Trolls
+- [IMAGE: deepseek utility_trajectories.png]
+- NR (200) and G (191) lead, both above baseline B (181)
+- M collapses to -37 — only condition going deeply negative
+- Overall utilities much higher than nano (stronger cooperative prior)
+
 --- WRAP-UP ---
 
-# Slide 19: Key Takeaways
-- Governance (G) and Sanctioning (S) are most troll-resilient
-- NR is effective but model-dependent
-- Contracting backfires — penalty fear causes market freeze
-- GR ~ Baseline — information without enforcement is insufficient
-- Mechanism design matters more than information quality
+# Slide 22: Key Takeaways
+- G ranks #1 on both nano and DeepSeek — the only consistent winner
+- Mechanism rankings shift across models — S is #2 nano but #5 DeepSeek; M works on nano but collapses on DeepSeek
+- Mechanisms can backfire — C freezes markets, M creates "peaceful graveyard", S drains the commons
+- Stronger models cooperate well by default — mechanisms must be evaluated on marginal benefit
+- Actionable enforcement (G, NR) beats information-only (GR) and per-trade friction (C, S, M)
+- All conclusions provisional pending replication
 
-# Slide 20: Next Steps
-- Cross-model comparison (DeepSeek across all conditions)
+# Slide 23: Next Steps
 - Test C_low variant (lower penalty)
 - Higher troll counts (6, 8) to find breaking points
 - 3 runs per condition for statistical significance
+- Investigate M's DeepSeek failure — mechanism-design flaw or model-specific?
