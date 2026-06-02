@@ -124,6 +124,33 @@ B agents can only warn others in the moment — those warnings vanish next round
 
 ---
 
+## Mediation Delegation Bug — Zero Delegation Observed (KNOWN IMPLEMENTATION FLAW)
+
+**Finding**: Across all 3 models (nano, DeepSeek, mini) and all 30 rounds, `mediated_trade_count = 0` in every M condition run. Agents never delegated a single trade to the mediator.
+
+**Root cause**: The delegation decision is only available to the **acceptor** of an incoming trade, not the **proposer**. Stage 3 of `prompts/mediation.txt` only presents `delegate_to_mediator / accept_trade / reject_trade` on pending trades. An agent who *proposes* a trade has no delegation option at proposal time.
+
+This creates a coordination trap:
+- Every agent in the traces explicitly reasons: *"delegation only helps if my counterparty also delegates — and I can't know if they will"*
+- Agents proposing trades skip delegation entirely (no option available)
+- Agents accepting trades defer: *"I'll delegate if I don't trust them — but I have no evidence against them yet"*
+- Nobody ever delegates. The coordination never bootstraps across 30 rounds.
+
+**Why CoopEval's mediation works but ours doesn't**: In CoopEval, both players decide simultaneously whether to delegate — it's a symmetric choice made at the same time, before anyone has committed. In our implementation, only the acceptor decides, *after* the proposer has already sent terms. The asymmetry kills coordination.
+
+**What agents said** (nano, M_t4_run_00, Round 1):
+> *"delegation to the mediator is safer against defection, but it only guarantees fairness if the counterparty also delegates. Because I'm making the first move, I can't rely on them delegating."* — Agent 0
+> *"delegation mainly matters when accepting someone else's trade"* — Agent 3
+> *"Mediation is only relevant if someone offers me a trade"* — Agent 6
+
+**Fix (not yet implemented)**: Add `"delegate": true` flag to `propose_trade` so the proposer can signal delegation intent upfront. The acceptor then sees "Agent A wants to delegate this trade" and can match. This mirrors CoopEval's simultaneous delegation model.
+
+**How to frame this**: M's poor performance is NOT evidence that mediation doesn't work — it's evidence that **mechanism design details matter**. The same mechanism (delegation) can work or fail depending on whether both parties have symmetric agency. This is a methodological finding, not a null result.
+
+**Current decision**: Do not re-run. Document as a known implementation flaw. Frame in paper as: "M never triggered due to a unilateral delegation design — only acceptors could initiate delegation, creating a coordination failure. A corrected implementation (bilateral delegation) is left for future work."
+
+---
+
 ## Mediation Prompt Anchoring (MINOR)
 
 **Issue**: Stage 1 (mediator design) prompt includes a JSON example with specific values (`"2": "execute_fair"`, `"1": "cancel"`), anchoring agents toward that design. Most agents will propose nearly identical mediators, making the vote meaningless.
@@ -405,7 +432,7 @@ AGI may emerge not as a monolithic entity but as a **"Patchwork AGI"** — coord
 
 2. **The information gradient (B → NR → GR).** They discuss reputation but don't distinguish between global system scores vs. local gossip. We show this matters enormously — GR isolates trolls in ~2 rounds, NR agents don't naturally gossip at all.
 
-3. **Mechanism adoption failure.** They assume agents will use available mechanisms. We found agents unanimously design a mediator but nobody delegates — a critical finding about the gap between mechanism availability and mechanism use.
+3. **Mechanism adoption failure.** They assume agents will use available mechanisms. We found agents unanimously design a mediator but nobody delegates — traced to a coordination bug where only acceptors (not proposers) could initiate delegation, creating a symmetric-information failure. The deeper finding: mechanism availability ≠ mechanism use, and small design choices (who has agency, when) determine whether a mechanism ever gets adopted.
 
 4. **Natural vs. scaffolded behavior.** RepuNet requires a 5-stage pipeline to get agents to gossip. Our agents don't gossip naturally. This challenges the assumption that reputation systems "just work" in multi-agent settings.
 

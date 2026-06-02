@@ -46,7 +46,7 @@ NET_MAX_REQUEST_PER_ROUND = 99
 # Sanction mechanism parameters
 SANCTION_COST_RATIO = 3   # spend 1 utility → target loses 3
 
-# Marketplace cooperation threshold (Sustainability and Peace must exceed this)
+# Marketplace cooperation threshold (Sustainability and Cooperation Rate must exceed this)
 COOPERATION_THRESHOLD = 0.5
 
 # LLM — simulation agents (GPT via Azure, default)

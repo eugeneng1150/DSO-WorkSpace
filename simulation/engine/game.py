@@ -115,7 +115,7 @@ class Game:
 
             metrics = compute_metrics(self.market, round_utilities)
             self.market.metrics_log.append({"round": round_num, **metrics})
-            pbar.set_postfix(sust=f"{metrics['sustainability']:.2f}", peace=f"{metrics['peace']:.2f}")
+            pbar.set_postfix(sust=f"{metrics['sustainability']:.2f}", coop=f"{metrics['cooperation_rate']:.2f}")
 
             for mech in self.mechanisms:
                 if mech.name == "contracting":

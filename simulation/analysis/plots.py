@@ -21,7 +21,14 @@ def _get_out_dir(n_trolls: int = 0) -> Path:
 OUT_DIR = Path(__file__).parent.parent / "data" / "plots"  # updated dynamically in plot_all
 _N_TROLLS = 0  # set by plot_all(), controls which log files to load
 
-METRICS = ["sustainability", "peace"]
+METRICS = ["sustainability", "cooperation_rate"]
+
+
+def _get_metric(rnd_metrics: dict, key: str, default=0):
+    """Get metric with backward compat: old logs use 'peace', new use 'cooperation_rate'."""
+    if key == "cooperation_rate":
+        return rnd_metrics.get("cooperation_rate", rnd_metrics.get("peace", default))
+    return rnd_metrics.get(key, default)
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 COLORS = dict(zip(CONDITIONS, cm.tab20(np.linspace(0, 1, len(CONDITIONS)))))
 
@@ -43,7 +50,7 @@ def _mean_metric_over_rounds(runs: list[dict], metric: str) -> list[float]:
     n_rounds = len(runs[0]["rounds"])
     values = []
     for r in range(n_rounds):
-        round_vals = [run["rounds"][r]["metrics"].get(metric, 0) for run in runs if r < len(run["rounds"])]
+        round_vals = [_get_metric(run["rounds"][r]["metrics"], metric) for run in runs if r < len(run["rounds"])]
         values.append(np.mean(round_vals) if round_vals else 0.0)
     return values
 
@@ -96,7 +103,7 @@ def _non_troll_trade_stats(runs: list[dict]) -> tuple[list[float], list[float]]:
 # ── Plots ─────────────────────────────────────────────────────────────────────
 
 def plot_metric_trajectories(save: bool = True) -> None:
-    """2×4 grid — one panel per condition, each showing Production Stability and Cooperation Rate over rounds."""
+    """2×4 grid — one panel per condition, each showing Sustainability and Cooperation Rate over rounds."""
     n_cols = 4
     n_rows = 2
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
@@ -108,7 +115,7 @@ def plot_metric_trajectories(save: bool = True) -> None:
             for metric, color, label in zip(
                 METRICS,
                 ["tab:green", "tab:blue"],
-                ["Production Stability", "Cooperation Rate"],
+                ["Sustainability", "Cooperation Rate"],
             ):
                 trajectory = _mean_metric_over_rounds(runs, metric)
                 rounds = list(range(1, len(trajectory) + 1))
@@ -129,7 +136,7 @@ def plot_metric_trajectories(save: bool = True) -> None:
 
     handles, labels = axes_flat[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="lower center", ncol=3, fontsize=9, bbox_to_anchor=(0.5, -0.02))
-    fig.suptitle("Production Stability and Cooperation Rate Over Rounds by Condition", fontsize=14, fontweight="bold")
+    fig.suptitle("Sustainability and Cooperation Rate Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     _maybe_save(fig, "metric_trajectories.png", save)
 
@@ -358,10 +365,10 @@ def plot_reputation_trajectories(save: bool = True) -> None:
 
 
 def plot_stability_rates(save: bool = True) -> None:
-    """Bar chart: fraction of rounds (across all runs) where BOTH sustainability AND peace
+    """Bar chart: fraction of rounds (across all runs) where BOTH sustainability AND cooperation rate
     exceed the cooperation threshold, per condition.
 
-    Uses the mean metric value over all rounds — not just the final round — so that peace
+    Uses the mean metric value over all rounds — not just the final round — so that cooperation rate
     is not evaluated at a single potentially noisy endpoint.
     """
     labels, stable_fractions = [], []
@@ -376,8 +383,8 @@ def plot_stability_rates(save: bool = True) -> None:
         for run in runs:
             for rnd in run["rounds"]:
                 sust = rnd["metrics"].get("sustainability", 0)
-                peace = rnd["metrics"].get("peace", 0)
-                if sust > COOPERATION_THRESHOLD and peace > COOPERATION_THRESHOLD:
+                coop = _get_metric(rnd["metrics"], "cooperation_rate")
+                if sust > COOPERATION_THRESHOLD and coop > COOPERATION_THRESHOLD:
                     stable_rounds += 1
                 total_rounds += 1
 
@@ -984,7 +991,7 @@ def plot_gini_trajectory(save: bool = True) -> None:
 
 _SUMMARY_METRICS = [
     ("sustainability", "Sustainability", "higher"),
-    ("peace", "Cooperation\nRate", "higher"),
+    ("cooperation_rate", "Cooperation\nRate", "higher"),
     ("gini", "Gini\n(Inequality)", "lower"),
     ("mean_utility", "Mean\nUtility", "higher"),
 ]
@@ -1015,7 +1022,7 @@ def _extract_summary_metrics(run: dict) -> dict[str, float]:
         return {}
 
     sust_vals = [r["metrics"]["sustainability"] for r in all_rounds]
-    peace_vals = [r["metrics"]["peace"] for r in all_rounds]
+    coop_vals = [_get_metric(r["metrics"], "cooperation_rate") for r in all_rounds]
     gini_vals = [r["metrics"]["gini"] for r in all_rounds]
     util_vals = []
     for r in all_rounds:
@@ -1024,7 +1031,7 @@ def _extract_summary_metrics(run: dict) -> dict[str, float]:
 
     return {
         "sustainability": np.mean(sust_vals),
-        "peace": np.mean(peace_vals),
+        "cooperation_rate": np.mean(coop_vals),
         "gini": np.mean(gini_vals),
         "whistleblowing_rate": np.mean([r["metrics"].get("whistleblowing_rate", 0) for r in all_rounds]),
         "false_accusation_rate": np.mean([r["metrics"].get("false_accusation_rate", 0) for r in all_rounds]),
@@ -1054,10 +1061,10 @@ def _cell_color(value: float, direction: str, vmin: float, vmax: float):
 
 
 def plot_model_summary_table(save: bool = True) -> None:
-    """Table: sustainability, peace, gini, normalised utility + composite score per model × condition.
+    """Table: sustainability, cooperation_rate, gini, normalised utility + composite score per model × condition.
 
     Mean utility is min-max normalised to [0, 1] across all rows. Composite score =
-    mean(sustainability, peace, 1-gini, norm_utility). Best mechanism per model is highlighted.
+    mean(sustainability, cooperation_rate, 1-gini, norm_utility). Best mechanism per model is highlighted.
     """
     base = Path(__file__).parent.parent / "data" / "runs"
     models = _discover_models()
@@ -1082,7 +1089,7 @@ def plot_model_summary_table(save: bool = True) -> None:
         return
     u_min, u_max = min(all_utils), max(all_utils)
 
-    # build table rows: model, cond, sust, peace, gini, norm_util, composite
+    # build table rows: model, cond, sust, coop, gini, norm_util, composite
     col_labels = ["Sustainability", "Cooperation\nRate", "Gini\n(Inequality)",
                   "Mean Utility\n(normalised)", "Composite\nScore"]
     row_labels = []
@@ -1095,14 +1102,14 @@ def plot_model_summary_table(save: bool = True) -> None:
                 continue
             m = raw[model][cond]
             sust = m.get("sustainability", 0)
-            peace = m.get("peace", 0)
+            coop = m.get("cooperation_rate", 0)
             gini = m.get("gini", 0)
             util_raw = m.get("mean_utility", 0)
             norm_util = (util_raw - u_min) / (u_max - u_min) if u_max != u_min else 0.5
-            composite = np.mean([sust, peace, 1.0 - gini, norm_util])
+            composite = np.mean([sust, coop, 1.0 - gini, norm_util])
 
             row_labels.append(f"{model}  |  {cond}")
-            cell_values.append([sust, peace, gini, norm_util, composite])
+            cell_values.append([sust, coop, gini, norm_util, composite])
             row_model.append(model)
 
     n_rows = len(row_labels)
@@ -1176,7 +1183,7 @@ def plot_model_summary_table(save: bool = True) -> None:
     troll_tag = f"{_N_TROLLS}-troll" if _N_TROLLS > 0 else "no-troll"
     ax.set_title(
         f"Mean Metrics Across All Rounds — Model Comparison ({troll_tag})\n"
-        "Composite = mean(Sustainability, Peace, 1−Gini, NormUtility)  ·  "
+        "Composite = mean(Sustainability, CoopRate, 1−Gini, NormUtility)  ·  "
         "Gold border = best mechanism per model",
         fontweight="bold", fontsize=12, pad=20)
     plt.tight_layout()
@@ -1184,7 +1191,7 @@ def plot_model_summary_table(save: bool = True) -> None:
 
 
 def plot_model_comparison_bars(save: bool = True) -> None:
-    """Grouped bar chart: sustainability, peace, gini, normalised utility, composite per condition."""
+    """Grouped bar chart: sustainability, cooperation rate, gini, normalised utility, composite per condition."""
     base = Path(__file__).parent.parent / "data" / "runs"
     models = _discover_models()
     if len(models) < 2:
@@ -1208,7 +1215,7 @@ def plot_model_comparison_bars(save: bool = True) -> None:
 
     bar_metrics = [
         ("sustainability", "Sustainability"),
-        ("peace", "Cooperation Rate"),
+        ("cooperation_rate", "Cooperation Rate"),
         ("gini", "Gini (Inequality)"),
         ("norm_utility", "Mean Utility (norm)"),
         ("composite", "Composite Score"),
@@ -1225,10 +1232,10 @@ def plot_model_comparison_bars(save: bool = True) -> None:
             nu = (m["mean_utility"] - u_min) / (u_max - u_min) if u_max != u_min else 0.5
             data[model][cond] = {
                 "sustainability": m.get("sustainability", 0),
-                "peace": m.get("peace", 0),
+                "cooperation_rate": m.get("cooperation_rate", 0),
                 "gini": m.get("gini", 0),
                 "norm_utility": nu,
-                "composite": np.mean([m.get("sustainability", 0), m.get("peace", 0),
+                "composite": np.mean([m.get("sustainability", 0), m.get("cooperation_rate", 0),
                                       1.0 - m.get("gini", 0), nu]),
             }
 
@@ -1263,7 +1270,7 @@ def plot_model_comparison_bars(save: bool = True) -> None:
 
     troll_tag = f"{_N_TROLLS}-troll" if _N_TROLLS > 0 else "no-troll"
     fig.suptitle(f"Mean Metrics Across All Rounds by Condition & Model ({troll_tag})\n"
-                 "Composite = mean(Sustainability, Peace, 1−Gini, NormUtility)",
+                 "Composite = mean(Sustainability, CoopRate, 1−Gini, NormUtility)",
                  fontsize=14, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.93])
     _maybe_save(fig, "model_comparison_bars.png", save)
@@ -1272,7 +1279,7 @@ def plot_model_comparison_bars(save: bool = True) -> None:
 def plot_composite_ranking(save: bool = True) -> None:
     """Heatmap: normalized 4-metric composite score per condition.
 
-    Metrics: mean utility, cooperation rate (peace), equality (1-gini),
+    Metrics: mean utility, cooperation rate, equality (1-gini),
     production stability (sustainability). Each is min-max normalized to [0,1]
     across conditions. Shows per-metric normalized scores plus average and min
     (Rawlsian) composite.
@@ -1287,7 +1294,7 @@ def plot_composite_ranking(save: bool = True) -> None:
         all_rounds = run["rounds"]
 
         sust_vals = [r["metrics"]["sustainability"] for r in all_rounds]
-        peace_vals = [r["metrics"]["peace"] for r in all_rounds]
+        coop_vals = [_get_metric(r["metrics"], "cooperation_rate") for r in all_rounds]
         gini_vals = [r["metrics"]["gini"] for r in all_rounds]
         util_vals = []
         for r in all_rounds:
@@ -1297,7 +1304,7 @@ def plot_composite_ranking(save: bool = True) -> None:
         rows.append({
             "condition": condition,
             "utility": np.mean(util_vals),
-            "peace": np.mean(peace_vals),
+            "cooperation_rate": np.mean(coop_vals),
             "equality": 1.0 - np.mean(gini_vals),
             "sustainability": np.mean(sust_vals),
         })
@@ -1306,12 +1313,12 @@ def plot_composite_ranking(save: bool = True) -> None:
         print("  [composite_ranking] No data found, skipping.")
         return
 
-    metrics = ["utility", "peace", "equality", "sustainability"]
-    display_names = ["Mean Utility\n(normalized)", "Cooperation\nRate", "Equality\n(1−Gini)", "Production\nStability"]
+    metrics = ["utility", "cooperation_rate", "equality", "sustainability"]
+    display_names = ["Mean Utility\n(normalized)", "Cooperation\nRate", "Equality\n(1−Gini)", "Sustainability"]
 
     raw = {m: np.array([r[m] for r in rows]) for m in metrics}
 
-    # Only normalize utility (different scale); peace, equality, sustainability are already 0-1
+    # Only normalize utility (different scale); cooperation_rate, equality, sustainability are already 0-1
     normed = {}
     for m in metrics:
         if m == "utility":

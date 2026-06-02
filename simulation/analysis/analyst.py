@@ -19,7 +19,7 @@ from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, COOPERATION_THRESHOLD, CON
 
 _BASE_DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
 OUT_DIR = Path(__file__).parent.parent / "data"
-METRICS = ["sustainability", "peace", "gini"]
+METRICS = ["sustainability", "cooperation_rate", "gini"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 
 _MECHANISM_LABELS = {
@@ -119,20 +119,21 @@ def _summarize_condition(condition: str, runs: list[dict]) -> dict:
 
     for metric in METRICS + INTERMEDIATE:
         all_vals = [
-            rnd["metrics"].get(metric, 0)
+            rnd["metrics"].get(metric, rnd["metrics"].get("peace", 0)) if metric == "cooperation_rate" else rnd["metrics"].get(metric, 0)
             for run in runs for rnd in run["rounds"]
-            if rnd["metrics"].get(metric) is not None
+            if rnd["metrics"].get(metric, rnd["metrics"].get("peace")) is not None
         ]
         cond[metric] = {
             "mean": round(float(np.mean(all_vals)), 4) if all_vals else None,
             "final": round(float(np.mean([
-                run["rounds"][-1]["metrics"].get(metric, 0) for run in runs
+                run["rounds"][-1]["metrics"].get(metric, run["rounds"][-1]["metrics"].get("peace", 0)) if metric == "cooperation_rate"
+                else run["rounds"][-1]["metrics"].get(metric, 0) for run in runs
             ])), 4),
         }
 
     cooperative = sum(
         1 for run in runs
-        if all(run["rounds"][-1]["metrics"].get(m, 0) > COOPERATION_THRESHOLD for m in ["sustainability", "peace"])
+        if all(run["rounds"][-1]["metrics"].get(m, run["rounds"][-1]["metrics"].get("peace", 0)) > COOPERATION_THRESHOLD for m in ["sustainability", "cooperation_rate"])
     )
     cond["cooperation_achieved"] = f"{cooperative}/{len(runs)} runs"
 
@@ -170,15 +171,15 @@ def _summarize_condition(condition: str, runs: list[dict]) -> dict:
 def _build_round_table(runs: list[dict]) -> str:
     n_rounds = len(runs[0]["rounds"])
     troll_ids = _get_troll_ids(runs[0])
-    lines = [f"{'Rnd':>3} | {'Peace':>6} | {'Sustain':>7} | {'Gini':>5} | {'Defect':>6} | {'Trades':>6} | {'AvgUtil':>7}"]
+    lines = [f"{'Rnd':>3} | {'Coop%':>6} | {'Sustain':>7} | {'Gini':>5} | {'Defect':>6} | {'Trades':>6} | {'AvgUtil':>7}"]
     lines.append(f"{'-'*3}-+-{'-'*6}-+-{'-'*7}-+-{'-'*5}-+-{'-'*6}-+-{'-'*6}-+-{'-'*7}")
     for r in range(n_rounds):
-        peace, sust, gini, defects, trades, utils = [], [], [], [], [], []
+        coop, sust, gini, defects, trades, utils = [], [], [], [], [], []
         for run in runs:
             if r >= len(run["rounds"]):
                 continue
             rnd = run["rounds"][r]
-            peace.append(rnd["metrics"].get("peace", 0))
+            coop.append(rnd["metrics"].get("cooperation_rate", rnd["metrics"].get("peace", 0)))
             sust.append(rnd["metrics"].get("sustainability", 0))
             gini.append(rnd["metrics"].get("gini", 0))
             defects.append(rnd.get("defections", 0))
@@ -188,7 +189,7 @@ def _build_round_table(runs: list[dict]) -> str:
             if non_troll:
                 utils.append(np.mean(non_troll))
         lines.append(
-            f"{r+1:>3} | {np.mean(peace):>6.3f} | {np.mean(sust):>7.3f} | {np.mean(gini):>5.3f} | "
+            f"{r+1:>3} | {np.mean(coop):>6.3f} | {np.mean(sust):>7.3f} | {np.mean(gini):>5.3f} | "
             f"{np.mean(defects):>6.1f} | {np.mean(trades):>6.1f} | {np.mean(utils):>7.2f}"
         )
     return "\n".join(lines)

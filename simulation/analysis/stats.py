@@ -13,7 +13,7 @@ from scipy.stats import mannwhitneyu
 
 from .. import config
 
-METRICS = ["sustainability", "peace", "mean_utility"]
+METRICS = ["sustainability", "cooperation_rate", "mean_utility"]
 
 
 def _discover_runs() -> dict[str, list[dict]]:
@@ -35,7 +35,7 @@ def _extract_metrics(runs: list[dict]) -> dict[str, list[float]]:
     for run in runs:
         final = run["rounds"][-1]
         out["sustainability"].append(final["metrics"]["sustainability"])
-        out["peace"].append(final["metrics"]["peace"])
+        out["cooperation_rate"].append(final["metrics"].get("cooperation_rate", final["metrics"].get("peace", 0)))
         utilities = [float(v) for v in final["utilities"].values()]
         out["mean_utility"].append(float(np.mean(utilities)))
     return out
@@ -132,9 +132,9 @@ def run_stats() -> str:
     for i, (cond, metrics) in enumerate(ranked, 1):
         u = np.mean(metrics["mean_utility"])
         s = np.mean(metrics["sustainability"])
-        p = np.mean(metrics["peace"])
+        cr = np.mean(metrics["cooperation_rate"])
         n = len(all_runs[cond])
-        lines.append(f"  {i}. {cond:>5s}  utility={u:+.3f}  sustainability={s:.3f}  peace={p:.3f}  (n={n})")
+        lines.append(f"  {i}. {cond:>5s}  utility={u:+.3f}  sustainability={s:.3f}  cooperation_rate={cr:.3f}  (n={n})")
 
     return "\n".join(lines)
 
