@@ -987,9 +987,6 @@ _SUMMARY_METRICS = [
     ("peace", "Cooperation\nRate", "higher"),
     ("gini", "Gini\n(Inequality)", "lower"),
     ("mean_utility", "Mean\nUtility", "higher"),
-    ("whistleblowing_rate", "Whistleblowing\nRate", "higher"),
-    ("false_accusation_rate", "False Accusation\nRate", "lower"),
-    ("warning_accuracy", "Warning\nAccuracy", "higher"),
 ]
 
 
@@ -1040,34 +1037,73 @@ def _cell_color(value: float, direction: str, vmin: float, vmax: float):
 
 
 def plot_model_summary_table(save: bool = True) -> None:
-    """Table: final-round metrics for every model × condition, color-coded."""
+    """Table: sustainability, peace, gini, normalised utility + composite score per model × condition.
+
+    Mean utility is min-max normalised to [0, 1] across all rows. Composite score =
+    mean(sustainability, peace, 1-gini, norm_utility). Best mechanism per model is highlighted.
+    """
     base = Path(__file__).parent.parent / "data" / "runs"
     models = _discover_models()
     if len(models) < 2:
         print("  [model_summary_table] Need ≥2 models. Skipping.")
         return
 
-    row_labels, cell_values = [], []
+    # collect raw metrics: {model: {cond: {metric: val}}}
+    raw: dict[str, dict[str, dict[str, float]]] = {}
     for model in models:
-        model_dir = base / model
+        raw[model] = {}
         for cond in CONDITIONS:
-            run = _load_run_from_dir(model_dir, cond, _N_TROLLS)
+            run = _load_run_from_dir(base / model, cond, _N_TROLLS)
             if run is None:
                 continue
-            metrics = _extract_summary_metrics(run)
-            row_labels.append(f"{model}  |  {cond}")
-            cell_values.append([metrics.get(k) for k, _, _ in _SUMMARY_METRICS])
+            raw[model][cond] = _extract_summary_metrics(run)
 
-    if not row_labels:
+    # min-max normalise mean_utility across ALL model×condition pairs
+    all_utils = [m["mean_utility"] for md in raw.values() for m in md.values()]
+    if not all_utils:
         print("  [model_summary_table] No data. Skipping.")
         return
+    u_min, u_max = min(all_utils), max(all_utils)
+
+    # build table rows: model, cond, sust, peace, gini, norm_util, composite
+    col_labels = ["Sustainability", "Cooperation\nRate", "Gini\n(Inequality)",
+                  "Mean Utility\n(normalised)", "Composite\nScore"]
+    row_labels = []
+    cell_values: list[list[float]] = []
+    row_model: list[str] = []
+
+    for model in models:
+        for cond in CONDITIONS:
+            if cond not in raw[model]:
+                continue
+            m = raw[model][cond]
+            sust = m.get("sustainability", 0)
+            peace = m.get("peace", 0)
+            gini = m.get("gini", 0)
+            util_raw = m.get("mean_utility", 0)
+            norm_util = (util_raw - u_min) / (u_max - u_min) if u_max != u_min else 0.5
+            composite = np.mean([sust, peace, 1.0 - gini, norm_util])
+
+            row_labels.append(f"{model}  |  {cond}")
+            cell_values.append([sust, peace, gini, norm_util, composite])
+            row_model.append(model)
 
     n_rows = len(row_labels)
-    n_cols = len(_SUMMARY_METRICS)
+    n_cols = len(col_labels)
+    col_directions = ["higher", "higher", "lower", "higher", "higher"]
 
+    # find best composite per model
+    best_rows: set[int] = set()
+    for model in models:
+        model_indices = [i for i, m in enumerate(row_model) if m == model]
+        if model_indices:
+            best_idx = max(model_indices, key=lambda i: cell_values[i][4])
+            best_rows.add(best_idx)
+
+    # colour normalisation per column
     col_mins, col_maxs = [], []
     for j in range(n_cols):
-        vals = [cell_values[i][j] for i in range(n_rows) if cell_values[i][j] is not None]
+        vals = [cell_values[i][j] for i in range(n_rows)]
         col_mins.append(min(vals) if vals else 0)
         col_maxs.append(max(vals) if vals else 1)
 
@@ -1076,26 +1112,22 @@ def plot_model_summary_table(save: bool = True) -> None:
         tr, cr = [], []
         for j in range(n_cols):
             v = cell_values[i][j]
-            if v is None:
-                tr.append("—")
-                cr.append("#f5f5f5")
-            else:
-                tr.append(f"{v:.3f}")
-                cr.append(_cell_color(v, _SUMMARY_METRICS[j][2], col_mins[j], col_maxs[j]))
+            tr.append(f"{v:.3f}")
+            cr.append(_cell_color(v, col_directions[j], col_mins[j], col_maxs[j]))
         cell_text.append(tr)
         cell_colors.append(cr)
 
     fig_h = 1.5 + 0.45 * n_rows
-    fig, ax = plt.subplots(figsize=(16, fig_h))
+    fig, ax = plt.subplots(figsize=(14, fig_h))
     ax.axis("off")
 
-    col_labels = [m[1] for m in _SUMMARY_METRICS]
     table = ax.table(cellText=cell_text, rowLabels=row_labels, colLabels=col_labels,
                      loc="center", cellLoc="center")
     table.auto_set_font_size(False)
     table.set_fontsize(9)
     table.scale(1.0, 1.8)
 
+    # header style
     for j in range(n_cols):
         table[0, j].set_facecolor("#37474f")
         table[0, j].set_text_props(color="white", fontweight="bold", fontsize=9)
@@ -1105,51 +1137,92 @@ def plot_model_summary_table(save: bool = True) -> None:
         for j in range(n_cols):
             table[i + 1, j].set_facecolor(cell_colors[i][j])
 
+    # highlight best mechanism per model with gold border
+    for i in best_rows:
+        for j in range(-1, n_cols):
+            table[i + 1, j].set_edgecolor("#FFD700")
+            table[i + 1, j].set_linewidth(3.0)
+        table[i + 1, -1].set_text_props(fontweight="bold", fontsize=8, color="#B8860B")
+
     # bold separator between models
     prev_model = None
     for i, label in enumerate(row_labels):
         model_name = label.split("  |  ")[0]
         if prev_model and model_name != prev_model:
             for j in range(-1, n_cols):
-                table[i + 1, j].set_edgecolor("black")
-                table[i + 1, j].set_linewidth(2.5)
+                cell = table[i + 1, j]
+                if i not in best_rows:
+                    cell.set_edgecolor("black")
+                    cell.set_linewidth(2.5)
         prev_model = model_name
 
     troll_tag = f"{_N_TROLLS}-troll" if _N_TROLLS > 0 else "no-troll"
     ax.set_title(
         f"Final-Round Metrics — Model Comparison ({troll_tag})\n"
-        "Green = better · Red = worse  (column-normalised)",
-        fontweight="bold", fontsize=13, pad=20)
+        "Composite = mean(Sustainability, Peace, 1−Gini, NormUtility)  ·  "
+        "Gold border = best mechanism per model",
+        fontweight="bold", fontsize=12, pad=20)
     plt.tight_layout()
     _maybe_save(fig, "model_summary_table.png", save)
 
 
 def plot_model_comparison_bars(save: bool = True) -> None:
-    """Grouped bar chart: one subplot per metric, bars grouped by condition, coloured by model."""
+    """Grouped bar chart: sustainability, peace, gini, normalised utility, composite per condition."""
     base = Path(__file__).parent.parent / "data" / "runs"
     models = _discover_models()
     if len(models) < 2:
         print("  [model_comparison_bars] Need ≥2 models. Skipping.")
         return
 
-    data: dict[str, dict[str, dict[str, float]]] = {}
+    raw_data: dict[str, dict[str, dict[str, float]]] = {}
     for model in models:
-        data[model] = {}
+        raw_data[model] = {}
         for cond in CONDITIONS:
             run = _load_run_from_dir(base / model, cond, _N_TROLLS)
             if run is None:
                 continue
-            data[model][cond] = _extract_summary_metrics(run)
+            raw_data[model][cond] = _extract_summary_metrics(run)
 
-    n_metrics = len(_SUMMARY_METRICS)
-    fig, axes = plt.subplots(2, 4, figsize=(20, 10))
+    # min-max normalise utility
+    all_utils = [m["mean_utility"] for md in raw_data.values() for m in md.values()]
+    if not all_utils:
+        return
+    u_min, u_max = min(all_utils), max(all_utils)
+
+    bar_metrics = [
+        ("sustainability", "Sustainability"),
+        ("peace", "Cooperation Rate"),
+        ("gini", "Gini (Inequality)"),
+        ("norm_utility", "Mean Utility (norm)"),
+        ("composite", "Composite Score"),
+    ]
+
+    # pre-compute normalised values
+    data: dict[str, dict[str, dict[str, float]]] = {}
+    for model in models:
+        data[model] = {}
+        for cond in CONDITIONS:
+            if cond not in raw_data[model]:
+                continue
+            m = raw_data[model][cond]
+            nu = (m["mean_utility"] - u_min) / (u_max - u_min) if u_max != u_min else 0.5
+            data[model][cond] = {
+                "sustainability": m.get("sustainability", 0),
+                "peace": m.get("peace", 0),
+                "gini": m.get("gini", 0),
+                "norm_utility": nu,
+                "composite": np.mean([m.get("sustainability", 0), m.get("peace", 0),
+                                      1.0 - m.get("gini", 0), nu]),
+            }
+
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
     axes_flat = axes.flatten()
 
     model_cmap = plt.cm.Set2
     model_colors = {m: model_cmap(i / max(len(models) - 1, 1)) for i, m in enumerate(models)}
     bar_w = 0.8 / max(len(models), 1)
 
-    for idx, (key, label, _) in enumerate(_SUMMARY_METRICS):
+    for idx, (key, label) in enumerate(bar_metrics):
         ax = axes_flat[idx]
         x = np.arange(len(CONDITIONS))
         for mi, model in enumerate(models):
@@ -1163,18 +1236,19 @@ def plot_model_comparison_bars(save: bool = True) -> None:
                             f"{v:.2f}", ha="center", va="bottom", fontsize=6, rotation=45)
         ax.set_xticks(x)
         ax.set_xticklabels(CONDITIONS, fontsize=9)
-        ax.set_title(label.replace("\n", " "), fontweight="bold", fontsize=10)
+        ax.set_title(label, fontweight="bold", fontsize=10)
         ax.grid(axis="y", alpha=0.3)
         if idx == 0:
             ax.legend(fontsize=7, loc="lower left")
 
-    for ax in axes_flat[n_metrics:]:
+    for ax in axes_flat[len(bar_metrics):]:
         ax.set_visible(False)
 
     troll_tag = f"{_N_TROLLS}-troll" if _N_TROLLS > 0 else "no-troll"
-    fig.suptitle(f"Final-Round Metrics by Condition & Model ({troll_tag})",
+    fig.suptitle(f"Final-Round Metrics by Condition & Model ({troll_tag})\n"
+                 "Composite = mean(Sustainability, Peace, 1−Gini, NormUtility)",
                  fontsize=14, fontweight="bold")
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
     _maybe_save(fig, "model_comparison_bars.png", save)
 
 
