@@ -1290,16 +1290,21 @@ def plot_composite_ranking(save: bool = True) -> None:
         return
 
     metrics = ["utility", "peace", "equality", "sustainability"]
-    display_names = ["Mean\nUtility", "Cooperation\nRate", "Equality\n(1−Gini)", "Production\nStability"]
+    display_names = ["Mean Utility\n(normalized)", "Cooperation\nRate", "Equality\n(1−Gini)", "Production\nStability"]
 
     raw = {m: np.array([r[m] for r in rows]) for m in metrics}
+
+    # Only normalize utility (different scale); peace, equality, sustainability are already 0-1
     normed = {}
     for m in metrics:
-        mn, mx = raw[m].min(), raw[m].max()
-        if mx - mn < 1e-9:
-            normed[m] = np.full_like(raw[m], 0.5)
+        if m == "utility":
+            mn, mx = raw[m].min(), raw[m].max()
+            if mx - mn < 1e-9:
+                normed[m] = np.full_like(raw[m], 0.5)
+            else:
+                normed[m] = (raw[m] - mn) / (mx - mn)
         else:
-            normed[m] = (raw[m] - mn) / (mx - mn)
+            normed[m] = raw[m]
 
     n_cond = len(rows)
     avg_scores = np.mean([normed[m] for m in metrics], axis=0)
@@ -1354,7 +1359,7 @@ def plot_composite_ranking(save: bool = True) -> None:
     troll_tag = f"{_N_TROLLS} trolls" if _N_TROLLS > 0 else "no trolls"
     ax.set_title(
         f"Composite Mechanism Ranking ({troll_tag})\n"
-        "Min-max normalized [0,1] per metric; sorted by average composite",
+        "Utility normalized to [0,1]; other metrics are raw [0,1]; sorted by average composite",
         fontsize=13, fontweight="bold", pad=20,
     )
     plt.tight_layout()
