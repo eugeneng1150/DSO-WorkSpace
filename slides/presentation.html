@@ -649,7 +649,25 @@ flowchart LR
         </div>
     </div>
 
-    <!-- SLIDE 6: Experiment Setup -->
+    <!-- SLIDE: Metrics -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Measurement</div>
+        <h2>How We Measure Success</h2>
+        <div class="content">
+            <ul>
+                <li><strong>Sustainability</strong> = avg production<sub>round t</sub> / avg production<sub>round 1</sub> &mdash; are agents still producing at healthy levels? Captures economic collapse before utility drops (leading indicator)</li>
+                <li><strong>Cooperation Rate</strong> = 1 &minus; (defections / total trades) &mdash; what fraction of trades are honored? A marketplace with 50% defection is not functioning even if utility is positive</li>
+                <li><strong>Mean Utility per Round</strong> = avg utility across non-troll agents each round &mdash; the bottom line. Production cost (&minus;1) vs consumption gain (+3) means agents need trade to be net positive</li>
+                <li><strong>Gini Coefficient</strong> = inequality of utility distribution (0 = equal, 1 = one agent takes all) &mdash; a mechanism that helps 3 agents while starving 15 is not a good mechanism</li>
+            </ul>
+            <div class="callout" style="margin-top:2vh;">
+                <p>All metrics <strong>exclude troll agents</strong> &mdash; we measure how well the <em>honest</em> agents fare, not the trolls. Sustainability and cooperation rate are our own constructs (defined in methodology).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: Experiment Setup -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
         <div class="label">Parameters</div>
@@ -659,16 +677,16 @@ flowchart LR
                 <li><strong>Models:</strong> gpt-5.4-nano, gpt-5.4-mini, DeepSeek-V3</li>
                 <li><strong>Troll counts:</strong> 0 (baseline), 2 (10%), 4 (20%) out of 18+troll agents</li>
                 <li><strong>Duration:</strong> 30 rounds per run</li>
-                <li><strong>Metrics:</strong> total utility, trade volume, defection rate, production stability</li>
+                <li><strong>Metrics:</strong> sustainability, cooperation rate, mean utility per round, Gini coefficient</li>
             </ul>
         </div>
     </div>
 
-    <!-- ============ SECTION: RESULTS OVERVIEW ============ -->
+    <!-- ============ SECTION: RESULTS — ALL 3 MODELS ============ -->
 
-    <!-- SLIDE 8: Utility Trajectories -->
+    <!-- SLIDE: Utility Trajectories — Nano -->
     <div class="slide slide-imgtext">
-        <div class="label">Results</div>
+        <div class="label">Nano Results</div>
         <h2>Utility Trajectories &mdash; Nano, 4 Trolls</h2>
         <div class="content">
             <div class="plot-container">
@@ -820,9 +838,110 @@ flowchart LR
         </div>
     </div>
 
-    <!-- ============ SECTION: NR DEEP DIVE ============ -->
+    <!-- SLIDE: DeepSeek Utility Trajectories -->
+    <div class="slide slide-imgtext">
+        <div class="label">DeepSeek Results</div>
+        <h2>Utility Trajectories &mdash; DeepSeek, 4 Trolls</h2>
+        <div class="content">
+            <div class="plot-container">
+                <img src="../simulation/data/plots/deepseek-v3/troll_4/utility_trajectories.png" alt="DeepSeek Utility Trajectories">
+            </div>
+            <ul style="margin-top:2vh;">
+                <li><strong>NR</strong> (200) and <strong>G</strong> (191) lead &mdash; both above baseline B (181)</li>
+                <li><strong>M collapses to &minus;37</strong> &mdash; delegation bug causes &ldquo;cooperation theater&rdquo;</li>
+                <li>Overall utilities <strong>much higher than nano</strong> (B: 181 vs nano B: 55) &mdash; stronger cooperative prior</li>
+            </ul>
+        </div>
+    </div>
 
-    <!-- SLIDE 15: NR Cross-Model -->
+    <!-- SLIDE: Mini Utility Trajectories -->
+    <div class="slide slide-imgtext">
+        <div class="label">Mini Results</div>
+        <h2>Utility Trajectories &mdash; Mini, 4 Trolls</h2>
+        <div class="content">
+            <div class="plot-container">
+                <img src="../simulation/data/plots/gpt-5.4-mini/troll_4/utility_trajectories.png" alt="Mini Utility Trajectories">
+            </div>
+            <ul style="margin-top:2vh;">
+                <li><strong>NR</strong> (53) and <strong>B</strong> (43) lead &mdash; but total utilities far below nano/DeepSeek</li>
+                <li><strong>G</strong> (24) suppresses trade volume but achieves <strong>highest sustainability</strong> (0.67)</li>
+                <li>Mini paradox: high cooperation rate (0.78) but <strong>lowest sustainability</strong> (0.47) &mdash; agents &ldquo;cooperate&rdquo; but the economy collapses</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: CROSS-MODEL COMPARISON ============ -->
+
+    <!-- SLIDE: Cross-Model Summary Table -->
+    <div class="slide slide-imgtext">
+        <div class="label">Cross-Model</div>
+        <h2>Cross-Model Mechanism Comparison &mdash; 4 Trolls</h2>
+        <div class="content">
+            <div class="plot-container">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/model_summary_table.png" alt="Model Summary Table" style="max-height:52vh;">
+            </div>
+            <ul style="margin-top:1vh;">
+                <li><strong>G</strong> has gold border (best composite) for both <strong>mini</strong> and <strong>nano</strong>. DeepSeek&rsquo;s best is <strong>NR</strong> (ceiling effect)</li>
+                <li><strong>M has near-zero utility</strong> across all models &mdash; known delegation bug</li>
+                <li><strong>C</strong> is consistently the lowest utility for weaker models (mini 0.37, nano 0.55)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SLIDE: Model > Mechanism -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Key Finding</div>
+        <h2>Model Capability &gt; Mechanism Choice</h2>
+        <div class="content">
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Marginal benefit of each mechanism vs that model&rsquo;s own baseline (&Delta; sustainability, 4 trolls):</p>
+            <table style="width:100%; border-collapse:collapse; font-family:'Inter',sans-serif; font-size:clamp(0.8rem,1vw,0.95rem);">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--line);">
+                        <th style="text-align:left; padding:1vh 1vw; color:var(--text-primary);">Mechanism</th>
+                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">DeepSeek &Delta;</th>
+                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">Mini &Delta;</th>
+                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">Nano &Delta;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">G</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.000</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.195</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.207</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">S</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.001</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.036</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.241</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">NR</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.026</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.051</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.053</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">GR</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.020</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.069</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.128</td></tr>
+                    <tr><td style="padding:0.8vh 1vw; font-weight:600;">C</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.110</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.040</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.247</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">M excluded (delegation bug). Baseline sustainability: DeepSeek 0.999, Mini 0.474, Nano 0.659.</p>
+            <div class="callout blue" style="margin-top:2vh;">
+                <p><strong>The model is a bigger lever than the mechanism.</strong> Baseline spread across models (0.47&ndash;0.99) dwarfs the mechanism effect within any model. Formal enforcement (G) helps weak models; information-based mechanisms (GR, NR) hurt them.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: What Changes Across Models -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Cross-Model</div>
+        <h2>What Changes Across Models</h2>
+        <div class="content">
+            <ul>
+                <li><strong>G is #1 on all 3 models</strong> &mdash; the only mechanism never net-negative</li>
+                <li><strong>DeepSeek baseline is stubbornly strong</strong> &mdash; sustainability 0.999 with zero mechanisms. Mechanisms barely help; some actively hurt</li>
+                <li><strong>Mini is the most fragile</strong> &mdash; sustainability collapses to 0.47 at baseline. Only <strong>G</strong> rescues it (0.47 &rarr; 0.67)</li>
+                <li><strong>NR and GR are capability-gated</strong> &mdash; excellent for DeepSeek, fail for mini</li>
+                <li><strong>S is robust for nano</strong> (+0.24 sust) but mediocre for mini and utility-costly for DeepSeek</li>
+                <li><strong>M results unreliable</strong> &mdash; delegation bug. Excluded from rankings</li>
+            </ul>
+            <div class="callout" style="margin-top:2vh;">
+                <p><strong>Implication:</strong> Formal enforcement (G) works across the capability spectrum; information-rich mechanisms (GR, NR) require a capable model.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: DEEP DIVES ============ -->
+
+    <!-- SLIDE: NR Cross-Model -->
     <div class="slide slide-twocol">
         <div class="label">Cross-Model</div>
         <h2>NR &mdash; Cross-Model Behavioral Difference</h2>
@@ -889,134 +1008,6 @@ flowchart LR
                     <li>Actionable tools &gt; perfect information</li>
                     <li>Result: NR outperforms GR</li>
                 </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ SECTION: CROSS-MODEL ============ -->
-
-    <!-- SLIDE 18: Cross-Model Summary Table -->
-    <div class="slide slide-imgtext">
-        <div class="label">Cross-Model</div>
-        <h2>Cross-Model Mechanism Comparison &mdash; 4 Trolls</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/model_summary_table.png" alt="Model Summary Table" style="max-height:52vh;">
-            </div>
-            <ul style="margin-top:1vh;">
-                <li><strong>G</strong> has gold border (best composite) for both <strong>mini</strong> and <strong>nano</strong>. DeepSeek&rsquo;s best is <strong>NR</strong> (but DeepSeek barely needs mechanisms)</li>
-                <li><strong>M has near-zero utility</strong> across all models &mdash; known delegation bug (see earlier slide)</li>
-                <li><strong>C</strong> is consistently the lowest utility for weaker models (mini 0.37, nano 0.55)</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- SLIDE 19: Cross-Model Key Differences -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Cross-Model</div>
-        <h2>What Changes Across Models</h2>
-        <div class="content">
-            <ul>
-                <li><strong>G is #1 on all 3 models</strong> &mdash; the only mechanism that is never net-negative across nano, mini, and DeepSeek</li>
-                <li><strong>DeepSeek baseline is stubbornly strong</strong> &mdash; sustainability 0.999, utility 5.35 with zero mechanisms. Mechanisms barely help it; some actively hurt</li>
-                <li><strong>Mini is the most fragile</strong> &mdash; sustainability collapses to 0.47 at baseline. Only <strong>G</strong> meaningfully rescues it (0.47 &rarr; 0.67). GR, NR, C all fail</li>
-                <li><strong>NR and GR are capability-gated</strong> &mdash; excellent for DeepSeek (agents reason about reputation), but fail for mini (agents ignore the signals)</li>
-                <li><strong>S is robust for nano</strong> (+0.24 sustainability) but mediocre for mini (+0.04) and utility-costly for DeepSeek</li>
-                <li><strong>M results unreliable</strong> &mdash; zero delegation due to implementation bug (see earlier slide). Excluded from ranking conclusions</li>
-            </ul>
-            <div class="callout" style="margin-top:2vh;">
-                <p><strong>Implication:</strong> Mechanism effectiveness depends more on <em>model capability</em> than on mechanism design. Formal enforcement (G) works across the capability spectrum; information-rich mechanisms (GR, NR) require a capable model to act on them.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 20: DeepSeek Utility Trajectories -->
-    <div class="slide slide-imgtext">
-        <div class="label">DeepSeek</div>
-        <h2>DeepSeek Utility Trajectories &mdash; 4 Trolls</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/deepseek-v3/troll_4/utility_trajectories.png" alt="DeepSeek Utility Trajectories">
-            </div>
-            <ul style="margin-top:2vh;">
-                <li><strong>NR</strong> (200) and <strong>G</strong> (191) lead &mdash; both above baseline B (181)</li>
-                <li><strong>M collapses to &minus;37</strong> &mdash; the only condition going deeply negative</li>
-                <li><strong>S</strong> (129) underperforms baseline &mdash; sanction costs are a net drag</li>
-                <li>Overall utilities much higher than nano (B: 181 vs nano B: 55) &mdash; stronger cooperative prior</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- SLIDE: Mini Utility Trajectories -->
-    <div class="slide slide-imgtext">
-        <div class="label">Mini</div>
-        <h2>Mini Utility Trajectories &mdash; 4 Trolls</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/gpt-5.4-mini/troll_4/utility_trajectories.png" alt="Mini Utility Trajectories">
-            </div>
-            <ul style="margin-top:2vh;">
-                <li><strong>NR</strong> (53) and <strong>B</strong> (43) lead &mdash; but total utilities far below nano/DeepSeek</li>
-                <li><strong>G</strong> (24) suppresses trade volume via enforcement but achieves highest sustainability (0.67)</li>
-                <li><strong>M</strong> (&minus;4) and <strong>C</strong> (11) go negative/near-zero &mdash; consistent with nano and DeepSeek</li>
-                <li>Mini&rsquo;s paradox: high cooperation rate (0.78) but lowest sustainability (0.47) &mdash; agents &ldquo;cooperate&rdquo; but the economy still collapses</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- SLIDE: Model > Mechanism -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Key Finding</div>
-        <h2>Model Capability &gt; Mechanism Choice</h2>
-        <div class="content">
-            <p style="margin-bottom:2vh; color:var(--text-secondary);">Marginal benefit of each mechanism vs that model&rsquo;s own baseline (&Delta; sustainability, 4 trolls):</p>
-            <table style="width:100%; border-collapse:collapse; font-family:'Inter',sans-serif; font-size:clamp(0.8rem,1vw,0.95rem);">
-                <thead>
-                    <tr style="border-bottom:2px solid var(--line);">
-                        <th style="text-align:left; padding:1vh 1vw; color:var(--text-primary);">Mechanism</th>
-                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">DeepSeek &Delta;</th>
-                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">Mini &Delta;</th>
-                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">Nano &Delta;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);">
-                        <td style="padding:0.8vh 1vw; font-weight:600;">G</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.000</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.195</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.207</td>
-                    </tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);">
-                        <td style="padding:0.8vh 1vw; font-weight:600;">S</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.001</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.036</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+0.241</td>
-                    </tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);">
-                        <td style="padding:0.8vh 1vw; font-weight:600;">NR</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.026</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.051</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.053</td>
-                    </tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);">
-                        <td style="padding:0.8vh 1vw; font-weight:600;">GR</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.020</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.069</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.128</td>
-                    </tr>
-                    <tr>
-                        <td style="padding:0.8vh 1vw; font-weight:600;">C</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.110</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.040</td>
-                        <td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.247</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">M excluded due to delegation bug. Baseline sustainability: DeepSeek 0.999, Mini 0.474, Nano 0.659.</p>
-            <div class="callout blue" style="margin-top:2vh;">
-                <p><strong>The model is a bigger lever than the mechanism.</strong> Baseline spread across models (0.47&ndash;0.99) dwarfs the mechanism effect within any model. Formal enforcement (G) helps weak models; information-based mechanisms (GR, NR) hurt them.</p>
             </div>
         </div>
     </div>
