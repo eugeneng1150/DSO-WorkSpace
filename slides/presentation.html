@@ -815,16 +815,32 @@ flowchart LR
         <div class="label">Key Insight</div>
         <h2>All Mechanisms Isolate Trolls &mdash; That&rsquo;s Not the Hard Part</h2>
         <div class="content">
-            <ul>
-                <li>Every mechanism eventually reduces damaging troll trades over 30 rounds &mdash; even Baseline</li>
-                <li>The <strong>harder problem</strong> is getting self-interested agents to cooperate with <em>each other</em></li>
-                <li>C isolates trolls perfectly (only 9 damaging trades) but freezes the entire market &mdash; 163 total trades vs S&rsquo;s 689</li>
-                <li>GR agents see trolls have 0.00 reputation but still defect among honest agents</li>
-                <li><strong>Cooperation rate is misleading:</strong> mini has 0.78 cooperation rate but 0.47 sustainability &mdash; agents &ldquo;cooperate&rdquo; (don&rsquo;t defect) but the economy still collapses because they stop producing and trading enough</li>
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">Damaging troll trades (self-interested agent proposed to troll, troll stole goods) &mdash; 4 trolls, 30 rounds:</p>
+            <table style="width:100%; border-collapse:collapse; font-family:'Inter',sans-serif; font-size:clamp(0.75rem,0.95vw,0.9rem);">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--line);">
+                        <th style="text-align:left; padding:0.6vh 1vw;">Condition</th>
+                        <th style="text-align:center; padding:0.6vh 1vw;">Nano</th>
+                        <th style="text-align:center; padding:0.6vh 1vw;">DeepSeek</th>
+                        <th style="text-align:center; padding:0.6vh 1vw;">Mini</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4); background:rgba(155,44,44,0.08);"><td style="padding:0.5vh 1vw; font-weight:600;">B (baseline)</td><td style="text-align:center;">70</td><td style="text-align:center;">97</td><td style="text-align:center;">8</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">GR</td><td style="text-align:center;">16</td><td style="text-align:center;">34</td><td style="text-align:center;">6</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">C</td><td style="text-align:center;">9</td><td style="text-align:center;">29</td><td style="text-align:center;">5</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">G</td><td style="text-align:center;">14</td><td style="text-align:center;">43</td><td style="text-align:center;">8</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">NR</td><td style="text-align:center;">18</td><td style="text-align:center;">27</td><td style="text-align:center;">14</td></tr>
+                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">S</td><td style="text-align:center;">78</td><td style="text-align:center;">66</td><td style="text-align:center;">8</td></tr>
+                    <tr><td style="padding:0.5vh 1vw; font-weight:600; color:var(--accent);">M</td><td style="text-align:center; color:var(--accent);">31</td><td style="text-align:center; color:var(--accent);">45</td><td style="text-align:center; color:var(--accent);">14</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top:0.5vh; font-size:0.75rem; color:var(--accent);">M greyed out (delegation bug). Lower = better troll isolation.</p>
+            <ul style="margin-top:1.5vh;">
+                <li>Almost every mechanism beats baseline &mdash; <strong>troll isolation is the easy part</strong></li>
+                <li>The <strong>harder problem:</strong> keeping self-interested agents cooperating with <em>each other</em></li>
+                <li><strong>Cooperation rate is misleading:</strong> mini has 0.78 coop rate but 0.47 sustainability &mdash; agents don&rsquo;t defect but still stop producing and trading enough</li>
             </ul>
-            <div class="callout blue" style="margin-top:2vh;">
-                <p><strong>The real benchmark: &ldquo;can honest agents still thrive despite trolls?&rdquo;</strong> &mdash; not just &ldquo;can we stop trolls?&rdquo;</p>
-            </div>
         </div>
     </div>
 
