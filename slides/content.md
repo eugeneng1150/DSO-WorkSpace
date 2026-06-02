@@ -1,171 +1,101 @@
-# Slide 1: Title
-- Multi-Agent Marketplace Simulation: Comparing Institutional Cooperation Mechanisms
-- Date: 2 June 2026
+# Slide Outline — Multi-Agent Marketplace Simulation
+# Updated: 2 June 2026
 
-# Slide 2: Research Question
-- Can institutional mechanisms help Self Interested LLM agents sustain cooperation in adversarial environments?
+## SETUP (slides 1-9)
 
-# Slide 3: Literature Context
-- Without mechanisms, all modern LLMs defect in social dilemmas (CoopEval)
-- Contracting and Mediation ranked most effective in controlled experiments (CoopEval)
-- But: more capable reasoning LLMs become better free-riders, not more cooperative (Corrupted by Reasoning)
-- Reputation alone is moderate; becomes powerful when combined with dynamic networks + gossip — 85-98% cooperation (RepuNet)
-- Constitutional/prompt-level governance ("be honest") is statistically indistinguishable from no governance (Institutional AI)
-- A single defector among cooperators can collapse the system in 1-7 rounds (Subtle Art of Defection)
-- Gap: most studies test one mechanism in isolation — we compare 7 head-to-head under adversarial stress
+# 1: Title
+# 2: Research Question
+# 3: Literature Context
+# 4: The Environment
+# 5: The Marketplace (SVG)
+# 6: Simulation Architecture (Mermaid)
+# 7: The 7 Mechanisms (M flagged as having known bug)
+# 8: How We Measure Success — Metrics slide
+  - Sustainability = production_t / production_1 — leading indicator of economic health
+  - Cooperation Rate = 1 - defections/trades — are trades honored?
+  - Mean Utility per Round — the bottom line
+  - Gini Coefficient — is utility distributed fairly?
+  - All metrics exclude trolls
+# 9: Experiment Setup — 3 models, troll counts, 30 rounds
 
-# Slide 4: The Environment
-- 18 LLM agents in a marketplace over 30 rounds
-- Each round: produce goods, communicate, trade, consume
-- Agents need diverse goods to earn utility (incentivizes trade)
-- 20% spoilage per round — hoarding is penalized
-- Adversarial stress test: inject troll agents (2T and 4T) who always defect
+## THE BIG PICTURE — CROSS-MODEL FIRST (slides 10-17)
 
-# Slide 5: The Marketplace
-- [SVG DIAGRAM: Triangle layout — 3 groups of 6 agents, trading between groups]
+# 10: Statement — "Mechanism effectiveness is overwhelmingly model-dependent"
+  - Lead with the punchline before showing the data
 
-# Slide 6: Simulation Architecture
-- [MERMAID DIAGRAM: High-level architecture]
+# 11: Nano Utility Trajectories (4 trolls)
+  - G (112) > S (105) > NR (99), C near zero
 
-# Slide 7: The 7 Mechanisms
-- B — Baseline (no mechanism, pure barter)
-- GR — Global Reputation (system-computed trust scores visible to all)
-- C — Contracting (binding agreements with breach penalties)
-- M — Mediation (agent-designed mediator, delegation) ⚠ KNOWN BUG — see slide 14
-- G — Governance (oracle detection, escalating fines/suspension)
-- NR — Network Rewiring + Local Reputation (gossip + link severing)
-- S — Sanctioning (collective punishment for defectors)
+# 12: DeepSeek Utility Trajectories (4 trolls)
+  - NR (200) and G (191) lead, B (181) already strong
+  - M collapses to -37 (delegation bug)
+  - 3x higher utilities than nano
 
-# Slide 8: Experiment Setup
-- Models: gpt-5.4-nano, gpt-5.4-mini, DeepSeek-V3
-- Troll counts: 0 (baseline), 2 (10%), 4 (20%) out of 18+troll agents
-- 30 rounds per run
-- Metrics: total utility, trade volume, defection rate, sustainability
+# 13: Mini Utility Trajectories (4 trolls)
+  - NR (53) and B (43) lead but far below others
+  - G (24) low utility but highest sustainability (0.67)
+  - Mini paradox: coop rate 0.78 but sustainability 0.47
 
---- RESULTS OVERVIEW ---
+# 14: Cross-Model Summary Table
+  - model_summary_table.png with all 3 models, gold borders
+  - G best for mini and nano; NR best for DeepSeek (ceiling)
 
-# Slide 9: Results — Utility Trajectories (Nano, 4 Trolls)
-- [IMAGE: utility_trajectories.png]
-- G leads (112 total), S close behind (105), NR solid (99)
-- GR ≈ Baseline (53 vs 55) — reputation alone doesn't help
-- C is the only condition going negative (16) — worse than no mechanism
+# 15: Model > Mechanism — Δ sustainability table
+  - G: +0.195 mini, +0.207 nano, 0 deepseek
+  - GR/NR/C hurt weak models
+  - M excluded (delegation bug)
 
-# Slide 10: Results — Troll Resilience (Nano, 4 Trolls)
-- [IMAGE: troll_resilience_table.png]
-- C shows only 9 damaging troll trades vs S's 78
-- But C only has 163 total trades vs S's 689
-- Low troll damage is a side effect of low trade volume, not active exclusion
+# 16: G is the Only Consistent Winner
+  - Never net-negative across all 3 models
+  - Works because oracle doesn't rely on agent reasoning
+  - NR/GR capability-gated, S model-split, C consistently harmful
 
---- KEY INSIGHT ---
+# 17: All Mechanisms Isolate Trolls — That's Not the Hard Part
+  - Every mechanism (including baseline) eventually contains trolls
+  - The real problem: honest-agent cooperation
+  - Cooperation rate is misleading (mini: 0.78 coop but 0.47 sust)
+  - Real benchmark: "can honest agents thrive despite trolls?"
 
-# Slide 11: Troll Isolation ≠ Cooperation
-- All mechanisms eventually reduce damaging troll trades over 30 rounds
-- The harder problem is getting self-interested agents to cooperate with each other
-- G and S succeed because they both isolate trolls AND create incentives for honest agents to keep trading
-- The real benchmark: "can honest agents still thrive despite trolls?"
+## DEEP DIVES — WHY (slides 18-23)
 
---- ESCALATION & FAILURE MODES ---
+# 18: Why C Consistently Fails (cross-model, not nano-specific)
+  - Penalty fear → market freeze across all 3 models
+  - CoopEval comparison: their C rewrites payoffs, ours adds punishment
+  - Death spiral: penalty fear → avoidance → barter → loss
 
-# Slide 12: Escalation — 2 Trolls → 4 Trolls (Nano)
-- G is the ONLY mechanism that improved — sustainability +11.8%, utility +1.9%
-- NR nearly flat — sustainability -0.6%, utility +3.1%
-- GR collapsed — sustainability -31.6%, utility -37.4%. Worse than Baseline at 4T
-- S resilient on sustainability (-2.6%) but damaging troll trades doubled (39→78)
-- CAVEAT: Based on 1 run per condition — needs statistical replication
+# 19: M Delegation Bug
+  - Zero delegation, all 3 models, 30 rounds
+  - Root cause: asymmetric design (only acceptor can delegate)
+  - Implementation flaw, not null result. Fix planned.
+  - ⚠ All M results unreliable — excluded from rankings
 
-# Slide 13: Two Opposite Failure Modes (C vs S)
-- C — Over-Deterrence: best troll isolation but market freeze. Utility: 0.55
-- S — Under-Deterrence: worst troll isolation but vibrant market. Utility: 3.49
-- Neither achieves targeted exclusion
+# 20: Information vs Action — GR/NR are Capability-Gated
+  - GR: perfect info, no enforcement → fails for weak models
+  - NR: worse info but can sever links → outperforms GR
+  - Both require agents capable of reasoning about social signals
+  - Actionable tools > perfect information
 
-# Slide 14: Why Contracting (C) Fails
-- Agents fear they cannot fulfill contracts — inherently risk averse
-- Agents reason incorrectly: "a contract could backfire if the counterparty rejects" — rejection costs nothing
-- Death spiral: penalty fear → mechanism avoidance → unprotected barter → utility loss → market freeze
+# 21: NR Network Rewiring in Action
+  - network_snapshot: trolls isolated, honest agents rebuild denser connections
 
-# Slide 15: ⚠ Why Mediation (M) Fails — Delegation Bug
-- Zero delegated trades across all 3 models, all 30 rounds
-- Root cause: only the acceptor can delegate — proposer has no delegation option
-- Coordination trap: every agent reasons "delegation only helps if counterparty also delegates"
-- In CoopEval, both players decide simultaneously (symmetric). Ours is asymmetric — coordination never bootstraps
-- M achieves cooperation_rate 0.997 but utility -1.22 — "cooperation theater"
-- Implementation flaw, not a null result on mediation. Fix planned for future work.
-- ALL M results should be interpreted with this caveat
+# 22: Escalation 2T → 4T (Nano only, caveated)
+  - G improved (+11.8% sust), NR/S flat, GR collapsed (-31.6%)
+  - Caveat: nano only, 1 run per condition
 
-# Slide 16: Defections & Trade Volume
-- [IMAGE: defection_trajectory.png] — G defections decline over time
-- [IMAGE: trade_volume.png] — C trade volume near zero (market freeze visualized)
+# 23: Evidence — Defection & Trade Volume plots (Nano)
+  - G defections decline; C trade volume near zero
 
---- NR DEEP DIVE ---
+## WRAP-UP (slides 24-25)
 
-# Slide 17: NR — Cross-Model Behavioral Difference
-- Same mechanism (gossip + link severing), very different emergent behavior
-- Nano: generic messages ("Open to new trades this round")
-- DeepSeek: active warnings, cross-referencing, public apologies
-- Mechanism effectiveness is model-dependent
+# 24: Key Takeaways
+  - G is the only mechanism never net-negative across all 3 models
+  - Model > Mechanism (baseline spread dwarfs mechanism effects)
+  - Mechanisms can backfire (C, GR/NR on weak models)
+  - Capability-gated: formal enforcement works everywhere, info mechanisms need capable models
+  - M unreliable (bug). All conclusions provisional (single-run)
 
-# Slide 18: NR Network Rewiring in Action
-- [IMAGE: network_snapshot_NR_run00.png]
-- Round 10 → Round 30: trolls isolated, honest agents rebuild denser connections
-
---- INFORMATION GAP ---
-
-# Slide 19: GR vs NR — Information-Action Gap
-- GR: perfect information, no enforcement → GR ≈ Baseline
-- NR: worse info but CAN sever links → NR outperforms GR
-- Actionable tools > perfect information
-
---- CROSS-MODEL ---
-
-# Slide 20: Cross-Model Summary Table — All 3 Models
-- [IMAGE: model_summary_table.png — all 3 models, gold border = best per model]
-- G has gold border for mini and nano. DeepSeek best = NR (ceiling effect)
-- M near-zero utility across all models (delegation bug)
-- C consistently lowest utility for weaker models
-
-# Slide 21: What Changes Across Models
-- G is #1 on all 3 models — only mechanism never net-negative
-- DeepSeek baseline stubbornly strong (sust 0.999) — mechanisms barely help
-- Mini is most fragile (sust 0.47 at baseline) — only G rescues it
-- NR and GR are capability-gated — work for DeepSeek, fail for mini
-- S robust for nano (+0.24 sust) but mediocre for mini
-- M results unreliable — excluded from ranking (delegation bug)
-
-# Slide 22: DeepSeek Utility Trajectories — 4 Trolls
-- [IMAGE: deepseek utility_trajectories.png]
-- NR (200) and G (191) lead, both above baseline B (181)
-- M collapses to -37 — only condition going deeply negative
-- Overall utilities much higher than nano (stronger cooperative prior)
-
-# Slide 23: Mini Utility Trajectories — 4 Trolls
-- [IMAGE: mini utility_trajectories.png]
-- NR (53) and B (43) lead — but far below nano/DeepSeek
-- G (24) suppresses trade volume but achieves highest sustainability (0.67)
-- M (-4) and C (11) near-zero — consistent failure across models
-- Mini paradox: high cooperation rate (0.78) but lowest sustainability (0.47)
-
-# Slide 24: Model Capability > Mechanism Choice
-- Marginal benefit table (Δ sustainability vs own baseline, 4 trolls):
-  - G:  DeepSeek +0.000, Mini +0.195, Nano +0.207
-  - S:  DeepSeek +0.001, Mini +0.036, Nano +0.241
-  - NR: DeepSeek -0.026, Mini -0.051, Nano +0.053
-  - GR: DeepSeek -0.020, Mini -0.069, Nano -0.128
-  - C:  DeepSeek -0.110, Mini +0.040, Nano -0.247
-- M excluded (delegation bug)
-- The model is a bigger lever than the mechanism
-- Formal enforcement (G) helps weak models; information-based mechanisms hurt them
-
---- WRAP-UP ---
-
-# Slide 25: Key Takeaways
-- G is the only mechanism never net-negative across all 3 models — and the only one that rescues mini
-- Model > Mechanism: baseline spread (sust 0.47–0.99) dwarfs mechanism effects
-- Mechanisms can backfire: C freezes markets, S drains commons, GR/NR hurt weak models
-- Capability-gated: information-rich mechanisms (GR, NR) need capable models; formal enforcement (G) works everywhere
-- M results unreliable (delegation bug). All conclusions provisional pending replication
-
-# Slide 26: Next Steps
-- Fix M delegation — implement bilateral delegation and re-run
-- Fill missing data — mini at 0/2 trolls; DeepSeek at 2 trolls (5 missing conditions)
-- Replication — 3 runs per condition for statistical significance
-- Stress test — higher troll counts (6, 8) to find G's breaking point
+# 25: Next Steps
+  - Fix M delegation (bilateral)
+  - Fill missing data (mini 0/2T, deepseek 2T)
+  - Replication (3 runs per condition)
+  - Stress test (6, 8 trolls — find G's breaking point)

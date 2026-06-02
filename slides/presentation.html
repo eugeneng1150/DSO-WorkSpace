@@ -662,7 +662,7 @@ flowchart LR
                 <li><strong>Gini Coefficient</strong> = inequality of utility distribution (0 = equal, 1 = one agent takes all) &mdash; a mechanism that helps 3 agents while starving 15 is not a good mechanism</li>
             </ul>
             <div class="callout" style="margin-top:2vh;">
-                <p>All metrics <strong>exclude troll agents</strong> &mdash; we measure how well the <em>honest</em> agents fare, not the trolls. Sustainability and cooperation rate are our own constructs (defined in methodology).</p>
+                <p>All metrics <strong>exclude troll agents</strong> &mdash; we measure how well the <em>Self - Interested</em> agents fare, not the trolls. Sustainability and cooperation rate are our own constructs (defined in methodology).</p>
             </div>
         </div>
     </div>
@@ -682,197 +682,68 @@ flowchart LR
         </div>
     </div>
 
-    <!-- ============ SECTION: RESULTS — ALL 3 MODELS ============ -->
+    <!-- ============ SECTION: BIG PICTURE — CROSS-MODEL FIRST ============ -->
 
-    <!-- SLIDE: Utility Trajectories — Nano -->
+    <!-- SLIDE 10: Mechanism Effectiveness is Model-Dependent -->
+    <div class="slide slide-statement">
+        <div class="geo-decoration" style="right:-8vw; top:15vh; width:30vw; height:30vw; opacity:0.2;"></div>
+        <div class="content">
+            <span class="quote-mark">&ldquo;</span>
+            <h2>Mechanism effectiveness is overwhelmingly model-dependent</h2>
+            <div style="margin-top:3vh;">
+                <p style="color:var(--text-secondary); font-size:clamp(0.95rem,1.2vw,1.1rem);">The same mechanism can be the best performer on one model and harmful on another.<br>
+                The baseline spread across models (sustainability 0.47&ndash;0.99) dwarfs any mechanism effect.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11-13: All 3 Utility Trajectories -->
     <div class="slide slide-imgtext">
-        <div class="label">Nano Results</div>
+        <div class="label">Nano</div>
         <h2>Utility Trajectories &mdash; Nano, 4 Trolls</h2>
         <div class="content">
             <div class="plot-container">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/utility_trajectories.png" alt="Utility Trajectories">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/utility_trajectories.png" alt="Nano Utility Trajectories">
             </div>
             <ul style="margin-top:2vh;">
-                <li><strong>G leads</strong> (112 total), <strong>S</strong> close behind (105), <strong>NR</strong> solid (99)</li>
+                <li><strong>G</strong> (112) &gt; <strong>S</strong> (105) &gt; <strong>NR</strong> (99) &mdash; enforcement mechanisms lead</li>
                 <li><strong>GR &asymp; Baseline</strong> (53 vs 55) &mdash; reputation alone doesn&rsquo;t help</li>
-                <li><strong>C is the only condition going negative</strong> (16) &mdash; <em>worse than no mechanism</em></li>
+                <li><strong>C</strong> near zero (16) &mdash; <em>worse than no mechanism</em></li>
             </ul>
         </div>
     </div>
 
-    <!-- SLIDE 9: Troll Resilience Table -->
     <div class="slide slide-imgtext">
-        <div class="label">Results</div>
-        <h2>Troll Resilience &mdash; Nano, 4 Trolls</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/troll_resilience_table.png" alt="Troll Resilience Table">
-            </div>
-            <div class="callout red" style="margin-top:2vh;">
-                <p>C shows only <strong>9</strong> damaging troll trades vs S&rsquo;s <strong>78</strong> &mdash; but C only has <strong>163</strong> total trades vs S&rsquo;s <strong>689</strong>. Low troll damage is a side effect of low trade volume, not active exclusion.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ SECTION: KEY INSIGHT ============ -->
-
-    <!-- SLIDE 10: Troll Isolation vs Cooperation -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Key Insight</div>
-        <h2>Troll Isolation &ne; Cooperation</h2>
-        <div class="content">
-            <ul>
-                <li>All mechanisms eventually reduce damaging troll trades over 30 rounds</li>
-                <li>The <strong>harder problem</strong> is getting self-interested agents to cooperate with <em>each other</em></li>
-                <li>C isolates trolls but freezes the entire market &mdash; agents stop trading altogether</li>
-                <li>GR agents identify trolls (0.00 reputation) but still can&rsquo;t sustain cooperation among honest agents</li>
-                <li>G and S succeed because they both isolate trolls <strong>and</strong> create incentives for honest agents to keep trading</li>
-            </ul>
-            <div class="callout blue" style="margin-top:3vh;">
-                <p><strong>The real benchmark is not &ldquo;can we stop trolls?&rdquo; but &ldquo;can honest agents still thrive despite them?&rdquo;</strong></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ SECTION: ESCALATION & FAILURE MODES ============ -->
-
-    <!-- SLIDE 11: Escalation 2T → 4T -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Escalation</div>
-        <h2>2 Trolls &rarr; 4 Trolls (Nano)</h2>
-        <div class="content">
-            <ul>
-                <li><strong>G is the only mechanism that improved</strong> &mdash; sustainability <em>+11.8%</em>, utility <em>+1.9%</em>. Oracle detection gets easier with more trolls (clearer patterns).</li>
-                <li><strong>NR nearly flat</strong> &mdash; sustainability -0.6%, utility +3.1%. Structural exclusion scales naturally.</li>
-                <li><strong>GR collapsed</strong> &mdash; sustainability <em>-31.6%</em>, utility <em>-37.4%</em>. Performed <strong>worse than Baseline</strong> at 4T (1.76 vs 1.83 utility). Information without tools was counterproductive.</li>
-                <li><strong>S stayed resilient on sustainability</strong> (-2.6%) but damaging troll trades doubled (39&rarr;78).</li>
-                <li><strong>C already broken at 2T</strong> &mdash; utility 0.82, leaving little room to fall further.</li>
-            </ul>
-            <div class="callout" style="margin-top:2vh;">
-                <p><strong>Caveat:</strong> Based on 1 run per condition. These trends are hypothesis-generating &mdash; statistical replication (3+ runs) is needed to confirm.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 12: Two Opposite Failure Modes -->
-    <div class="slide slide-twocol">
-        <div class="label">Failure Modes</div>
-        <h2>Two Opposite Failure Modes</h2>
-        <div class="content">
-            <div class="card card-red">
-                <h3>C &mdash; Over-Deterrence</h3>
-                <ul>
-                    <li>Best troll isolation (9 damaging trades)</li>
-                    <li>But only 163 total trades &mdash; <strong>market freeze</strong></li>
-                    <li>Penalty fear deters <em>all</em> trade, not just troll trade</li>
-                    <li>Utility: <strong>0.55</strong> (worst)</li>
-                </ul>
-            </div>
-            <div class="card" style="border-color: var(--amber);">
-                <h3 style="color: var(--amber);">S &mdash; Under-Deterrence</h3>
-                <ul>
-                    <li>Worst troll isolation (78 damaging trades)</li>
-                    <li>But 689 total trades &mdash; <strong>vibrant market</strong></li>
-                    <li>Sanctions create false security &mdash; agents trade broadly, including with trolls</li>
-                    <li>Utility: <strong>3.49</strong> (strong)</li>
-                </ul>
-            </div>
-        </div>
-        <div class="callout" style="position:relative; z-index:1; margin-top:1vh;">
-            <p>S deters honest-to-honest defection but trolls don&rsquo;t care about punishment. C deters everyone. <strong>Neither achieves targeted exclusion.</strong></p>
-        </div>
-    </div>
-
-    <!-- SLIDE 13: Why Contracting Fails -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Deep Dive</div>
-        <h2>Why Contracting (C) Fails</h2>
-        <div class="content">
-            <ul>
-                <li>Agents fear they cannot fulfill contracts (spoilage, competing trades)</li>
-                <li>They avoid the mechanism even when they <em>can</em> deliver &mdash; inherently risk-averse</li>
-                <li>Agents reason incorrectly: <em>&ldquo;a contract could backfire if the counterparty rejects&rdquo;</em> &mdash; but rejection costs nothing</li>
-                <li>Breach penalties reduce production capacity (negative utility), fewer trades, <strong>market freeze</strong></li>
-            </ul>
-            <div class="callout red" style="margin-top:3vh;">
-                <p><strong>Death spiral:</strong> penalty fear &rarr; mechanism avoidance &rarr; unprotected barter &rarr; troll exploitation &rarr; utility loss &rarr; less production &rarr; fewer trades</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE: M Cooperation Theater -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Known Bug</div>
-        <h2>Why Mediation (M) Fails &mdash; Delegation Bug</h2>
-        <div class="content">
-            <ul>
-                <li><strong>Zero delegated trades</strong> across all 3 models, all 30 rounds &mdash; agents never used the mediator</li>
-                <li><strong>Root cause:</strong> only the <em>acceptor</em> of a trade can delegate &mdash; the <em>proposer</em> has no delegation option</li>
-                <li>Every agent reasons: <em>&ldquo;delegation only helps if my counterparty also delegates &mdash; and I can&rsquo;t know if they will&rdquo;</em></li>
-                <li>In CoopEval, both players decide simultaneously &mdash; symmetric choice. Our design is asymmetric &mdash; coordination never bootstraps</li>
-                <li>M achieves cooperation_rate <strong>0.997</strong> (DeepSeek) but utility <strong>&minus;1.22</strong> &mdash; &ldquo;cooperation theater&rdquo;</li>
-            </ul>
-            <div class="callout red" style="margin-top:2vh;">
-                <p><strong>Implementation flaw, not a null result on mediation.</strong> M&rsquo;s poor performance reflects a coordination bug in our delegation design. A corrected bilateral-delegation version is planned for future work. All M results should be interpreted with this caveat.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 14: Defections & Trade Volume -->
-    <div class="slide slide-twocol">
-        <div class="label">Evidence</div>
-        <h2>Defections &amp; Trade Volume</h2>
-        <div class="content">
-            <div style="text-align:center;">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/defection_trajectory.png" alt="Defection Trajectory" style="max-width:100%; max-height:34vh; border:1px solid var(--line);">
-                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">G defections decline over time &mdash; governance deters repeat offenders</p>
-            </div>
-            <div style="text-align:center;">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/trade_volume.png" alt="Trade Volume" style="max-width:100%; max-height:34vh; border:1px solid var(--line);">
-                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">C trade volume near zero &mdash; market freeze visualized</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE: DeepSeek Utility Trajectories -->
-    <div class="slide slide-imgtext">
-        <div class="label">DeepSeek Results</div>
+        <div class="label">DeepSeek</div>
         <h2>Utility Trajectories &mdash; DeepSeek, 4 Trolls</h2>
         <div class="content">
             <div class="plot-container">
                 <img src="../simulation/data/plots/deepseek-v3/troll_4/utility_trajectories.png" alt="DeepSeek Utility Trajectories">
             </div>
             <ul style="margin-top:2vh;">
-                <li><strong>NR</strong> (200) and <strong>G</strong> (191) lead &mdash; both above baseline B (181)</li>
+                <li><strong>NR</strong> (200) and <strong>G</strong> (191) lead &mdash; but baseline B (181) is already very strong</li>
                 <li><strong>M collapses to &minus;37</strong> &mdash; delegation bug causes &ldquo;cooperation theater&rdquo;</li>
-                <li>Overall utilities <strong>much higher than nano</strong> (B: 181 vs nano B: 55) &mdash; stronger cooperative prior</li>
+                <li>Overall utilities <strong>3&times; higher than nano</strong> &mdash; DeepSeek barely needs mechanisms</li>
             </ul>
         </div>
     </div>
 
-    <!-- SLIDE: Mini Utility Trajectories -->
     <div class="slide slide-imgtext">
-        <div class="label">Mini Results</div>
+        <div class="label">Mini</div>
         <h2>Utility Trajectories &mdash; Mini, 4 Trolls</h2>
         <div class="content">
             <div class="plot-container">
                 <img src="../simulation/data/plots/gpt-5.4-mini/troll_4/utility_trajectories.png" alt="Mini Utility Trajectories">
             </div>
             <ul style="margin-top:2vh;">
-                <li><strong>NR</strong> (53) and <strong>B</strong> (43) lead &mdash; but total utilities far below nano/DeepSeek</li>
-                <li><strong>G</strong> (24) suppresses trade volume but achieves <strong>highest sustainability</strong> (0.67)</li>
-                <li>Mini paradox: high cooperation rate (0.78) but <strong>lowest sustainability</strong> (0.47) &mdash; agents &ldquo;cooperate&rdquo; but the economy collapses</li>
+                <li><strong>NR</strong> (53) and <strong>B</strong> (43) lead &mdash; but total utilities far below nano and DeepSeek</li>
+                <li><strong>G</strong> (24) has low utility but <strong>highest sustainability</strong> (0.67) &mdash; it rescues market health, not profit</li>
+                <li><strong>Mini paradox:</strong> cooperation rate 0.78 but sustainability 0.47 &mdash; agents &ldquo;cooperate&rdquo; but the economy collapses</li>
             </ul>
         </div>
     </div>
 
-    <!-- ============ SECTION: CROSS-MODEL COMPARISON ============ -->
-
-    <!-- SLIDE: Cross-Model Summary Table -->
+    <!-- SLIDE 14: Cross-Model Summary Table -->
     <div class="slide slide-imgtext">
         <div class="label">Cross-Model</div>
         <h2>Cross-Model Mechanism Comparison &mdash; 4 Trolls</h2>
@@ -882,13 +753,13 @@ flowchart LR
             </div>
             <ul style="margin-top:1vh;">
                 <li><strong>G</strong> has gold border (best composite) for both <strong>mini</strong> and <strong>nano</strong>. DeepSeek&rsquo;s best is <strong>NR</strong> (ceiling effect)</li>
-                <li><strong>M has near-zero utility</strong> across all models &mdash; known delegation bug</li>
-                <li><strong>C</strong> is consistently the lowest utility for weaker models (mini 0.37, nano 0.55)</li>
+                <li><strong>M</strong> near-zero utility across all models (known delegation bug)</li>
+                <li><strong>C</strong> consistently lowest utility for weaker models (mini 0.37, nano 0.55)</li>
             </ul>
         </div>
     </div>
 
-    <!-- SLIDE: Model > Mechanism -->
+    <!-- SLIDE 15: Model > Mechanism -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
         <div class="label">Key Finding</div>
@@ -914,61 +785,117 @@ flowchart LR
             </table>
             <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">M excluded (delegation bug). Baseline sustainability: DeepSeek 0.999, Mini 0.474, Nano 0.659.</p>
             <div class="callout blue" style="margin-top:2vh;">
-                <p><strong>The model is a bigger lever than the mechanism.</strong> Baseline spread across models (0.47&ndash;0.99) dwarfs the mechanism effect within any model. Formal enforcement (G) helps weak models; information-based mechanisms (GR, NR) hurt them.</p>
+                <p><strong>The model is a bigger lever than the mechanism.</strong> Formal enforcement (G) helps weak models; information-based mechanisms (GR, NR) hurt them.</p>
             </div>
         </div>
     </div>
 
-    <!-- SLIDE: What Changes Across Models -->
+    <!-- SLIDE 16: G is the consistent winner -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
-        <div class="label">Cross-Model</div>
-        <h2>What Changes Across Models</h2>
+        <div class="label">Key Finding</div>
+        <h2>Governance (G) is the Only Consistent Winner</h2>
         <div class="content">
             <ul>
-                <li><strong>G is #1 on all 3 models</strong> &mdash; the only mechanism never net-negative</li>
-                <li><strong>DeepSeek baseline is stubbornly strong</strong> &mdash; sustainability 0.999 with zero mechanisms. Mechanisms barely help; some actively hurt</li>
-                <li><strong>Mini is the most fragile</strong> &mdash; sustainability collapses to 0.47 at baseline. Only <strong>G</strong> rescues it (0.47 &rarr; 0.67)</li>
-                <li><strong>NR and GR are capability-gated</strong> &mdash; excellent for DeepSeek, fail for mini</li>
-                <li><strong>S is robust for nano</strong> (+0.24 sust) but mediocre for mini and utility-costly for DeepSeek</li>
-                <li><strong>M results unreliable</strong> &mdash; delegation bug. Excluded from rankings</li>
+                <li><strong>G is #1 on all 3 models</strong> &mdash; the only mechanism that is never net-negative</li>
+                <li><strong>Why G works everywhere:</strong> the oracle&rsquo;s detection and enforcement doesn&rsquo;t rely on agents reasoning about it &mdash; even weak models respond to fines and suspension threats</li>
+                <li><strong>NR and GR are capability-gated</strong> &mdash; excellent for DeepSeek (agents reason about reputation), fail for mini (agents ignore the signals)</li>
+                <li><strong>S is model-split</strong> &mdash; strong for nano (+0.24 sust) but mediocre for mini and utility-costly for DeepSeek</li>
+                <li><strong>C is consistently harmful</strong> &mdash; lowest utility for weaker models across all 3. Penalty fear freezes markets</li>
             </ul>
-            <div class="callout" style="margin-top:2vh;">
-                <p><strong>Implication:</strong> Formal enforcement (G) works across the capability spectrum; information-rich mechanisms (GR, NR) require a capable model.</p>
+            <div class="callout green" style="margin-top:2vh;">
+                <p><strong>Formal enforcement works across the capability spectrum. Information-rich mechanisms require a capable model to act on them.</strong></p>
             </div>
         </div>
     </div>
 
-    <!-- ============ SECTION: DEEP DIVES ============ -->
-
-    <!-- SLIDE: NR Cross-Model -->
-    <div class="slide slide-twocol">
-        <div class="label">Cross-Model</div>
-        <h2>NR &mdash; Cross-Model Behavioral Difference</h2>
+    <!-- SLIDE 17: Troll Isolation ≠ Cooperation -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Key Insight</div>
+        <h2>All Mechanisms Isolate Trolls &mdash; That&rsquo;s Not the Hard Part</h2>
         <div class="content">
-            <div class="card">
-                <h3>gpt-5.4-nano</h3>
+            <ul>
+                <li>Every mechanism eventually reduces damaging troll trades over 30 rounds &mdash; even Baseline</li>
+                <li>The <strong>harder problem</strong> is getting self-interested agents to cooperate with <em>each other</em></li>
+                <li>C isolates trolls perfectly (only 9 damaging trades) but freezes the entire market &mdash; 163 total trades vs S&rsquo;s 689</li>
+                <li>GR agents see trolls have 0.00 reputation but still defect among honest agents</li>
+                <li><strong>Cooperation rate is misleading:</strong> mini has 0.78 cooperation rate but 0.47 sustainability &mdash; agents &ldquo;cooperate&rdquo; (don&rsquo;t defect) but the economy still collapses because they stop producing and trading enough</li>
+            </ul>
+            <div class="callout blue" style="margin-top:2vh;">
+                <p><strong>The real benchmark: &ldquo;can honest agents still thrive despite trolls?&rdquo;</strong> &mdash; not just &ldquo;can we stop trolls?&rdquo;</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: DEEP DIVES — WHY ============ -->
+
+    <!-- SLIDE 18: Why C Consistently Fails -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Deep Dive</div>
+        <h2>Why Contracting (C) Fails Across All Models</h2>
+        <div class="content">
+            <ul>
+                <li>Agents fear they cannot fulfill contracts (spoilage, competing trades) &mdash; inherently risk-averse</li>
+                <li>Agents reason incorrectly: <em>&ldquo;a contract could backfire if the counterparty rejects&rdquo;</em> &mdash; but rejection costs nothing</li>
+                <li>The 6-utility breach penalty suppresses trade volume on all models (nano C: 163 trades vs B: 370)</li>
+                <li><strong>CoopEval comparison:</strong> their &ldquo;contracting&rdquo; rewrites the payoff matrix (cooperation becomes mathematically dominant). Ours adds a punishment layer on top &mdash; agents can still breach, they just pay a fine. Different mechanisms, same name</li>
+            </ul>
+            <div class="callout red" style="margin-top:2vh;">
+                <p><strong>Death spiral:</strong> penalty fear &rarr; mechanism avoidance &rarr; unprotected barter &rarr; utility loss &rarr; less production &rarr; fewer trades</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 19: M Delegation Bug -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Known Bug</div>
+        <h2>Mediation (M) &mdash; Delegation Bug</h2>
+        <div class="content">
+            <ul>
+                <li><strong>Zero delegated trades</strong> across all 3 models, all 30 rounds</li>
+                <li><strong>Root cause:</strong> only the <em>acceptor</em> can delegate &mdash; the <em>proposer</em> has no delegation option</li>
+                <li>Every agent reasons: <em>&ldquo;delegation only helps if my counterparty also delegates&rdquo;</em> &mdash; coordination never bootstraps</li>
+                <li>In CoopEval, both players decide simultaneously (symmetric). Ours is asymmetric</li>
+            </ul>
+            <div class="callout red" style="margin-top:2vh;">
+                <p><strong>Implementation flaw, not a null result on mediation.</strong> All M results should be interpreted with this caveat. Fix (bilateral delegation) planned for future work.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 20: NR/GR Capability-Gated -->
+    <div class="slide slide-twocol">
+        <div class="label">Deep Dive</div>
+        <h2>Information vs Action &mdash; GR and NR are Capability-Gated</h2>
+        <div class="content">
+            <div class="card card-red">
+                <h3>GR &mdash; Global Reputation</h3>
                 <ul>
-                    <li>Generic messages: <em>&ldquo;Open to new trades this round&rdquo;</em></li>
-                    <li>No specific warnings about trolls</li>
-                    <li>Gossip channel underutilized</li>
+                    <li>Agents <strong>see</strong> trolls have 0.00 reputation</li>
+                    <li>But <strong>cannot</strong> structurally exclude them</li>
+                    <li>DeepSeek reasons about it; mini/nano ignore it</li>
+                    <li>GR &asymp; Baseline for weak models</li>
                 </ul>
             </div>
             <div class="card card-green">
-                <h3>DeepSeek-V3</h3>
+                <h3>NR &mdash; Network Rewiring</h3>
                 <ul>
-                    <li>Active warnings: <em>&ldquo;Warning: Agent 6 defected on me twice&rdquo;</em></li>
-                    <li>Cross-referencing reports from multiple agents</li>
-                    <li>Public apologies for past defections</li>
+                    <li>Worse information (unverified gossip)</li>
+                    <li>But <strong>can sever links</strong> to bad actors</li>
+                    <li>DeepSeek uses gossip strategically; nano barely engages</li>
+                    <li>NR outperforms GR &mdash; <strong>actionable tools &gt; perfect information</strong></li>
                 </ul>
             </div>
         </div>
         <div class="callout blue" style="position:relative; z-index:1; margin-top:1vh;">
-            <p><strong>Implication:</strong> Same mechanism, very different emergent behavior. Mechanism effectiveness is model-dependent.</p>
+            <p><strong>Both mechanisms require agents capable of reasoning about social signals.</strong> They work for DeepSeek but fail for mini &mdash; a capability threshold, not a mechanism flaw.</p>
         </div>
     </div>
 
-    <!-- SLIDE 16: NR Network Snapshot -->
+    <!-- SLIDE 21: NR Network Snapshot -->
     <div class="slide slide-imgtext">
         <div class="label">Evidence</div>
         <h2>NR Network Rewiring in Action</h2>
@@ -979,35 +906,41 @@ flowchart LR
             <ul style="margin-top:2vh;">
                 <li><strong>Round 10 &rarr; Round 30:</strong> trolls (red, small) progressively isolated at the periphery</li>
                 <li>Honest agents (blue, large) <strong>rebuild denser connections</strong> among themselves</li>
-                <li>Network gets <em>more</em> connected over time, not less &mdash; agents sever bad links and form new good ones</li>
+                <li>Network gets <em>more</em> connected over time, not less</li>
             </ul>
         </div>
     </div>
 
-    <!-- ============ SECTION: INFORMATION GAP ============ -->
-
-    <!-- SLIDE 17: Information-Action Gap -->
-    <div class="slide slide-twocol">
-        <div class="label">Insight</div>
-        <h2>GR vs NR &mdash; The Information-Action Gap</h2>
+    <!-- SLIDE 22: Escalation -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Escalation</div>
+        <h2>2 Trolls &rarr; 4 Trolls (Nano Only)</h2>
         <div class="content">
-            <div class="card card-red">
-                <h3>GR &mdash; Global Reputation</h3>
-                <ul>
-                    <li>Agents <strong>see</strong> trolls have 0.00 reputation</li>
-                    <li>But <strong>cannot</strong> structurally exclude them</li>
-                    <li>Perfect information, no enforcement</li>
-                    <li>Result: GR &asymp; Baseline on nano; marginally better on DeepSeek</li>
-                </ul>
+            <ul>
+                <li><strong>G is the only mechanism that improved</strong> &mdash; sustainability <em>+11.8%</em>. Oracle detection gets more accurate with more trolls</li>
+                <li><strong>S and NR nearly flat</strong> &mdash; both robust to escalation</li>
+                <li><strong>GR collapsed</strong> &mdash; sustainability <em>&minus;31.6%</em>. Worse than Baseline at 4T. Information without tools is counterproductive under pressure</li>
+                <li><strong>C already broken at 2T</strong> &mdash; utility 0.82, nowhere to fall further</li>
+            </ul>
+            <div class="callout" style="margin-top:2vh;">
+                <p><strong>Caveat:</strong> Escalation data only complete for nano. Based on 1 run per condition &mdash; hypothesis-generating, not conclusive.</p>
             </div>
-            <div class="card card-green">
-                <h3>NR &mdash; Network Rewiring</h3>
-                <ul>
-                    <li>Worse information (unverified gossip)</li>
-                    <li>But <strong>can sever links</strong> to bad actors</li>
-                    <li>Actionable tools &gt; perfect information</li>
-                    <li>Result: NR outperforms GR</li>
-                </ul>
+        </div>
+    </div>
+
+    <!-- SLIDE 23: Evidence Plots -->
+    <div class="slide slide-twocol">
+        <div class="label">Evidence</div>
+        <h2>Defections &amp; Trade Volume (Nano)</h2>
+        <div class="content">
+            <div style="text-align:center;">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/defection_trajectory.png" alt="Defection Trajectory" style="max-width:100%; max-height:34vh; border:1px solid var(--line);">
+                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">G defections decline over time &mdash; governance deters repeat offenders</p>
+            </div>
+            <div style="text-align:center;">
+                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/trade_volume.png" alt="Trade Volume" style="max-width:100%; max-height:34vh; border:1px solid var(--line);">
+                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">C trade volume near zero &mdash; market freeze visualized</p>
             </div>
         </div>
     </div>
