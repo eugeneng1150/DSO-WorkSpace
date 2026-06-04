@@ -25,16 +25,7 @@
       "Bash(node *)",
       "WebFetch(domain:world.emergence.ai)",
       "Bash(rm -f \"C:\\\\Users\\\\NYiSheng\\\\Documents\\\\DSO-WorkSpace\\\\simulation\\\\data\\\\plots\"/*.png)",
-      "Bash(rm -f \"C:\\\\Users\\\\NYiSheng\\\\Documents\\\\DSO-WorkSpace\\\\simulation\\\\data\\\\plots\\\\gpt-5.4-nano\"/*.png)",
-      "Bash(where pdftoppm *)",
-      "Bash(where pdftotext *)",
-      "Bash(base64 -w0 /c/Users/NYiSheng/Documents/DSO-WorkSpace/__TRACKED_VAR__)",
-      "Bash(sed -i 's|__TRACKED_VAR__|__TRACKED_VAR__|g' /c/Users/NYiSheng/Documents/DSO-WorkSpace/slides/presentation-standalone.html)",
-      "Bash(echo 'Embedded: __TRACKED_VAR__')",
-      "Bash(ls -lh /c/Users/NYiSheng/Documents/DSO-WorkSpace/slides/presentation-standalone.html)",
-      "WebFetch(domain:azure.microsoft.com)",
-      "WebFetch(domain:futureagi.com)",
-      "WebFetch(domain:cloudprice.net)"
+      "Bash(rm -f \"C:\\\\Users\\\\NYiSheng\\\\Documents\\\\DSO-WorkSpace\\\\simulation\\\\data\\\\plots\\\\gpt-5.4-nano\"/*.png)"
     ]
   }
 }
