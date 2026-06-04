@@ -41,6 +41,7 @@ def run_condition(
     runs: int = RUNS_PER_CONDITION,
     n_trolls: int = 0,
     total_rounds: int | None = None,
+    troll_schedule: list[tuple[int, int]] | None = None,
 ) -> list[dict]:
     """Run all repetitions for one condition. Returns list of run summaries."""
     from ..config import ROUNDS
@@ -58,6 +59,7 @@ def run_condition(
             condition_label=condition,
             run_idx=run_idx,
             total_rounds=effective_rounds,
+            troll_schedule=troll_schedule,
         )
         round_logs = game.run()
 
@@ -65,18 +67,19 @@ def run_condition(
             "condition": condition,
             "run": run_idx,
             "n_trolls": n_trolls,
+            "troll_schedule": troll_schedule,
             "total_rounds": effective_rounds,
             "timestamp": datetime.utcnow().isoformat(),
             "session_log": game.session_log,
             "rounds": round_logs,
             "final_metrics": round_logs[-1]["metrics"] if round_logs else {},
             "agent_types": {
-                a.agent_id: type(a).__name__ for a in agents
+                a.agent_id: type(a).__name__ for a in game.agents
             },
         }
         summaries.append(summary)
-        _save_run(condition, run_idx, summary, n_trolls=n_trolls)
-        _save_traces(condition, run_idx, game.trace_log, n_trolls=n_trolls)
+        _save_run(condition, run_idx, summary, n_trolls=n_trolls, troll_schedule=troll_schedule)
+        _save_traces(condition, run_idx, game.trace_log, n_trolls=n_trolls, troll_schedule=troll_schedule)
 
     return summaries
 
@@ -86,6 +89,7 @@ def run_all(
     runs: int | None = None,
     n_trolls: int = 0,
     total_rounds: int | None = None,
+    troll_schedule: list[tuple[int, int]] | None = None,
 ) -> dict[str, list[dict]]:
     """Run all conditions sequentially."""
     results = {}
@@ -96,23 +100,37 @@ def run_all(
         kwargs["n_trolls"] = n_trolls
     if total_rounds is not None:
         kwargs["total_rounds"] = total_rounds
+    if troll_schedule is not None:
+        kwargs["troll_schedule"] = troll_schedule
     for condition in conditions:
         results[condition] = run_condition(condition, **kwargs)
     return results
 
 
-def _save_run(condition: str, run_idx: int, data: dict, n_trolls: int = 0) -> None:
+def _save_run(condition: str, run_idx: int, data: dict, n_trolls: int = 0,
+              troll_schedule: list | None = None) -> None:
     config.DATA_DIR.mkdir(parents=True, exist_ok=True)
-    tag = f"_t{n_trolls}" if n_trolls > 0 else ""
+    if troll_schedule:
+        tag = "_tprog"
+    elif n_trolls > 0:
+        tag = f"_t{n_trolls}"
+    else:
+        tag = ""
     filename = config.DATA_DIR / f"{condition}{tag}_run_{run_idx:02d}.json"
     with open(filename, "w") as f:
         json.dump(data, f, indent=2)
     print(f"  Saved → {filename}")
 
 
-def _save_traces(condition: str, run_idx: int, traces: list[dict], n_trolls: int = 0) -> None:
+def _save_traces(condition: str, run_idx: int, traces: list[dict], n_trolls: int = 0,
+                 troll_schedule: list | None = None) -> None:
     config.DATA_DIR.mkdir(parents=True, exist_ok=True)
-    tag = f"_t{n_trolls}" if n_trolls > 0 else ""
+    if troll_schedule:
+        tag = "_tprog"
+    elif n_trolls > 0:
+        tag = f"_t{n_trolls}"
+    else:
+        tag = ""
     filename = config.DATA_DIR / f"{condition}{tag}_run_{run_idx:02d}_traces.jsonl"
     with open(filename, "w") as f:
         for entry in traces:

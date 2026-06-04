@@ -28,6 +28,8 @@ def main():
     parser.add_argument("--analyse", action="store_true", help="Run analyst agent after simulation")
     parser.add_argument("--trolls", type=int, default=0,
                         help="Number of troll agents — deterministic defectors (default 0)")
+    parser.add_argument("--progressive-trolls", action="store_true",
+                        help="Progressive injection: 0→4→8→16 trolls at rounds 1/51/101/151 (200 rounds)")
     parser.add_argument("--rounds", type=int, default=None,
                         help="Override number of rounds (default 30)")
     parser.add_argument("--model", type=str, default=None,
@@ -67,18 +69,27 @@ def main():
 
     from . import config as _cfg
     print(f"Data directory: {_cfg.DATA_DIR}")
-    if args.trolls:
+
+    troll_schedule = None
+    if args.progressive_trolls:
+        troll_schedule = [(51, 4), (101, 4), (151, 8)]
+        if not args.rounds:
+            args.rounds = 200
+        print(f"Progressive troll injection: 0→4→8→16 at rounds 1/51/101/151 ({args.rounds} rounds)")
+    elif args.trolls:
         print(f"Troll agents: {args.trolls}")
     if args.rounds:
-        print(f"Rounds override: {args.rounds}")
+        print(f"Rounds: {args.rounds}")
 
     run_kwargs: dict = {}
     if args.runs:
         run_kwargs["runs"] = args.runs
-    if args.trolls:
+    if args.trolls and not args.progressive_trolls:
         run_kwargs["n_trolls"] = args.trolls
     if args.rounds:
         run_kwargs["total_rounds"] = args.rounds
+    if troll_schedule:
+        run_kwargs["troll_schedule"] = troll_schedule
 
     if args.condition:
         run_condition(args.condition, **run_kwargs)
@@ -88,7 +99,7 @@ def main():
 
     if args.plot:
         from .analysis.plots import plot_all
-        plot_all(n_trolls=args.trolls)
+        plot_all(n_trolls=args.trolls, progressive=args.progressive_trolls)
 
     if args.interactive:
         from .analysis.interactive_network import plot_interactive_networks

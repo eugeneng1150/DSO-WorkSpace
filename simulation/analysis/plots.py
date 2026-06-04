@@ -10,16 +10,19 @@ import numpy as np
 from .. import config
 from ..config import CONDITIONS, CONDITION_MECHANISMS
 
-def _get_out_dir(n_trolls: int = 0) -> Path:
+def _get_out_dir(n_trolls: int = 0, progressive: bool = False) -> Path:
     """Plots output directory: plots/<model>/ or plots/<model>/troll_<N>/."""
     model_tag = config.DATA_DIR.name
     base = Path(__file__).parent.parent / "data" / "plots" / model_tag
+    if progressive:
+        return base / "troll_progressive"
     if n_trolls > 0:
         return base / f"troll_{n_trolls}"
     return base
 
 OUT_DIR = Path(__file__).parent.parent / "data" / "plots"  # updated dynamically in plot_all
 _N_TROLLS = 0  # set by plot_all(), controls which log files to load
+_PROGRESSIVE = False  # set by plot_all(), controls progressive troll mode
 
 METRICS = ["gini"]
 
@@ -33,7 +36,9 @@ INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accurac
 COLORS = dict(zip(CONDITIONS, cm.tab20(np.linspace(0, 1, max(len(CONDITIONS), 1)))))
 
 def _load_runs(condition: str) -> list[dict]:
-    if _N_TROLLS > 0:
+    if _PROGRESSIVE:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_tprog_run_*.json"))
+    elif _N_TROLLS > 0:
         files = sorted(config.DATA_DIR.glob(f"{condition}_t{_N_TROLLS}_run_*.json"))
     else:
         files = sorted(config.DATA_DIR.glob(f"{condition}_run_*.json"))
@@ -42,6 +47,26 @@ def _load_runs(condition: str) -> list[dict]:
         with open(f) as fp:
             runs.append(json.load(fp))
     return runs
+
+
+def _get_troll_schedule(runs: list[dict]) -> list[tuple[int, int]]:
+    """Extract troll injection schedule from run data. Returns [(round, n_new), ...]."""
+    if not runs:
+        return []
+    schedule = runs[0].get("troll_schedule") or runs[0].get("session_log", {}).get("troll_schedule")
+    if not schedule:
+        return []
+    return [(int(r), int(n)) for r, n in schedule]
+
+
+def _draw_injection_lines(ax, schedule: list[tuple[int, int]]) -> None:
+    """Draw vertical red dashed lines at troll injection rounds."""
+    cumulative = 0
+    for inject_round, n_new in schedule:
+        cumulative += n_new
+        ax.axvline(inject_round, color="red", linestyle="--", linewidth=1.0, alpha=0.6)
+        ax.text(inject_round + 1, 0.95, f"+{n_new}T", transform=ax.get_xaxis_transform(),
+                fontsize=7, color="red", alpha=0.8, va="top")
 
 
 def _mean_metric_over_rounds(runs: list[dict], metric: str) -> list[float]:
@@ -120,8 +145,7 @@ def _troll_defection_stats(runs: list[dict]) -> list[float]:
                 continue
             trades = run["rounds"][r].get("trades", [])
             count = sum(1 for t in trades
-                        if str(t.get("defected_by")) in troll_ids
-                        and str(t["proposer"]) not in troll_ids)
+                        if str(t.get("defected_by")) in troll_ids)
             round_defections.append(count)
         defection_counts.append(np.mean(round_defections) if round_defections else 0.0)
     return defection_counts
@@ -148,6 +172,10 @@ def plot_metric_trajectories(save: bool = True) -> None:
             trajectory = _mean_metric_over_rounds(runs, "gini")
             rounds = list(range(1, len(trajectory) + 1))
             ax.plot(rounds, trajectory, label="Gini", color="tab:purple", linewidth=1.8)
+
+            schedule = _get_troll_schedule(runs)
+            if schedule:
+                _draw_injection_lines(ax, schedule)
 
         ax.set_title(condition, fontweight="bold")
         ax.set_ylim(0, 1.05)
@@ -222,6 +250,10 @@ def plot_defection_trajectory(save: bool = True) -> None:
                 has_trolls = True
                 ax.plot(rounds, troll_defections, color="red", linewidth=1.5,
                         linestyle="--", alpha=0.8, label="Troll → victim")
+
+            schedule = _get_troll_schedule(runs)
+            if schedule:
+                _draw_injection_lines(ax, schedule)
         ax.set_title(condition, fontweight="bold")
         ax.grid(True, alpha=0.3)
 
@@ -255,6 +287,10 @@ def plot_trade_volume(save: bool = True) -> None:
             rounds = list(range(1, len(trade_counts) + 1))
             ax.plot(rounds, trade_counts, color=COLORS[condition], linewidth=1.8)
             ax.fill_between(rounds, trade_counts, alpha=0.15, color=COLORS[condition])
+
+            schedule = _get_troll_schedule(runs)
+            if schedule:
+                _draw_injection_lines(ax, schedule)
         ax.set_title(condition, fontweight="bold")
         ax.grid(True, alpha=0.3)
 
@@ -618,6 +654,10 @@ def plot_utility_trajectories(save: bool = True) -> None:
             ax.text(0.97, 0.97, f"Total: {total_util:.0f}", transform=ax.transAxes,
                     ha="right", va="top", fontsize=9, fontweight="bold",
                     bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
+
+            schedule = _get_troll_schedule(runs)
+            if schedule:
+                _draw_injection_lines(ax, schedule)
 
         ax.set_title(condition, fontweight="bold")
         ax.grid(True, alpha=0.3)
@@ -1557,10 +1597,11 @@ def plot_troll_escalation_table(save: bool = True, troll_counts: tuple[int, ...]
     _maybe_save(fig, "troll_escalation_table.png", save)
 
 
-def plot_all(save: bool = True, n_trolls: int = 0) -> None:
-    global OUT_DIR, _N_TROLLS
+def plot_all(save: bool = True, n_trolls: int = 0, progressive: bool = False) -> None:
+    global OUT_DIR, _N_TROLLS, _PROGRESSIVE
     _N_TROLLS = n_trolls
-    OUT_DIR = _get_out_dir(n_trolls)
+    _PROGRESSIVE = progressive
+    OUT_DIR = _get_out_dir(n_trolls, progressive=progressive)
     plot_metric_trajectories(save)
     plot_defection_trajectory(save)
     plot_trade_volume(save)

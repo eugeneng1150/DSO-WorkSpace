@@ -56,6 +56,10 @@ JUDICIAL_FALSE_FINE = 2        # additional fine for false/invalid complaint
 ESCROW_POOL_INITIAL = 100      # shared insurance pool starting balance
 ESCROW_PAYOUT = 4              # compensation paid from pool to victim per defection
 
+# Progressive troll injection schedule: list of (round, n_new_trolls)
+# Empty list = no progressive injection (use --trolls for fixed count)
+TROLL_SCHEDULE: list[tuple[int, int]] = []
+
 # Marketplace cooperation threshold (Sustainability and Cooperation Rate must exceed this)
 COOPERATION_THRESHOLD = 0.5
 

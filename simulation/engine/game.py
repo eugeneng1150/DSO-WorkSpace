@@ -29,6 +29,7 @@ class Game:
         condition_label: str,
         run_idx: int,
         total_rounds: int = ROUNDS,
+        troll_schedule: list[tuple[int, int]] | None = None,
     ):
         self.agents = agents
         self.mechanisms = mechanisms
@@ -36,6 +37,8 @@ class Game:
         self.run_idx = run_idx
         self.total_rounds = total_rounds
         self.mechanism_names = [m.name for m in mechanisms]
+        self.troll_schedule = troll_schedule or []
+        self._next_troll_id = max(a.agent_id for a in agents) + 1
 
         agent_ids = [a.agent_id for a in agents]
         self.specialties = {a.agent_id: a.specialty for a in agents}
@@ -57,9 +60,49 @@ class Game:
         self.session_log: dict = {
             "network": {str(k): sorted(v) for k, v in self.market.network.items()},
             "specialties": {str(k): v for k, v in self.specialties.items()},
-            "troll_ids": self.troll_ids,
+            "troll_ids": list(self.troll_ids),
+            "troll_schedule": self.troll_schedule,
         }
         self._pre_consumption_penalties: dict[int, float] = {}
+
+    def _inject_trolls(self, n_new: int, round_num: int) -> None:
+        """Create n_new TrollAgents and integrate them into the running game."""
+        for i in range(n_new):
+            good = GOODS[i % len(GOODS)]
+            others = [g for g in GOODS if g != good]
+            troll = TrollAgent(
+                agent_id=self._next_troll_id, specialty=good, needs=(others[0], others[1])
+            )
+            self._next_troll_id += 1
+
+            self.agents.append(troll)
+            self.troll_ids.append(troll.agent_id)
+            self.specialties[troll.agent_id] = troll.specialty
+
+            self.market.agent_ids.append(troll.agent_id)
+            self.market.troll_ids.append(troll.agent_id)
+            self.market.inventories[troll.agent_id] = {g: 0 for g in GOODS}
+            self.market.private_inboxes[troll.agent_id] = []
+            self.market.pending_offers[troll.agent_id] = []
+            self.market.system_reputation[troll.agent_id] = 1.0
+            self.market._trade_counts[troll.agent_id] = {"success": 0, "total": 0}
+            self.market.defections_suffered[troll.agent_id] = 0
+            self.market.warnings_broadcast[troll.agent_id] = 0
+
+            self.market.network[troll.agent_id] = set()
+            for aid in self.market.agent_ids:
+                if aid != troll.agent_id:
+                    self.market.network[troll.agent_id].add(aid)
+                    self.market.network[aid].add(troll.agent_id)
+
+            if self.market.governance_states:
+                from ..mechanisms.governance import GovernanceState
+                self.market.governance_states[troll.agent_id] = GovernanceState()
+
+        if hasattr(self.market, '_escrow_agents'):
+            self.market._escrow_agents = self.agents
+
+        self.session_log["troll_ids"] = list(self.troll_ids)
 
     def run(self) -> list[dict]:
         loop = asyncio.get_event_loop()
@@ -103,6 +146,11 @@ class Game:
         pbar = tqdm(range(1, self.total_rounds + 1), desc=f"[{self.condition_label}] Run {self.run_idx}", unit="round", leave=True)
         for round_num in pbar:
             self.market.new_round(round_num)
+
+            for inject_round, n_new in self.troll_schedule:
+                if round_num == inject_round:
+                    self._inject_trolls(n_new, round_num)
+
             for mech in self.mechanisms:
                 mech.on_round_start(self.market, round_num)
 
