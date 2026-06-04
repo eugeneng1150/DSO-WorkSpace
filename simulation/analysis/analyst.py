@@ -15,11 +15,11 @@ import numpy as np
 import anthropic
 
 from .. import config
-from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, COOPERATION_THRESHOLD, CONDITIONS
+from ..config import ANALYST_ENDPOINT, ANALYST_MODEL, CONDITIONS
 
 _BASE_DATA_DIR = Path(__file__).parent.parent / "data" / "runs"
 OUT_DIR = Path(__file__).parent.parent / "data"
-METRICS = ["sustainability", "cooperation_rate", "gini"]
+METRICS = ["gini", "mean_utility"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 
 _MECHANISM_LABELS = {
@@ -30,6 +30,8 @@ _MECHANISM_LABELS = {
     "G":  "governance (oracle detects defection >40% and predatory targeting, escalates to fines/suspension)",
     "NR": "network rewiring + local reputation (sever/request links, 10-round gossip history, no system scores)",
     "S":  "costly sanctions (spend 1 utility → target loses 3, anonymous, publicly announced)",
+    "J":  "judicial (complaint-driven enforcement — victims file complaints, court verifies and fines defectors 5 utility)",
+    "E":  "escrow (shared insurance pool — starts at 100, pays victims 4 per defection, pool collapse resets ALL agents' utility to 0)",
 }
 
 client = anthropic.Anthropic(
@@ -119,20 +121,16 @@ def _summarize_condition(condition: str, runs: list[dict]) -> dict:
 
     for metric in METRICS + INTERMEDIATE:
         all_vals = [
-            rnd["metrics"].get(metric, rnd["metrics"].get("peace", 0)) if metric == "cooperation_rate" else rnd["metrics"].get(metric, 0)
+            rnd["metrics"].get(metric, 0)
             for run in runs for rnd in run["rounds"]
-            if rnd["metrics"].get(metric, rnd["metrics"].get("peace")) is not None
+            if rnd["metrics"].get(metric) is not None
         ]
         cond[metric] = {
             "mean": round(float(np.mean(all_vals)), 4) if all_vals else None,
             "final": round(float(np.mean([
-                run["rounds"][-1]["metrics"].get(metric, run["rounds"][-1]["metrics"].get("peace", 0)) if metric == "cooperation_rate"
-                else run["rounds"][-1]["metrics"].get(metric, 0) for run in runs
+                run["rounds"][-1]["metrics"].get(metric, 0) for run in runs
             ])), 4),
         }
-
-    # cooperation_rate is already captured above via METRICS loop as cond["cooperation_rate"]["mean"]
-    # No binary cooperation_achieved field — use raw numbers throughout
 
     if troll_ids:
         n_rounds = len(runs[0]["rounds"])
@@ -168,16 +166,14 @@ def _summarize_condition(condition: str, runs: list[dict]) -> dict:
 def _build_round_table(runs: list[dict]) -> str:
     n_rounds = len(runs[0]["rounds"])
     troll_ids = _get_troll_ids(runs[0])
-    lines = [f"{'Rnd':>3} | {'Coop%':>6} | {'Sustain':>7} | {'Gini':>5} | {'Defect':>6} | {'Trades':>6} | {'AvgUtil':>7}"]
-    lines.append(f"{'-'*3}-+-{'-'*6}-+-{'-'*7}-+-{'-'*5}-+-{'-'*6}-+-{'-'*6}-+-{'-'*7}")
+    lines = [f"{'Rnd':>3} | {'Gini':>5} | {'Defect':>6} | {'Trades':>6} | {'AvgUtil':>7}"]
+    lines.append(f"{'-'*3}-+-{'-'*5}-+-{'-'*6}-+-{'-'*6}-+-{'-'*7}")
     for r in range(n_rounds):
-        coop, sust, gini, defects, trades, utils = [], [], [], [], [], []
+        gini, defects, trades, utils = [], [], [], []
         for run in runs:
             if r >= len(run["rounds"]):
                 continue
             rnd = run["rounds"][r]
-            coop.append(rnd["metrics"].get("cooperation_rate", rnd["metrics"].get("peace", 0)))
-            sust.append(rnd["metrics"].get("sustainability", 0))
             gini.append(rnd["metrics"].get("gini", 0))
             defects.append(rnd.get("defections", 0))
             trades.append(rnd.get("trade_count", 0))
@@ -186,7 +182,7 @@ def _build_round_table(runs: list[dict]) -> str:
             if non_troll:
                 utils.append(np.mean(non_troll))
         lines.append(
-            f"{r+1:>3} | {np.mean(coop):>6.3f} | {np.mean(sust):>7.3f} | {np.mean(gini):>5.3f} | "
+            f"{r+1:>3} | {np.mean(gini):>5.3f} | "
             f"{np.mean(defects):>6.1f} | {np.mean(trades):>6.1f} | {np.mean(utils):>7.2f}"
         )
     return "\n".join(lines)
@@ -371,26 +367,20 @@ Write a single comprehensive report with these sections:
 
 2. **DATA COVERAGE**: Briefly state what data exists and what is missing. Flag any conclusions that are limited by single-run or single-model evidence.
 
-3. **CROSS-MODEL MECHANISM RANKING (4 trolls)**: This is the one troll count with complete data across all models. Rank all 7 conditions. For each, show raw numeric values for sustainability, mean_utility, and cooperation_rate["mean"] across all models. Do NOT use ✓/✗ or binary pass/fail — use the actual numbers from the summary data. Present as a comparison table with columns: Condition | Model1 (sust / util / coop_rate) | Model2 | Model3 | Verdict.
+3. **MECHANISM RANKING**: Rank all conditions. For each, show raw numeric values for mean_utility and gini across all troll counts. Do NOT use ✓/✗ or binary pass/fail — use the actual numbers from the summary data. Present as a comparison table with columns: Condition | 0T (util / gini) | 4T | 8T | 16T | Verdict.
 
-4. **MODEL COMPARISON**: How do the models differ in baseline cooperative behavior? Which models need mechanisms more? How does the marginal benefit of each mechanism change across models? Use raw numeric values (sustainability, mean_utility, cooperation_rate) throughout — no ✓/✗ symbols.
+4. **TROLL ESCALATION ANALYSIS**: How does each mechanism degrade under escalating adversarial pressure (0→4→8→16 trolls)? Which mechanisms are robust vs fragile? Use raw numeric values (mean_utility, gini) throughout — no ✓/✗ symbols.
 
-5. **ESCALATION ANALYSIS**: Where troll escalation data exists (primarily nano: t2→t4), how does each mechanism degrade? Which mechanisms are robust vs fragile? Note data gaps.
-
-6. **MECHANISM-SPECIFIC FINDINGS**: For each of the 7 conditions, synthesize findings across all available models:
+5. **MECHANISM-SPECIFIC FINDINGS**: For each condition, synthesize findings:
    - What worked and what didn't?
-   - Is the mechanism's effect consistent or model-dependent?
    - What is the failure mode (if any)?
 
-7. **BEHAVIORAL INSIGHTS** (use the CoT traces): Compare how agents from different models reason under the same mechanism. Quote specific examples showing:
-   - How agent reasoning style differs across models
-   - Whether more capable models use mechanisms more strategically
-   - How agents react to trolls differently across models
-   Use exact quotes, citing model, round, agent ID.
+6. **BEHAVIORAL INSIGHTS** (use the CoT traces): Quote specific examples showing:
+   - Whether agents use mechanisms strategically
+   - How agents react to trolls
+   Use exact quotes, citing round and agent ID.
 
-8. **KEY CROSS-MODEL PATTERNS**: What patterns hold across ALL models? What patterns are model-specific? This section should directly inform which findings are publishable vs preliminary.
-
-9. **IMPLICATIONS & NEXT STEPS**: What should be tested next? Consider: missing data cells, replication needs, mechanism combinations, higher troll counts.
+7. **IMPLICATIONS & NEXT STEPS**: What should be tested next?
 
 Be specific — cite numbers and quote traces. Flag every claim that relies on a single run. Distinguish between "consistent across models" and "observed in one model only."
 """

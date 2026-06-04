@@ -12,6 +12,8 @@ from ..config import (
     GOODS, ROUNDS, UTILITY_CONSUME, COST_PRODUCE, MEDIATION_FEE,
     DEFAULT_BREACH_PENALTY, MAX_PRODUCE, MIN_NEIGHBORS, MAX_NEIGHBORS,
     SPOILAGE_RATE, SANCTION_COST_RATIO,
+    JUDICIAL_FILING_FEE, JUDICIAL_PENALTY,
+    JUDICIAL_COMPENSATION, JUDICIAL_FALSE_FINE,
 )
 
 if TYPE_CHECKING:
@@ -115,11 +117,13 @@ class Game:
 
             metrics = compute_metrics(self.market, round_utilities)
             self.market.metrics_log.append({"round": round_num, **metrics})
-            pbar.set_postfix(sust=f"{metrics['sustainability']:.2f}", coop=f"{metrics['cooperation_rate']:.2f}")
+            non_troll_utils = [v for k, v in round_utilities.items() if k not in self.troll_ids]
+            avg_util = sum(non_troll_utils) / max(len(non_troll_utils), 1)
+            pbar.set_postfix(util=f"{avg_util:.1f}", gini=f"{metrics['gini']:.2f}")
 
             for mech in self.mechanisms:
-                if mech.name == "contracting":
-                    continue  # already enforced in Phase 2b inside _run_round
+                if mech.name in ("contracting", "escrow"):
+                    continue  # already enforced inside _run_round before consumption
                 mech.on_round_end(self.market, round_num)
 
             private_messages = [
@@ -244,6 +248,16 @@ class Game:
                     s for s in self.market.sanction_log
                     if s["round"] == round_num
                 ] if hasattr(self.market, "sanction_log") and "sanction" in self.mechanism_names else None,
+                # --- Judicial ---
+                "complaints_this_round": [
+                    c for c in self.market.complaint_log
+                    if c["round"] == round_num
+                ] if hasattr(self.market, "complaint_log") and "judicial" in self.mechanism_names else None,
+                # --- Escrow ---
+                "escrow_forfeitures_this_round": [
+                    e for e in self.market.escrow_log
+                    if e["round"] == round_num
+                ] if hasattr(self.market, "escrow_log") and "escrow" in self.mechanism_names else None,
                 # --- Messages ---
                 "private_messages": private_messages,
                 "public_messages": public_messages,
@@ -329,6 +343,16 @@ class Game:
         for agent in self.agents:
             actions = trade_actions.get(agent.agent_id, [])
             self._process_trade_decisions(agent.agent_id, actions, round_num)
+
+        # Judicial complaints (agents file after seeing trade outcomes)
+        if "judicial" in self.mechanism_names:
+            complaint_actions = await self._call_agents_phase("complaint", round_num)
+            self._process_complaint_actions(complaint_actions, round_num)
+
+        # Escrow: process defection payouts before consumption (same-round compensation)
+        for mech in self.mechanisms:
+            if mech.name == "escrow":
+                mech.on_round_end(self.market, round_num)
 
         # Snapshot penalties before consumption pops them
         self._pre_consumption_penalties = dict(self.market._penalty_ledger)
@@ -591,6 +615,73 @@ class Game:
                 self.market.public_feed.append(Message(
                     sender_id=-1,
                     text=f"Agent {target} was sanctioned this round (-{damage} utility).",
+                    round_num=round_num,
+                    channel="public",
+                ))
+
+    def _process_complaint_actions(
+        self, complaint_actions: dict[int, list[dict]], round_num: int
+    ) -> None:
+        seen_complaints: set[tuple[int, str]] = set()
+        for agent in sorted(self.agents, key=lambda a: a.agent_id):
+            actions = complaint_actions.get(agent.agent_id, [])
+            for act in actions:
+                if act.get("action") != "file_complaint":
+                    continue
+                try:
+                    target = int(act["target"])
+                    trade_id = str(act["trade_id"])
+                except (KeyError, ValueError, TypeError):
+                    continue
+                if target not in self.market.agent_ids or target == agent.agent_id:
+                    continue
+                if (agent.agent_id, trade_id) in seen_complaints:
+                    continue
+                seen_complaints.add((agent.agent_id, trade_id))
+
+                self.market._penalty_ledger[agent.agent_id] = (
+                    self.market._penalty_ledger.get(agent.agent_id, 0) + JUDICIAL_FILING_FEE
+                )
+
+                cited_trade = next(
+                    (t for t in self.market.trade_history
+                     if t.trade_id == trade_id),
+                    None,
+                )
+
+                filer_is_party = (
+                    cited_trade is not None
+                    and (agent.agent_id == cited_trade.proposer_id
+                         or agent.agent_id == cited_trade.target_id)
+                )
+
+                if (filer_is_party
+                        and cited_trade.status == "defected"
+                        and cited_trade.defected_by == target):
+                    self.market._penalty_ledger[target] = (
+                        self.market._penalty_ledger.get(target, 0) + JUDICIAL_PENALTY
+                    )
+                    self.market._penalty_ledger[agent.agent_id] = (
+                        self.market._penalty_ledger.get(agent.agent_id, 0) - JUDICIAL_COMPENSATION
+                    )
+                    verdict = "GUILTY"
+                else:
+                    self.market._penalty_ledger[agent.agent_id] = (
+                        self.market._penalty_ledger.get(agent.agent_id, 0) + JUDICIAL_FALSE_FINE
+                    )
+                    verdict = "DISMISSED"
+
+                self.market.complaint_log.append({
+                    "round": round_num,
+                    "filer": agent.agent_id,
+                    "target": target,
+                    "trade_id": trade_id,
+                    "verdict": verdict,
+                })
+
+                self.market.public_feed.append(Message(
+                    sender_id=-1,
+                    text=f"Court ruling: Agent {agent.agent_id} filed complaint against Agent {target} → {verdict}.",
                     round_num=round_num,
                     channel="public",
                 ))

@@ -1,0 +1,30 @@
+=== SHARED INSURANCE POOL (active this session) ===
+
+A collective insurance pool protects all agents in this marketplace.
+When someone is defected on, the pool compensates the victim.
+
+HOW THE POOL WORKS:
+  - The pool started with {pool_initial} utility.
+  - Each time an agent defects on a trade, the pool pays the victim
+    {payout} utility as compensation.
+  - The pool does NOT replenish. Every defection permanently drains it.
+  - If the pool reaches 0: ALL agents' total accumulated utility is
+    RESET TO ZERO. Everyone loses everything — cooperators and
+    defectors alike.
+
+CURRENT POOL STATUS:
+  Pool balance: {pool_balance} / {pool_initial}
+  Defections so far: {total_defections}
+  Defections until collapse: {defections_remaining}
+
+RECENT POOL PAYOUTS:
+{recent_escrow_log}
+
+STRATEGY:
+  - Every defection brings the entire marketplace closer to collapse.
+  - Even if YOU cooperate, other agents' defections drain the pool that
+    protects you.
+  - If the pool collapses, you lose ALL your accumulated utility — not
+    just this round, but everything you have earned so far.
+  - Consider: is any short-term defection gain worth the risk of total
+    loss for everyone?

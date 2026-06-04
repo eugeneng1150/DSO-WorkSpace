@@ -11,6 +11,9 @@ from ..config import (
     MEDIATION_FEE, MEMORY_WINDOW, GOV_WARNING_EXPIRY,
     GOV_CLEAN_ROUNDS_TO_DEESCALATE,
     SANCTION_COST_RATIO,
+    JUDICIAL_FILING_FEE, JUDICIAL_PENALTY,
+    JUDICIAL_COMPENSATION, JUDICIAL_FALSE_FINE,
+    ESCROW_POOL_INITIAL, ESCROW_PAYOUT,
 )
 
 if TYPE_CHECKING:
@@ -33,6 +36,8 @@ _GOVERNANCE = _load("governance.txt")
 _NETWORK_REWIRING = _load("network_rewiring.txt")
 _SANCTION = _load("sanction.txt")
 _LOCAL_REPUTATION = _load("local_reputation.txt")
+_JUDICIAL = _load("judicial.txt")
+_ESCROW = _load("escrow.txt")
 
 
 def _extract_stage(template: str, stage_label: str) -> str:
@@ -210,6 +215,35 @@ def _fmt_recent_sanctions(market: "Market") -> str:
     lines = []
     for s in recent[-10:]:
         lines.append(f"  Round {s['round']}: Agent {s['target']} sanctioned (lost {s['damage']} utility)")
+    return "\n".join(lines)
+
+
+def _fmt_recent_rulings(market: "Market") -> str:
+    if not hasattr(market, "complaint_log") or not market.complaint_log:
+        return "  No complaints filed yet."
+    recent = [c for c in market.complaint_log if c["round"] >= market.round_num - 5]
+    if not recent:
+        return "  No recent rulings."
+    lines = []
+    for c in recent[-10:]:
+        lines.append(f"  Round {c['round']}: Agent {c['filer']} vs Agent {c['target']} → {c['verdict']}")
+    return "\n".join(lines)
+
+
+def _fmt_recent_escrow(market: "Market") -> str:
+    if not hasattr(market, "escrow_log") or not market.escrow_log:
+        return "  No pool payouts yet."
+    recent = [e for e in market.escrow_log
+              if e["round"] >= market.round_num - 5 and "defector" in e]
+    if not recent:
+        return "  No recent payouts."
+    lines = []
+    for e in recent[-10:]:
+        lines.append(
+            f"  Round {e['round']}: Agent {e['defector']} defected → "
+            f"Agent {e['victim']} compensated {e['payout']} from pool "
+            f"(pool now {e['pool_remaining']})"
+        )
     return "\n".join(lines)
 
 
@@ -423,6 +457,29 @@ def _build_mechanism_block(
             block = block.replace("{message_history}", _fmt_message_history(market, agent_id))
             blocks.append(block)
 
+        elif mech == "judicial":
+            block = _JUDICIAL
+            block = block.replace("{filing_fee}", str(JUDICIAL_FILING_FEE))
+            block = block.replace("{penalty}", str(JUDICIAL_PENALTY))
+            block = block.replace("{compensation}", str(JUDICIAL_COMPENSATION))
+            block = block.replace("{false_fine}", str(JUDICIAL_FALSE_FINE))
+            block = block.replace("{net_gain}", str(JUDICIAL_COMPENSATION - JUDICIAL_FILING_FEE))
+            block = block.replace("{recent_rulings_log}", _fmt_recent_rulings(market))
+            blocks.append(block)
+
+        elif mech == "escrow":
+            block = _ESCROW
+            pool = getattr(market, "escrow_pool", ESCROW_POOL_INITIAL)
+            total_defections = len([e for e in getattr(market, "escrow_log", []) if "defector" in e])
+            defections_remaining = pool // ESCROW_PAYOUT if ESCROW_PAYOUT > 0 else 0
+            block = block.replace("{pool_initial}", str(ESCROW_POOL_INITIAL))
+            block = block.replace("{payout}", str(ESCROW_PAYOUT))
+            block = block.replace("{pool_balance}", str(pool))
+            block = block.replace("{total_defections}", str(total_defections))
+            block = block.replace("{defections_remaining}", str(defections_remaining))
+            block = block.replace("{recent_escrow_log}", _fmt_recent_escrow(market))
+            blocks.append(block)
+
     return "\n\n".join(blocks)
 
 
@@ -441,8 +498,12 @@ def _build_mechanism_actions(mechanisms: list[str]) -> str:
             '  {"action": "sever_link",   "target": <neighbor_id>}',
             '  {"action": "request_link", "target": <any_agent_id>}',
         ])
+    if "mediation" in mechanisms:
+        actions.append('  {"action": "propose_trade", ..., "use_mediator": true}  [signal delegation intent when proposing a trade]')
     if "sanction" in mechanisms:
         actions.append('  {"action": "sanction", "target": <any_agent_id>, "amount": <int>}  [you spend amount, target loses amount × 3]')
+    if "judicial" in mechanisms:
+        actions.append('  {"action": "file_complaint", "target": <agent_id>, "trade_id": "..."}  [costs 1 utility; if valid, target fined 5]')
 
     if not actions:
         return ""

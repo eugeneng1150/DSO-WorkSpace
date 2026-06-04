@@ -8,7 +8,7 @@ import matplotlib.colors as mcolors
 import numpy as np
 
 from .. import config
-from ..config import COOPERATION_THRESHOLD, CONDITIONS, CONDITION_MECHANISMS
+from ..config import CONDITIONS, CONDITION_MECHANISMS
 
 def _get_out_dir(n_trolls: int = 0) -> Path:
     """Plots output directory: plots/<model>/ or plots/<model>/troll_<N>/."""
@@ -21,7 +21,7 @@ def _get_out_dir(n_trolls: int = 0) -> Path:
 OUT_DIR = Path(__file__).parent.parent / "data" / "plots"  # updated dynamically in plot_all
 _N_TROLLS = 0  # set by plot_all(), controls which log files to load
 
-METRICS = ["sustainability", "cooperation_rate"]
+METRICS = ["gini"]
 
 
 def _get_metric(rnd_metrics: dict, key: str, default=0):
@@ -30,7 +30,7 @@ def _get_metric(rnd_metrics: dict, key: str, default=0):
         return rnd_metrics.get("cooperation_rate", rnd_metrics.get("peace", default))
     return rnd_metrics.get(key, default)
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
-COLORS = dict(zip(CONDITIONS, cm.tab20(np.linspace(0, 1, len(CONDITIONS)))))
+COLORS = dict(zip(CONDITIONS, cm.tab20(np.linspace(0, 1, max(len(CONDITIONS), 1)))))
 
 def _load_runs(condition: str) -> list[dict]:
     if _N_TROLLS > 0:
@@ -100,28 +100,55 @@ def _non_troll_trade_stats(runs: list[dict]) -> tuple[list[float], list[float]]:
     return trade_counts, defection_counts
 
 
+def _troll_defection_stats(runs: list[dict]) -> list[float]:
+    """Compute per-round count of trades where a troll defected on a non-troll (damaging trades).
+
+    Returns defection_counts as list of per-round averages.
+    """
+    if not runs:
+        return []
+    n_rounds = len(runs[0]["rounds"])
+    defection_counts = []
+    for r in range(n_rounds):
+        round_defections = []
+        for run in runs:
+            if r >= len(run["rounds"]):
+                continue
+            troll_ids = _get_troll_ids(run)
+            if not troll_ids:
+                round_defections.append(0)
+                continue
+            trades = run["rounds"][r].get("trades", [])
+            count = sum(1 for t in trades
+                        if str(t.get("defected_by")) in troll_ids
+                        and str(t["proposer"]) not in troll_ids)
+            round_defections.append(count)
+        defection_counts.append(np.mean(round_defections) if round_defections else 0.0)
+    return defection_counts
+
+
 # ── Plots ─────────────────────────────────────────────────────────────────────
 
+def _grid_shape(n: int) -> tuple[int, int]:
+    """Return (n_rows, n_cols) for a grid that fits n panels, preferring 4 columns."""
+    n_cols = min(4, n)
+    n_rows = max(1, (n + n_cols - 1) // n_cols)
+    return n_rows, n_cols
+
+
 def plot_metric_trajectories(save: bool = True) -> None:
-    """2×4 grid — one panel per condition, each showing Sustainability and Cooperation Rate over rounds."""
-    n_cols = 4
-    n_rows = 2
+    """Grid — one panel per condition, showing Gini coefficient over rounds."""
+    n_rows, n_cols = _grid_shape(len(CONDITIONS))
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
     for ax, condition in zip(axes_flat, CONDITIONS):
         runs = _load_runs(condition)
         if runs:
-            for metric, color, label in zip(
-                METRICS,
-                ["tab:green", "tab:blue"],
-                ["Sustainability", "Cooperation Rate"],
-            ):
-                trajectory = _mean_metric_over_rounds(runs, metric)
-                rounds = list(range(1, len(trajectory) + 1))
-                ax.plot(rounds, trajectory, label=label, color=color, linewidth=1.8)
+            trajectory = _mean_metric_over_rounds(runs, "gini")
+            rounds = list(range(1, len(trajectory) + 1))
+            ax.plot(rounds, trajectory, label="Gini", color="tab:purple", linewidth=1.8)
 
-        ax.axhline(COOPERATION_THRESHOLD, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
         ax.set_title(condition, fontweight="bold")
         ax.set_ylim(0, 1.05)
         ax.grid(True, alpha=0.3)
@@ -132,12 +159,10 @@ def plot_metric_trajectories(save: bool = True) -> None:
     for ax in axes[-1]:
         ax.set_xlabel("Round")
     for ax in axes[:, 0]:
-        ax.set_ylabel("Metric value")
+        ax.set_ylabel("Gini coefficient")
 
-    handles, labels = axes_flat[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=3, fontsize=9, bbox_to_anchor=(0.5, -0.02))
-    fig.suptitle("Sustainability and Cooperation Rate Over Rounds by Condition", fontsize=14, fontweight="bold")
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    fig.suptitle("Inequality (Gini Coefficient) Over Rounds by Condition", fontsize=14, fontweight="bold")
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "metric_trajectories.png", save)
 
 
@@ -178,19 +203,25 @@ def plot_intermediate_variables(save: bool = True) -> None:
 # ── New plots ─────────────────────────────────────────────────────────────────
 
 def plot_defection_trajectory(save: bool = True) -> None:
-    """2×4 grid — one panel per condition showing defection count over rounds."""
-    n_cols = 4
-    n_rows = 2
+    """Grid — one panel per condition showing defection count over rounds."""
+    n_rows, n_cols = _grid_shape(len(CONDITIONS))
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
+    has_trolls = False
     for ax, condition in zip(axes_flat, CONDITIONS):
         runs = _load_runs(condition)
         if runs:
             _, defections = _non_troll_trade_stats(runs)
             rounds = list(range(1, len(defections) + 1))
-            ax.plot(rounds, defections, color=COLORS[condition], linewidth=1.8)
+            ax.plot(rounds, defections, color=COLORS[condition], linewidth=1.8, label="Self-interested")
             ax.fill_between(rounds, defections, alpha=0.15, color=COLORS[condition])
+
+            troll_defections = _troll_defection_stats(runs)
+            if troll_defections and any(d > 0 for d in troll_defections):
+                has_trolls = True
+                ax.plot(rounds, troll_defections, color="red", linewidth=1.5,
+                        linestyle="--", alpha=0.8, label="Troll → victim")
         ax.set_title(condition, fontweight="bold")
         ax.grid(True, alpha=0.3)
 
@@ -200,17 +231,20 @@ def plot_defection_trajectory(save: bool = True) -> None:
     for ax in axes[-1]:
         ax.set_xlabel("Round")
     for ax in axes[:, 0]:
-        ax.set_ylabel("Self-interested agent defections per round")
+        ax.set_ylabel("Defections per round")
 
-    fig.suptitle("Self-Interested Agent Defection Count Over Rounds (Excluding Trolls)", fontsize=14, fontweight="bold")
+    if has_trolls:
+        handles, labels = axes_flat[0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="lower center", ncol=2, fontsize=9, bbox_to_anchor=(0.5, -0.02))
+
+    fig.suptitle("Defection Count Over Rounds by Condition", fontsize=14, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     _maybe_save(fig, "defection_trajectory.png", save)
 
 
 def plot_trade_volume(save: bool = True) -> None:
-    """2×4 grid — one panel per condition showing trade volume over rounds."""
-    n_cols = 4
-    n_rows = 2
+    """Grid — one panel per condition showing trade volume over rounds."""
+    n_rows, n_cols = _grid_shape(len(CONDITIONS))
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
@@ -544,9 +578,8 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
 
 
 def plot_utility_trajectories(save: bool = True) -> None:
-    """2×4 grid — one panel per condition, average per-round utility with 3-round rolling average."""
-    n_cols = 4
-    n_rows = 2
+    """Grid — one panel per condition, average per-round utility with 3-round rolling average."""
+    n_rows, n_cols = _grid_shape(len(CONDITIONS))
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
@@ -951,9 +984,8 @@ def plot_utility_per_agent(save: bool = True) -> None:
 
 
 def plot_gini_trajectory(save: bool = True) -> None:
-    """2×4 grid — Gini coefficient over rounds per condition."""
-    n_cols = 4
-    n_rows = 2
+    """Grid — Gini coefficient over rounds per condition."""
+    n_rows, n_cols = _grid_shape(len(CONDITIONS))
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(16, 7), sharex=True, sharey=True)
     axes_flat = axes.flatten()
 
@@ -990,8 +1022,6 @@ def plot_gini_trajectory(save: bool = True) -> None:
 # ── Model-comparison summary table & grouped bars ────────────────────────────
 
 _SUMMARY_METRICS = [
-    ("sustainability", "Sustainability", "higher"),
-    ("cooperation_rate", "Cooperation\nRate", "higher"),
     ("gini", "Gini\n(Inequality)", "lower"),
     ("mean_utility", "Mean\nUtility", "higher"),
 ]
@@ -1293,8 +1323,6 @@ def plot_composite_ranking(save: bool = True) -> None:
         troll_ids = set(str(t) for t in run.get("session_log", {}).get("troll_ids", []))
         all_rounds = run["rounds"]
 
-        sust_vals = [r["metrics"]["sustainability"] for r in all_rounds]
-        coop_vals = [_get_metric(r["metrics"], "cooperation_rate") for r in all_rounds]
         gini_vals = [r["metrics"]["gini"] for r in all_rounds]
         util_vals = []
         for r in all_rounds:
@@ -1304,31 +1332,25 @@ def plot_composite_ranking(save: bool = True) -> None:
         rows.append({
             "condition": condition,
             "utility": np.mean(util_vals),
-            "cooperation_rate": np.mean(coop_vals),
             "equality": 1.0 - np.mean(gini_vals),
-            "sustainability": np.mean(sust_vals),
         })
 
     if not rows:
         print("  [composite_ranking] No data found, skipping.")
         return
 
-    metrics = ["utility", "cooperation_rate", "equality", "sustainability"]
-    display_names = ["Mean Utility\n(normalized)", "Cooperation\nRate", "Equality\n(1−Gini)", "Sustainability"]
+    metrics = ["utility", "equality"]
+    display_names = ["Mean Utility\n(normalized)", "Equality\n(1−Gini)"]
 
     raw = {m: np.array([r[m] for r in rows]) for m in metrics}
 
-    # Only normalize utility (different scale); cooperation_rate, equality, sustainability are already 0-1
     normed = {}
     for m in metrics:
-        if m == "utility":
-            mn, mx = raw[m].min(), raw[m].max()
-            if mx - mn < 1e-9:
-                normed[m] = np.full_like(raw[m], 0.5)
-            else:
-                normed[m] = (raw[m] - mn) / (mx - mn)
+        mn, mx = raw[m].min(), raw[m].max()
+        if mx - mn < 1e-9:
+            normed[m] = np.full_like(raw[m], 0.5)
         else:
-            normed[m] = raw[m]
+            normed[m] = (raw[m] - mn) / (mx - mn)
 
     n_cond = len(rows)
     avg_scores = np.mean([normed[m] for m in metrics], axis=0)
@@ -1390,13 +1412,156 @@ def plot_composite_ranking(save: bool = True) -> None:
     _maybe_save(fig, "composite_ranking.png", save)
 
 
+def plot_troll_escalation(save: bool = True, troll_counts: tuple[int, ...] = (0, 4, 8, 16)) -> None:
+    """Line charts: how each mechanism degrades under escalating troll counts.
+
+    One panel per metric (utility, cooperation rate, sustainability, gini).
+    X-axis = troll count, one line per condition. Shows each mechanism's breaking point.
+    Averages across all runs per troll count.
+    """
+    metrics_to_plot = [
+        ("mean_utility", "Mean Utility (per round)", "higher"),
+        ("gini", "Gini (Inequality)", "lower"),
+    ]
+
+    # Collect data: {condition: {troll_count: {metric: value}}}
+    data: dict[str, dict[int, dict[str, float]]] = {}
+    for cond in CONDITIONS:
+        data[cond] = {}
+        for tc in troll_counts:
+            if tc > 0:
+                files = sorted(config.DATA_DIR.glob(f"{cond}_t{tc}_run_*.json"))
+            else:
+                files = sorted(config.DATA_DIR.glob(f"{cond}_run_*.json"))
+            if not files:
+                continue
+            runs = []
+            for f in files:
+                with open(f) as fp:
+                    runs.append(json.load(fp))
+            # Average metrics across all runs
+            summaries = [_extract_summary_metrics(run) for run in runs]
+            avg = {}
+            for key in summaries[0]:
+                avg[key] = np.mean([s[key] for s in summaries])
+            data[cond][tc] = avg
+
+    # Only plot conditions that have data for at least 2 troll counts
+    active_conds = [c for c in CONDITIONS if len(data.get(c, {})) >= 2]
+    if not active_conds:
+        print("  [troll_escalation] Need data for ≥2 troll counts per condition. Skipping.")
+        return
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    for ax, (metric_key, metric_label, direction) in zip(axes, metrics_to_plot):
+        for cond in active_conds:
+            tcs = sorted(data[cond].keys())
+            vals = [data[cond][tc].get(metric_key, 0) for tc in tcs]
+            ax.plot(tcs, vals, marker="o", label=cond, color=COLORS.get(cond, "gray"),
+                    linewidth=2.0, markersize=6)
+
+        ax.set_xlabel("Number of trolls", fontsize=11)
+        ax.set_ylabel(metric_label, fontsize=11)
+        ax.set_title(metric_label, fontweight="bold", fontsize=12)
+        ax.set_xticks(list(troll_counts))
+        ax.grid(True, alpha=0.3)
+        ax.legend(fontsize=8, loc="best")
+
+    fig.suptitle("Mechanism Resilience Under Escalating Adversarial Pressure\n"
+                 "(3 runs × 100 rounds per condition per troll count, averaged)",
+                 fontsize=14, fontweight="bold")
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    _maybe_save(fig, "troll_escalation.png", save)
+
+
+def plot_troll_escalation_table(save: bool = True, troll_counts: tuple[int, ...] = (0, 4, 8, 16)) -> None:
+    """Summary table: mean utility per condition × troll count, with colour coding."""
+    data: dict[str, dict[int, float]] = {}
+    for cond in CONDITIONS:
+        data[cond] = {}
+        for tc in troll_counts:
+            if tc > 0:
+                files = sorted(config.DATA_DIR.glob(f"{cond}_t{tc}_run_*.json"))
+            else:
+                files = sorted(config.DATA_DIR.glob(f"{cond}_run_*.json"))
+            if not files:
+                continue
+            runs = []
+            for f in files:
+                with open(f) as fp:
+                    runs.append(json.load(fp))
+            summaries = [_extract_summary_metrics(run) for run in runs]
+            data[cond][tc] = np.mean([s["mean_utility"] for s in summaries])
+
+    active_conds = [c for c in CONDITIONS if data.get(c, {})]
+    if not active_conds:
+        print("  [troll_escalation_table] No data found. Skipping.")
+        return
+
+    col_labels = [f"{tc} trolls" for tc in troll_counts] + ["Δ (0→max)"]
+    cell_text = []
+    all_vals = [v for cd in data.values() for v in cd.values()]
+    v_min, v_max = min(all_vals), max(all_vals) if all_vals else (0, 1)
+
+    for cond in active_conds:
+        row = []
+        for tc in troll_counts:
+            val = data[cond].get(tc)
+            row.append(f"{val:.2f}" if val is not None else "—")
+        # Delta: difference from 0 trolls to max troll count
+        v0 = data[cond].get(troll_counts[0])
+        vmax = data[cond].get(troll_counts[-1])
+        if v0 is not None and vmax is not None:
+            delta = vmax - v0
+            row.append(f"{delta:+.2f}")
+        else:
+            row.append("—")
+        cell_text.append(row)
+
+    fig, ax = plt.subplots(figsize=(12, 2 + 0.5 * len(active_conds)))
+    ax.axis("off")
+
+    table = ax.table(
+        cellText=cell_text,
+        rowLabels=active_conds,
+        colLabels=col_labels,
+        loc="center",
+        cellLoc="center",
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1.0, 1.8)
+
+    for j in range(len(col_labels)):
+        table[0, j].set_facecolor("#37474f")
+        table[0, j].set_text_props(color="white", fontweight="bold")
+
+    for i, cond in enumerate(active_conds):
+        for j, tc in enumerate(troll_counts):
+            val = data[cond].get(tc)
+            if val is not None:
+                table[i + 1, j].set_facecolor(_cell_color(val, "higher", v_min, v_max))
+        # Delta column
+        v0 = data[cond].get(troll_counts[0])
+        vmax_val = data[cond].get(troll_counts[-1])
+        if v0 is not None and vmax_val is not None:
+            delta = vmax_val - v0
+            color = "#c8e6c9" if delta >= 0 else "#ffcdd2"
+            table[i + 1, len(troll_counts)].set_facecolor(color)
+
+    ax.set_title("Mean Utility by Condition × Troll Count\n"
+                 "(Green = higher utility, Red = lower; Δ = change from 0 to max trolls)",
+                 fontweight="bold", fontsize=12, pad=20)
+    plt.tight_layout()
+    _maybe_save(fig, "troll_escalation_table.png", save)
+
+
 def plot_all(save: bool = True, n_trolls: int = 0) -> None:
     global OUT_DIR, _N_TROLLS
     _N_TROLLS = n_trolls
     OUT_DIR = _get_out_dir(n_trolls)
     plot_metric_trajectories(save)
-    plot_intermediate_variables(save)
-    plot_stability_rates(save)
     plot_defection_trajectory(save)
     plot_trade_volume(save)
     plot_contract_utilisation(save)
@@ -1407,11 +1572,9 @@ def plot_all(save: bool = True, n_trolls: int = 0) -> None:
     plot_troll_trade_volume(save)
     plot_troll_resilience_table(save)
     plot_utility_per_agent(save)
-    plot_gini_trajectory(save)
-    plot_model_comparison(save)
-    plot_model_summary_table(save)
-    plot_model_comparison_bars(save)
     plot_composite_ranking(save)
+    plot_troll_escalation(save)
+    plot_troll_escalation_table(save)
     print(f"Plots saved to {OUT_DIR}")
 
 

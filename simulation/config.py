@@ -46,6 +46,16 @@ NET_MAX_REQUEST_PER_ROUND = 99
 # Sanction mechanism parameters
 SANCTION_COST_RATIO = 3   # spend 1 utility → target loses 3
 
+# Judicial mechanism parameters
+JUDICIAL_FILING_FEE = 1        # cost to file a complaint (paid regardless)
+JUDICIAL_PENALTY = 5           # fine on guilty defector
+JUDICIAL_COMPENSATION = 3      # returned to victim on guilty verdict
+JUDICIAL_FALSE_FINE = 2        # additional fine for false/invalid complaint
+
+# Escrow mechanism parameters
+ESCROW_POOL_INITIAL = 100      # shared insurance pool starting balance
+ESCROW_PAYOUT = 4              # compensation paid from pool to victim per defection
+
 # Marketplace cooperation threshold (Sustainability and Cooperation Rate must exceed this)
 COOPERATION_THRESHOLD = 0.5
 
@@ -82,7 +92,7 @@ MESSAGE_HISTORY_WINDOW = 10  # rounds of public message history for local reputa
 
 # Experimental conditions
 CONDITIONS = [
-    "B", "GR", "C", "M", "G", "NR", "S",
+    "B", "GR", "C", "M", "G", "NR", "S", "J", "E",
     # Combinations (disabled for initial test runs):
     # "RC", "RM", "RG", "CM", "CG", "MG",
     # "RCM", "RCG", "RMG", "CMG",
@@ -110,4 +120,6 @@ CONDITION_MECHANISMS = {
     "N":    ["network_rewiring"],  # removed from CONDITIONS; kept here for loading old N_run_*.json logs
     "NR":   ["network_rewiring", "local_reputation"],
     "S":    ["sanction"],
+    "J":    ["judicial"],
+    "E":    ["escrow"],
 }

@@ -1,0 +1,25 @@
+=== JUDICIAL SYSTEM (active this session) ===
+
+A court system exists in this marketplace. If you are defected on, you can
+FILE A COMPLAINT to seek justice.
+
+HOW THE COURT WORKS:
+  - Filing a complaint costs you {filing_fee} utility (court fee, paid regardless of outcome).
+  - You must cite a specific trade_id from your recent trades.
+  - The court VERIFIES the trade record:
+      If the defection is confirmed: the defector is fined {penalty} utility,
+        and you receive {compensation} utility in compensation.
+      If no defection is found (false complaint): you pay an additional
+        {false_fine} utility fine.
+  - Rulings are PUBLIC — all agents see who filed, who was accused, and the verdict.
+
+RECENT COURT RULINGS:
+{recent_rulings_log}
+
+STRATEGY:
+  - Filing is costly — you lose {filing_fee} utility even if you win.
+  - Net gain from a successful complaint: +{compensation} (compensation) - {filing_fee} (fee) = {net_gain} utility.
+  - But if no one files complaints, defectors face no consequences.
+  - Consider: is the defection large enough to be worth filing over?
+  - Consider: will reporting deter future defections against you and others?
+  - False complaints are punished — do not file unless you have a real trade_id.

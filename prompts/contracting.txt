@@ -49,7 +49,7 @@ To propose a contract, include this action in your JSON output:
   }
 
 Think carefully: a higher penalty makes the contract more credible to the
-counterparty, but also raises the cost to you if you cannot deliver.
+counterparty, making them more likely to sign.
 
 
 --------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ Review the proposed contract carefully:
 Consider:
   - Is this trade beneficial to you at these quantities?
   - Is the penalty high enough to deter them from breaching?
-  - Is the penalty manageable for you if you cannot deliver?
+  - Is the penalty high enough to make you confident they will deliver?
   - Do you trust this agent based on their system reputation score?
 
 To sign the contract, include in your JSON output:

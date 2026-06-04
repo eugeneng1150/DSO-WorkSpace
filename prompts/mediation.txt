@@ -99,20 +99,24 @@ mediator or execute it directly.
 
 === MEDIATION SYSTEM (active this session) ===
 
-Here is the twist: A mediator is available this session. For any trade you
-accept, you may choose to delegate execution to the mediator rather than
-executing it directly.
+Here is the twist: A mediator is available this session. BOTH the proposer
+and the acceptor can independently choose to delegate a trade to the mediator.
+
+HOW TO DELEGATE:
+  - As a PROPOSER: add "use_mediator": true to your propose_trade action.
+  - As an ACCEPTOR: use the "delegate_to_mediator" action instead of "accept_trade".
 
 Active mediator design (selected by vote, Round 1):
   2 delegating → {mediator_action_both}
   1 delegating → {mediator_action_one}
-If you and your counterparty BOTH delegate the same trade:
+
+If BOTH proposer and acceptor delegate the same trade:
   → The mediator executes: {mediator_action_both}
   → Simultaneous exchange guaranteed. Neither party can defect.
 
-If only YOU delegate:
+If only ONE side delegates:
   → The mediator applies: {mediator_action_one}
-  → Your counterparty acts freely — they could still defect.
+  → The non-delegating party acts freely — they could still defect.
 
 If NEITHER party delegates:
   → Normal unenforceable trade. Either party may defect.
@@ -121,9 +125,8 @@ Your pending trades this round:
 
   {pending_trades_list}
 
-  Example format:
-    Trade t_007: Agent 3 offers 2 units of Good B in exchange for 2 units of Good A
-    Trade t_009: Agent 6 offers 1 unit of Good C in exchange for 2 units of Good A
+  If a trade shows "(proposer delegated to mediator)", the proposer has
+  already chosen mediation. Delegating your side too guarantees fair execution.
 
 To accept a trade AND delegate to the mediator:
   {"action": "delegate_to_mediator", "trade_id": "..."}
@@ -134,7 +137,6 @@ To accept a trade WITHOUT delegating (standard, unenforceable):
 To reject a trade:
   {"action": "reject_trade", "trade_id": "..."}
 
-Consider: delegating guarantees fair execution but requires your counterparty
-to also delegate for full protection. If you trust your counterparty based
-on past trades, direct acceptance may be fine. If they have a history of
-defection, delegation protects you.
+Delegation is your strongest tool against defection. If your counterparty
+has a history of defection, delegate. If they have already delegated (shown
+above), matching their delegation guarantees a safe trade for both sides.
