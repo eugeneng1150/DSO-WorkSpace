@@ -466,6 +466,27 @@
         }
 
         .timeline-item p { font-size: 0.85rem; }
+
+        /* ===== PRINT / PDF EXPORT ===== */
+        @media print {
+            body { overflow: visible; background: white; }
+            .presentation { width: auto; height: auto; position: static; }
+            .slide {
+                position: static !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                width: 100vw;
+                height: 100vh;
+                page-break-after: always;
+                page-break-inside: avoid;
+                overflow: hidden;
+                display: flex !important;
+            }
+            .slide:last-child { page-break-after: auto; }
+            .nav-dots, .slide-counter, .nav-arrows { display: none !important; }
+            h1, h2, h3, p, li { color: #1a1a1a !important; }
+            img { max-width: 100% !important; }
+        }
     </style>
 </head>
 <body>
