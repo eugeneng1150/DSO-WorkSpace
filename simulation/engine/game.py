@@ -97,7 +97,7 @@ class Game:
 
             if self.market.governance_states:
                 from ..mechanisms.governance import GovernanceState
-                self.market.governance_states[troll.agent_id] = GovernanceState()
+                self.market.governance_states[troll.agent_id] = GovernanceState(agent_id=troll.agent_id)
 
         if hasattr(self.market, '_escrow_agents'):
             self.market._escrow_agents = self.agents
