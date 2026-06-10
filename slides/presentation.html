@@ -351,6 +351,10 @@
         .card.card-red h3 { color: var(--red); }
         .card.card-green { border-color: var(--green); }
         .card.card-green h3 { color: var(--green); }
+        .card.card-blue { border-color: var(--blue); }
+        .card.card-blue h3 { color: var(--blue); }
+        .card.card-amber { border-color: var(--amber); }
+        .card.card-amber h3 { color: var(--amber); }
 
         /* ========== Takeaway cards ========== */
         .takeaway-grid {
@@ -466,6 +470,73 @@
         }
 
         .timeline-item p { font-size: 0.85rem; }
+
+        /* ========== Phase bar (progressive trolls) ========== */
+        .phase-bar {
+            display: flex;
+            width: 100%;
+            height: 60px;
+            border: 1px solid var(--line);
+            margin: 2vh 0;
+        }
+
+        .phase-bar .phase {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0.5vh 1vw;
+            border-right: 2px dashed var(--red);
+            position: relative;
+        }
+
+        .phase-bar .phase:last-child { border-right: none; }
+
+        .phase-bar .phase-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .phase-bar .phase-detail {
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
+
+        .phase-bar .inject-label {
+            position: absolute;
+            top: -2.2em;
+            font-size: 0.7rem;
+            color: var(--red);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ========== Flow diagram ========== */
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5vw;
+            margin: 1vh 0;
+        }
+
+        .flow-box {
+            border: 1px solid var(--line);
+            padding: 1.2vh 1.5vw;
+            background: rgba(255,255,255,0.3);
+            font-size: 0.9rem;
+            text-align: center;
+            min-width: 8vw;
+        }
+
+        .flow-box.highlight { border-color: var(--green); background: rgba(39,103,73,0.08); }
+        .flow-box.danger { border-color: var(--red); background: rgba(155,44,44,0.08); }
+
+        .flow-arrow {
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -476,9 +547,9 @@
     <div class="slide slide-title active">
         <div class="geo-decoration"></div>
         <div class="content">
-            <div class="label">Progress Update &mdash; 2 June 2026</div>
+            <div class="label">Progress Update &mdash; 9 June 2026</div>
             <h1>Multi-Agent Marketplace Simulation</h1>
-            <p class="subtitle">Comparing institutional cooperation mechanisms for self-interested LLM agents under adversarial stress.</p>
+            <p class="subtitle">Comparing 9 institutional cooperation mechanisms for self-interested LLM agents under progressive adversarial stress.</p>
         </div>
     </div>
 
@@ -487,11 +558,11 @@
         <div class="geo-decoration" style="left:-10vw; top:10vh; width:35vw; height:35vw; opacity:0.2;"></div>
         <div class="content">
             <span class="quote-mark">&ldquo;</span>
-            <h2>Can institutional mechanisms help self-interested LLM agents sustain cooperation in adversarial environments?</h2>
+            <h2>Can institutional mechanisms help self-interested LLM agents sustain cooperation under escalating adversarial pressure?</h2>
             <div style="margin-top:4vh;">
-                <p style="color:var(--accent); letter-spacing:1px;">Do different mechanisms produce different outcomes under stress?<br>
-                Which designs are robust to adversarial actors?<br>
-                How does effectiveness vary across LLM models?</p>
+                <p style="color:var(--accent); letter-spacing:1px;">Which mechanism designs are robust to progressive troll injection?<br>
+                Do enforcement-based, insurance-based, or information-based mechanisms degrade differently?<br>
+                At what adversarial density does each mechanism break?</p>
             </div>
         </div>
     </div>
@@ -511,7 +582,7 @@
                 <li>A single defector can collapse the system in 1&ndash;7 rounds <span class="cite">(Subtle Art of Defection)</span></li>
             </ul>
             <div class="callout blue" style="margin-top:3vh;">
-                <p><strong>Gap:</strong> Most studies test one mechanism in isolation &mdash; we compare <strong>7 head-to-head</strong> under adversarial stress.</p>
+                <p><strong>Gap:</strong> Most studies test one mechanism in isolation &mdash; we compare <strong>9 head-to-head</strong> under progressive adversarial stress using a single model.</p>
             </div>
         </div>
     </div>
@@ -523,11 +594,12 @@
         <h2>The Environment</h2>
         <div class="content">
             <ul>
-                <li><strong>18 LLM agents</strong> in a marketplace over <strong>30 rounds</strong></li>
+                <li><strong>18 LLM agents</strong> (DeepSeek-V3) in a marketplace over <strong>200 rounds</strong></li>
                 <li>Each round: produce goods, communicate, trade, consume</li>
                 <li>Agents need <strong>diverse goods</strong> to earn utility &mdash; incentivizes trade</li>
                 <li><strong>20% spoilage</strong> per round &mdash; hoarding is penalized</li>
-                <li>Adversarial stress test: inject <em>troll agents</em> (2T and 4T) who always defect</li>
+                <li>Adversarial stress test: <strong>progressive troll injection</strong> &mdash; 0&rarr;4&rarr;8&rarr;16 trolls injected at rounds 51, 101, 151</li>
+                <li>Trolls appear <em>silently</em> &mdash; agents discover them only through experience</li>
             </ul>
         </div>
     </div>
@@ -593,7 +665,7 @@
                 <line x1="262" y1="380" x2="438" y2="380" stroke="#8a8178" stroke-width="1.5" marker-end="url(#arr2)" marker-start="url(#arr2r)"/>
 
                 <!-- Round label at bottom -->
-                <text x="350" y="520" text-anchor="middle" font-size="12" font-weight="500" fill="#1a1a1a">Each round: Produce → Communicate → Trade → Consume</text>
+                <text x="350" y="520" text-anchor="middle" font-size="12" font-weight="500" fill="#1a1a1a">Each round: Produce &rarr; Communicate &rarr; Trade &rarr; Consume</text>
 
             </svg>
         </div>
@@ -609,13 +681,13 @@ flowchart LR
     CLI["CLI"] --> Runner
     Runner --> Game
 
-    subgraph Game["Game Loop &times; 30 rounds"]
+    subgraph Game["Game Loop &times; 200 rounds"]
         direction LR
-        P1["Spoilage<br/>&amp; Produce"] --> P2["Communicate<br/>&amp; Contract"] --> P3["Trade"] --> P4["Consume<br/>&amp; Score"]
+        P1["Spoilage<br/>&amp; Produce"] --> P2["Communicate<br/>&amp; Contract"] --> P3["Trade<br/>&amp; Complain"] --> P4["Consume<br/>&amp; Score"]
     end
 
     Game --> Mechs
-    Game --> LLM["LLM Agent<br/>&times; 18"]
+    Game --> LLM["DeepSeek-V3<br/>&times; 18+trolls"]
     LLM --> Prompt["Prompt<br/>Builder"]
     Prompt --> Market["Market State"]
     Market --> Game
@@ -624,6 +696,7 @@ flowchart LR
         direction TB
         m1["GR &bull; C &bull; M"]
         m2["G &bull; NR &bull; S"]
+        m3["J &bull; E"]
     end
 
     Runner -->|JSON| Analysis["Plots &amp;<br/>Analyst"]
@@ -631,393 +704,343 @@ flowchart LR
         </div>
     </div>
 
-    <!-- SLIDE 6: The 7 Mechanisms -->
+    <!-- SLIDE 7: The 9 Conditions -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
         <div class="label">Conditions</div>
-        <h2>The 7 Mechanisms</h2>
+        <h2>The 9 Conditions</h2>
         <div class="content">
             <ul class="mechanism-list">
                 <li><span class="abbrev">B</span> <span>Baseline &mdash; no mechanism, pure barter</span></li>
                 <li><span class="abbrev">GR</span> <span>Global Reputation &mdash; system-computed trust scores visible to all</span></li>
                 <li><span class="abbrev">C</span> <span>Contracting &mdash; binding agreements with breach penalties</span></li>
-                <li><span class="abbrev">M</span> <span>Mediation &mdash; agent-designed mediator, delegation</span></li>
-                <li><span class="abbrev">G</span> <span>Governance &mdash; community voting on trade rules</span></li>
+                <li><span class="abbrev">M</span> <span>Mediation &mdash; agent-designed mediator, bilateral delegation</span></li>
+                <li><span class="abbrev">G</span> <span>Governance &mdash; omniscient oracle detects and punishes defectors</span></li>
                 <li><span class="abbrev">NR</span> <span>Network Rewiring + Local Reputation &mdash; gossip + link severing</span></li>
                 <li><span class="abbrev">S</span> <span>Sanctioning &mdash; collective punishment for defectors</span></li>
+                <li><span class="abbrev" style="color:var(--blue);">J</span> <span><strong>Judicial</strong> &mdash; complaint-driven court with imperfect information <em>(new)</em></span></li>
+                <li><span class="abbrev" style="color:var(--amber);">E</span> <span><strong>Escrow</strong> &mdash; shared insurance pool, mutually assured destruction <em>(new)</em></span></li>
             </ul>
         </div>
     </div>
 
-    <!-- SLIDE: Metrics -->
+    <!-- SLIDE 8: Judicial (J) Deep Dive -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
-        <div class="label">Measurement</div>
-        <h2>How We Measure Success</h2>
+        <div class="label">New Mechanism</div>
+        <h2>Judicial (J) &mdash; Complaint-Driven Court</h2>
         <div class="content">
-            <ul>
-                <li><strong>Sustainability</strong> = avg production<sub>round t</sub> / avg production<sub>round 1</sub> &mdash; are agents still producing at healthy levels? Captures economic collapse before utility drops (leading indicator)</li>
-                <li><strong>Cooperation Rate</strong> = 1 &minus; (defections / total trades) &mdash; what fraction of trades are honored? A marketplace with 50% defection is not functioning even if utility is positive</li>
-                <li><strong>Mean Utility per Round</strong> = avg utility across non-troll agents each round &mdash; the bottom line. Production cost (&minus;1) vs consumption gain (+3) means agents need trade to be net positive</li>
-                <li><strong>Gini Coefficient</strong> = inequality of utility distribution (0 = equal, 1 = one agent takes all) &mdash; a mechanism that helps 3 agents while starving 15 is not a good mechanism</li>
-            </ul>
-            <div class="callout" style="margin-top:2vh;">
-                <p>All metrics <strong>exclude troll agents</strong> &mdash; we measure how well the <em>Self - Interested</em> agents fare, not the trolls. Sustainability and cooperation rate are our own constructs (defined in methodology).</p>
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Unlike Governance (G), where an omniscient oracle auto-detects defectors, Judicial requires the <strong>victim to act</strong> &mdash; introducing imperfect information and strategic cost.</p>
+            <div class="flow-row">
+                <div class="flow-box">Victim suffers defection</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-box danger">Files complaint<br/><strong>&minus;1 utility</strong> filing fee</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-box">Court verifies<br/>via trade history</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-box highlight">Verdict</div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw; margin-top:2vh;">
+                <div class="card card-green">
+                    <h3>Guilty Verdict</h3>
+                    <ul>
+                        <li>Defector fined <strong>&minus;5 utility</strong></li>
+                        <li>Victim compensated <strong>+3 utility</strong></li>
+                        <li>Net for victim: +2 (after filing fee)</li>
+                    </ul>
+                </div>
+                <div class="card card-red">
+                    <h3>Dismissed (False Claim)</h3>
+                    <ul>
+                        <li>Filer pays additional <strong>&minus;2 utility</strong></li>
+                        <li>Total cost: &minus;3 for a false complaint</li>
+                        <li>Deters frivolous litigation</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout blue" style="margin-top:2vh;">
+                <p><strong>Key design:</strong> G has perfect information (oracle sees all). J has <em>imperfect</em> information &mdash; the court only examines what the victim reports. Filing is a strategic choice: is the expected payout worth the risk?</p>
             </div>
         </div>
     </div>
 
-    <!-- SLIDE: Experiment Setup -->
+    <!-- SLIDE 9: Escrow (E) Deep Dive -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">New Mechanism</div>
+        <h2>Escrow (E) &mdash; Shared Insurance Pool</h2>
+        <div class="content">
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">A collective insurance pool that automatically compensates defection victims &mdash; but collapses catastrophically when depleted.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw;">
+                <div>
+                    <h3 style="margin-bottom:1.5vh;">How It Works</h3>
+                    <ul>
+                        <li>Shared pool starts at <strong>100 utility</strong></li>
+                        <li>Each defection: victim automatically receives <strong>+4</strong> from the pool</li>
+                        <li>Pool <strong>never replenishes</strong></li>
+                        <li>No agent action required &mdash; fully automatic</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-bottom:1.5vh;">The Collapse</h3>
+                    <ul>
+                        <li>When the pool reaches <strong>0</strong>:</li>
+                        <li><strong>ALL agents&rsquo; total utility resets to 0</strong></li>
+                        <li>Mutually assured destruction</li>
+                        <li>Agents know the pool balance each round</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout red" style="margin-top:2vh;">
+                <p><strong>Tragedy of the commons:</strong> Every defection drains the shared pool. With 100 starting balance and 4 per payout, the pool survives only ~25 defections. Progressive troll injection (up to 16 trolls) will test how fast the pool collapses &mdash; and whether agents adapt their behavior to prevent it.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: Progressive Troll Injection -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Stress Test</div>
+        <h2>Progressive Troll Injection</h2>
+        <div class="content">
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Instead of a fixed troll count, trolls are injected mid-game in waves. Cooperation must establish first, then survive escalating adversarial pressure.</p>
+
+            <svg viewBox="0 0 800 200" style="width:100%; max-height:25vh;" font-family="Inter, sans-serif">
+                <!-- Timeline base -->
+                <rect x="50" y="80" width="700" height="40" rx="6" fill="#f5f1eb" stroke="#b8b0a4" stroke-width="1.5"/>
+
+                <!-- Phase 1 -->
+                <rect x="50" y="80" width="175" height="40" rx="6" fill="rgba(39,103,73,0.15)" stroke="#276749" stroke-width="1"/>
+                <text x="137" y="95" text-anchor="middle" font-size="11" font-weight="600" fill="#276749">Rounds 1&ndash;50</text>
+                <text x="137" y="112" text-anchor="middle" font-size="10" fill="#276749">0 trolls &middot; 18 agents</text>
+
+                <!-- Injection line 1 -->
+                <line x1="225" y1="45" x2="225" y2="120" stroke="#9b2c2c" stroke-width="2" stroke-dasharray="4,3"/>
+                <text x="225" y="38" text-anchor="middle" font-size="10" font-weight="600" fill="#9b2c2c">+4 trolls</text>
+
+                <!-- Phase 2 -->
+                <rect x="225" y="80" width="175" height="40" fill="rgba(155,44,44,0.08)" stroke="#b8b0a4" stroke-width="1"/>
+                <text x="312" y="95" text-anchor="middle" font-size="11" font-weight="600" fill="#5a5a5a">Rounds 51&ndash;100</text>
+                <text x="312" y="112" text-anchor="middle" font-size="10" fill="#5a5a5a">4 trolls &middot; 22 agents</text>
+
+                <!-- Injection line 2 -->
+                <line x1="400" y1="45" x2="400" y2="120" stroke="#9b2c2c" stroke-width="2" stroke-dasharray="4,3"/>
+                <text x="400" y="38" text-anchor="middle" font-size="10" font-weight="600" fill="#9b2c2c">+4 trolls</text>
+
+                <!-- Phase 3 -->
+                <rect x="400" y="80" width="175" height="40" fill="rgba(155,44,44,0.15)" stroke="#b8b0a4" stroke-width="1"/>
+                <text x="487" y="95" text-anchor="middle" font-size="11" font-weight="600" fill="#5a5a5a">Rounds 101&ndash;150</text>
+                <text x="487" y="112" text-anchor="middle" font-size="10" fill="#5a5a5a">8 trolls &middot; 26 agents</text>
+
+                <!-- Injection line 3 -->
+                <line x1="575" y1="45" x2="575" y2="120" stroke="#9b2c2c" stroke-width="2" stroke-dasharray="4,3"/>
+                <text x="575" y="38" text-anchor="middle" font-size="10" font-weight="600" fill="#9b2c2c">+8 trolls</text>
+
+                <!-- Phase 4 -->
+                <rect x="575" y="80" width="175" height="40" rx="0 6 6 0" fill="rgba(155,44,44,0.25)" stroke="#9b2c2c" stroke-width="1"/>
+                <text x="662" y="95" text-anchor="middle" font-size="11" font-weight="600" fill="#9b2c2c">Rounds 151&ndash;200</text>
+                <text x="662" y="112" text-anchor="middle" font-size="10" fill="#9b2c2c">16 trolls &middot; 34 agents</text>
+
+                <!-- Troll ratio labels -->
+                <text x="137" y="145" text-anchor="middle" font-size="9" fill="#8a8178">0% adversarial</text>
+                <text x="312" y="145" text-anchor="middle" font-size="9" fill="#8a8178">18% adversarial</text>
+                <text x="487" y="145" text-anchor="middle" font-size="9" fill="#8a8178">31% adversarial</text>
+                <text x="662" y="145" text-anchor="middle" font-size="9" fill="#9b2c2c">47% adversarial</text>
+            </svg>
+
+            <ul style="margin-top:2vh;">
+                <li><strong>Phase 1</strong> (rounds 1&ndash;50): Pure cooperation &mdash; agents build trust and trading patterns</li>
+                <li><strong>Phase 2</strong> (rounds 51&ndash;100): Mild pressure &mdash; 4 trolls appear silently, 18% adversarial</li>
+                <li><strong>Phase 3</strong> (rounds 101&ndash;150): Moderate pressure &mdash; 8 trolls total, 31% adversarial</li>
+                <li><strong>Phase 4</strong> (rounds 151&ndash;200): Severe pressure &mdash; 16 trolls, nearly half the population</li>
+            </ul>
+            <div class="callout" style="margin-top:1.5vh;">
+                <p><strong>Key question:</strong> Does established cooperation (50 rounds of trust) provide resilience that cold-start trolling does not? Which mechanisms degrade gracefully vs collapse suddenly?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: Metrics -->
+    <div class="slide slide-twocol">
+        <div class="label">Measurement</div>
+        <h2>How We Measure Success</h2>
+        <div class="content">
+            <div class="card card-green">
+                <h3>Mean Utility per Round</h3>
+                <ul>
+                    <li>Average utility across <strong>non-troll agents</strong> each round</li>
+                    <li>Production cost (&minus;1) vs consumption gain (+3)</li>
+                    <li>Agents need trade to be net positive</li>
+                    <li><strong>The bottom line</strong> &mdash; are agents better off?</li>
+                </ul>
+            </div>
+            <div class="card card-blue">
+                <h3>Gini Coefficient</h3>
+                <ul>
+                    <li>Inequality of utility distribution</li>
+                    <li>0 = perfectly equal, 1 = one agent takes all</li>
+                    <li>A mechanism that helps 3 agents while starving 15 is not a good mechanism</li>
+                    <li><strong>Fairness check</strong> &mdash; does the mechanism help everyone?</li>
+                </ul>
+            </div>
+        </div>
+        <div class="callout" style="position:relative; z-index:1; margin-top:1vh;">
+            <p>All metrics <strong>exclude troll agents</strong> &mdash; we measure how well the <em>self-interested</em> agents fare, not the trolls. We deliberately focus on two core metrics to keep analysis clean and avoid correlated-metric redundancy.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: Experiment Setup -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
         <div class="label">Parameters</div>
         <h2>Experiment Setup</h2>
         <div class="content">
             <ul>
-                <li><strong>Models:</strong> gpt-5.4-nano, gpt-5.4-mini, DeepSeek-V3</li>
-                <li><strong>Troll counts:</strong> 0 (baseline), 2 (10%), 4 (20%) out of 18+troll agents</li>
-                <li><strong>Duration:</strong> 30 rounds per run</li>
-                <li><strong>Metrics:</strong> sustainability, cooperation rate, mean utility per round, Gini coefficient</li>
+                <li><strong>Model:</strong> DeepSeek-V3 (via Azure) &mdash; $0.58 / $1.68 per 1M input/output tokens</li>
+                <li><strong>Troll injection:</strong> Progressive &mdash; 0&rarr;4&rarr;8&rarr;16 trolls at rounds 51 / 101 / 151</li>
+                <li><strong>Duration:</strong> 200 rounds per run, 1 run per condition</li>
+                <li><strong>Conditions:</strong> 9 &mdash; B, GR, C, M, G, NR, S, J, E</li>
+                <li><strong>Metrics:</strong> Mean utility per round, Gini coefficient</li>
+                <li><strong>Agents:</strong> 18 self-interested (start) &rarr; up to 34 total (18 + 16 trolls)</li>
             </ul>
+            <div class="callout" style="margin-top:2vh;">
+                <p><strong>Why single-model?</strong> Previous multi-model runs showed that model capability dwarfs mechanism effects. We fix the model (DeepSeek-V3) to isolate mechanism differences, and use progressive injection for richer stress dynamics than fixed troll counts.</p>
+            </div>
         </div>
     </div>
 
-    <!-- ============ SECTION: BIG PICTURE — CROSS-MODEL FIRST ============ -->
+    <!-- ============ SECTION: MECHANISM DESIGN SPECTRUM ============ -->
 
-    <!-- SLIDE 10: Mechanism Effectiveness is Model-Dependent -->
+    <!-- SLIDE 13: Mechanism Design Spectrum -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Design Space</div>
+        <h2>The Mechanism Spectrum</h2>
+        <div class="content">
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Our 9 conditions span three axes of institutional design:</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:2vw;">
+                <div class="card">
+                    <h3>Information</h3>
+                    <ul>
+                        <li><strong>B</strong> &mdash; none</li>
+                        <li><strong>GR</strong> &mdash; global, perfect</li>
+                        <li><strong>NR</strong> &mdash; local, imperfect (gossip)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Enforcement</h3>
+                    <ul>
+                        <li><strong>C</strong> &mdash; pre-trade penalties</li>
+                        <li><strong>G</strong> &mdash; omniscient oracle</li>
+                        <li><strong>J</strong> &mdash; complaint-driven court</li>
+                        <li><strong>S</strong> &mdash; collective punishment</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Insurance</h3>
+                    <ul>
+                        <li><strong>M</strong> &mdash; third-party mediation</li>
+                        <li><strong>E</strong> &mdash; shared pool (depletable)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout blue" style="margin-top:2vh;">
+                <p><strong>J vs G</strong> tests whether enforcement needs perfect information. <strong>E</strong> tests whether collective insurance creates a tragedy of the commons under adversarial pressure.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: PREVIOUS FINDINGS ============ -->
+
+    <!-- SLIDE 14: Previous Findings (condensed) -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Prior Results</div>
+        <h2>Key Findings from Initial Runs</h2>
+        <div class="content">
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">From earlier multi-model experiments (nano, mini, DeepSeek) with fixed troll counts (0/2/4 trolls, 30 rounds):</p>
+            <ul>
+                <li><strong>Model capability &gt; mechanism choice</strong> &mdash; baseline utility spread across models (1.42&ndash;5.35) dwarfed any mechanism effect</li>
+                <li><strong>Governance (G)</strong> was the only mechanism never net-negative across all 3 models &mdash; but it has perfect information (oracle)</li>
+                <li><strong>Contracting (C) consistently harmful</strong> &mdash; penalty fear froze trade volume. Prompt updated to remove fear-inducing language</li>
+                <li><strong>NR and GR were capability-gated</strong> &mdash; worked for DeepSeek, failed for weaker models that couldn&rsquo;t reason about reputation signals</li>
+                <li><strong>Mediation (M) had a delegation bug</strong> &mdash; only acceptors could delegate, not proposers. Now fixed with bilateral delegation</li>
+            </ul>
+            <div class="callout" style="margin-top:2vh;">
+                <p><strong>These findings motivated the current design:</strong> fix the model (DeepSeek), add J (imperfect enforcement) and E (collective insurance), and test with progressive stress instead of static troll counts.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 15: Hypotheses -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Hypotheses</div>
+        <h2>What We Expect to See</h2>
+        <div class="content" style="justify-content:center;">
+            <div class="takeaway-grid">
+                <div class="takeaway-card tk-green">
+                    <div class="tk-label">G should dominate early</div>
+                    <p>Omniscient oracle catches trolls immediately. But does perfect enforcement create dependency? What happens when 47% of agents are trolls and fines pile up?</p>
+                </div>
+                <div class="takeaway-card tk-blue">
+                    <div class="tk-label">J tests imperfect enforcement</div>
+                    <p>Filing costs create a threshold &mdash; agents must decide if it&rsquo;s worth complaining. Expect slower troll isolation than G, but potentially more resilient long-term behavior.</p>
+                </div>
+                <div class="takeaway-card tk-red">
+                    <div class="tk-label">E should collapse in Phase 4</div>
+                    <p>100-point pool / 4 per defection = ~25 defections to collapse. With 16 trolls defecting every round, the pool drains in 1&ndash;2 rounds after Phase 4 injection. Does the threat of collapse change agent behavior before it happens?</p>
+                </div>
+                <div class="takeaway-card tk-amber">
+                    <div class="tk-label">Progressive &ne; Static</div>
+                    <p>50 rounds of established cooperation should provide resilience that cold-start trolling does not. Mechanisms that rely on learned behavior (NR, GR) may degrade more gracefully than structural ones (C).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 16: Results Pending -->
     <div class="slide slide-statement">
         <div class="geo-decoration" style="right:-8vw; top:15vh; width:30vw; height:30vw; opacity:0.2;"></div>
         <div class="content">
-            <span class="quote-mark">&ldquo;</span>
-            <h2>Mechanism effectiveness is overwhelmingly model-dependent</h2>
+            <span class="quote-mark">&bull;</span>
+            <h2>Results: In Progress</h2>
             <div style="margin-top:3vh;">
-                <p style="color:var(--text-secondary); font-size:clamp(0.95rem,1.2vw,1.1rem);">The same mechanism can be the best performer on one model and harmful on another.<br>
-                The baseline spread across models (sustainability 0.47&ndash;0.99) dwarfs any mechanism effect.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 11-13: All 3 Utility Trajectories -->
-    <div class="slide slide-imgtext">
-        <div class="label">Nano</div>
-        <h2>Utility Trajectories &mdash; Nano, 4 Trolls</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/utility_trajectories.png" alt="Nano Utility Trajectories">
-            </div>
-            <ul style="margin-top:2vh;">
-                <li><strong>G</strong> (112) &gt; <strong>S</strong> (105) &gt; <strong>NR</strong> (99) &mdash; enforcement mechanisms lead</li>
-                <li><strong>GR &asymp; Baseline</strong> (53 vs 55) &mdash; reputation alone doesn&rsquo;t help</li>
-                <li><strong>C</strong> near zero (16) &mdash; <em>worse than no mechanism</em></li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="slide slide-imgtext">
-        <div class="label">DeepSeek</div>
-        <h2>Utility Trajectories &mdash; DeepSeek, 4 Trolls</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/deepseek-v3/troll_4/utility_trajectories.png" alt="DeepSeek Utility Trajectories">
-            </div>
-            <ul style="margin-top:2vh;">
-                <li><strong>NR</strong> (200) and <strong>G</strong> (191) lead &mdash; but baseline B (181) is already very strong</li>
-                <li><strong>M collapses to &minus;37</strong> &mdash; delegation bug causes &ldquo;cooperation theater&rdquo;</li>
-                <li>Overall utilities <strong>3&times; higher than nano</strong> &mdash; DeepSeek barely needs mechanisms</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="slide slide-imgtext">
-        <div class="label">Mini</div>
-        <h2>Utility Trajectories &mdash; Mini, 4 Trolls</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/gpt-5.4-mini/troll_4/utility_trajectories.png" alt="Mini Utility Trajectories">
-            </div>
-            <ul style="margin-top:2vh;">
-                <li><strong>NR</strong> (53) and <strong>B</strong> (43) lead &mdash; but total utilities far below nano and DeepSeek</li>
-                <li><strong>G</strong> (24) has low utility but <strong>highest sustainability</strong> (0.67) &mdash; it rescues market health, not profit</li>
-                <li><strong>Mini paradox:</strong> cooperation rate 0.78 but sustainability 0.47 &mdash; agents &ldquo;cooperate&rdquo; but the economy collapses</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- SLIDE 14: Cross-Model Summary Table -->
-    <div class="slide slide-imgtext">
-        <div class="label">Cross-Model</div>
-        <h2>Cross-Model Mechanism Comparison &mdash; 4 Trolls</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/model_summary_table.png" alt="Model Summary Table" style="max-height:52vh;">
-            </div>
-            <ul style="margin-top:1vh;">
-                <li><strong>G</strong> has gold border (best composite) for both <strong>mini</strong> and <strong>nano</strong>. DeepSeek&rsquo;s best is <strong>NR</strong> (ceiling effect)</li>
-                <li><strong>M</strong> near-zero utility across all models (known delegation bug)</li>
-                <li><strong>C</strong> consistently lowest utility for weaker models (mini 0.37, nano 0.55)</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- SLIDE 15: Model > Mechanism -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Key Finding</div>
-        <h2>Model Capability &gt; Mechanism Choice</h2>
-        <div class="content">
-            <p style="margin-bottom:2vh; color:var(--text-secondary);">Marginal benefit of each mechanism vs that model&rsquo;s own baseline (&Delta; mean utility, 4 trolls):</p>
-            <table style="width:100%; border-collapse:collapse; font-family:'Inter',sans-serif; font-size:clamp(0.8rem,1vw,0.95rem);">
-                <thead>
-                    <tr style="border-bottom:2px solid var(--line);">
-                        <th style="text-align:left; padding:1vh 1vw; color:var(--text-primary);">Mechanism</th>
-                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">DeepSeek &Delta;</th>
-                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">Mini &Delta;</th>
-                        <th style="text-align:center; padding:1vh 1vw; color:var(--text-primary);">Nano &Delta;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">G</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.02</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.61</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.89</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">S</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;1.05</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.46</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.66</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">NR</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.33</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.34</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--green); font-weight:600;">+1.48</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.8vh 1vw; font-weight:600;">GR</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--accent);">+0.20</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.27</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.07</td></tr>
-                    <tr><td style="padding:0.8vh 1vw; font-weight:600;">C</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;0.33</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;1.05</td><td style="text-align:center; padding:0.8vh 1vw; color:var(--red);">&minus;1.28</td></tr>
-                </tbody>
-            </table>
-            <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">M excluded (delegation bug). Baseline mean utility: DeepSeek 5.35, Mini 1.42, Nano 1.83.</p>
-            <div class="callout blue" style="margin-top:2vh;">
-                <p><strong>The model is a bigger lever than the mechanism.</strong> Baseline utility spread across models (1.42&ndash;5.35) dwarfs mechanism effects. G and NR add value; C consistently destroys it.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 16: G is the consistent winner -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Key Finding</div>
-        <h2>Governance (G) is the Only Consistent Winner</h2>
-        <div class="content">
-            <ul>
-                <li><strong>G is #1 on all 3 models</strong> &mdash; the only mechanism that is never net-negative</li>
-                <li><strong>Why G works everywhere:</strong> the oracle&rsquo;s detection and enforcement doesn&rsquo;t rely on agents reasoning about it &mdash; even weak models respond to fines and suspension threats</li>
-                <li><strong>NR and GR are capability-gated</strong> &mdash; excellent for DeepSeek (agents reason about reputation), fail for mini (agents ignore the signals)</li>
-                <li><strong>S is model-split</strong> &mdash; strong for nano (+0.24 sust) but mediocre for mini and utility-costly for DeepSeek</li>
-                <li><strong>C is consistently harmful</strong> &mdash; lowest utility for weaker models across all 3. Penalty fear freezes markets</li>
-            </ul>
-            <div class="callout green" style="margin-top:2vh;">
-                <p><strong>Formal enforcement works across the capability spectrum. Information-rich mechanisms require a capable model to act on them.</strong></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 17: Troll Isolation ≠ Cooperation -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Key Insight</div>
-        <h2>All Mechanisms Isolate Trolls &mdash; That&rsquo;s Not the Hard Part</h2>
-        <div class="content">
-            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">Damaging troll trades (self-interested agent proposed to troll, troll stole goods) &mdash; 4 trolls, 30 rounds:</p>
-            <table style="width:100%; border-collapse:collapse; font-family:'Inter',sans-serif; font-size:clamp(0.75rem,0.95vw,0.9rem);">
-                <thead>
-                    <tr style="border-bottom:2px solid var(--line);">
-                        <th style="text-align:left; padding:0.6vh 1vw;">Condition</th>
-                        <th style="text-align:center; padding:0.6vh 1vw;">Nano</th>
-                        <th style="text-align:center; padding:0.6vh 1vw;">DeepSeek</th>
-                        <th style="text-align:center; padding:0.6vh 1vw;">Mini</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4); background:rgba(155,44,44,0.08);"><td style="padding:0.5vh 1vw; font-weight:600;">B (baseline)</td><td style="text-align:center;">70</td><td style="text-align:center;">97</td><td style="text-align:center;">8</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">GR</td><td style="text-align:center;">16</td><td style="text-align:center;">34</td><td style="text-align:center;">6</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">C</td><td style="text-align:center;">9</td><td style="text-align:center;">29</td><td style="text-align:center;">5</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">G</td><td style="text-align:center;">14</td><td style="text-align:center;">43</td><td style="text-align:center;">8</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">NR</td><td style="text-align:center;">18</td><td style="text-align:center;">27</td><td style="text-align:center;">14</td></tr>
-                    <tr style="border-bottom:1px solid rgba(184,176,164,0.4);"><td style="padding:0.5vh 1vw; font-weight:600;">S</td><td style="text-align:center;">78</td><td style="text-align:center;">66</td><td style="text-align:center;">8</td></tr>
-                    <tr><td style="padding:0.5vh 1vw; font-weight:600; color:var(--accent);">M</td><td style="text-align:center; color:var(--accent);">31</td><td style="text-align:center; color:var(--accent);">45</td><td style="text-align:center; color:var(--accent);">14</td></tr>
-                </tbody>
-            </table>
-            <p style="margin-top:0.5vh; font-size:0.75rem; color:var(--accent);">M greyed out (delegation bug). Lower = better troll isolation.</p>
-            <ul style="margin-top:1.5vh;">
-                <li>Almost every mechanism beats baseline &mdash; <strong>troll isolation is the easy part</strong></li>
-                <li>The <strong>harder problem:</strong> keeping self-interested agents cooperating with <em>each other</em></li>
-                <li><strong>Cooperation rate is misleading:</strong> mini has 0.78 coop rate but 0.47 sustainability &mdash; agents don&rsquo;t defect but still stop producing and trading enough</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- ============ SECTION: DEEP DIVES — WHY ============ -->
-
-    <!-- SLIDE 18: Why C Consistently Fails -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Deep Dive</div>
-        <h2>Why Contracting (C) Fails Across All Models</h2>
-        <div class="content">
-            <ul>
-                <li>Agents fear they cannot fulfill contracts (spoilage, competing trades) &mdash; inherently risk-averse</li>
-                <li>Agents reason incorrectly: <em>&ldquo;a contract could backfire if the counterparty rejects&rdquo;</em> &mdash; but rejection costs nothing</li>
-                <li>The 6-utility breach penalty suppresses trade volume on all models (nano C: 163 trades vs B: 370)</li>
-                <li><strong>CoopEval comparison:</strong> their &ldquo;contracting&rdquo; rewrites the payoff matrix (cooperation becomes mathematically dominant). Ours adds a punishment layer on top &mdash; agents can still breach, they just pay a fine. Different mechanisms, same name</li>
-            </ul>
-            <div class="callout red" style="margin-top:2vh;">
-                <p><strong>Death spiral:</strong> penalty fear &rarr; mechanism avoidance &rarr; unprotected barter &rarr; utility loss &rarr; less production &rarr; fewer trades</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 19: M Delegation Bug -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Known Bug</div>
-        <h2>Mediation (M) &mdash; Delegation Bug</h2>
-        <div class="content">
-            <ul>
-                <li><strong>Zero delegated trades</strong> across all 3 models, all 30 rounds</li>
-                <li><strong>Root cause:</strong> only the <em>acceptor</em> can delegate &mdash; the <em>proposer</em> has no delegation option</li>
-                <li>Every agent reasons: <em>&ldquo;delegation only helps if my counterparty also delegates&rdquo;</em> &mdash; coordination never bootstraps</li>
-                <li>In CoopEval, both players decide simultaneously (symmetric). Ours is asymmetric</li>
-            </ul>
-            <div class="callout red" style="margin-top:2vh;">
-                <p><strong>Implementation flaw, not a null result on mediation.</strong> All M results should be interpreted with this caveat. Fix (bilateral delegation) planned for future work.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 20: NR/GR Capability-Gated -->
-    <div class="slide slide-twocol">
-        <div class="label">Deep Dive</div>
-        <h2>Information vs Action &mdash; GR and NR are Capability-Gated</h2>
-        <div class="content">
-            <div class="card card-red">
-                <h3>GR &mdash; Global Reputation</h3>
-                <ul>
-                    <li>Agents <strong>see</strong> trolls have 0.00 reputation</li>
-                    <li>But <strong>cannot</strong> structurally exclude them</li>
-                    <li>DeepSeek reasons about it; mini/nano ignore it</li>
-                    <li>GR &asymp; Baseline for weak models</li>
-                </ul>
-            </div>
-            <div class="card card-green">
-                <h3>NR &mdash; Network Rewiring</h3>
-                <ul>
-                    <li>Worse information (unverified gossip)</li>
-                    <li>But <strong>can sever links</strong> to bad actors</li>
-                    <li>DeepSeek uses gossip strategically; nano barely engages</li>
-                    <li>NR outperforms GR &mdash; <strong>actionable tools &gt; perfect information</strong></li>
-                </ul>
-            </div>
-        </div>
-        <div class="callout blue" style="position:relative; z-index:1; margin-top:1vh;">
-            <p><strong>Both mechanisms require agents capable of reasoning about social signals.</strong> They work for DeepSeek but fail for mini &mdash; a capability threshold, not a mechanism flaw.</p>
-        </div>
-    </div>
-
-    <!-- SLIDE 21: NR Network Snapshot -->
-    <div class="slide slide-imgtext">
-        <div class="label">Evidence</div>
-        <h2>NR Network Rewiring in Action</h2>
-        <div class="content">
-            <div class="plot-container">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/network_snapshot_NR_run00.png" alt="NR Network Topology">
-            </div>
-            <ul style="margin-top:2vh;">
-                <li><strong>Round 10 &rarr; Round 30:</strong> trolls (red, small) progressively isolated at the periphery</li>
-                <li>Honest agents (blue, large) <strong>rebuild denser connections</strong> among themselves</li>
-                <li>Network gets <em>more</em> connected over time, not less</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- SLIDE 22: Escalation -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">Escalation</div>
-        <h2>2 Trolls &rarr; 4 Trolls (Nano Only)</h2>
-        <div class="content">
-            <ul>
-                <li><strong>G is the only mechanism that improved</strong> &mdash; sustainability <em>+11.8%</em>. Oracle detection gets more accurate with more trolls</li>
-                <li><strong>S and NR nearly flat</strong> &mdash; both robust to escalation</li>
-                <li><strong>GR collapsed</strong> &mdash; sustainability <em>&minus;31.6%</em>. Worse than Baseline at 4T. Information without tools is counterproductive under pressure</li>
-                <li><strong>C already broken at 2T</strong> &mdash; utility 0.82, nowhere to fall further</li>
-            </ul>
-            <div class="callout" style="margin-top:2vh;">
-                <p><strong>Caveat:</strong> Escalation data only complete for nano. Based on 1 run per condition &mdash; hypothesis-generating, not conclusive.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 23: Evidence Plots -->
-    <div class="slide slide-twocol">
-        <div class="label">Evidence</div>
-        <h2>Defections &amp; Trade Volume (Nano)</h2>
-        <div class="content">
-            <div style="text-align:center;">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/defection_trajectory.png" alt="Defection Trajectory" style="max-width:100%; max-height:34vh; border:1px solid var(--line);">
-                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">G defections decline over time &mdash; governance deters repeat offenders</p>
-            </div>
-            <div style="text-align:center;">
-                <img src="../simulation/data/plots/gpt-5.4-nano/troll_4/trade_volume.png" alt="Trade Volume" style="max-width:100%; max-height:34vh; border:1px solid var(--line);">
-                <p style="margin-top:1vh; font-size:0.8rem; color:var(--accent);">C trade volume near zero &mdash; market freeze visualized</p>
+                <p style="color:var(--text-secondary); font-size:clamp(0.95rem,1.2vw,1.1rem);">Progressive troll injection runs are underway on DeepSeek-V3.<br>
+                9 conditions &times; 200 rounds &times; 1 run each.<br><br>
+                Plots will include utility trajectories, Gini trajectories, defection counts, and trade volume &mdash;<br>
+                each with <strong style="color:var(--red);">red vertical injection lines</strong> marking troll arrival at rounds 51, 101, and 151.</p>
             </div>
         </div>
     </div>
 
     <!-- ============ SECTION: WRAP-UP ============ -->
 
-    <!-- SLIDE 21: Key Takeaways -->
-    <div class="slide slide-content">
-        <div class="label">Summary</div>
-        <h2>Key Takeaways</h2>
-        <div class="content" style="justify-content:center;">
-            <div class="takeaway-grid">
-                <div class="takeaway-card tk-green">
-                    <div class="tk-label">Robust across all 3 models</div>
-                    <p><strong>Governance (G)</strong> is the only mechanism never net-negative across nano, mini, and DeepSeek &mdash; and the only one that rescues mini</p>
-                </div>
-                <div class="takeaway-card tk-amber">
-                    <div class="tk-label">Model &gt; Mechanism</div>
-                    <p>Baseline spread across models (sustainability 0.47&ndash;0.99) dwarfs mechanism effects. <strong>The model is a bigger lever than the mechanism.</strong></p>
-                </div>
-                <div class="takeaway-card tk-red">
-                    <div class="tk-label">Mechanisms can backfire</div>
-                    <p>C freezes markets, S drains the commons, GR/NR hurt weak models that can&rsquo;t reason about the signals &mdash; more mechanism &ne; better outcome</p>
-                </div>
-                <div class="takeaway-card tk-blue">
-                    <div class="tk-label">Capability-gated</div>
-                    <p>Information-rich mechanisms (GR, NR) only work for capable models. Formal enforcement (G) works across the capability spectrum &mdash; because it doesn&rsquo;t rely on agent reasoning</p>
-                </div>
-                <div class="takeaway-card tk-blue full-width">
-                    <div class="tk-label">Core Finding</div>
-                    <p>Actionable enforcement (G) beats information-only (GR) and per-trade friction (C, S). M results are unreliable (delegation bug). All conclusions provisional pending replication.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 19: Next Steps -->
+    <!-- SLIDE 17: Next Steps -->
     <div class="slide slide-content">
         <div class="label">Roadmap</div>
         <h2>Next Steps</h2>
         <div class="content" style="justify-content:center;">
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="phase-label">Fix</div>
-                    <h4>M Delegation</h4>
-                    <p>Implement bilateral delegation (proposer + acceptor) and re-run M across all models</p>
+                    <div class="phase-label">Current</div>
+                    <h4>Progressive Runs</h4>
+                    <p>Complete all 9 conditions with progressive troll injection on DeepSeek-V3 (200 rounds each)</p>
                 </div>
                 <div class="timeline-item">
-                    <div class="phase-label">Fill gaps</div>
-                    <h4>Missing Data</h4>
-                    <p>Mini at 0/2 trolls (all conditions); DeepSeek at 2 trolls (5 missing conditions)</p>
+                    <div class="phase-label">Analysis</div>
+                    <h4>Plot &amp; Compare</h4>
+                    <p>Generate trajectory plots with injection markers. Compare mechanism degradation curves across all 4 phases</p>
                 </div>
                 <div class="timeline-item">
-                    <div class="phase-label">Rigor</div>
-                    <h4>Replication</h4>
-                    <p>3 runs per condition for statistical confidence &mdash; all findings are single-run</p>
+                    <div class="phase-label">Validate</div>
+                    <h4>J vs G &amp; E Collapse</h4>
+                    <p>Does J achieve comparable enforcement to G without perfect information? When does E collapse? Do agents anticipate it?</p>
                 </div>
                 <div class="timeline-item">
-                    <div class="phase-label">Scale</div>
-                    <h4>Stress Test</h4>
-                    <p>Higher troll counts (6, 8) &mdash; G improved from t2&rarr;t4 in nano, find its breaking point</p>
+                    <div class="phase-label">Replicate</div>
+                    <h4>Multiple Runs</h4>
+                    <p>3 runs per condition for statistical confidence &mdash; current results are single-run</p>
                 </div>
             </div>
         </div>
@@ -1034,7 +1057,7 @@ flowchart LR
 </div>
 
 <div class="slide-counter">
-    <span id="currentSlide">01</span> / <span id="totalSlides">13</span>
+    <span id="currentSlide">01</span> / <span id="totalSlides">17</span>
 </div>
 
 <script>

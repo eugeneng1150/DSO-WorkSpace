@@ -762,8 +762,10 @@ def plot_model_comparison(save: bool = True) -> None:
 
 
 def _load_troll_runs(condition: str) -> list[dict]:
-    """Load troll run files. Uses _N_TROLLS if set, otherwise any troll count."""
-    if _N_TROLLS > 0:
+    """Load troll run files. Uses _PROGRESSIVE or _N_TROLLS if set, otherwise any troll count."""
+    if _PROGRESSIVE:
+        files = sorted(config.DATA_DIR.glob(f"{condition}_tprog_run_*.json"))
+    elif _N_TROLLS > 0:
         files = sorted(config.DATA_DIR.glob(f"{condition}_t{_N_TROLLS}_run_*.json"))
     else:
         files = sorted(config.DATA_DIR.glob(f"{condition}_t*_run_*.json"))
@@ -1516,40 +1518,72 @@ def plot_troll_escalation(save: bool = True, troll_counts: tuple[int, ...] = (0,
 
 
 def plot_troll_escalation_table(save: bool = True, troll_counts: tuple[int, ...] = (0, 4, 8, 16)) -> None:
-    """Summary table: mean utility per condition × troll count, with colour coding."""
+    """Summary table: mean utility per condition × troll phase.
+
+    In progressive mode, splits each run into phases (1-50, 51-100, 101-150, 151-200)
+    and computes mean non-troll utility per phase.  Falls back to separate-file mode
+    when _PROGRESSIVE is False.
+    """
+    # Phase boundaries for progressive mode: (start, end, total_trolls)
+    PHASES = [(1, 50, 0), (51, 100, 4), (101, 150, 8), (151, 200, 16)]
+
     data: dict[str, dict[int, float]] = {}
-    for cond in CONDITIONS:
-        data[cond] = {}
-        for tc in troll_counts:
-            if tc > 0:
-                files = sorted(config.DATA_DIR.glob(f"{cond}_t{tc}_run_*.json"))
-            else:
-                files = sorted(config.DATA_DIR.glob(f"{cond}_run_*.json"))
-            if not files:
+
+    if _PROGRESSIVE:
+        for cond in CONDITIONS:
+            runs = _load_runs(cond)
+            if not runs:
                 continue
-            runs = []
-            for f in files:
-                with open(f) as fp:
-                    runs.append(json.load(fp))
-            summaries = [_extract_summary_metrics(run) for run in runs]
-            data[cond][tc] = np.mean([s["mean_utility"] for s in summaries])
+            data[cond] = {}
+            for phase_start, phase_end, tc in PHASES:
+                phase_utils = []
+                for run in runs:
+                    troll_ids = set(str(t) for t in run.get("session_log", {}).get("troll_ids", []))
+                    rounds = run.get("rounds", [])
+                    for r in rounds:
+                        rn = r.get("round", 0)
+                        if rn < phase_start or rn > phase_end:
+                            continue
+                        non_troll = [float(v) for k, v in r.get("utilities", {}).items() if k not in troll_ids]
+                        if non_troll:
+                            phase_utils.append(np.mean(non_troll))
+                if phase_utils:
+                    data[cond][tc] = np.mean(phase_utils)
+    else:
+        for cond in CONDITIONS:
+            data[cond] = {}
+            for tc in troll_counts:
+                if tc > 0:
+                    files = sorted(config.DATA_DIR.glob(f"{cond}_t{tc}_run_*.json"))
+                else:
+                    files = sorted(config.DATA_DIR.glob(f"{cond}_run_*.json"))
+                if not files:
+                    continue
+                runs = []
+                for f in files:
+                    with open(f) as fp:
+                        runs.append(json.load(fp))
+                summaries = [_extract_summary_metrics(run) for run in runs]
+                data[cond][tc] = np.mean([s["mean_utility"] for s in summaries])
 
     active_conds = [c for c in CONDITIONS if data.get(c, {})]
     if not active_conds:
         print("  [troll_escalation_table] No data found. Skipping.")
         return
 
-    col_labels = [f"{tc} trolls" for tc in troll_counts] + ["Δ (0→max)"]
+    if _PROGRESSIVE:
+        col_labels = [f"Phase {i+1}\n({p[2]} trolls)" for i, p in enumerate(PHASES)] + ["Δ (0→16)"]
+    else:
+        col_labels = [f"{tc} trolls" for tc in troll_counts] + ["Δ (0→max)"]
     cell_text = []
     all_vals = [v for cd in data.values() for v in cd.values()]
-    v_min, v_max = min(all_vals), max(all_vals) if all_vals else (0, 1)
+    v_min, v_max = (min(all_vals), max(all_vals)) if all_vals else (0, 1)
 
     for cond in active_conds:
         row = []
         for tc in troll_counts:
             val = data[cond].get(tc)
             row.append(f"{val:.2f}" if val is not None else "—")
-        # Delta: difference from 0 trolls to max troll count
         v0 = data[cond].get(troll_counts[0])
         vmax = data[cond].get(troll_counts[-1])
         if v0 is not None and vmax is not None:
@@ -1582,7 +1616,6 @@ def plot_troll_escalation_table(save: bool = True, troll_counts: tuple[int, ...]
             val = data[cond].get(tc)
             if val is not None:
                 table[i + 1, j].set_facecolor(_cell_color(val, "higher", v_min, v_max))
-        # Delta column
         v0 = data[cond].get(troll_counts[0])
         vmax_val = data[cond].get(troll_counts[-1])
         if v0 is not None and vmax_val is not None:
@@ -1590,9 +1623,12 @@ def plot_troll_escalation_table(save: bool = True, troll_counts: tuple[int, ...]
             color = "#c8e6c9" if delta >= 0 else "#ffcdd2"
             table[i + 1, len(troll_counts)].set_facecolor(color)
 
-    ax.set_title("Mean Utility by Condition × Troll Count\n"
-                 "(Green = higher utility, Red = lower; Δ = change from 0 to max trolls)",
-                 fontweight="bold", fontsize=12, pad=20)
+    title = ("Mean Utility by Condition × Progressive Phase\n"
+             "(Green = higher utility, Red = lower; Δ = change from Phase 1 to Phase 4)"
+             if _PROGRESSIVE else
+             "Mean Utility by Condition × Troll Count\n"
+             "(Green = higher utility, Red = lower; Δ = change from 0 to max trolls)")
+    ax.set_title(title, fontweight="bold", fontsize=12, pad=20)
     plt.tight_layout()
     _maybe_save(fig, "troll_escalation_table.png", save)
 
