@@ -499,13 +499,17 @@ Be specific — cite numbers and quote traces. Flag every claim that relies on a
 """
 
 
-def run_analyst(model: str = ANALYST_MODEL, save: bool = True) -> str:
-    """Run cross-model analysis across all available data."""
+def run_analyst(model: str = ANALYST_MODEL, save: bool = True, filter_models: list[str] | None = None) -> str:
+    """Run analysis. If filter_models is given, only analyse those model directories."""
     print("Discovering models and data...")
 
     models = _discover_models()
     if not models:
         return "No run logs found. Run the simulation first."
+    if filter_models:
+        models = [m for m in models if m in filter_models]
+        if not models:
+            return f"No data found for models: {filter_models}. Available: {_discover_models()}"
     print(f"Models found: {models}")
 
     avail = _build_availability_map(models)

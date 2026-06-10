@@ -109,11 +109,10 @@ def main():
 
     if args.analyse:
         from .analysis.analyst import run_analyst
-        report = run_analyst()
+        filter_models = [args.model] if args.model else None
+        report = run_analyst(filter_models=filter_models)
         print("\n" + "=" * 60)
         print(report)
-        print("\nNote: analyst now runs cross-model analysis automatically.")
-        print("It scans all model directories under data/runs/ — no --model flag needed.")
 
 
 
