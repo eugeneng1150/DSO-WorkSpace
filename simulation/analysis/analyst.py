@@ -22,6 +22,9 @@ OUT_DIR = Path(__file__).parent.parent / "data"
 METRICS = ["gini", "mean_utility"]
 INTERMEDIATE = ["whistleblowing_rate", "false_accusation_rate", "warning_accuracy"]
 
+PROGRESSIVE_SENTINEL = -1
+TROLL_PHASES = [(1, 50, 0), (51, 100, 4), (101, 150, 8), (151, 200, 16)]
+
 _MECHANISM_LABELS = {
     "B":  "baseline (no mechanisms)",
     "GR": "global reputation (system-computed scores visible to all)",
@@ -53,14 +56,18 @@ def _discover_models() -> list[str]:
 
 
 def _detect_troll_counts_for_model(model_dir: Path) -> list[int]:
-    """Scan a model's data dir and return sorted troll counts found."""
+    """Scan a model's data dir and return sorted troll counts found.
+
+    Returns PROGRESSIVE_SENTINEL (-1) for progressive troll runs (_tprog files).
+    """
     counts = set()
     for f in model_dir.glob("*_run_*.json"):
         if "traces" in f.name:
             continue
-        m = re.search(r"_t(\d+)_run_", f.name)
-        if m:
-            counts.add(int(m.group(1)))
+        if "_tprog_" in f.name:
+            counts.add(PROGRESSIVE_SENTINEL)
+        elif re.search(r"_t(\d+)_run_", f.name):
+            counts.add(int(re.search(r"_t(\d+)_run_", f.name).group(1)))
         else:
             counts.add(0)
     return sorted(counts)
@@ -70,7 +77,9 @@ def _conditions_for(model_dir: Path, n_trolls: int) -> list[str]:
     """Return which conditions have data for a given model and troll count."""
     available = []
     for cond in CONDITIONS:
-        if n_trolls > 0:
+        if n_trolls == PROGRESSIVE_SENTINEL:
+            files = list(model_dir.glob(f"{cond}_tprog_run_*.json"))
+        elif n_trolls > 0:
             files = list(model_dir.glob(f"{cond}_t{n_trolls}_run_*.json"))
         else:
             files = [f for f in model_dir.glob(f"{cond}_run_*.json") if "traces" not in f.name and "_t" not in f.name]
@@ -83,7 +92,9 @@ def _conditions_for(model_dir: Path, n_trolls: int) -> list[str]:
 # ── Data loading ─────────────────────────────────────────────────────────────
 
 def _load_runs(model_dir: Path, condition: str, n_trolls: int) -> list[dict]:
-    if n_trolls > 0:
+    if n_trolls == PROGRESSIVE_SENTINEL:
+        files = sorted(model_dir.glob(f"{condition}_tprog_run_*.json"))
+    elif n_trolls > 0:
         files = sorted(model_dir.glob(f"{condition}_t{n_trolls}_run_*.json"))
     else:
         files = sorted(f for f in model_dir.glob(f"{condition}_run_*.json") if "_t" not in f.name)
@@ -96,7 +107,9 @@ def _load_runs(model_dir: Path, condition: str, n_trolls: int) -> list[dict]:
 
 
 def _load_traces(model_dir: Path, condition: str, n_trolls: int) -> list[dict]:
-    if n_trolls > 0:
+    if n_trolls == PROGRESSIVE_SENTINEL:
+        files = sorted(model_dir.glob(f"{condition}_tprog_run_*_traces.jsonl"))
+    elif n_trolls > 0:
         files = sorted(model_dir.glob(f"{condition}_t{n_trolls}_run_*_traces.jsonl"))
     else:
         files = sorted(f for f in model_dir.glob(f"{condition}_run_*_traces.jsonl") if "_t" not in f.name)
@@ -115,9 +128,12 @@ def _get_troll_ids(run: dict) -> set[str]:
 
 # ── Summary statistics ───────────────────────────────────────────────────────
 
-def _summarize_condition(condition: str, runs: list[dict]) -> dict:
+def _summarize_condition(condition: str, runs: list[dict], progressive: bool = False) -> dict:
     cond = {}
     troll_ids = _get_troll_ids(runs[0])
+
+    if progressive:
+        return _summarize_condition_progressive(condition, runs)
 
     for metric in METRICS + INTERMEDIATE:
         all_vals = [
@@ -159,6 +175,66 @@ def _summarize_condition(condition: str, runs: list[dict]) -> dict:
             if non_troll:
                 util_vals.append(np.mean(non_troll))
     cond["mean_utility"] = round(float(np.mean(util_vals)), 2) if util_vals else 0.0
+
+    return cond
+
+
+def _summarize_condition_progressive(condition: str, runs: list[dict]) -> dict:
+    """Summarize a progressive troll run by splitting into 4 phases."""
+    cond = {"progressive": True, "phases": {}}
+
+    for start, end, n_trolls in TROLL_PHASES:
+        phase_key = f"phase_{start}_{end}_t{n_trolls}"
+        phase = {}
+
+        for metric in METRICS:
+            vals = []
+            for run in runs:
+                tids = _get_troll_ids(run)
+                for rnd in run["rounds"]:
+                    rnd_num = rnd.get("round", rnd.get("round_number", 0))
+                    if start <= rnd_num <= end:
+                        v = rnd["metrics"].get(metric)
+                        if v is not None:
+                            vals.append(float(v))
+            phase[metric] = {
+                "mean": round(float(np.mean(vals)), 4) if vals else None,
+            }
+
+        util_vals = []
+        for run in runs:
+            tids = _get_troll_ids(run)
+            for rnd in run["rounds"]:
+                rnd_num = rnd.get("round", rnd.get("round_number", 0))
+                if start <= rnd_num <= end:
+                    utils = rnd.get("utilities", {})
+                    non_troll = [float(v) for k, v in utils.items() if k not in tids]
+                    if non_troll:
+                        util_vals.append(np.mean(non_troll))
+        phase["non_troll_mean_utility"] = round(float(np.mean(util_vals)), 2) if util_vals else 0.0
+
+        damaging = 0
+        for run in runs:
+            tids = _get_troll_ids(run)
+            for rnd in run["rounds"]:
+                rnd_num = rnd.get("round", rnd.get("round_number", 0))
+                if start <= rnd_num <= end:
+                    for t in rnd.get("trades", []):
+                        if str(t["proposer"]) not in tids and str(t["target"]) in tids:
+                            damaging += 1
+        phase["damaging_troll_trades"] = damaging
+
+        cond["phases"][phase_key] = phase
+
+    overall_utils = []
+    for run in runs:
+        tids = _get_troll_ids(run)
+        for rnd in run["rounds"]:
+            utils = rnd.get("utilities", {})
+            non_troll = [float(v) for k, v in utils.items() if k not in tids]
+            if non_troll:
+                overall_utils.append(np.mean(non_troll))
+    cond["overall_mean_utility"] = round(float(np.mean(overall_utils)), 2) if overall_utils else 0.0
 
     return cond
 
@@ -268,8 +344,13 @@ def _format_availability(avail: dict[str, dict[int, list[str]]]) -> str:
     lines = []
     for model, tc_map in avail.items():
         for tc, conds in sorted(tc_map.items()):
-            label = f"{tc} trolls" if tc > 0 else "0 trolls"
-            lines.append(f"  {model} @ {label}: {', '.join(conds)} ({len(conds)}/7 conditions)")
+            if tc == PROGRESSIVE_SENTINEL:
+                label = "progressive (0→4→8→16 trolls)"
+            elif tc > 0:
+                label = f"{tc} trolls"
+            else:
+                label = "0 trolls"
+            lines.append(f"  {model} @ {label}: {', '.join(conds)} ({len(conds)}/{len(CONDITIONS)} conditions)")
     return "\n".join(lines)
 
 
@@ -293,16 +374,26 @@ def _build_analyst_prompt(
             summary_block += "(no data)\n"
             continue
         for n_trolls in sorted(summaries[model].keys()):
-            label = f"{n_trolls} trolls" if n_trolls > 0 else "0 trolls"
+            if n_trolls == PROGRESSIVE_SENTINEL:
+                label = "progressive (0→4→8→16 trolls over 200 rounds)"
+            elif n_trolls > 0:
+                label = f"{n_trolls} trolls"
+            else:
+                label = "0 trolls"
             summary_block += f"\n### {label}\n{json.dumps(summaries[model][n_trolls], indent=2)}\n"
 
-    # Build round tables block (only for the common troll count with most coverage)
+    # Build round tables block
     tables_block = ""
     for model in models:
         if model not in round_tables:
             continue
         for n_trolls in sorted(round_tables[model].keys()):
-            label = f"{n_trolls} trolls" if n_trolls > 0 else "0 trolls"
+            if n_trolls == PROGRESSIVE_SENTINEL:
+                label = "progressive"
+            elif n_trolls > 0:
+                label = f"{n_trolls} trolls"
+            else:
+                label = "0 trolls"
             for cond in CONDITIONS:
                 if cond in round_tables[model][n_trolls]:
                     mech_label = _MECHANISM_LABELS.get(cond, cond)
@@ -314,7 +405,12 @@ def _build_analyst_prompt(
         if model not in traces:
             continue
         for n_trolls in sorted(traces[model].keys()):
-            label = f"{n_trolls} trolls" if n_trolls > 0 else "0 trolls"
+            if n_trolls == PROGRESSIVE_SENTINEL:
+                label = "progressive"
+            elif n_trolls > 0:
+                label = f"{n_trolls} trolls"
+            else:
+                label = "0 trolls"
             for cond in CONDITIONS:
                 if cond in traces[model].get(n_trolls, {}):
                     entries = traces[model][n_trolls][cond]
@@ -324,38 +420,53 @@ def _build_analyst_prompt(
                         traces_block += "\n"
 
     all_troll_counts = sorted(set(tc for tc_map in avail.values() for tc in tc_map))
-    troll_counts_str = ", ".join(str(t) for t in all_troll_counts)
+    has_progressive = PROGRESSIVE_SENTINEL in all_troll_counts
+    fixed_counts = [t for t in all_troll_counts if t != PROGRESSIVE_SENTINEL]
+    troll_counts_str = ", ".join(str(t) for t in fixed_counts)
+    if has_progressive:
+        troll_counts_str = "progressive (0→4→8→16)" + (f", fixed: {troll_counts_str}" if fixed_counts else "")
 
-    return f"""You are a research analyst reviewing a multi-agent marketplace simulation comparing 7 institutional mechanisms for sustaining cooperation among self-interested LLM agents under escalating adversarial pressure.
+    return f"""You are a research analyst reviewing a multi-agent marketplace simulation comparing 9 institutional mechanisms for sustaining cooperation among self-interested LLM agents under progressive adversarial stress testing.
 
 SETUP:
-- 18 LLM agents + trolls added on top (IDs 18+)
+- 18 LLM agents, single model (DeepSeek-V3)
 - Models tested: {', '.join(models)}
-- Troll counts tested: {troll_counts_str}
-- 3 perishable goods (A, B, C), barter economy, 30 rounds
-- Production cost: 1 utility/unit, consumption gain: +3 utility/needed unit, 20% spoilage/round
+- Troll injection: {troll_counts_str}
+- Progressive troll injection schedule: 0 trolls (rounds 1-50) → 4 trolls (rounds 51-100) → 8 trolls (rounds 101-150) → 16 trolls (rounds 151-200)
+- Trolls are injected silently mid-game — agents discover them through experience
+- 3 perishable goods (A, B, C), barter economy, 200 rounds
+- Production cost: 1 utility/unit, consumption gain: +3 utility/needed unit (agents only need ONE other good type for utility, not both), 20% spoilage/round
 - Agents see only "Round N" — no total rounds, no market health metrics
 - Trolls defect on ALL trades, propose trades to all neighbors, broadcast lies
-- All metrics exclude trolls
+- Key metrics: mean utility (non-troll) and Gini coefficient
 - "Damaging troll trades" = trades where a non-troll proposed to a troll and the troll stole goods
 
-CONDITIONS:
+CONDITIONS (9 mechanisms):
 {json.dumps(_MECHANISM_LABELS, indent=2)}
 
-INFORMATION GRADIENT (B → NR → GR):
-- B: private experience only (lifetime partner summary + last 5 rounds detail)
-- NR: private experience + 10-round gossip history + network reshaping (sever/request links)
-- GR: private experience + system-computed reputation scores visible to all
+MECHANISM CATEGORIES:
+- Information mechanisms (B → NR → GR): escalating information transparency
+  - B: private experience only (lifetime partner summary + last 5 rounds detail)
+  - NR: private experience + 10-round gossip history + network reshaping (sever/request links)
+  - GR: private experience + system-computed reputation scores visible to all
+- Enforcement mechanisms (C, G, S, J): punitive deterrence
+  - C: binding contracts with breach penalty (6 utility)
+  - G: oracle-based governance (detects defection >40%, escalates fines/suspension)
+  - S: costly peer sanctions (spend 1 → target loses 3, anonymous)
+  - J: complaint-driven court (filing fee 1, guilty penalty 5, compensation 3, false complaint fine 2)
+- Cooperative mechanisms (M, E): structural cooperation support
+  - M: agent-designed mediator (free delegation, mediator acts on behalf)
+  - E: shared escrow pool (starts at 100, pays 4 per defection victim, pool=0 → ALL agents' utility reset to 0)
 
-DATA AVAILABILITY (not all model×troll×condition cells have data):
+DATA AVAILABILITY (not all model×condition cells have data):
 {avail_block}
 
-IMPORTANT: Only make claims about data that exists. If a model is missing data for a troll count or condition, say so explicitly. Do not extrapolate results from one model to another.
+IMPORTANT: Only make claims about data that exists. If a condition is missing, say so explicitly.
 
-SUMMARY STATISTICS (by model and troll count):
+SUMMARY STATISTICS (by model — for progressive runs, stats are broken into 4 phases):
 {summary_block}
 
-PER-ROUND TABLES:
+PER-ROUND TABLES (200 rounds):
 {tables_block}
 
 AGENT REASONING TRACES (sampled for interesting behavior):
@@ -363,26 +474,28 @@ AGENT REASONING TRACES (sampled for interesting behavior):
 
 Write a single comprehensive report with these sections:
 
-1. **EXECUTIVE SUMMARY** (4-5 sentences): Headline findings across all models and troll counts. What is the single most important takeaway?
+1. **EXECUTIVE SUMMARY** (4-5 sentences): Headline findings. What is the single most important takeaway about mechanism robustness under progressive adversarial pressure?
 
-2. **DATA COVERAGE**: Briefly state what data exists and what is missing. Flag any conclusions that are limited by single-run or single-model evidence.
+2. **DATA COVERAGE**: What data exists and what is missing. Flag conclusions limited by single-run evidence.
 
-3. **MECHANISM RANKING**: Rank all conditions. For each, show raw numeric values for mean_utility and gini across all troll counts. Do NOT use ✓/✗ or binary pass/fail — use the actual numbers from the summary data. Present as a comparison table with columns: Condition | 0T (util / gini) | 4T | 8T | 16T | Verdict.
+3. **MECHANISM RANKING**: Rank all 9 conditions by robustness. For each, show raw numeric values for non-troll mean_utility and gini across each phase (0T / 4T / 8T / 16T). Present as a comparison table. Use actual numbers, not ✓/✗.
 
-4. **TROLL ESCALATION ANALYSIS**: How does each mechanism degrade under escalating adversarial pressure (0→4→8→16 trolls)? Which mechanisms are robust vs fragile? Use raw numeric values (mean_utility, gini) throughout — no ✓/✗ symbols.
+4. **PROGRESSIVE STRESS ANALYSIS**: How does each mechanism degrade as trolls escalate from 0→4→8→16? Which mechanisms maintain utility and low inequality? Which collapse? At what troll count does each mechanism break down? Use raw numeric values throughout.
 
-5. **MECHANISM-SPECIFIC FINDINGS**: For each condition, synthesize findings:
-   - What worked and what didn't?
-   - What is the failure mode (if any)?
+5. **MECHANISM-SPECIFIC FINDINGS**: For each of the 9 conditions:
+   - What worked and what failed under progressive stress?
+   - At which phase did it start to degrade?
+   - What is the failure mode?
 
 6. **BEHAVIORAL INSIGHTS** (use the CoT traces): Quote specific examples showing:
-   - Whether agents use mechanisms strategically
-   - How agents react to trolls
+   - How agents react when trolls first appear (phase 2 transition)
+   - Whether agents use mechanisms strategically to counter trolls
+   - How behavior changes under maximum pressure (phase 4, 16 trolls)
    Use exact quotes, citing round and agent ID.
 
-7. **IMPLICATIONS & NEXT STEPS**: What should be tested next?
+7. **IMPLICATIONS & NEXT STEPS**: What should be tested next? Which mechanisms show promise for real-world multi-agent system design?
 
-Be specific — cite numbers and quote traces. Flag every claim that relies on a single run. Distinguish between "consistent across models" and "observed in one model only."
+Be specific — cite numbers and quote traces. Flag every claim that relies on a single run.
 """
 
 
@@ -419,12 +532,14 @@ def run_analyst(model: str = ANALYST_MODEL, save: bool = True) -> str:
                 if not runs:
                     continue
 
-                summaries[model_name][n_trolls][condition] = _summarize_condition(condition, runs)
+                is_prog = n_trolls == PROGRESSIVE_SENTINEL
+                summaries[model_name][n_trolls][condition] = _summarize_condition(condition, runs, progressive=is_prog)
                 round_tables[model_name][n_trolls][condition] = _build_round_table(runs)
                 sampled = _sample_interesting_traces(model_dir, condition, runs, n_trolls)
                 if sampled:
                     traces[model_name][n_trolls][condition] = sampled
-                    print(f"  [{model_name}/{condition}, {n_trolls}T] {len(sampled)} traces")
+                    troll_label = "prog" if is_prog else f"{n_trolls}"
+                    print(f"  [{model_name}/{condition}, {troll_label}T] {len(sampled)} traces")
 
     print("\nCalling analyst LLM...")
     prompt = _build_analyst_prompt(models, avail, summaries, round_tables, traces)
@@ -440,13 +555,17 @@ def run_analyst(model: str = ANALYST_MODEL, save: bool = True) -> str:
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         models_tag = "_".join(models)
         all_trolls = sorted(set(tc for m in avail.values() for tc in m))
-        trolls_label = "_".join(f"t{t}" for t in all_trolls)
-        out_path = OUT_DIR / f"analyst_report_cross-model_{trolls_label}_{timestamp}.md"
+        troll_parts = []
+        for t in all_trolls:
+            troll_parts.append("tprog" if t == PROGRESSIVE_SENTINEL else f"t{t}")
+        trolls_label = "_".join(troll_parts)
+        out_path = OUT_DIR / f"analyst_report_{models_tag}_{trolls_label}_{timestamp}.md"
         with open(out_path, "w") as f:
-            f.write(f"# Cross-Model Analyst Report\n\n")
+            f.write(f"# Analyst Report\n\n")
             f.write(f"Generated: {datetime.utcnow().isoformat()}\n")
             f.write(f"Models: {', '.join(models)}\n")
-            f.write(f"Troll counts: {all_trolls}\n\n")
+            troll_display = ["progressive" if t == PROGRESSIVE_SENTINEL else str(t) for t in all_trolls]
+            f.write(f"Troll mode: {', '.join(troll_display)}\n\n")
             f.write(f"## Data Availability\n\n")
             f.write(_format_availability(avail))
             f.write("\n\n---\n\n")

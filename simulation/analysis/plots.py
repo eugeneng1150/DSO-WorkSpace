@@ -828,9 +828,11 @@ def plot_troll_trade_volume(save: bool = True) -> None:
 def plot_troll_resilience_table(save: bool = True) -> None:
     """Table comparing troll containment across conditions.
 
-    Columns: total troll defections, avg troll trades/round (last half),
-    non-troll defection rate, mean non-troll utility.
+    For progressive runs: shows per-phase mean utility (0T, 4T, 8T, 16T) plus
+    damaging troll trades and non-troll defection rate.
     """
+    PHASES = [(0, 49, "0T"), (50, 99, "4T"), (100, 149, "8T"), (150, 199, "16T")]
+
     rows = []
     for condition in CONDITIONS:
         runs = _load_troll_runs(condition)
@@ -838,85 +840,79 @@ def plot_troll_resilience_table(save: bool = True) -> None:
             continue
 
         troll_ids = _get_troll_ids(runs[0])
-        if not troll_ids:
+        if not troll_ids and not _PROGRESSIVE:
             continue
 
         n_rounds = len(runs[0]["rounds"])
-        half = n_rounds // 2
 
         damaging_troll_trades = 0
-        damaging_last_half = []
         non_troll_defections = 0
         non_troll_trades_total = 0
-        non_troll_utilities = []
+
+        phase_utilities = {label: [] for _, _, label in PHASES}
 
         for run in runs:
+            t_ids = _get_troll_ids(run)
             for r, rnd in enumerate(run["rounds"]):
                 trades = rnd.get("trades", [])
                 utilities = rnd.get("utilities", {})
 
                 for t in trades:
-                    proposer_is_troll = str(t["proposer"]) in troll_ids
-                    target_is_troll = str(t["target"]) in troll_ids
+                    proposer_is_troll = str(t["proposer"]) in t_ids
+                    target_is_troll = str(t["target"]) in t_ids
                     if not proposer_is_troll and target_is_troll:
                         damaging_troll_trades += 1
-                        if r >= half:
-                            damaging_last_half.append(1)
                     elif not proposer_is_troll and not target_is_troll:
                         non_troll_trades_total += 1
                         if t.get("defected_by") is not None:
                             non_troll_defections += 1
 
-                for aid, util in utilities.items():
-                    if aid not in troll_ids:
-                        non_troll_utilities.append(float(util))
+                non_troll_utils = [float(v) for k, v in utilities.items() if k not in t_ids]
+                if non_troll_utils:
+                    avg_util = np.mean(non_troll_utils)
+                    for start, end, label in PHASES:
+                        if start <= r <= end:
+                            phase_utilities[label].append(avg_util)
+                            break
 
-            if not damaging_last_half:
-                damaging_last_half = [0]
-
-        n_runs = len(runs)
-        last_half_rounds = (n_rounds - half) * n_runs
-        avg_damaging_last_half = sum(damaging_last_half) / max(last_half_rounds, 1)
         non_troll_def_rate = non_troll_defections / max(non_troll_trades_total, 1)
-        mean_utility = np.mean(non_troll_utilities) if non_troll_utilities else 0.0
 
-        rows.append({
+        row = {
             "condition": condition,
             "damaging_troll_trades": damaging_troll_trades,
-            "avg_damaging_last_half": avg_damaging_last_half,
-            "non_troll_trades": non_troll_trades_total,
-            "non_troll_defections": non_troll_defections,
             "non_troll_defection_rate": non_troll_def_rate,
-            "mean_utility": mean_utility,
-        })
+        }
+        for _, _, label in PHASES:
+            vals = phase_utilities[label]
+            row[f"util_{label}"] = round(float(np.mean(vals)), 2) if vals else 0.0
+        rows.append(row)
 
     if not rows:
         print("  [troll_resilience_table] No troll runs found, skipping.")
         return
 
-    # Render as a matplotlib table figure
-    fig, ax = plt.subplots(figsize=(18, 2 + 0.5 * len(rows)))
+    fig, ax = plt.subplots(figsize=(16, 2 + 0.5 * len(rows)))
     ax.axis("off")
 
     col_labels = [
         "Condition",
         "Damaging\nTroll Trades",
-        "Avg Damaging/Rnd\n(last half)",
-        "Self-Interested\nTrades",
-        "Self-Interested\nDefections",
-        "Self-Interested\nDefect Rate",
-        "Mean\nUtility",
+        "Non-Troll\nDefect Rate",
+        "Mean Util\n0T (1-50)",
+        "Mean Util\n4T (51-100)",
+        "Mean Util\n8T (101-150)",
+        "Mean Util\n16T (151-200)",
     ]
     cell_text = []
     for r in rows:
         cell_text.append([
             r["condition"],
             str(r["damaging_troll_trades"]),
-            f"{r['avg_damaging_last_half']:.2f}",
-            str(r["non_troll_trades"]),
-            str(r["non_troll_defections"]),
             f"{r['non_troll_defection_rate']:.1%}",
-            f"{r['mean_utility']:.2f}",
+            f"{r['util_0T']:.2f}",
+            f"{r['util_4T']:.2f}",
+            f"{r['util_8T']:.2f}",
+            f"{r['util_16T']:.2f}",
         ])
 
     table = ax.table(
@@ -929,33 +925,30 @@ def plot_troll_resilience_table(save: bool = True) -> None:
     table.set_fontsize(10)
     table.scale(1, 1.6)
 
-    # Style header
     for j in range(len(col_labels)):
         table[0, j].set_facecolor("#4472C4")
         table[0, j].set_text_props(color="white", fontweight="bold")
 
-    # Alternate row colors
     for i in range(len(rows)):
         color = "#D9E2F3" if i % 2 == 0 else "white"
         for j in range(len(col_labels)):
             table[i + 1, j].set_facecolor(color)
 
-    ax.set_title("Troll Resilience Comparison Across Mechanisms (Excluding Trolls)",
+    ax.set_title("Troll Resilience: Per-Phase Mean Utility Under Progressive Injection (Excluding Trolls)",
                  fontweight="bold", fontsize=13, pad=20)
     plt.tight_layout()
     _maybe_save(fig, "troll_resilience_table.png", save)
 
-    # Also print to console
-    print("\n  Troll Resilience Table:")
-    print(f"  {'Cond':<6} {'DmgTroll':>8} {'Avg/Rnd':>8} {'NTTrades':>8} {'NTDefect':>8} {'NTDef%':>7} {'Util':>6}")
-    print(f"  {'-'*6} {'-'*8} {'-'*8} {'-'*8} {'-'*8} {'-'*7} {'-'*6}")
+    print("\n  Troll Resilience Table (per-phase utility):")
+    print(f"  {'Cond':<6} {'DmgTroll':>8} {'DefRate':>8} {'0T':>8} {'4T':>8} {'8T':>8} {'16T':>8}")
+    print(f"  {'-'*6} {'-'*8} {'-'*8} {'-'*8} {'-'*8} {'-'*8} {'-'*8}")
     for r in rows:
         print(f"  {r['condition']:<6} {r['damaging_troll_trades']:>8} "
-              f"{r['avg_damaging_last_half']:>8.2f} "
-              f"{r['non_troll_trades']:>8} "
-              f"{r['non_troll_defections']:>8} "
-              f"{r['non_troll_defection_rate']:>6.1%} "
-              f"{r['mean_utility']:>6.2f}")
+              f"{r['non_troll_defection_rate']:>7.1%} "
+              f"{r['util_0T']:>8.2f} "
+              f"{r['util_4T']:>8.2f} "
+              f"{r['util_8T']:>8.2f} "
+              f"{r['util_16T']:>8.2f}")
     print()
 
 
