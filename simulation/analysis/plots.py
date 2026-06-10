@@ -486,7 +486,7 @@ def plot_stability_rates(save: bool = True) -> None:
     _maybe_save(fig, "stability_rates.png", save)
 
 
-def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] = (10, 30)) -> None:
+def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] | None = None) -> None:
     """Draw network graph snapshots for conditions with network rewiring."""
     import networkx as nx
     import math
@@ -495,10 +495,14 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] =
 
     rep_cmap = LinearSegmentedColormap.from_list("rep", ["#d32f2f", "#ff9800", "#2196f3", "#1565c0"])
 
+    if snapshot_rounds is None:
+        snapshot_rounds = (1, 50, 100, 150, 200) if _PROGRESSIVE else (10, 30)
+
     network_conditions = [c for c in CONDITIONS if "network_rewiring" in CONDITION_MECHANISMS.get(c, [])]
     all_runs: list[tuple[str, int, dict]] = []
     for cond in network_conditions:
-        for idx, run in enumerate(_load_runs(cond)):
+        runs = _load_troll_runs(cond) if _PROGRESSIVE else _load_runs(cond)
+        for idx, run in enumerate(runs):
             all_runs.append((cond, idx, run))
     if not all_runs:
         print("  [network_snapshots] No network-rewiring condition runs found, skipping.")
