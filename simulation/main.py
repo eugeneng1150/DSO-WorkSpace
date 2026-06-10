@@ -110,7 +110,7 @@ def main():
     if args.analyse:
         from .analysis.analyst import run_analyst
         filter_models = [args.model] if args.model else None
-        report = run_analyst(filter_models=filter_models)
+        report = run_analyst(filter_models=filter_models, progressive_only=args.progressive_trolls)
         print("\n" + "=" * 60)
         print(report)
 

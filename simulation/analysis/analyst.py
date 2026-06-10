@@ -499,8 +499,9 @@ Be specific — cite numbers and quote traces. Flag every claim that relies on a
 """
 
 
-def run_analyst(model: str = ANALYST_MODEL, save: bool = True, filter_models: list[str] | None = None) -> str:
-    """Run analysis. If filter_models is given, only analyse those model directories."""
+def run_analyst(model: str = ANALYST_MODEL, save: bool = True, filter_models: list[str] | None = None, progressive_only: bool = False) -> str:
+    """Run analysis. If filter_models is given, only analyse those model directories.
+    If progressive_only is True, only analyse progressive troll runs (_tprog)."""
     print("Discovering models and data...")
 
     models = _discover_models()
@@ -513,6 +514,10 @@ def run_analyst(model: str = ANALYST_MODEL, save: bool = True, filter_models: li
     print(f"Models found: {models}")
 
     avail = _build_availability_map(models)
+    if progressive_only:
+        avail = {m: {tc: conds for tc, conds in tc_map.items() if tc == PROGRESSIVE_SENTINEL}
+                 for m, tc_map in avail.items()}
+        avail = {m: tc_map for m, tc_map in avail.items() if tc_map}
     print(f"\nData availability:")
     print(_format_availability(avail))
 
