@@ -53,7 +53,7 @@ JUDICIAL_COMPENSATION = 3      # returned to victim on guilty verdict
 JUDICIAL_FALSE_FINE = 2        # additional fine for false/invalid complaint
 
 # Escrow mechanism parameters
-ESCROW_POOL_INITIAL = 100      # shared insurance pool starting balance
+ESCROW_POOL_INITIAL = 1000     # shared insurance pool starting balance
 ESCROW_PAYOUT = 4              # compensation paid from pool to victim per defection
 
 # Progressive troll injection schedule: list of (round, n_new_trolls)

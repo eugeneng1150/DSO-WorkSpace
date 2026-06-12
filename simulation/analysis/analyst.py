@@ -34,7 +34,7 @@ _MECHANISM_LABELS = {
     "NR": "network rewiring + local reputation (sever/request links, 10-round gossip history, no system scores)",
     "S":  "costly sanctions (spend 1 utility → target loses 3, anonymous, publicly announced)",
     "J":  "judicial (complaint-driven enforcement — victims file complaints, court verifies and fines defectors 5 utility)",
-    "E":  "escrow (shared insurance pool — starts at 100, pays victims 4 per defection, pool collapse resets ALL agents' utility to 0)",
+    "E":  "escrow (shared insurance pool — starts at 1000, pays victims 4 per defection, pool collapse resets ALL agents' utility to 0 and ends the game)",
 }
 
 client = anthropic.Anthropic(
@@ -456,7 +456,7 @@ MECHANISM CATEGORIES:
   - J: complaint-driven court (filing fee 1, guilty penalty 5, compensation 3, false complaint fine 2)
 - Cooperative mechanisms (M, E): structural cooperation support
   - M: agent-designed mediator (free delegation, mediator acts on behalf)
-  - E: shared escrow pool (starts at 100, pays 4 per defection victim, pool=0 → ALL agents' utility reset to 0)
+  - E: shared escrow pool (starts at 1000, pays 4 per defection victim, pool=0 → ALL agents' utility reset to 0, game ends)
 
 DATA AVAILABILITY (not all model×condition cells have data):
 {avail_block}
