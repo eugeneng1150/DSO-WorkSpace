@@ -9,8 +9,9 @@ HOW THE POOL WORKS:
     {payout} utility as compensation.
   - The pool does NOT replenish. Every defection permanently drains it.
   - If the pool reaches 0: ALL agents' total accumulated utility is
-    RESET TO ZERO. Everyone loses everything — cooperators and
-    defectors alike.
+    RESET TO ZERO and the game ENDS IMMEDIATELY. Everyone loses
+    everything — cooperators and defectors alike. There are no more
+    rounds after a collapse.
 
 CURRENT POOL STATUS:
   Pool balance: {pool_balance} / {pool_initial}
@@ -24,7 +25,7 @@ STRATEGY:
   - Every defection brings the entire marketplace closer to collapse.
   - Even if YOU cooperate, other agents' defections drain the pool that
     protects you.
-  - If the pool collapses, you lose ALL your accumulated utility — not
-    just this round, but everything you have earned so far.
-  - Consider: is any short-term defection gain worth the risk of total
-    loss for everyone?
+  - If the pool collapses, you lose ALL your accumulated utility and
+    the game ends immediately. There is no recovery.
+  - Consider: is any short-term defection gain worth ending the game
+    with zero utility for everyone?

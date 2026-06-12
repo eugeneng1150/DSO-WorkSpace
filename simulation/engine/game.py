@@ -311,6 +311,15 @@ class Game:
                 "public_messages": public_messages,
             })
 
+            if getattr(self.market, "escrow_collapsed", False):
+                pbar.set_description(f"[{self.condition_label}] ESCROW COLLAPSED at round {round_num}")
+                pbar.close()
+                self.session_log["early_termination"] = {
+                    "reason": "escrow_pool_collapsed",
+                    "round": round_num,
+                }
+                break
+
         return self.round_logs
 
     async def _run_round(self, round_num: int) -> dict[int, float]:
