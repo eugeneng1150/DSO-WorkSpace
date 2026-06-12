@@ -33,8 +33,8 @@ def main():
     parser.add_argument("--rounds", type=int, default=None,
                         help="Override number of rounds (default 30)")
     parser.add_argument("--model", type=str, default=None,
-                        choices=["gpt-5.4-mini", "gpt-5.4-nano", "oss-120b", "deepseek-v3"],
-                        help="Agent LLM backend: gpt-5.4-mini (Azure, default), gpt-5.4-nano (Azure), oss-120b (local Docker), or deepseek-v3 (Azure)")
+                        choices=["gpt-5.4-mini", "gpt-5.4-nano", "oss-120b", "oss-20b", "deepseek-v3"],
+                        help="Agent LLM backend: gpt-5.4-mini (Azure, default), gpt-5.4-nano (Azure), oss-120b (local Docker), oss-20b (local Docker), or deepseek-v3 (Azure)")
     args = parser.parse_args()
 
     model_tag = args.model or "gpt-5.4-mini"
@@ -46,6 +46,11 @@ def main():
         from .engine.agent import configure_llm
         configure_llm(base_url=DOCKER_ENDPOINT, api_key=DOCKER_API_KEY, model=DOCKER_MODEL)
         print(f"Using local Docker model: {DOCKER_MODEL}")
+    elif args.model == "oss-20b":
+        from .config import OSS20B_ENDPOINT, OSS20B_MODEL, OSS20B_API_KEY
+        from .engine.agent import configure_llm
+        configure_llm(base_url=OSS20B_ENDPOINT, api_key=OSS20B_API_KEY, model=OSS20B_MODEL)
+        print(f"Using local Docker model: {OSS20B_MODEL}")
     elif args.model == "gpt-5.4-nano":
         if not os.environ.get("AZURE_OPENAI_API_KEY"):
             print("ERROR: AZURE_OPENAI_API_KEY not set. Add it to .env or export it.")

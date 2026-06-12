@@ -79,6 +79,11 @@ DOCKER_ENDPOINT = "http://localhost:12434/engines/llama.cpp/v1"
 DOCKER_MODEL = "hf.co/unsloth/gpt-oss-120b-GGUF:Q4_K_M"
 DOCKER_API_KEY = "local"
 
+# LLM — local Docker (oss-20b via llama.cpp)
+OSS20B_ENDPOINT = "http://localhost:8080/v1"
+OSS20B_MODEL = "gpt-oss-20b-Q8_0.gguf"
+OSS20B_API_KEY = "local"
+
 # LLM — analyst agent (Claude)
 ANALYST_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.services.ai.azure.com/anthropic/"
 ANALYST_MODEL = "claude-opus-4-8-BQ-Cohort"
