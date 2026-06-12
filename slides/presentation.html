@@ -1175,7 +1175,24 @@ flowchart LR
         </div>
     </div>
 
-    <!-- SLIDE 20: Fragile Mechanisms Deep Dive -->
+    <!-- SLIDE 20: NR Network Snapshots -->
+    <div class="slide slide-imgtext">
+        <div class="label">Deep Dive</div>
+        <h2>NR: Network Rewiring in Action</h2>
+        <div class="plot-container">
+            <img src="../simulation/data/plots/deepseek-v3/troll_progressive/network_snapshot_NR_run00.png" alt="NR network topology snapshots at rounds 1, 50, 100, 150, 200">
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw; margin-top:1vh;">
+            <div class="callout green">
+                <p><strong>Structural quarantine:</strong> Trolls (red triangles) appear at round 51, but by round 100 honest agents have already severed links to them. By round 200, trolls are increasingly isolated while the cooperative core stays densely connected.</p>
+            </div>
+            <div class="callout blue">
+                <p><strong>Why NR's Gini <em>decreases</em> under stress</strong> (0.317 &rarr; 0.298): link-severing removes the trolls from the trading network, so the remaining honest agents trade more evenly among themselves. The network self-organizes into a tighter, fairer cooperative cluster.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 21: Fragile Mechanisms Deep Dive -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
         <div class="label">Analysis</div>
@@ -1344,7 +1361,7 @@ flowchart LR
 </div>
 
 <div class="slide-counter">
-    <span id="currentSlide">01</span> / <span id="totalSlides">24</span>
+    <span id="currentSlide">01</span> / <span id="totalSlides">25</span>
 </div>
 
 <script>
