@@ -547,7 +547,7 @@
     <div class="slide slide-title active">
         <div class="geo-decoration"></div>
         <div class="content">
-            <div class="label">Progress Update &mdash; 9 June 2026</div>
+            <div class="label">Progress Update &mdash; 12 June 2026</div>
             <h1>Multi-Agent Marketplace Simulation</h1>
             <p class="subtitle">Comparing 9 institutional cooperation mechanisms for self-interested LLM agents under progressive adversarial stress.</p>
         </div>
@@ -972,75 +972,362 @@ flowchart LR
         </div>
     </div>
 
-    <!-- SLIDE 15: Hypotheses -->
+    <!-- ============ SECTION: RESULTS ============ -->
+
+    <!-- SLIDE 15: Headline Finding -->
+    <div class="slide slide-statement">
+        <div class="geo-decoration" style="left:-10vw; bottom:10vh; width:30vw; height:30vw; opacity:0.2;"></div>
+        <div class="content">
+            <span class="quote-mark">&ldquo;</span>
+            <h2>Facilitation outperforms enforcement.</h2>
+            <div style="margin-top:3vh;">
+                <p style="color:var(--text-secondary); font-size:clamp(0.95rem,1.2vw,1.1rem);">Mechanisms that <strong>facilitate and absorb</strong> (mediation, escrow, network rewiring) sustain cooperation under adversarial stress.<br><br>
+                Mechanisms that <strong>punish</strong> (costly sanctions, judicial courts) perform <em>worse than doing nothing</em> &mdash;<br>
+                the cost of enforcement falls on the cooperative majority.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 16: Mechanism Ranking Table -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
-        <div class="label">Hypotheses</div>
-        <h2>What We Expect to See</h2>
+        <div class="label">Results</div>
+        <h2>Mechanism Ranking by Phase</h2>
+        <div class="content" style="justify-content:center; overflow-y:auto;">
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">Mean non-troll utility per phase. All values single-run (n=1). Ranked by overall utility.</p>
+            <table style="width:100%; border-collapse:collapse; font-size:clamp(0.75rem,0.95vw,0.9rem);">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--text-primary);">
+                        <th style="text-align:left; padding:1vh 0.8vw; font-family:'Playfair Display',serif; font-weight:600;">#</th>
+                        <th style="text-align:left; padding:1vh 0.8vw; font-family:'Playfair Display',serif; font-weight:600;">Mechanism</th>
+                        <th style="text-align:center; padding:1vh 0.8vw; color:var(--green);">0T<br/><span style="font-size:0.7em; color:var(--accent);">Rnd 1-50</span></th>
+                        <th style="text-align:center; padding:1vh 0.8vw;">4T<br/><span style="font-size:0.7em; color:var(--accent);">Rnd 51-100</span></th>
+                        <th style="text-align:center; padding:1vh 0.8vw;">8T<br/><span style="font-size:0.7em; color:var(--accent);">Rnd 101-150</span></th>
+                        <th style="text-align:center; padding:1vh 0.8vw; color:var(--red);">16T<br/><span style="font-size:0.7em; color:var(--accent);">Rnd 151-200</span></th>
+                        <th style="text-align:center; padding:1vh 0.8vw; font-weight:600;">Overall</th>
+                        <th style="text-align:center; padding:1vh 0.8vw;">Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(39,103,73,0.06);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">1</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>M</strong> Mediation</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">7.17</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">7.76</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">8.05</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:600; color:var(--green);">8.15</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">7.78</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--green); font-weight:600;">&#9650; Improves</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">2</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>E</strong> Escrow</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">7.29</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.84</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.88</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.64</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">6.91</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--amber);">&#9660; Slow decay</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">3</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>NR</strong> Network Rewiring</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.78</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.83</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.71</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.72</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">6.76</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--green);">&#9644; Stable</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">4</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>G</strong> Governance</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.36</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.32</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.71</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.37</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">6.44</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--green);">&#9644; Stable</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">5</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>B</strong> Baseline</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.37</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.20</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">5.97</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">5.65</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">6.05</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--amber);">&#9660; Slow decay</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">6</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>C</strong> Contracting</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">5.43</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">5.74</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">5.71</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">5.73</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">5.65</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--green);">&#9644; Stable</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">7</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>GR</strong> Global Reputation</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">5.67</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.12</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">5.17</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">5.13</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">5.52</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">&#9660; Breaks at 8T</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">8</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>J</strong> Judicial</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">4.12</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">4.84</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw;">4.29</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">3.78</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700; color:var(--red);">4.26</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">&#9660; Weak throughout</td>
+                    </tr>
+                    <tr style="background:rgba(155,44,44,0.05);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">9</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>S</strong> Costly Sanctions</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">3.77</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">3.51</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">3.21</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">3.21</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700; color:var(--red);">3.42</td>
+                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">&#9660; Broken from start</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="callout" style="margin-top:1.5vh;">
+                <p><strong>Key tension:</strong> Low troll damage does not predict high welfare. G suppresses trolls best (17 damaging trades at 16T) but ranks 4th. M absorbs the most troll damage (110 at 16T) yet ranks 1st &mdash; because it generates enough trade volume to absorb the losses.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 17: Utility Trajectories Plot -->
+    <div class="slide slide-imgtext">
+        <div class="label">Results</div>
+        <h2>Utility Trajectories</h2>
+        <div class="plot-container">
+            <img src="../simulation/data/plots/deepseek-v3/troll_progressive/utility_trajectories.png" alt="Utility trajectories across 200 rounds for all 9 conditions">
+        </div>
+        <div class="callout" style="margin-top:1vh;">
+            <p>Red dashed lines mark troll injection at rounds 51, 101, and 151. <strong>M rises</strong> throughout all phases. <strong>S</strong> and <strong>J</strong> frequently dip negative. <strong>NR</strong> and <strong>G</strong> hold remarkably flat.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 18: Troll Resilience Table Plot -->
+    <div class="slide slide-imgtext">
+        <div class="label">Results</div>
+        <h2>Phase-by-Phase Resilience</h2>
+        <div class="plot-container">
+            <img src="../simulation/data/plots/deepseek-v3/troll_progressive/troll_resilience_table.png" alt="Per-phase mean utility breakdown across all conditions">
+        </div>
+        <div class="callout" style="margin-top:1vh;">
+            <p>Per-phase mean utility for each mechanism under progressive troll injection. Damaging troll trades and non-troll defection rates reveal how each mechanism handles escalating adversarial load.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 19: Robust Mechanisms Deep Dive -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Analysis</div>
+        <h2>What Works: Robust Mechanisms</h2>
+        <div class="content">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5vw;">
+                <div class="card card-green">
+                    <h3>M &mdash; Mediation</h3>
+                    <p style="font-size:2rem; font-family:'Playfair Display',serif; margin:1vh 0;">7.78</p>
+                    <ul>
+                        <li>Only mechanism that <strong>improved</strong> under stress (7.17 &rarr; 8.15)</li>
+                        <li>Highest trade volume (~45-55/round)</li>
+                        <li>Absorbs troll losses through sheer throughput</li>
+                        <li><em>Risk:</em> mediator is an untested single point of failure</li>
+                    </ul>
+                </div>
+                <div class="card card-blue">
+                    <h3>NR &mdash; Network Rewiring</h3>
+                    <p style="font-size:2rem; font-family:'Playfair Display',serif; margin:1vh 0;">6.76</p>
+                    <ul>
+                        <li>Flat utility, Gini <em>decreases</em> under stress (0.317 &rarr; 0.298)</li>
+                        <li>Link-severing quarantines trolls structurally</li>
+                        <li>No oracle, no central authority needed</li>
+                        <li><em>Weakness:</em> brief vulnerability window at each injection</li>
+                    </ul>
+                </div>
+                <div class="card card-amber">
+                    <h3>G &mdash; Governance</h3>
+                    <p style="font-size:2rem; font-family:'Playfair Display',serif; margin:1vh 0;">6.44</p>
+                    <ul>
+                        <li>Best troll suppression (damaging trades <em>fall</em> as trolls increase)</li>
+                        <li>Stable utility and low Gini</li>
+                        <li>Oracle detects and suspends predators</li>
+                        <li><em>Caveat:</em> assumes a reliable omniscient oracle</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout green" style="margin-top:1.5vh;">
+                <p><strong>Pattern:</strong> All three succeed through different strategies &mdash; M through volume absorption, NR through structural isolation, G through active suppression. None broke through 16 trolls (47% adversarial).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 20: Fragile Mechanisms Deep Dive -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Analysis</div>
+        <h2>What Fails: Fragile Mechanisms</h2>
+        <div class="content">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5vw;">
+                <div class="card card-red">
+                    <h3>S &mdash; Costly Sanctions</h3>
+                    <p style="font-size:2rem; font-family:'Playfair Display',serif; margin:1vh 0; color:var(--red);">3.42</p>
+                    <ul>
+                        <li><strong>Worst overall</strong> &mdash; broken from Phase 1</li>
+                        <li>Agents spend utility to punish; net welfare collapses</li>
+                        <li>Negative utility rounds (round 30: &minus;1.17)</li>
+                        <li>The 1-for-3 cost ratio still drains cooperators faster than it deters trolls</li>
+                    </ul>
+                </div>
+                <div class="card card-red">
+                    <h3>J &mdash; Judicial</h3>
+                    <p style="font-size:2rem; font-family:'Playfair Display',serif; margin:1vh 0; color:var(--red);">4.26</p>
+                    <ul>
+                        <li>Reactive, victim-initiated enforcement too slow</li>
+                        <li>Filing costs accumulate on honest agents</li>
+                        <li>Damaging troll trades rise to 193 at 16T</li>
+                        <li>Complaint cycle cannot keep pace with high-frequency defectors</li>
+                    </ul>
+                </div>
+                <div class="card card-red">
+                    <h3>GR &mdash; Global Reputation</h3>
+                    <p style="font-size:2rem; font-family:'Playfair Display',serif; margin:1vh 0; color:var(--red);">5.52</p>
+                    <ul>
+                        <li>Holds at 4 trolls, <strong>breaks at 8</strong></li>
+                        <li>Concentrates wealth (Gini 0.408 at 16T)</li>
+                        <li>Collapse-like rounds (AvgUtil 0.00 at round 181)</li>
+                        <li>Transparency lets agents pile onto few high-rep partners</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout red" style="margin-top:1.5vh;">
+                <p><strong>Pattern:</strong> Enforcement that costs the victim (S, J) is self-defeating &mdash; cooperators impoverish themselves trying to punish. Transparent reputation (GR) creates fragile concentration. All three perform <em>below baseline</em> (B = 6.05).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 21: Hypotheses vs Results -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Reflection</div>
+        <h2>Hypotheses vs Reality</h2>
         <div class="content" style="justify-content:center;">
             <div class="takeaway-grid">
-                <div class="takeaway-card tk-green">
-                    <div class="tk-label">G should dominate early</div>
-                    <p>Omniscient oracle catches trolls immediately. But does perfect enforcement create dependency? What happens when 47% of agents are trolls and fines pile up?</p>
-                </div>
-                <div class="takeaway-card tk-blue">
-                    <div class="tk-label">J tests imperfect enforcement</div>
-                    <p>Filing costs create a threshold &mdash; agents must decide if it&rsquo;s worth complaining. Expect slower troll isolation than G, but potentially more resilient long-term behavior.</p>
+                <div class="takeaway-card tk-red">
+                    <div class="tk-label">Prediction: G dominates</div>
+                    <p><strong>Partially correct.</strong> G is stable and best at troll suppression, but ranks 4th overall. M and NR outperform it because volume and structural isolation matter more than detection.</p>
                 </div>
                 <div class="takeaway-card tk-red">
-                    <div class="tk-label">E should collapse in Phase 4</div>
-                    <p>100-point pool / 4 per defection = ~25 defections to collapse. With 16 trolls defecting every round, the pool drains in 1&ndash;2 rounds after Phase 4 injection. Does the threat of collapse change agent behavior before it happens?</p>
+                    <div class="tk-label">Prediction: J is slower but resilient</div>
+                    <p><strong>Wrong.</strong> J is not just slower &mdash; it is fundamentally broken. Filing costs drain cooperators, and the complaint cycle never catches up to troll defection frequency. Ranks 8th of 9.</p>
                 </div>
                 <div class="takeaway-card tk-amber">
-                    <div class="tk-label">Progressive &ne; Static</div>
-                    <p>50 rounds of established cooperation should provide resilience that cold-start trolling does not. Mechanisms that rely on learned behavior (NR, GR) may degrade more gracefully than structural ones (C).</p>
+                    <div class="tk-label">Prediction: E collapses in Phase 4</div>
+                    <p><strong>Partially correct.</strong> E degrades (7.29 &rarr; 6.64) and Gini rises steadily, but the full pool collapse was not triggered in this run. The tail risk is latent, not realized &mdash; yet.</p>
+                </div>
+                <div class="takeaway-card tk-green">
+                    <div class="tk-label">Surprise: M improves under stress</div>
+                    <p><strong>Unexpected.</strong> Mediation is the only mechanism where utility <em>increases</em> with more trolls. The mediator absorbs adversarial load, and honest agents benefit from concentrated trusted trading.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- SLIDE 16: Results Pending -->
-    <div class="slide slide-statement">
-        <div class="geo-decoration" style="right:-8vw; top:15vh; width:30vw; height:30vw; opacity:0.2;"></div>
+    <!-- SLIDE 22: Agent Reasoning -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Behavioral Insights</div>
+        <h2>How Agents Reason</h2>
         <div class="content">
-            <span class="quote-mark">&bull;</span>
-            <h2>Results: In Progress</h2>
-            <div style="margin-top:3vh;">
-                <p style="color:var(--text-secondary); font-size:clamp(0.95rem,1.2vw,1.1rem);">Progressive troll injection runs are underway on DeepSeek-V3.<br>
-                9 conditions &times; 200 rounds &times; 1 run each.<br><br>
-                Plots will include utility trajectories, Gini trajectories, defection counts, and trade volume &mdash;<br>
-                each with <strong style="color:var(--red);">red vertical injection lines</strong> marking troll arrival at rounds 51, 101, and 151.</p>
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Chain-of-thought traces reveal agents strategically reasoning about mechanism design:</p>
+            <div class="callout blue" style="margin-bottom:1.5vh;">
+                <p><strong>G, Round 2, Agent 0:</strong> <em>"I'm currently UNDER REVIEW by the regulator due to high defection rate. I need 2 consecutive clean rounds to clear the warning. If I defect again, I'll face fines."</em></p>
+                <p style="margin-top:0.5vh; font-size:0.85rem;">The oracle threat directly shapes cooperative intent &mdash; agents internalize the enforcement signal.</p>
+            </div>
+            <div class="callout red" style="margin-bottom:1.5vh;">
+                <p><strong>E, Round 2, Agent 1:</strong> <em>"In Round 1, I defected on multiple trades (against Agents 9, 10, 11, 12, 15) &mdash; I took their goods without delivering my A. This gave me utility 13 but drained the pool to 56/100."</em></p>
+                <p style="margin-top:0.5vh; font-size:0.85rem;">A non-troll agent free-riding on the escrow buffer &mdash; exactly the moral hazard that drives E's rising Gini (0.285 &rarr; 0.369).</p>
+            </div>
+            <div class="callout" style="margin-bottom:1.5vh;">
+                <p><strong>NR, Round 51:</strong> Defections spike to 52 at troll injection, then collapse to 24 by round 52.</p>
+                <p style="margin-top:0.5vh; font-size:0.85rem;">Rapid link-severing quarantines trolls within a single round &mdash; gossip + rewiring is the fastest adaptive response.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 23: Escrow Risk -->
+    <div class="slide slide-twocol">
+        <div class="label">Deep Dive</div>
+        <h2>Escrow: High Reward, Latent Risk</h2>
+        <div class="content">
+            <div>
+                <h3 style="margin-bottom:2vh;">Why E Ranks 2nd</h3>
+                <ul>
+                    <li>High trade volume (~30-45 trades/round)</li>
+                    <li>Automatic victim compensation buffers honest agents</li>
+                    <li>Utility only falls from 7.29 to 6.64 under 16 trolls</li>
+                    <li>Agents reason about the pool: <em>"each defection drains the pool by 4 utility, and if it collapses..."</em></li>
+                </ul>
+                <div class="callout green" style="margin-top:2vh;">
+                    <p><strong>Strength:</strong> The systemic threat creates anticipatory deterrence even in non-troll agents.</p>
+                </div>
+            </div>
+            <div>
+                <h3 style="margin-bottom:2vh;">The Tail Risk</h3>
+                <ul>
+                    <li>Pool starts at 100, pays 4 per defection</li>
+                    <li>Pool never replenishes</li>
+                    <li>Collapse = ALL agents reset to 0 utility</li>
+                    <li>Gini rises steadily: 0.285 &rarr; 0.369 (worst among top 4)</li>
+                    <li>Near-depletion stress visible in late rounds (round 169: AvgUtil 1.50)</li>
+                </ul>
+                <div class="callout red" style="margin-top:2vh;">
+                    <p><strong>Risk:</strong> Full collapse was not triggered in this run but is structurally inevitable with enough trolls. A single exhaustion wipes everyone.</p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- ============ SECTION: WRAP-UP ============ -->
 
-    <!-- SLIDE 17: Next Steps -->
+    <!-- SLIDE 24: Next Steps -->
     <div class="slide slide-content">
         <div class="label">Roadmap</div>
         <h2>Next Steps</h2>
         <div class="content" style="justify-content:center;">
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="phase-label">Current</div>
-                    <h4>Progressive Runs</h4>
-                    <p>Complete all 9 conditions with progressive troll injection on DeepSeek-V3 (200 rounds each)</p>
+                    <div class="phase-label">Priority 1</div>
+                    <h4>Replicate</h4>
+                    <p>All findings are n=1. Run 5-10 seeds per condition to establish confidence intervals and test whether M's improvement survives noise.</p>
                 </div>
                 <div class="timeline-item">
-                    <div class="phase-label">Analysis</div>
-                    <h4>Plot &amp; Compare</h4>
-                    <p>Generate trajectory plots with injection markers. Compare mechanism degradation curves across all 4 phases</p>
+                    <div class="phase-label">Priority 2</div>
+                    <h4>Stress Test M &amp; NR</h4>
+                    <p>Push troll fraction beyond 16/18 to find absolute breaking points. Neither broke at 47% adversarial &mdash; where do they fail?</p>
                 </div>
                 <div class="timeline-item">
-                    <div class="phase-label">Validate</div>
-                    <h4>J vs G &amp; E Collapse</h4>
-                    <p>Does J achieve comparable enforcement to G without perfect information? When does E collapse? Do agents anticipate it?</p>
+                    <div class="phase-label">Priority 3</div>
+                    <h4>Trigger E Collapse</h4>
+                    <p>Deliberately deplete the escrow pool to quantify the tail risk. Does collapse change agent behavior permanently?</p>
                 </div>
                 <div class="timeline-item">
-                    <div class="phase-label">Replicate</div>
-                    <h4>Multiple Runs</h4>
-                    <p>3 runs per condition for statistical confidence &mdash; current results are single-run</p>
+                    <div class="phase-label">Priority 4</div>
+                    <h4>Mechanism Combos</h4>
+                    <p>Test M+NR (best facilitator + best decentralized quarantine) and G+E (best suppressor + insurance). Complementary designs may compound.</p>
                 </div>
             </div>
         </div>
@@ -1057,7 +1344,7 @@ flowchart LR
 </div>
 
 <div class="slide-counter">
-    <span id="currentSlide">01</span> / <span id="totalSlides">17</span>
+    <span id="currentSlide">01</span> / <span id="totalSlides">24</span>
 </div>
 
 <script>
