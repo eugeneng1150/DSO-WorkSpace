@@ -509,8 +509,6 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] |
         return
 
     for cond, run_idx, run in all_runs:
-        specialties = run["session_log"]["specialties"]
-        valid_ids = sorted(int(a) for a in specialties)
         rounds_data = run["rounds"]
         n_rounds = len(rounds_data)
 
@@ -522,11 +520,7 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] |
         if len(available) == 1:
             axes = [axes]
 
-        n = len(valid_ids)
-        pos = {}
-        for i, aid in enumerate(valid_ids):
-            angle = 2 * math.pi * i / n - math.pi / 2
-            pos[aid] = (math.cos(angle), math.sin(angle))
+        troll_ids = _get_troll_ids(run)
 
         for ax, rnd in zip(axes, available):
             rnd_data = rounds_data[rnd - 1]
@@ -535,49 +529,77 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] |
                 ax.set_visible(False)
                 continue
 
+            all_ids_this_round = set()
+            for aid_str, neighbors in net.items():
+                all_ids_this_round.add(int(aid_str))
+                for nb in neighbors:
+                    all_ids_this_round.add(int(nb) if not isinstance(nb, int) else nb)
+            all_ids_this_round = sorted(all_ids_this_round)
+
+            n = len(all_ids_this_round)
+            pos = {}
+            for i, aid in enumerate(all_ids_this_round):
+                angle = 2 * math.pi * i / n - math.pi / 2
+                pos[aid] = (math.cos(angle), math.sin(angle))
+
             G = nx.Graph()
-            G.add_nodes_from(valid_ids)
+            G.add_nodes_from(all_ids_this_round)
             for aid_str, neighbors in net.items():
                 for nb in neighbors:
-                    if int(aid_str) in pos and nb in pos:
-                        G.add_edge(int(aid_str), nb)
+                    nb_int = int(nb) if not isinstance(nb, int) else nb
+                    if int(aid_str) in pos and nb_int in pos:
+                        G.add_edge(int(aid_str), nb_int)
 
             node_list = sorted(G.nodes())
-            degrees = {n_: G.degree(n_) for n_ in node_list}
+            degrees = {nd: G.degree(nd) for nd in node_list}
+            non_troll_nodes = [nd for nd in node_list if str(nd) not in troll_ids]
+            troll_nodes = [nd for nd in node_list if str(nd) in troll_ids]
 
             rep_scores = rnd_data.get("reputation", {})
-            rep_vals = {n_: float(rep_scores.get(str(n_), 0.5)) for n_ in node_list}
+            rep_vals = {nd: float(rep_scores.get(str(nd), 0.5)) for nd in node_list}
 
-            # Split agents by reputation tier (hardcoded thresholds)
-            high_rep = [n_ for n_ in node_list if rep_vals[n_] >= 0.7]
-            mid_rep = [n_ for n_ in node_list if 0.4 <= rep_vals[n_] < 0.7]
-            low_rep = [n_ for n_ in node_list if rep_vals[n_] < 0.4]
-            high_deg = np.mean([degrees[n_] for n_ in high_rep]) if high_rep else 0
-            mid_deg = np.mean([degrees[n_] for n_ in mid_rep]) if mid_rep else 0
-            low_deg = np.mean([degrees[n_] for n_ in low_rep]) if low_rep else 0
-            isolated = [n_ for n_ in node_list if degrees[n_] == 0]
+            high_rep = [nd for nd in non_troll_nodes if rep_vals[nd] >= 0.7]
+            mid_rep = [nd for nd in non_troll_nodes if 0.4 <= rep_vals[nd] < 0.7]
+            low_rep = [nd for nd in non_troll_nodes if rep_vals[nd] < 0.4]
+            high_deg = np.mean([degrees[nd] for nd in high_rep]) if high_rep else 0
+            mid_deg = np.mean([degrees[nd] for nd in mid_rep]) if mid_rep else 0
+            low_deg = np.mean([degrees[nd] for nd in low_rep]) if low_rep else 0
+            isolated = [nd for nd in non_troll_nodes if degrees[nd] == 0]
+            troll_isolated = [nd for nd in troll_nodes if degrees[nd] == 0]
 
-            # Draw edges
             for u, v in G.edges():
+                is_troll_edge = str(u) in troll_ids or str(v) in troll_ids
+                edge_color = "#d32f2f" if is_troll_edge else "#aaaaaa"
+                edge_alpha = 0.3 if is_troll_edge else 0.5
                 x = [pos[u][0], pos[v][0]]
                 y = [pos[u][1], pos[v][1]]
-                ax.plot(x, y, color="#aaaaaa", linewidth=0.8, alpha=0.5, zorder=1)
+                ax.plot(x, y, color=edge_color, linewidth=0.8, alpha=edge_alpha, zorder=1)
 
-            # Draw nodes: red (low rep) → blue (high rep), size = rep
-            for n_ in node_list:
-                r = rep_vals[n_]
-                x, y = pos[n_]
+            for nd in non_troll_nodes:
+                r = rep_vals[nd]
+                x, y = pos[nd]
                 radius = 0.05 + r * 0.05
                 color = rep_cmap(r)
                 circle = plt.Circle((x, y), radius, color=color,
                                     ec="black", lw=1.2, alpha=0.9, zorder=2)
                 ax.add_patch(circle)
-                ax.text(x, y, str(n_), ha="center", va="center",
+                ax.text(x, y, str(nd), ha="center", va="center",
                         fontsize=7, fontweight="bold", color="white", zorder=3)
 
-            # Highlight isolated with red ring
-            for n_ in isolated:
-                x, y = pos[n_]
+            for nd in troll_nodes:
+                x, y = pos[nd]
+                radius = 0.07
+                triangle = plt.Polygon([
+                    (x, y + radius * 1.3),
+                    (x - radius, y - radius * 0.7),
+                    (x + radius, y - radius * 0.7),
+                ], closed=True, facecolor="#d32f2f", edgecolor="black", lw=1.5, alpha=0.9, zorder=2)
+                ax.add_patch(triangle)
+                ax.text(x, y - 0.005, str(nd), ha="center", va="center",
+                        fontsize=6, fontweight="bold", color="white", zorder=3)
+
+            for nd in isolated:
+                x, y = pos[nd]
                 ring = plt.Circle((x, y), 0.08, fill=False, ec="red",
                                   lw=3.0, zorder=4)
                 ax.add_patch(ring)
@@ -586,28 +608,32 @@ def plot_network_snapshots(save: bool = True, snapshot_rounds: tuple[int, ...] |
             severs = sum(1 for e in events if e["type"] == "sever" and e["outcome"] == "applied")
             requests = sum(1 for e in events if e["type"] == "request" and e["outcome"] == "applied")
 
+            troll_deg = np.mean([degrees[nd] for nd in troll_nodes]) if troll_nodes else 0
+
             ax.set_xlim(-1.5, 1.5)
             ax.set_ylim(-1.5, 1.5)
             ax.set_aspect("equal")
-            ax.set_title(
-                f"Round {rnd}\n"
-                f"High rep (≥0.7): {len(high_rep)} agents, avg {high_deg:.1f} links\n"
-                f"Mid rep (0.4–0.7): {len(mid_rep)} agents, avg {mid_deg:.1f} links\n"
-                f"Low rep (<0.4): {len(low_rep)} agents, avg {low_deg:.1f} links\n"
-                f"Isolated: {len(isolated)}  |  Severs: {severs}  |  New links: {requests}",
-                fontsize=9, fontweight="bold",
-            )
+            title_lines = f"Round {rnd}\n"
+            title_lines += f"High rep: {len(high_rep)}, avg {high_deg:.1f} links  |  "
+            title_lines += f"Mid rep: {len(mid_rep)}, avg {mid_deg:.1f} links  |  "
+            title_lines += f"Low rep: {len(low_rep)}, avg {low_deg:.1f} links\n"
+            if troll_nodes:
+                title_lines += f"Trolls: {len(troll_nodes)} (avg {troll_deg:.1f} links, {len(troll_isolated)} isolated)  |  "
+            title_lines += f"Isolated: {len(isolated)}  |  Severs: {severs}  |  New links: {requests}"
+            ax.set_title(title_lines, fontsize=9, fontweight="bold")
             ax.axis("off")
 
-        # Legend
         legend_items = [
             Line2D([0], [0], color="#aaaaaa", lw=1.0, alpha=0.5, label="Trade link"),
+            Line2D([0], [0], color="#d32f2f", lw=1.0, alpha=0.3, label="Troll link"),
             Line2D([0], [0], marker="o", color="w", markerfacecolor="#d32f2f",
                    markersize=8, label="Low rep (small, red)"),
             Line2D([0], [0], marker="o", color="w", markerfacecolor="#ff9800",
                    markersize=10, label="Mid rep (orange)"),
             Line2D([0], [0], marker="o", color="w", markerfacecolor="#1565c0",
                    markersize=14, label="High rep (large, blue)"),
+            Line2D([0], [0], marker="^", color="w", markerfacecolor="#d32f2f",
+                   markersize=10, label="Troll (triangle)"),
         ]
         axes[0].legend(handles=legend_items, loc="upper left", fontsize=9,
                        framealpha=0.9, title="Color & size = reputation")
