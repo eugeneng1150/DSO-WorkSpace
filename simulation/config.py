@@ -101,7 +101,7 @@ MESSAGE_HISTORY_WINDOW = 10  # rounds of public message history for local reputa
 
 # Experimental conditions
 CONDITIONS = [
-    "B", "GR", "C", "M", "G", "NR", "S", "J", "E",
+    "B", "GR", "C", "M", "G", "NR", "S", "J",
     # Combinations (disabled for initial test runs):
     # "RC", "RM", "RG", "CM", "CG", "MG",
     # "RCM", "RCG", "RMG", "CMG",
