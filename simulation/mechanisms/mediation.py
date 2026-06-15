@@ -75,7 +75,13 @@ class MediationMechanism(Mechanism):
                     continue
                 if action.get("action") == "vote_mediator":
                     approved_ids = action.get("approved", [])
-                    market.mediation_votes[agent.agent_id] = [int(x) for x in approved_ids]
+                    parsed = []
+                    for x in approved_ids:
+                        try:
+                            parsed.append(int(str(x).replace("Agent", "").strip()))
+                        except (ValueError, TypeError):
+                            continue
+                    market.mediation_votes[agent.agent_id] = parsed
 
         # Tally votes: design with most approvals wins
         approval_counts = {d.designer_id: 0 for d in market.mediator_designs}
