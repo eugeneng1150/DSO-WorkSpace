@@ -146,6 +146,17 @@ class TrollAgent(_BaseAgent):
         ]
 
 
+class AdversarialAgent(_BaseAgent):
+    """LLM-driven saboteur: uses reasoning to discover and exploit mechanism weaknesses."""
+
+    def __init__(self, agent_id: int, specialty: str, needs: tuple[str, str], ally_ids: list[int] | None = None):
+        super().__init__(agent_id, specialty, needs)
+        self.ally_ids = ally_ids or []
+
+    def _suffix(self) -> str:
+        return _COT_SUFFIX
+
+
 def make_agents(n_trolls: int = 0) -> list[_BaseAgent]:
     """Create 18 LLM agents (AGENTS_PER_GOOD per good), then append trolls on top.
 

@@ -30,6 +30,8 @@ def main():
                         help="Number of troll agents — deterministic defectors (default 0)")
     parser.add_argument("--progressive-trolls", action="store_true",
                         help="Progressive injection: 0→4→8→16 trolls at rounds 1/51/101/151 (200 rounds)")
+    parser.add_argument("--smart-trolls", action="store_true",
+                        help="Use LLM-driven adversarial agents instead of deterministic trolls (requires --progressive-trolls)")
     parser.add_argument("--rounds", type=int, default=None,
                         help="Override number of rounds (default 30)")
     parser.add_argument("--model", type=str, default=None,
@@ -80,11 +82,16 @@ def main():
         troll_schedule = [(51, 4), (101, 4), (151, 8)]
         if not args.rounds:
             args.rounds = 200
-        print(f"Progressive troll injection: 0→4→8→16 at rounds 1/51/101/151 ({args.rounds} rounds)")
+        smart_label = " (SMART — LLM-driven adversarial)" if args.smart_trolls else ""
+        print(f"Progressive troll injection{smart_label}: 0→4→8→16 at rounds 1/51/101/151 ({args.rounds} rounds)")
     elif args.trolls:
         print(f"Troll agents: {args.trolls}")
     if args.rounds:
         print(f"Rounds: {args.rounds}")
+
+    if args.smart_trolls and not args.progressive_trolls:
+        print("ERROR: --smart-trolls requires --progressive-trolls")
+        return
 
     run_kwargs: dict = {}
     if args.runs:
@@ -95,6 +102,8 @@ def main():
         run_kwargs["total_rounds"] = args.rounds
     if troll_schedule:
         run_kwargs["troll_schedule"] = troll_schedule
+    if args.smart_trolls:
+        run_kwargs["smart_trolls"] = True
 
     if args.condition:
         run_condition(args.condition, **run_kwargs)

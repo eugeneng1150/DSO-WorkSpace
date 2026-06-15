@@ -7,7 +7,7 @@ from tqdm import tqdm
 from .market import Market, Message, TradeOffer, Contract, generate_network
 from .prompt_builder import build_prompt
 from ..metrics.social import compute_metrics
-from .agent import TrollAgent
+from .agent import TrollAgent, AdversarialAgent
 from ..config import (
     GOODS, ROUNDS, UTILITY_CONSUME, COST_PRODUCE, MEDIATION_FEE,
     DEFAULT_BREACH_PENALTY, MAX_PRODUCE, MIN_NEIGHBORS, MAX_NEIGHBORS,
@@ -30,6 +30,7 @@ class Game:
         run_idx: int,
         total_rounds: int = ROUNDS,
         troll_schedule: list[tuple[int, int]] | None = None,
+        smart_trolls: bool = False,
     ):
         self.agents = agents
         self.mechanisms = mechanisms
@@ -38,6 +39,7 @@ class Game:
         self.total_rounds = total_rounds
         self.mechanism_names = [m.name for m in mechanisms]
         self.troll_schedule = troll_schedule or []
+        self.smart_trolls = smart_trolls
         self._next_troll_id = max(a.agent_id for a in agents) + 1
 
         agent_ids = [a.agent_id for a in agents]
@@ -65,15 +67,30 @@ class Game:
         }
         self._pre_consumption_penalties: dict[int, float] = {}
 
-    def _inject_trolls(self, n_new: int, round_num: int) -> None:
-        """Create n_new TrollAgents and integrate them into the running game."""
+    async def _inject_trolls(self, n_new: int, round_num: int) -> None:
+        """Create n_new troll agents and integrate them into the running game.
+
+        When smart_trolls is active, creates AdversarialAgent (LLM-driven)
+        instead of TrollAgent, and triggers a mediation re-vote.
+        """
+        new_agents = []
         for i in range(n_new):
             good = GOODS[i % len(GOODS)]
             others = [g for g in GOODS if g != good]
-            troll = TrollAgent(
-                agent_id=self._next_troll_id, specialty=good, needs=(others[0], others[1])
-            )
+
+            if self.smart_trolls:
+                troll = AdversarialAgent(
+                    agent_id=self._next_troll_id,
+                    specialty=good,
+                    needs=(others[0], others[1]),
+                    ally_ids=list(self.troll_ids),
+                )
+            else:
+                troll = TrollAgent(
+                    agent_id=self._next_troll_id, specialty=good, needs=(others[0], others[1])
+                )
             self._next_troll_id += 1
+            new_agents.append(troll)
 
             self.agents.append(troll)
             self.troll_ids.append(troll.agent_id)
@@ -99,10 +116,33 @@ class Game:
                 from ..mechanisms.governance import GovernanceState
                 self.market.governance_states[troll.agent_id] = GovernanceState(agent_id=troll.agent_id)
 
+        # Update ally_ids on all adversarial agents so they know the full set
+        if self.smart_trolls:
+            all_troll_ids = list(self.troll_ids)
+            for a in self.agents:
+                if isinstance(a, AdversarialAgent):
+                    a.ally_ids = [tid for tid in all_troll_ids if tid != a.agent_id]
+
         if hasattr(self.market, '_escrow_agents'):
             self.market._escrow_agents = self.agents
 
         self.session_log["troll_ids"] = list(self.troll_ids)
+
+        # Trigger mediation re-vote so adversarial agents participate in rule-setting
+        if self.smart_trolls:
+            for mech in self.mechanisms:
+                if mech.name == "mediation":
+                    await mech.on_revote(self.market, self.agents)
+                    if self.market.active_mediator:
+                        m = self.market.active_mediator
+                        self.session_log.setdefault("revotes", []).append({
+                            "round": round_num,
+                            "designer_id": m.designer_id,
+                            "action_both": m.action_both,
+                            "action_one": m.action_one,
+                            "n_trolls": len(self.troll_ids),
+                            "n_agents": len(self.agents),
+                        })
 
     def run(self) -> list[dict]:
         loop = asyncio.get_event_loop()
@@ -149,7 +189,7 @@ class Game:
 
             for inject_round, n_new in self.troll_schedule:
                 if round_num == inject_round:
-                    self._inject_trolls(n_new, round_num)
+                    await self._inject_trolls(n_new, round_num)
 
             for mech in self.mechanisms:
                 mech.on_round_start(self.market, round_num)
@@ -470,6 +510,7 @@ class Game:
                 stage_overrides=stage_overrides,
                 specialties=self.specialties,
                 round_num=round_num,
+                agent_obj=agent,
             )
             prompts[agent.agent_id] = (agent, prompt)
 

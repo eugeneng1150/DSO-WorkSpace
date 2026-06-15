@@ -31,6 +31,7 @@ class MediationMechanism(Mechanism):
                 market=market,
                 mechanisms=["mediation"],
                 stage_overrides={"mediation": "1"},
+                agent_obj=a,
             )
             for a in agents
         ]
@@ -62,6 +63,7 @@ class MediationMechanism(Mechanism):
                 market=market,
                 mechanisms=["mediation"],
                 stage_overrides={"mediation": "2"},
+                agent_obj=a,
             )
             for a in agents
         ]
@@ -87,6 +89,12 @@ class MediationMechanism(Mechanism):
             market.active_mediator = next(
                 d for d in market.mediator_designs if d.designer_id == winner_id
             )
+
+    async def on_revote(self, market: "Market", agents: list["_BaseAgent"]) -> None:
+        """Re-run design/vote with current agent population (including new trolls)."""
+        market.mediator_designs.clear()
+        market.mediation_votes.clear()
+        await self._design_and_vote(market, agents)
 
     def get_stage_override(self, agent: "_BaseAgent", market: "Market") -> dict[str, str]:
         # After session start, always stage 3 (delegation decision per round)

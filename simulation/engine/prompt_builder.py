@@ -18,6 +18,7 @@ from ..config import (
 
 if TYPE_CHECKING:
     from .market import Market, Contract, TradeOffer
+    from .agent import _BaseAgent
 
 PROMPTS_DIR = Path(__file__).parent.parent.parent / "prompts"
 
@@ -38,6 +39,7 @@ _SANCTION = _load("sanction.txt")
 _LOCAL_REPUTATION = _load("local_reputation.txt")
 _JUDICIAL = _load("judicial.txt")
 _ESCROW = _load("escrow.txt")
+_ADVERSARIAL = _load("adversarial.txt")
 
 
 def _extract_stage(template: str, stage_label: str) -> str:
@@ -526,6 +528,7 @@ def build_prompt(
     stage_overrides: dict[str, str] | None = None,
     specialties: dict[int, str] | None = None,
     round_num: int = 1,
+    agent_obj: "_BaseAgent | None" = None,
 ) -> str:
     inv_a, inv_b, inv_c = _fmt_inventory(market, agent_id)
 
@@ -552,5 +555,11 @@ def build_prompt(
     prompt = prompt.replace("{neighbors}", _fmt_neighbors(market, agent_id, specialties or {}))
     prompt = prompt.replace("{mechanism_block}", mechanism_block)
     prompt = prompt.replace("{mechanism_actions}", mechanism_actions)
+
+    if agent_obj is not None:
+        from .agent import AdversarialAgent
+        if isinstance(agent_obj, AdversarialAgent):
+            preamble = _ADVERSARIAL.replace("{ally_ids}", str(agent_obj.ally_ids))
+            prompt = preamble + "\n\n" + prompt
 
     return prompt

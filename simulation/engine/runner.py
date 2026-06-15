@@ -42,6 +42,7 @@ def run_condition(
     n_trolls: int = 0,
     total_rounds: int | None = None,
     troll_schedule: list[tuple[int, int]] | None = None,
+    smart_trolls: bool = False,
 ) -> list[dict]:
     """Run all repetitions for one condition. Returns list of run summaries."""
     from ..config import ROUNDS
@@ -60,6 +61,7 @@ def run_condition(
             run_idx=run_idx,
             total_rounds=effective_rounds,
             troll_schedule=troll_schedule,
+            smart_trolls=smart_trolls,
         )
         round_logs = game.run()
 
@@ -68,6 +70,7 @@ def run_condition(
             "run": run_idx,
             "n_trolls": n_trolls,
             "troll_schedule": troll_schedule,
+            "smart_trolls": smart_trolls,
             "total_rounds": effective_rounds,
             "timestamp": datetime.utcnow().isoformat(),
             "session_log": game.session_log,
@@ -78,8 +81,10 @@ def run_condition(
             },
         }
         summaries.append(summary)
-        _save_run(condition, run_idx, summary, n_trolls=n_trolls, troll_schedule=troll_schedule)
-        _save_traces(condition, run_idx, game.trace_log, n_trolls=n_trolls, troll_schedule=troll_schedule)
+        _save_run(condition, run_idx, summary, n_trolls=n_trolls,
+                  troll_schedule=troll_schedule, smart_trolls=smart_trolls)
+        _save_traces(condition, run_idx, game.trace_log, n_trolls=n_trolls,
+                     troll_schedule=troll_schedule, smart_trolls=smart_trolls)
 
     return summaries
 
@@ -90,6 +95,7 @@ def run_all(
     n_trolls: int = 0,
     total_rounds: int | None = None,
     troll_schedule: list[tuple[int, int]] | None = None,
+    smart_trolls: bool = False,
 ) -> dict[str, list[dict]]:
     """Run all conditions sequentially."""
     results = {}
@@ -102,15 +108,19 @@ def run_all(
         kwargs["total_rounds"] = total_rounds
     if troll_schedule is not None:
         kwargs["troll_schedule"] = troll_schedule
+    if smart_trolls:
+        kwargs["smart_trolls"] = smart_trolls
     for condition in conditions:
         results[condition] = run_condition(condition, **kwargs)
     return results
 
 
 def _save_run(condition: str, run_idx: int, data: dict, n_trolls: int = 0,
-              troll_schedule: list | None = None) -> None:
+              troll_schedule: list | None = None, smart_trolls: bool = False) -> None:
     config.DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if troll_schedule:
+    if troll_schedule and smart_trolls:
+        tag = "_tprog_smart"
+    elif troll_schedule:
         tag = "_tprog"
     elif n_trolls > 0:
         tag = f"_t{n_trolls}"
@@ -123,9 +133,11 @@ def _save_run(condition: str, run_idx: int, data: dict, n_trolls: int = 0,
 
 
 def _save_traces(condition: str, run_idx: int, traces: list[dict], n_trolls: int = 0,
-                 troll_schedule: list | None = None) -> None:
+                 troll_schedule: list | None = None, smart_trolls: bool = False) -> None:
     config.DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if troll_schedule:
+    if troll_schedule and smart_trolls:
+        tag = "_tprog_smart"
+    elif troll_schedule:
         tag = "_tprog"
     elif n_trolls > 0:
         tag = f"_t{n_trolls}"
