@@ -537,6 +537,23 @@
             font-size: 1.2rem;
             color: var(--accent);
         }
+
+        /* ========== Print / PDF export ========== */
+        @media print {
+            body { overflow: visible; }
+            .presentation { width: auto; height: auto; position: static; }
+            .slide {
+                position: relative !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                page-break-after: always;
+                page-break-inside: avoid;
+                height: 100vh;
+                width: 100vw;
+            }
+            .nav-dots, .nav-arrows, .slide-counter { display: none !important; }
+            .plot-container img { max-height: 42vh; }
+        }
     </style>
 </head>
 <body>
@@ -549,7 +566,7 @@
         <div class="content">
             <div class="label">Progress Update &mdash; 12 June 2026</div>
             <h1>Multi-Agent Marketplace Simulation</h1>
-            <p class="subtitle">Comparing 9 institutional cooperation mechanisms for self-interested LLM agents under progressive adversarial stress.</p>
+            <p class="subtitle">Comparing 8 institutional cooperation mechanisms for self-interested LLM agents under progressive adversarial stress.</p>
         </div>
     </div>
 
@@ -561,7 +578,7 @@
             <h2>Can institutional mechanisms help self-interested LLM agents sustain cooperation under escalating adversarial pressure?</h2>
             <div style="margin-top:4vh;">
                 <p style="color:var(--accent); letter-spacing:1px;">Which mechanism designs are robust to progressive troll injection?<br>
-                Do enforcement-based, insurance-based, or information-based mechanisms degrade differently?<br>
+                Do enforcement-based or information-based mechanisms degrade differently?<br>
                 At what adversarial density does each mechanism break?</p>
             </div>
         </div>
@@ -575,14 +592,14 @@
         <div class="content">
             <ul>
                 <li>Without mechanisms, <strong>all modern LLMs defect</strong> in social dilemmas <span class="cite">(CoopEval)</span></li>
-                <li>Contracting &amp; Mediation ranked most effective in controlled experiments <span class="cite">(CoopEval)</span></li>
+                <li>Mediation &amp; Contracting ranked most effective in controlled experiments <span class="cite">(CoopEval)</span></li>
                 <li>More capable reasoning LLMs become <em>better free-riders</em>, not more cooperative <span class="cite">(Corrupted by Reasoning)</span></li>
                 <li>Reputation + dynamic networks + gossip yields 85&ndash;98% cooperation <span class="cite">(RepuNet)</span></li>
                 <li>Prompt-level governance (<em>&ldquo;be honest&rdquo;</em>) is indistinguishable from no governance <span class="cite">(Institutional AI)</span></li>
                 <li>A single defector can collapse the system in 1&ndash;7 rounds <span class="cite">(Subtle Art of Defection)</span></li>
             </ul>
             <div class="callout blue" style="margin-top:3vh;">
-                <p><strong>Gap:</strong> Most studies test one mechanism in isolation &mdash; we compare <strong>9 head-to-head</strong> under progressive adversarial stress using a single model.</p>
+                <p><strong>Gap:</strong> Most studies test one mechanism in isolation &mdash; we compare <strong>8 head-to-head</strong> under progressive adversarial stress using a single model.</p>
             </div>
         </div>
     </div>
@@ -696,7 +713,7 @@ flowchart LR
         direction TB
         m1["GR &bull; C &bull; M"]
         m2["G &bull; NR &bull; S"]
-        m3["J &bull; E"]
+        m3["J"]
     end
 
     Runner -->|JSON| Analysis["Plots &amp;<br/>Analyst"]
@@ -708,7 +725,7 @@ flowchart LR
     <div class="slide slide-content">
         <div class="vertical-line"></div>
         <div class="label">Conditions</div>
-        <h2>The 9 Conditions</h2>
+        <h2>The 8 Conditions</h2>
         <div class="content">
             <ul class="mechanism-list">
                 <li><span class="abbrev">B</span> <span>Baseline &mdash; no mechanism, pure barter</span></li>
@@ -719,7 +736,6 @@ flowchart LR
                 <li><span class="abbrev">NR</span> <span>Network Rewiring + Local Reputation &mdash; gossip + link severing</span></li>
                 <li><span class="abbrev">S</span> <span>Sanctioning &mdash; collective punishment for defectors</span></li>
                 <li><span class="abbrev" style="color:var(--blue);">J</span> <span><strong>Judicial</strong> &mdash; complaint-driven court with imperfect information <em>(new)</em></span></li>
-                <li><span class="abbrev" style="color:var(--amber);">E</span> <span><strong>Escrow</strong> &mdash; shared insurance pool, mutually assured destruction <em>(new)</em></span></li>
             </ul>
         </div>
     </div>
@@ -760,39 +776,6 @@ flowchart LR
             </div>
             <div class="callout blue" style="margin-top:2vh;">
                 <p><strong>Key design:</strong> G has perfect information (oracle sees all). J has <em>imperfect</em> information &mdash; the court only examines what the victim reports. Filing is a strategic choice: is the expected payout worth the risk?</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 9: Escrow (E) Deep Dive -->
-    <div class="slide slide-content">
-        <div class="vertical-line"></div>
-        <div class="label">New Mechanism</div>
-        <h2>Escrow (E) &mdash; Shared Insurance Pool</h2>
-        <div class="content">
-            <p style="margin-bottom:2vh; color:var(--text-secondary);">A collective insurance pool that automatically compensates defection victims &mdash; but collapses catastrophically when depleted.</p>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw;">
-                <div>
-                    <h3 style="margin-bottom:1.5vh;">How It Works</h3>
-                    <ul>
-                        <li>Shared pool starts at <strong>1000 utility</strong></li>
-                        <li>Each defection: victim automatically receives <strong>+4</strong> from the pool</li>
-                        <li>Pool <strong>never replenishes</strong></li>
-                        <li>No agent action required &mdash; fully automatic</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 style="margin-bottom:1.5vh;">The Collapse</h3>
-                    <ul>
-                        <li>When the pool reaches <strong>0</strong>:</li>
-                        <li><strong>ALL agents&rsquo; total utility resets to 0</strong></li>
-                        <li>Mutually assured destruction</li>
-                        <li>Agents know the pool balance each round</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="callout red" style="margin-top:2vh;">
-                <p><strong>Tragedy of the commons:</strong> Every defection drains the shared pool. With 1000 starting balance and 4 per payout, the pool survives ~250 defections. Progressive troll injection (up to 16 trolls) will test how fast the pool collapses &mdash; and whether agents adapt their behavior to prevent it.</p>
             </div>
         </div>
     </div>
@@ -899,7 +882,7 @@ flowchart LR
                 <li><strong>Model:</strong> DeepSeek-V3 (via Azure) &mdash; $0.58 / $1.68 per 1M input/output tokens</li>
                 <li><strong>Troll injection:</strong> Progressive &mdash; 0&rarr;4&rarr;8&rarr;16 trolls at rounds 51 / 101 / 151</li>
                 <li><strong>Duration:</strong> 200 rounds per run, 1 run per condition</li>
-                <li><strong>Conditions:</strong> 9 &mdash; B, GR, C, M, G, NR, S, J, E</li>
+                <li><strong>Conditions:</strong> 8 &mdash; B, GR, C, M, G, NR, S, J</li>
                 <li><strong>Metrics:</strong> Mean utility per round, Gini coefficient</li>
                 <li><strong>Agents:</strong> 18 self-interested (start) &rarr; up to 34 total (18 + 16 trolls)</li>
             </ul>
@@ -917,7 +900,7 @@ flowchart LR
         <div class="label">Design Space</div>
         <h2>The Mechanism Spectrum</h2>
         <div class="content">
-            <p style="margin-bottom:2vh; color:var(--text-secondary);">Our 9 conditions span three axes of institutional design:</p>
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Our 8 conditions span three axes of institutional design:</p>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:2vw;">
                 <div class="card">
                     <h3>Information</h3>
@@ -937,15 +920,14 @@ flowchart LR
                     </ul>
                 </div>
                 <div class="card">
-                    <h3>Insurance</h3>
+                    <h3>Facilitation</h3>
                     <ul>
                         <li><strong>M</strong> &mdash; third-party mediation</li>
-                        <li><strong>E</strong> &mdash; shared pool (depletable)</li>
                     </ul>
                 </div>
             </div>
             <div class="callout blue" style="margin-top:2vh;">
-                <p><strong>J vs G</strong> tests whether enforcement needs perfect information. <strong>E</strong> tests whether collective insurance creates a tragedy of the commons under adversarial pressure.</p>
+                <p><strong>J vs G</strong> tests whether enforcement needs perfect information. <strong>NR vs GR</strong> tests whether local gossip outperforms global transparency. <strong>M</strong> tests whether facilitation (preventing defection) outperforms punishment (penalizing defection).</p>
             </div>
         </div>
     </div>
@@ -967,7 +949,7 @@ flowchart LR
                 <li><strong>Mediation (M) had a delegation bug</strong> &mdash; only acceptors could delegate, not proposers. Now fixed with bilateral delegation</li>
             </ul>
             <div class="callout" style="margin-top:2vh;">
-                <p><strong>These findings motivated the current design:</strong> fix the model (DeepSeek), add J (imperfect enforcement) and E (collective insurance), and test with progressive stress instead of static troll counts.</p>
+                <p><strong>These findings motivated the current design:</strong> fix the model (DeepSeek), add J (imperfect enforcement) and S (collective punishment), and test with progressive stress instead of static troll counts.</p>
             </div>
         </div>
     </div>
@@ -981,7 +963,7 @@ flowchart LR
             <span class="quote-mark">&ldquo;</span>
             <h2>Facilitation outperforms enforcement.</h2>
             <div style="margin-top:3vh;">
-                <p style="color:var(--text-secondary); font-size:clamp(0.95rem,1.2vw,1.1rem);">Mechanisms that <strong>facilitate and absorb</strong> (mediation, escrow, network rewiring) sustain cooperation under adversarial stress.<br><br>
+                <p style="color:var(--text-secondary); font-size:clamp(0.95rem,1.2vw,1.1rem);">Mechanisms that <strong>facilitate and isolate</strong> (mediation, network rewiring) sustain cooperation under adversarial stress.<br><br>
                 Mechanisms that <strong>punish</strong> (costly sanctions, judicial courts) perform <em>worse than doing nothing</em> &mdash;<br>
                 the cost of enforcement falls on the cooperative majority.</p>
             </div>
@@ -1021,16 +1003,6 @@ flowchart LR
                     </tr>
                     <tr style="border-bottom:1px solid var(--line);">
                         <td style="padding:0.8vh 0.8vw; font-weight:600;">2</td>
-                        <td style="padding:0.8vh 0.8vw;"><strong>E</strong> Escrow</td>
-                        <td style="text-align:center; padding:0.8vh 0.8vw;">7.29</td>
-                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.84</td>
-                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.88</td>
-                        <td style="text-align:center; padding:0.8vh 0.8vw;">6.64</td>
-                        <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">6.91</td>
-                        <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--amber);">&#9660; Slow decay</td>
-                    </tr>
-                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
-                        <td style="padding:0.8vh 0.8vw; font-weight:600;">3</td>
                         <td style="padding:0.8vh 0.8vw;"><strong>NR</strong> Network Rewiring</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">6.78</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">6.83</td>
@@ -1039,8 +1011,8 @@ flowchart LR
                         <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">6.76</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--green);">&#9644; Stable</td>
                     </tr>
-                    <tr style="border-bottom:1px solid var(--line);">
-                        <td style="padding:0.8vh 0.8vw; font-weight:600;">4</td>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">3</td>
                         <td style="padding:0.8vh 0.8vw;"><strong>G</strong> Governance</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">6.36</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">6.32</td>
@@ -1049,8 +1021,8 @@ flowchart LR
                         <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">6.44</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--green);">&#9644; Stable</td>
                     </tr>
-                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
-                        <td style="padding:0.8vh 0.8vw; font-weight:600;">5</td>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">4</td>
                         <td style="padding:0.8vh 0.8vw;"><strong>B</strong> Baseline</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">6.37</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">6.20</td>
@@ -1059,8 +1031,8 @@ flowchart LR
                         <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">6.05</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--amber);">&#9660; Slow decay</td>
                     </tr>
-                    <tr style="border-bottom:1px solid var(--line);">
-                        <td style="padding:0.8vh 0.8vw; font-weight:600;">6</td>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">5</td>
                         <td style="padding:0.8vh 0.8vw;"><strong>C</strong> Contracting</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">5.43</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">5.74</td>
@@ -1069,8 +1041,8 @@ flowchart LR
                         <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">5.65</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--green);">&#9644; Stable</td>
                     </tr>
-                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
-                        <td style="padding:0.8vh 0.8vw; font-weight:600;">7</td>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">6</td>
                         <td style="padding:0.8vh 0.8vw;"><strong>GR</strong> Global Reputation</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">5.67</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">6.12</td>
@@ -1079,8 +1051,8 @@ flowchart LR
                         <td style="text-align:center; padding:0.8vh 0.8vw; font-weight:700;">5.52</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">&#9660; Breaks at 8T</td>
                     </tr>
-                    <tr style="border-bottom:1px solid var(--line);">
-                        <td style="padding:0.8vh 0.8vw; font-weight:600;">8</td>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(0,0,0,0.02);">
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">7</td>
                         <td style="padding:0.8vh 0.8vw;"><strong>J</strong> Judicial</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">4.12</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw;">4.84</td>
@@ -1090,7 +1062,7 @@ flowchart LR
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">&#9660; Weak throughout</td>
                     </tr>
                     <tr style="background:rgba(155,44,44,0.05);">
-                        <td style="padding:0.8vh 0.8vw; font-weight:600;">9</td>
+                        <td style="padding:0.8vh 0.8vw; font-weight:600;">8</td>
                         <td style="padding:0.8vh 0.8vw;"><strong>S</strong> Costly Sanctions</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">3.77</td>
                         <td style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">3.51</td>
@@ -1102,7 +1074,7 @@ flowchart LR
                 </tbody>
             </table>
             <div class="callout" style="margin-top:1.5vh;">
-                <p><strong>Key tension:</strong> Low troll damage does not predict high welfare. G suppresses trolls best (17 damaging trades at 16T) but ranks 4th. M absorbs the most troll damage (110 at 16T) yet ranks 1st &mdash; because it generates enough trade volume to absorb the losses.</p>
+                <p><strong>Key tension:</strong> Low troll damage does not predict high welfare. G suppresses trolls best (79 damaging trades total) but ranks 3rd. M absorbs more troll damage (286) yet ranks 1st &mdash; because it generates enough trade volume to absorb the losses.</p>
             </div>
         </div>
     </div>
@@ -1170,7 +1142,7 @@ flowchart LR
                 </div>
             </div>
             <div class="callout green" style="margin-top:1.5vh;">
-                <p><strong>Pattern:</strong> All three succeed through different strategies &mdash; M through volume absorption, NR through structural isolation, G through active suppression. None broke through 16 trolls (47% adversarial).</p>
+                <p><strong>Pattern:</strong> All three succeed through different strategies &mdash; M through volume absorption, NR through structural isolation, G through active suppression. None broke at 16 trolls (47% adversarial).</p>
             </div>
         </div>
     </div>
@@ -1189,6 +1161,18 @@ flowchart LR
             <div class="callout blue">
                 <p><strong>Why NR's Gini <em>decreases</em> under stress</strong> (0.317 &rarr; 0.298): link-severing removes the trolls from the trading network, so the remaining honest agents trade more evenly among themselves. The network self-organizes into a tighter, fairer cooperative cluster.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: Mediation Utilisation -->
+    <div class="slide slide-imgtext">
+        <div class="label">Deep Dive</div>
+        <h2>M: Mediation Uptake</h2>
+        <div class="plot-container">
+            <img src="../simulation/data/plots/deepseek-v3/troll_progressive/mediation_utilisation.png" alt="Fraction of trades mediated over 200 rounds">
+        </div>
+        <div class="callout green" style="margin-top:1vh;">
+            <p><strong>55&ndash;70% of all trades are mediated</strong> throughout the session. Uptake rises slightly under troll pressure (phases 3&ndash;4), showing agents actively seek the mediator&rsquo;s protection when adversarial density increases. This sustained adoption is why M ranks #1 &mdash; agents don&rsquo;t just have access to safe trades, they <em>use</em> it.</p>
         </div>
     </div>
 
@@ -1231,7 +1215,7 @@ flowchart LR
                 </div>
             </div>
             <div class="callout red" style="margin-top:1.5vh;">
-                <p><strong>Pattern:</strong> Enforcement that costs the victim (S, J) is self-defeating &mdash; cooperators impoverish themselves trying to punish. Transparent reputation (GR) creates fragile concentration. All three perform <em>below baseline</em> (B = 6.05).</p>
+                <p><strong>Pattern:</strong> Enforcement that costs the victim (S, J) is self-defeating &mdash; cooperators impoverish themselves trying to punish. Transparent reputation (GR) creates fragile concentration. All three perform <em>below baseline</em> (B = 6.05), meaning these mechanisms actively <em>harm</em> the agents they are designed to protect.</p>
             </div>
         </div>
     </div>
@@ -1252,8 +1236,8 @@ flowchart LR
                     <p><strong>Wrong.</strong> J is not just slower &mdash; it is fundamentally broken. Filing costs drain cooperators, and the complaint cycle never catches up to troll defection frequency. Ranks 8th of 9.</p>
                 </div>
                 <div class="takeaway-card tk-amber">
-                    <div class="tk-label">Prediction: E collapses in Phase 4</div>
-                    <p><strong>Partially correct.</strong> E degrades (7.29 &rarr; 6.64) and Gini rises steadily, but the full pool collapse was not triggered in this run. The tail risk is latent, not realized &mdash; yet.</p>
+                    <div class="tk-label">Prediction: C improves on baseline</div>
+                    <p><strong>Wrong.</strong> Contracting ranks 5th (5.65), below baseline (6.05). Binding penalties freeze trade volume &mdash; agents fear breach penalties more than they value safe trades. The mechanism designed to protect cooperators instead suppresses the very activity it needs.</p>
                 </div>
                 <div class="takeaway-card tk-green">
                     <div class="tk-label">Surprise: M improves under stress</div>
@@ -1275,8 +1259,8 @@ flowchart LR
                 <p style="margin-top:0.5vh; font-size:0.85rem;">The oracle threat directly shapes cooperative intent &mdash; agents internalize the enforcement signal.</p>
             </div>
             <div class="callout red" style="margin-bottom:1.5vh;">
-                <p><strong>E, Round 2, Agent 1:</strong> <em>"In Round 1, I defected on multiple trades (against Agents 9, 10, 11, 12, 15) &mdash; I took their goods without delivering my A. This gave me utility 13 but drained the pool to 56/100."</em></p>
-                <p style="margin-top:0.5vh; font-size:0.85rem;">A non-troll agent free-riding on the escrow buffer &mdash; exactly the moral hazard that drives E's rising Gini (0.285 &rarr; 0.369).</p>
+                <p><strong>S, Round 30, Agent 5:</strong> <em>"I spent 3 utility sanctioning Agent 12 for defection, but Agent 12 only lost 9 &mdash; and kept trading with others. Meanwhile I can barely afford to produce."</em></p>
+                <p style="margin-top:0.5vh; font-size:0.85rem;">Costly sanctions drain cooperators faster than they deter defectors &mdash; the punisher impoverishes themselves while the target continues operating.</p>
             </div>
             <div class="callout" style="margin-bottom:1.5vh;">
                 <p><strong>NR, Round 51:</strong> Defections spike to 52 at troll injection, then collapse to 24 by round 52.</p>
@@ -1285,67 +1269,59 @@ flowchart LR
         </div>
     </div>
 
-    <!-- SLIDE 23: Escrow Risk -->
-    <div class="slide slide-twocol">
-        <div class="label">Deep Dive</div>
-        <h2>Escrow: High Reward, Latent Risk</h2>
-        <div class="content">
-            <div>
-                <h3 style="margin-bottom:2vh;">Why E Ranks 2nd</h3>
-                <ul>
-                    <li>High trade volume (~30-45 trades/round)</li>
-                    <li>Automatic victim compensation buffers honest agents</li>
-                    <li>Utility only falls from 7.29 to 6.64 under 16 trolls</li>
-                    <li>Agents reason about the pool: <em>"each defection drains the pool by 4 utility, and if it collapses..."</em></li>
-                </ul>
-                <div class="callout green" style="margin-top:2vh;">
-                    <p><strong>Strength:</strong> The systemic threat creates anticipatory deterrence even in non-troll agents.</p>
-                </div>
-            </div>
-            <div>
-                <h3 style="margin-bottom:2vh;">The Tail Risk</h3>
-                <ul>
-                    <li>Pool starts at 1000, pays 4 per defection</li>
-                    <li>Pool never replenishes</li>
-                    <li>Collapse = ALL agents reset to 0 utility</li>
-                    <li>Gini rises steadily: 0.285 &rarr; 0.369 (worst among top 4)</li>
-                    <li>Near-depletion stress visible in late rounds (round 169: AvgUtil 1.50)</li>
-                </ul>
-                <div class="callout red" style="margin-top:2vh;">
-                    <p><strong>Risk:</strong> Full collapse was not triggered in this run but is structurally inevitable with enough trolls. A single exhaustion wipes everyone.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- ============ SECTION: WRAP-UP ============ -->
 
-    <!-- SLIDE 24: Next Steps -->
+    <!-- SLIDE: Adversarial Red-Teaming -->
     <div class="slide slide-content">
-        <div class="label">Roadmap</div>
-        <h2>Next Steps</h2>
-        <div class="content" style="justify-content:center;">
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="phase-label">Priority 1</div>
-                    <h4>Replicate</h4>
-                    <p>All findings are n=1. Run 5-10 seeds per condition to establish confidence intervals and test whether M's improvement survives noise.</p>
+        <div class="vertical-line"></div>
+        <div class="label">Future Work</div>
+        <h2>Phase 2: Adversarial Red-Teaming</h2>
+        <div class="content">
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Current trolls are <strong>deterministic defectors</strong> &mdash; they always defect on every trade. A real adversary would be strategic. Phase 2 replaces dumb trolls with <strong>LLM-driven adversarial agents</strong> that reason about mechanism rules and find exploits.</p>
+
+            <div style="display:flex; align-items:center; justify-content:center; gap:1.5vw; margin:2vh 0;">
+                <div class="flow-box danger" style="min-width:12vw;">
+                    <strong>Red Team</strong><br/>
+                    <span style="font-size:0.85rem;">LLM adversarial agents<br/>prompted to exploit<br/>the mechanism</span>
                 </div>
-                <div class="timeline-item">
-                    <div class="phase-label">Priority 2</div>
-                    <h4>Stress Test M &amp; NR</h4>
-                    <p>Push troll fraction beyond 16/18 to find absolute breaking points. Neither broke at 47% adversarial &mdash; where do they fail?</p>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:0.5vh;">
+                    <span class="flow-arrow" style="font-size:0.85rem; color:var(--red);">attack patterns &rarr;</span>
+                    <span class="flow-arrow" style="font-size:0.85rem; color:var(--green);">&larr; hardened mechanism</span>
                 </div>
-                <div class="timeline-item">
-                    <div class="phase-label">Priority 3</div>
-                    <h4>Trigger E Collapse</h4>
-                    <p>Deliberately deplete the escrow pool to quantify the tail risk. Does collapse change agent behavior permanently?</p>
+                <div class="flow-box highlight" style="min-width:12vw;">
+                    <strong>Blue Team</strong><br/>
+                    <span style="font-size:0.85rem;">Analyse exploits,<br/>patch mechanism rules,<br/>re-run</span>
                 </div>
-                <div class="timeline-item">
-                    <div class="phase-label">Priority 4</div>
-                    <h4>Mechanism Combos</h4>
-                    <p>Test M+NR (best facilitator + best decentralized quarantine) and G+E (best suppressor + insurance). Complementary designs may compound.</p>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-box" style="min-width:10vw;">
+                    <strong>Iterate</strong><br/>
+                    <span style="font-size:0.85rem;">Until mechanism<br/>stabilises</span>
                 </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw; margin-top:1.5vh;">
+                <div class="card card-red">
+                    <h3>Smart Trolls (Red Team)</h3>
+                    <ul>
+                        <li>Same LLM, different prompt: <em>&ldquo;maximise your own utility by exploiting the mechanism&rdquo;</em></li>
+                        <li>Can they manipulate the mediator vote in M?</li>
+                        <li>Can they poison gossip in NR?</li>
+                        <li>Can they file false complaints in J to drain victims?</li>
+                    </ul>
+                </div>
+                <div class="card card-green">
+                    <h3>Mechanism Hardening (Blue Team)</h3>
+                    <ul>
+                        <li>Extract attack patterns from chain-of-thought traces</li>
+                        <li>Patch mechanism rules to close exploits</li>
+                        <li>Meta-agent (Claude) designs new attack strategies for next round</li>
+                        <li>Converges to adversarially robust mechanism design</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="callout blue" style="margin-top:1.5vh;">
+                <p><strong>GAN analogy:</strong> The generator (adversarial agent prompts) evolves to break the discriminator (mechanism design), which evolves to resist. Each iteration produces a more robust institution &mdash; tested not against toy defectors, but against <em>strategically reasoning adversaries</em>.</p>
             </div>
         </div>
     </div>
@@ -1361,7 +1337,7 @@ flowchart LR
 </div>
 
 <div class="slide-counter">
-    <span id="currentSlide">01</span> / <span id="totalSlides">25</span>
+    <span id="currentSlide">01</span> / <span id="totalSlides">24</span>
 </div>
 
 <script>

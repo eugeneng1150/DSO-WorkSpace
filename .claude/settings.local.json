@@ -25,7 +25,11 @@
       "Bash(node *)",
       "WebFetch(domain:world.emergence.ai)",
       "Bash(rm -f \"C:\\\\Users\\\\NYiSheng\\\\Documents\\\\DSO-WorkSpace\\\\simulation\\\\data\\\\plots\"/*.png)",
-      "Bash(rm -f \"C:\\\\Users\\\\NYiSheng\\\\Documents\\\\DSO-WorkSpace\\\\simulation\\\\data\\\\plots\\\\gpt-5.4-nano\"/*.png)"
+      "Bash(rm -f \"C:\\\\Users\\\\NYiSheng\\\\Documents\\\\DSO-WorkSpace\\\\simulation\\\\data\\\\plots\\\\gpt-5.4-nano\"/*.png)",
+      "WebFetch(domain:www.dso.org.sg)",
+      "WebFetch(domain:scholar.google.com)",
+      "WebFetch(domain:unsloth.ai)",
+      "WebFetch(domain:emanueltewolde.com)"
     ]
   }
 }
