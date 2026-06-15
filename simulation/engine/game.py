@@ -31,6 +31,7 @@ class Game:
         total_rounds: int = ROUNDS,
         troll_schedule: list[tuple[int, int]] | None = None,
         smart_trolls: bool = False,
+        revote_interval: int = 0,
     ):
         self.agents = agents
         self.mechanisms = mechanisms
@@ -40,6 +41,7 @@ class Game:
         self.mechanism_names = [m.name for m in mechanisms]
         self.troll_schedule = troll_schedule or []
         self.smart_trolls = smart_trolls
+        self.revote_interval = revote_interval
         self._next_troll_id = max(a.agent_id for a in agents) + 1
 
         agent_ids = [a.agent_id for a in agents]
@@ -190,6 +192,26 @@ class Game:
             for inject_round, n_new in self.troll_schedule:
                 if round_num == inject_round:
                     await self._inject_trolls(n_new, round_num)
+
+            # Periodic mediation re-vote (skips rounds that already re-voted via _inject_trolls)
+            if (self.revote_interval > 0
+                    and round_num > 1
+                    and round_num % self.revote_interval == 0
+                    and self.troll_ids
+                    and round_num not in {r for r, _ in self.troll_schedule}):
+                for mech in self.mechanisms:
+                    if mech.name == "mediation":
+                        await mech.on_revote(self.market, self.agents)
+                        if self.market.active_mediator:
+                            m = self.market.active_mediator
+                            self.session_log.setdefault("revotes", []).append({
+                                "round": round_num,
+                                "designer_id": m.designer_id,
+                                "action_both": m.action_both,
+                                "action_one": m.action_one,
+                                "n_trolls": len(self.troll_ids),
+                                "n_agents": len(self.agents),
+                            })
 
             for mech in self.mechanisms:
                 mech.on_round_start(self.market, round_num)

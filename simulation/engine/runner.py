@@ -43,6 +43,7 @@ def run_condition(
     total_rounds: int | None = None,
     troll_schedule: list[tuple[int, int]] | None = None,
     smart_trolls: bool = False,
+    revote_interval: int = 0,
 ) -> list[dict]:
     """Run all repetitions for one condition. Returns list of run summaries."""
     from ..config import ROUNDS
@@ -62,6 +63,7 @@ def run_condition(
             total_rounds=effective_rounds,
             troll_schedule=troll_schedule,
             smart_trolls=smart_trolls,
+            revote_interval=revote_interval,
         )
         round_logs = game.run()
 
@@ -96,6 +98,7 @@ def run_all(
     total_rounds: int | None = None,
     troll_schedule: list[tuple[int, int]] | None = None,
     smart_trolls: bool = False,
+    revote_interval: int = 0,
 ) -> dict[str, list[dict]]:
     """Run all conditions sequentially."""
     results = {}
@@ -110,6 +113,8 @@ def run_all(
         kwargs["troll_schedule"] = troll_schedule
     if smart_trolls:
         kwargs["smart_trolls"] = smart_trolls
+    if revote_interval:
+        kwargs["revote_interval"] = revote_interval
     for condition in conditions:
         results[condition] = run_condition(condition, **kwargs)
     return results

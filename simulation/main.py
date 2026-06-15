@@ -32,6 +32,8 @@ def main():
                         help="Progressive injection: 0→4→8→16 trolls at rounds 1/51/101/151 (200 rounds)")
     parser.add_argument("--smart-trolls", action="store_true",
                         help="Use LLM-driven adversarial agents instead of deterministic trolls (requires --progressive-trolls)")
+    parser.add_argument("--revote-interval", type=int, default=0,
+                        help="Re-vote on mediator design every N rounds (0 = only at injection rounds)")
     parser.add_argument("--rounds", type=int, default=None,
                         help="Override number of rounds (default 30)")
     parser.add_argument("--model", type=str, default=None,
@@ -104,6 +106,8 @@ def main():
         run_kwargs["troll_schedule"] = troll_schedule
     if args.smart_trolls:
         run_kwargs["smart_trolls"] = True
+    if args.revote_interval:
+        run_kwargs["revote_interval"] = args.revote_interval
 
     if args.condition:
         run_condition(args.condition, **run_kwargs)
