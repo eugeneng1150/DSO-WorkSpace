@@ -311,4 +311,76 @@ def plot_adversarial_comparison(save: bool = True) -> None:
         print(f"  Saved → {path}")
     plt.close(fig)
 
+    # ============================================================
+    # Plot 5: Mediation utilisation — fraction of trades mediated
+    # ============================================================
+    fig, ax = plt.subplots(figsize=(14, 6))
+
+    def _mediation_fraction(runs):
+        if not runs:
+            return []
+        n_rounds = max(len(run["rounds"]) for run in runs)
+        fractions = []
+        for r in range(n_rounds):
+            mediated_vals = []
+            total_vals = []
+            for run in runs:
+                if r >= len(run["rounds"]):
+                    continue
+                rnd = run["rounds"][r]
+                troll_ids = _get_troll_ids(run)
+                # Count non-troll trades only
+                trades = rnd.get("trades", [])
+                nt_trades = [t for t in trades
+                             if str(t.get("proposer")) not in troll_ids
+                             and str(t.get("target")) not in troll_ids]
+                mediated = rnd.get("mediated_trade_count", 0)
+                total_vals.append(len(nt_trades))
+                mediated_vals.append(mediated)
+            total = np.mean(total_vals) if total_vals else 0
+            med = np.mean(mediated_vals) if mediated_vals else 0
+            fractions.append(med / total if total > 0 else 0.0)
+        return fractions
+
+    if dumb_runs:
+        fracs = _mediation_fraction(dumb_runs)
+        rounds = list(range(1, len(fracs) + 1))
+        smoothed = np.convolve(fracs, np.ones(5) / 5, mode="same")
+        smoothed[0], smoothed[1] = fracs[0], fracs[1]
+        if len(fracs) > 1:
+            smoothed[-1], smoothed[-2] = fracs[-1], fracs[-2]
+        ax.plot(rounds, smoothed, color=base_color, linewidth=2.5,
+                label="Dumb trolls (baseline)", linestyle="--", alpha=0.8)
+
+    for v, data in adv_data.items():
+        color = version_colors.get(v, "#e74c3c")
+        label = f"Adversarial {v}" if v != "smart" else "Adversarial (unversioned)"
+        fracs = _mediation_fraction(data["runs"])
+        rounds = list(range(1, len(fracs) + 1))
+        smoothed = np.convolve(fracs, np.ones(5) / 5, mode="same")
+        smoothed[0], smoothed[1] = fracs[0], fracs[1]
+        if len(fracs) > 1:
+            smoothed[-1], smoothed[-2] = fracs[-1], fracs[-2]
+        ax.plot(rounds, smoothed, color=color, linewidth=2.0, label=label)
+
+    for inject_round in [51, 101, 151]:
+        ax.axvline(inject_round, color="red", linestyle=":", alpha=0.4, linewidth=1)
+    ax.text(51, ax.get_ylim()[1] * 0.95, "+4 trolls", fontsize=8, color="red", alpha=0.6)
+    ax.text(101, ax.get_ylim()[1] * 0.95, "+4 trolls", fontsize=8, color="red", alpha=0.6)
+    ax.text(151, ax.get_ylim()[1] * 0.95, "+8 trolls", fontsize=8, color="red", alpha=0.6)
+
+    ax.set_xlabel("Round")
+    ax.set_ylabel("Fraction of trades mediated")
+    ax.set_ylim(0, 1.05)
+    ax.set_title("Mediation Utilisation: Dumb Trolls vs Adversarial Versions\n(5-round rolling average, non-troll trades only)")
+    ax.legend(loc="lower left")
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+
+    if save:
+        path = out_dir / "adversarial_mediation_utilisation.png"
+        fig.savefig(path, dpi=150)
+        print(f"  Saved → {path}")
+    plt.close(fig)
+
     print(f"\nAdversarial plots saved to: {out_dir}")
