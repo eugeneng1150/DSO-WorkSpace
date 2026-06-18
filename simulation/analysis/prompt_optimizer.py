@@ -376,6 +376,9 @@ def optimize(
     skip_first_run: bool = False,
 ):
     """Run the RAPOA-inspired optimization loop."""
+    from ..config import set_model_tag
+    set_model_tag(model)
+
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     log_path = LOG_DIR / f"optimizer_{timestamp}.jsonl"
