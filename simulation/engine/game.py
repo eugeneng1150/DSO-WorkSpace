@@ -99,7 +99,6 @@ class Game:
             self.specialties[troll.agent_id] = troll.specialty
 
             self.market.agent_ids.append(troll.agent_id)
-            self.market.troll_ids.append(troll.agent_id)
             self.market.inventories[troll.agent_id] = {g: 0 for g in GOODS}
             self.market.private_inboxes[troll.agent_id] = []
             self.market.pending_offers[troll.agent_id] = []
@@ -400,6 +399,9 @@ class Game:
         production_actions = await self._call_agents_phase("production", round_num)
         production_this_round: dict[int, int] = {}
         for agent in self.agents:
+            if isinstance(agent, (TrollAgent, AdversarialAgent)):
+                production_this_round[agent.agent_id] = 0
+                continue
             gov = self.market.governance_states.get(agent.agent_id)
             if gov and gov.status == "suspended":
                 production_this_round[agent.agent_id] = 0
@@ -425,7 +427,7 @@ class Game:
 
         # Troll agents: propose trades to ALL neighbors (they'll defect on delivery)
         for agent in self.agents:
-            if isinstance(agent, TrollAgent):
+            if isinstance(agent, (TrollAgent, AdversarialAgent)):
                 self._inject_troll_proposals(agent, round_num)
 
         # Network rewiring (after messages/proposals, before trade phase)
@@ -453,7 +455,7 @@ class Game:
 
         # Troll agents: override with defect-all on every pending offer
         for agent in self.agents:
-            if isinstance(agent, TrollAgent):
+            if isinstance(agent, (TrollAgent, AdversarialAgent)):
                 trade_actions[agent.agent_id] = [
                     {"action": "defect_trade", "trade_id": o.trade_id}
                     for o in self.market.pending_offers.get(agent.agent_id, [])
