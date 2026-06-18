@@ -41,6 +41,15 @@ _JUDICIAL = _load("judicial.txt")
 _ESCROW = _load("escrow.txt")
 _ADVERSARIAL = _load("adversarial.txt")
 
+_adv_version = ""
+
+
+def set_adversarial_version(version: str):
+    """Load a versioned adversarial prompt (e.g. 'v1' loads adversarial_v1.txt)."""
+    global _ADVERSARIAL, _adv_version
+    _adv_version = version
+    _ADVERSARIAL = _load(f"adversarial_{version}.txt")
+
 
 def _extract_stage(template: str, stage_label: str) -> str:
     """Extract a single STAGE N block from a multi-stage template.

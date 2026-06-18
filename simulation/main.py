@@ -34,6 +34,10 @@ def main():
                         help="Use LLM-driven adversarial agents instead of deterministic trolls (requires --progressive-trolls)")
     parser.add_argument("--revote-interval", type=int, default=0,
                         help="Re-vote on mediator design every N rounds (0 = only at injection rounds)")
+    parser.add_argument("--adv-version", type=str, default="",
+                        help="Adversarial prompt version tag (e.g. v1, v2). Tags output files and loads prompts/adversarial_vN.txt")
+    parser.add_argument("--plot-adversarial", action="store_true",
+                        help="Generate adversarial comparison plots (dumb trolls vs all adversarial versions)")
     parser.add_argument("--rounds", type=int, default=None,
                         help="Override number of rounds (default 30)")
     parser.add_argument("--model", type=str, default=None,
@@ -95,6 +99,11 @@ def main():
         print("ERROR: --smart-trolls requires --progressive-trolls")
         return
 
+    if args.adv_version:
+        from .engine.prompt_builder import set_adversarial_version
+        set_adversarial_version(args.adv_version)
+        print(f"Adversarial prompt: adversarial_{args.adv_version}.txt")
+
     run_kwargs: dict = {}
     if args.runs:
         run_kwargs["runs"] = args.runs
@@ -108,12 +117,18 @@ def main():
         run_kwargs["smart_trolls"] = True
     if args.revote_interval:
         run_kwargs["revote_interval"] = args.revote_interval
+    if args.adv_version:
+        run_kwargs["adv_version"] = args.adv_version
 
     if args.condition:
         run_condition(args.condition, **run_kwargs)
 
     elif args.all:
         run_all(**run_kwargs)
+
+    if args.plot_adversarial:
+        from .analysis.adversarial_plots import plot_adversarial_comparison
+        plot_adversarial_comparison()
 
     if args.plot:
         from .analysis.plots import plot_all

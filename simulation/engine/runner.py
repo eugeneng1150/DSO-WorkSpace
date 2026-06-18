@@ -44,6 +44,7 @@ def run_condition(
     troll_schedule: list[tuple[int, int]] | None = None,
     smart_trolls: bool = False,
     revote_interval: int = 0,
+    adv_version: str = "",
 ) -> list[dict]:
     """Run all repetitions for one condition. Returns list of run summaries."""
     from ..config import ROUNDS
@@ -73,6 +74,7 @@ def run_condition(
             "n_trolls": n_trolls,
             "troll_schedule": troll_schedule,
             "smart_trolls": smart_trolls,
+            "adv_version": adv_version,
             "total_rounds": effective_rounds,
             "timestamp": datetime.utcnow().isoformat(),
             "session_log": game.session_log,
@@ -84,9 +86,11 @@ def run_condition(
         }
         summaries.append(summary)
         _save_run(condition, run_idx, summary, n_trolls=n_trolls,
-                  troll_schedule=troll_schedule, smart_trolls=smart_trolls)
+                  troll_schedule=troll_schedule, smart_trolls=smart_trolls,
+                  adv_version=adv_version)
         _save_traces(condition, run_idx, game.trace_log, n_trolls=n_trolls,
-                     troll_schedule=troll_schedule, smart_trolls=smart_trolls)
+                     troll_schedule=troll_schedule, smart_trolls=smart_trolls,
+                     adv_version=adv_version)
 
     return summaries
 
@@ -99,6 +103,7 @@ def run_all(
     troll_schedule: list[tuple[int, int]] | None = None,
     smart_trolls: bool = False,
     revote_interval: int = 0,
+    adv_version: str = "",
 ) -> dict[str, list[dict]]:
     """Run all conditions sequentially."""
     results = {}
@@ -115,22 +120,31 @@ def run_all(
         kwargs["smart_trolls"] = smart_trolls
     if revote_interval:
         kwargs["revote_interval"] = revote_interval
+    if adv_version:
+        kwargs["adv_version"] = adv_version
     for condition in conditions:
         results[condition] = run_condition(condition, **kwargs)
     return results
 
 
-def _save_run(condition: str, run_idx: int, data: dict, n_trolls: int = 0,
-              troll_schedule: list | None = None, smart_trolls: bool = False) -> None:
-    config.DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if troll_schedule and smart_trolls:
-        tag = "_tprog_smart"
+def _make_tag(n_trolls: int = 0, troll_schedule: list | None = None,
+              smart_trolls: bool = False, adv_version: str = "") -> str:
+    if troll_schedule and smart_trolls and adv_version:
+        return f"_tprog_adv_{adv_version}"
+    elif troll_schedule and smart_trolls:
+        return "_tprog_smart"
     elif troll_schedule:
-        tag = "_tprog"
+        return "_tprog"
     elif n_trolls > 0:
-        tag = f"_t{n_trolls}"
-    else:
-        tag = ""
+        return f"_t{n_trolls}"
+    return ""
+
+
+def _save_run(condition: str, run_idx: int, data: dict, n_trolls: int = 0,
+              troll_schedule: list | None = None, smart_trolls: bool = False,
+              adv_version: str = "") -> None:
+    config.DATA_DIR.mkdir(parents=True, exist_ok=True)
+    tag = _make_tag(n_trolls, troll_schedule, smart_trolls, adv_version)
     filename = config.DATA_DIR / f"{condition}{tag}_run_{run_idx:02d}.json"
     with open(filename, "w") as f:
         json.dump(data, f, indent=2)
@@ -138,16 +152,10 @@ def _save_run(condition: str, run_idx: int, data: dict, n_trolls: int = 0,
 
 
 def _save_traces(condition: str, run_idx: int, traces: list[dict], n_trolls: int = 0,
-                 troll_schedule: list | None = None, smart_trolls: bool = False) -> None:
+                 troll_schedule: list | None = None, smart_trolls: bool = False,
+                 adv_version: str = "") -> None:
     config.DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if troll_schedule and smart_trolls:
-        tag = "_tprog_smart"
-    elif troll_schedule:
-        tag = "_tprog"
-    elif n_trolls > 0:
-        tag = f"_t{n_trolls}"
-    else:
-        tag = ""
+    tag = _make_tag(n_trolls, troll_schedule, smart_trolls, adv_version)
     filename = config.DATA_DIR / f"{condition}{tag}_run_{run_idx:02d}_traces.jsonl"
     with open(filename, "w") as f:
         for entry in traces:
