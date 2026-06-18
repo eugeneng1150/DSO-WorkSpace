@@ -509,6 +509,8 @@ class Game:
             gov = self.market.governance_states.get(agent.agent_id)
             if gov and gov.status == "suspended":
                 continue
+            if phase in ("production", "trade") and isinstance(agent, (TrollAgent, AdversarialAgent)):
+                continue
 
             stage_overrides = {}
             for mech in self.mechanisms:
