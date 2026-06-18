@@ -14,6 +14,10 @@ Prompt files for the marketplace simulation engine.
 | `governance.txt` | `{mechanism_block}` for Condition G (automated oracle enforcement) |
 | `network_rewiring.txt` | `{mechanism_block}` for +Network Rewiring conditions (N, NR) |
 | `sanction.txt` | `{mechanism_block}` for Condition S (agent-initiated costly punishment) |
+| `judicial.txt` | `{mechanism_block}` for Condition J (court system with filing/fines) |
+| `escrow.txt` | `{mechanism_block}` for Condition E (shared insurance pool) |
+| `adversarial.txt` | Preamble prepended to prompts for `AdversarialAgent` (smart trolls) |
+| `adversarial_v1.txt` | Version 1 snapshot of adversarial prompt (for reproducibility) |
 
 ## How prompts compose
 
@@ -52,13 +56,20 @@ Condition S   → base_agent.txt + sanction.txt
 | Condition | Mechanisms | Research question |
 |---|---|---|
 | B | None (baseline) | How do agents behave without institutional support? |
-| R | Reputation | Does public reputation scoring deter defection? |
+| GR | Global Reputation | Does public reputation scoring deter defection? |
 | C | Contracting | Do binding contracts with breach penalties sustain cooperation? |
 | M | Mediation | Does agent-designed mediation improve outcomes? |
 | G | Governance | Does automated oracle enforcement (top-down) sustain cooperation? |
-| N | Network Rewiring | Can agents restructure trade links to isolate defectors? |
 | NR | Network Rewiring + Reputation | Does combining reputation with link rewiring improve cooperation? |
 | S | Sanction | Will agents pay personal cost to punish defectors (bottom-up)? |
+| J | Judicial | Does a court system with filing costs and fines deter defection? |
+
+## Adversarial prompt versioning
+
+Smart trolls (`AdversarialAgent`) receive `adversarial.txt` prepended to their normal prompt. For iterative red-teaming:
+- `adversarial.txt` — the live/current adversarial prompt
+- `adversarial_v1.txt`, `v2.txt`, ... — frozen snapshots for reproducibility
+- Use `--adv-version v1` at runtime to load a specific version
 
 ## Template variables
 

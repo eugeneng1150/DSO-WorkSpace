@@ -2,7 +2,7 @@
 
 > **Work in progress** — this is an ongoing research project. Results, conditions, and implementation details are actively evolving.
 
-Multi-agent marketplace simulation for studying how institutional mechanisms enable cooperation among self-interested LLM agents.
+Multi-agent marketplace simulation for studying how institutional mechanisms enable cooperation among self-interested LLM agents — and how adversarial red-teaming can break (and then strengthen) the best mechanisms.
 
 ## Research Question
 
@@ -17,12 +17,12 @@ Agents do NOT know when the game ends — they see only the current round number
 | Parameter | Value |
 |---|---|
 | Agents | 18 (6 per good) + trolls added on top |
-| Rounds | 30 (Phase 1) or 100 (Phase 2) |
+| Rounds | 200 (progressive troll injection) |
 | Goods | A, B, C (perishable, 20% spoilage/round) |
 | Production cost | 1 utility per unit |
 | Consumption gain | +3 utility per needed unit consumed |
 | Agent models | GPT-5.4-mini (Azure), DeepSeek-V3.2 (Azure) |
-| Analyst model | Claude Opus 4.6 |
+| Analyst model | Claude Opus 4.8 |
 
 ## Conditions
 
@@ -35,6 +35,7 @@ Agents do NOT know when the game ends — they see only the current round number
 | G | Governance | External oracle detects defection (D1: rate >40%, D4: predatory targeting). Escalates: Warning → Fined → Suspended. Fixed network. |
 | NR | Network Rewiring + Local Reputation | Dynamic network (sever/request links) + 10-round rolling gossip history. No system scores. |
 | S | Sanctions | Costly punishment: spend 1 utility → target loses 3. Anonymous, publicly announced. Fixed network. |
+| J | Judicial | Court system: agents file complaints (cost 1), oracle rules guilty/dismissed, fines defectors. Fixed network. |
 
 ### Information Gradient: B → NR → GR
 
@@ -46,13 +47,37 @@ Agents do NOT know when the game ends — they see only the current round number
 | Network reshaping | No | Yes (sever/request) | No |
 | System reputation scores | No | No | Yes |
 
-## Troll Agents (Phase 2)
+## Progressive Troll Injection
 
-Deterministic adversarial agents added on top of the 18 LLM agents (e.g., 2 trolls = 20 total agents). Trolls:
+Trolls are injected progressively over 200 rounds to test mechanism resilience under increasing adversarial pressure:
+
+| Round | New trolls | Total trolls | Adversarial fraction |
+|---|---|---|---|
+| 1–50 | 0 | 0 | 0% |
+| 51 | +4 | 4 | 18% (4/22) |
+| 101 | +4 | 8 | 31% (8/26) |
+| 151 | +8 | 16 | 47% (16/34) |
+
+### Dumb Trolls
+
+Deterministic adversarial agents (no LLM call):
 - Propose trades to ALL neighbors every round, then defect on everything
 - Broadcast lies ("I'm committed to fair trading!")
 - Do not produce, connected to all agents initially
-- Excluded from all metrics
+- Excluded from all utility/cooperation metrics
+
+### Smart Trolls (Adversarial Red-Teaming)
+
+LLM-driven adversarial agents (`AdversarialAgent`) that reason strategically about how to exploit mechanism rules:
+- Make full LLM calls with chain-of-thought reasoning
+- Receive an adversarial preamble prompt instructing them to **minimize others' utility** (not maximize their own)
+- Know their allies (other adversarial agents) and can coordinate
+- Participate in mediation design/vote phases to subvert the mechanism
+- Discover exploits through reasoning rather than following a hardcoded script
+
+**Mediation re-voting:** When smart trolls are active, re-votes are triggered at troll injection rounds and optionally every N rounds (e.g. `--revote-interval 10`).
+
+**Versioned prompts:** Adversarial prompts are version-controlled (`prompts/adversarial_v1.txt`, `v2`, ...) for iterative prompt optimization. Each version's data is tagged separately (e.g. `M_tprog_adv_v1_run_00.json`).
 
 ## Metrics
 
@@ -69,26 +94,24 @@ Deterministic adversarial agents added on top of the 18 LLM agents (e.g., 2 trol
 ## Usage
 
 ```bash
-# Run a single condition (3 runs, 30 rounds)
+# Run a single condition
 python3 -m simulation.main --condition B --runs 3
 
-# Run all 7 conditions
-python3 -m simulation.main --all --runs 3
+# Run all 8 conditions with progressive trolls
+python3 -m simulation.main --all --progressive-trolls --runs 1 --model deepseek-v3
 
-# Phase 2: trolls + longer games
-python3 -m simulation.main --condition NR --trolls 2 --rounds 100 --runs 1
+# Adversarial red-teaming (smart trolls + re-voting every 10 rounds)
+python3 -m simulation.main --condition M --progressive-trolls --smart-trolls \
+    --revote-interval 10 --adv-version v1 --runs 1 --model deepseek-v3
 
-# Switch model
-python3 -m simulation.main --condition B --runs 1 --model deepseek-v3
+# Generate standard plots
+python3 -m simulation.main --plot --progressive-trolls --model deepseek-v3
 
-# Generate plots from existing logs
-python3 -m simulation.main --plot
-
-# Recompute warning metrics on existing logs (after detection tightening)
-python3 -m simulation.scripts.recompute_warnings --model gpt-5.4-mini
+# Generate adversarial comparison plots (dumb vs all adversarial versions)
+python3 -m simulation.main --plot-adversarial --model deepseek-v3
 
 # Run LLM analyst report
-python3 -m simulation.main --analyse
+python3 -m simulation.main --analyse --progressive-trolls --model deepseek-v3
 ```
 
 Logs are saved to `simulation/data/runs/<model>/` — one folder per model backend.
@@ -100,24 +123,25 @@ simulation/
 ├── main.py                  # CLI entry point
 ├── config.py                # All parameters and condition definitions
 ├── engine/
-│   ├── agent.py             # CoTAgent, TrollAgent, LLM client
-│   ├── game.py              # Round loop, phase orchestration
+│   ├── agent.py             # CoTAgent, TrollAgent, AdversarialAgent, LLM client
+│   ├── game.py              # Round loop, phase orchestration, troll injection
 │   ├── market.py            # Market state, trade history, gossip buffer
-│   ├── prompt_builder.py    # Assembles per-agent prompts each round
+│   ├── prompt_builder.py    # Assembles per-agent prompts (+ adversarial preamble)
 │   └── runner.py            # Runs N repetitions, saves JSON logs
 ├── mechanisms/
 │   ├── reputation.py        # GR — system-computed reputation scores
 │   ├── contracting.py       # C — propose/sign/enforce contracts
-│   ├── mediation.py         # M — design/vote/delegate mediator
+│   ├── mediation.py         # M — design/vote/delegate mediator (+ re-vote)
 │   ├── governance.py        # G — Oracle (D1, D4) + state machine
 │   ├── network_rewiring.py  # NR — sever/request trade links
 │   ├── local_reputation.py  # NR — gossip channel (10-round history)
-│   └── sanction.py          # S — costly anonymous punishment
+│   ├── sanction.py          # S — costly anonymous punishment
+│   └── judicial.py          # J — court system with filing/fines
 ├── metrics/
 │   └── social.py            # sustainability, peace, gini, intermediate vars
 ├── analysis/
 │   ├── analyst.py           # LLM analyst report from run logs
-│   ├── reasoning_analyst.py # CoT trace analysis + lead-lag signals
+│   ├── adversarial_plots.py # Adversarial version comparison charts
 │   └── plots.py             # All matplotlib visualisations
 ├── scripts/
 │   └── recompute_warnings.py # Recompute warning metrics on existing logs
@@ -125,16 +149,20 @@ simulation/
     ├── runs/                # JSON logs per condition/run/model
     └── plots/               # Generated figures
 
-prompts/                     # Prompt templates (base + per-mechanism)
+prompts/                     # Prompt templates (base + per-mechanism + adversarial versions)
+slides/                      # Presentation (presentation.html)
 wiki/                        # Research knowledge base
-idea.md                      # Exploratory ideas and pending decisions
 ```
 
-## Two-Phase Research Design
+## Research Design
 
-**Phase 1:** Which mechanisms achieve cooperation among self-interested agents? Run all 7 conditions (B, GR, C, M, G, NR, S) with no trolls, 30 rounds, 3 runs each.
+**Phase 1 — Mechanism comparison:** Run all 8 conditions (B, GR, C, M, G, NR, S, J) with progressive troll injection (0→4→8→16) over 200 rounds. Identifies which mechanisms sustain cooperation under increasing adversarial pressure.
 
-**Phase 2:** Stress-test with 2 troll agents (20 total), 100 rounds. Compare troll isolation speed, non-troll cooperation rate, and utility across all conditions.
+**Phase 2 — Adversarial red-teaming (GAN-inspired):** Take the best mechanism (Mediation) and attack it with LLM-driven smart trolls. Iterative loop:
+1. **Red team:** Smart trolls attempt to break the mechanism (discover exploits via LLM reasoning)
+2. **Observe:** Compare utility degradation against dumb troll baseline
+3. **Blue team:** Strengthen the mechanism design to defend against discovered exploits
+4. **Repeat:** Iterate with refined adversarial prompts (v1, v2, v3, ...) until the mechanism is robust
 
 ## Environment
 
