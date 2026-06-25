@@ -301,7 +301,7 @@ Output ONLY the prompt text, nothing else. No explanation, no markdown code bloc
 
     response = client.messages.create(
         model=ANALYST_MODEL,
-        max_tokens=2048,
+        max_tokens=8192,
         messages=[{"role": "user", "content": prompt}],
     )
     return response.content[0].text
