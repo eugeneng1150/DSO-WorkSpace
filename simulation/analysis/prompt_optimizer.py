@@ -301,7 +301,7 @@ Output ONLY the prompt text, nothing else. No explanation, no markdown code bloc
 
     response = client.messages.create(
         model=ANALYST_MODEL,
-        max_tokens=8192,
+        max_tokens=10240,
         messages=[{"role": "user", "content": prompt}],
     )
     return response.content[0].text
@@ -353,16 +353,18 @@ def _should_accept(
 
     utility_improved = new_p4 < old_p4 - threshold
     gini_improved = new_gini > old_gini + 0.02
+    cumulative_improved = new_overall < old_overall - threshold
 
     reason = (
         f"Phase 4 utility: {old_p4:.3f} → {new_p4:.3f} "
         f"({'BETTER' if utility_improved else 'worse'}), "
         f"Phase 4 gini: {old_gini:.3f} → {new_gini:.3f} "
         f"({'BETTER' if gini_improved else 'worse'}), "
-        f"Overall utility: {old_overall:.3f} → {new_overall:.3f}"
+        f"Overall utility: {old_overall:.3f} → {new_overall:.3f} "
+        f"({'BETTER' if cumulative_improved else 'worse'})"
     )
 
-    accepted = utility_improved or gini_improved
+    accepted = utility_improved or gini_improved or cumulative_improved
     return accepted, reason
 
 
