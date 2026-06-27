@@ -14,12 +14,12 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 from .engine.runner import run_condition, run_all
-from .config import CONDITIONS
+from .config import CONDITIONS, CONDITION_MECHANISMS
 
 
 def main():
     parser = argparse.ArgumentParser(description="Marketplace simulation runner")
-    parser.add_argument("--condition", type=str, choices=CONDITIONS, help="Run a single condition")
+    parser.add_argument("--condition", type=str, choices=list(CONDITION_MECHANISMS.keys()), help="Run a single condition")
     parser.add_argument("--all", action="store_true", help="Run all conditions")
     parser.add_argument("--runs", type=int, default=None, help="Override number of runs per condition")
     parser.add_argument("--plot", action="store_true", help="Generate plots after simulation")
