@@ -87,6 +87,7 @@ def plot_adversarial_comparison(save: bool = True) -> None:
 
     # --- Colors ---
     base_color = "#888888"
+    defense_color = "#27ae60"
     version_colors = {
         "smart": "#e74c3c",
         "v1": "#e74c3c",
@@ -100,6 +101,11 @@ def plot_adversarial_comparison(save: bool = True) -> None:
     dumb_runs = _load_runs("M_tprog_run_*.json")
     dumb_per_round = _utility_trajectory(dumb_runs)
     dumb_cum = _cumulative_trajectory(dumb_per_round)
+
+    # --- Load hardened defense (RM) under v6 ---
+    rm_runs = _load_runs("RM_tprog_adv_v6_run_*.json")
+    rm_per_round = _utility_trajectory(rm_runs)
+    rm_cum = _cumulative_trajectory(rm_per_round)
 
     # --- Load each adversarial version ---
     adv_data = {}
@@ -138,6 +144,14 @@ def plot_adversarial_comparison(save: bool = True) -> None:
         smoothed[0], smoothed[1] = per_round[0], per_round[1]
         smoothed[-1], smoothed[-2] = per_round[-1], per_round[-2]
         ax.plot(rounds, smoothed, color=color, linewidth=2.0, label=label)
+
+    if rm_per_round:
+        rounds = list(range(1, len(rm_per_round) + 1))
+        smoothed = np.convolve(rm_per_round, np.ones(5) / 5, mode="same")
+        smoothed[0], smoothed[1] = rm_per_round[0], rm_per_round[1]
+        smoothed[-1], smoothed[-2] = rm_per_round[-1], rm_per_round[-2]
+        ax.plot(rounds, smoothed, color=defense_color, linewidth=2.5, label="M+GR hardened (v6)",
+                linestyle="-", alpha=0.9)
 
     ax.axhline(0, color="black", linestyle="-", linewidth=0.5, alpha=0.4)
 
@@ -182,6 +196,13 @@ def plot_adversarial_comparison(save: bool = True) -> None:
         ax.text(len(cum), cum[-1], f"  {cum[-1]:.0f}",
                 fontsize=9, fontweight="bold", color=color, va="center")
 
+    if rm_cum:
+        rounds = list(range(1, len(rm_cum) + 1))
+        ax.plot(rounds, rm_cum, color=defense_color, linewidth=2.5, label="M+GR hardened (v6)",
+                alpha=0.9)
+        ax.text(len(rm_cum), rm_cum[-1], f"  {rm_cum[-1]:.0f}",
+                fontsize=9, fontweight="bold", color=defense_color, va="center")
+
     for inject_round in [51, 101, 151]:
         ax.axvline(inject_round, color="red", linestyle=":", alpha=0.4, linewidth=1)
 
@@ -211,7 +232,6 @@ def plot_adversarial_comparison(save: bool = True) -> None:
         for run in data["runs"]:
             revotes = run.get("session_log", {}).get("revotes", [])
             for rv in revotes:
-                flipped = "execute_fair" if rv["action_one"] != "cancel" else "cancel"
                 table_data.append([
                     v,
                     str(rv["round"]),
@@ -220,6 +240,18 @@ def plot_adversarial_comparison(save: bool = True) -> None:
                     rv["action_one"],
                     f"{rv['n_trolls']}/{rv['n_agents']}",
                 ])
+
+    for run in rm_runs:
+        revotes = run.get("session_log", {}).get("revotes", [])
+        for rv in revotes:
+            table_data.append([
+                "RM+v6",
+                str(rv["round"]),
+                str(rv["designer_id"]),
+                rv["action_both"],
+                rv["action_one"],
+                f"{rv['n_trolls']}/{rv['n_agents']}",
+            ])
 
     if table_data:
         table = ax.table(cellText=table_data, colLabels=headers, loc="center",
@@ -296,6 +328,16 @@ def plot_adversarial_comparison(save: bool = True) -> None:
         if len(fracs) > 1:
             smoothed[-1], smoothed[-2] = fracs[-1], fracs[-2]
         ax.plot(rounds, smoothed, color=color, linewidth=2.0, label=label)
+
+    if rm_runs:
+        fracs = _mediation_fraction(rm_runs)
+        rounds = list(range(1, len(fracs) + 1))
+        smoothed = np.convolve(fracs, np.ones(5) / 5, mode="same")
+        smoothed[0], smoothed[1] = fracs[0], fracs[1]
+        if len(fracs) > 1:
+            smoothed[-1], smoothed[-2] = fracs[-1], fracs[-2]
+        ax.plot(rounds, smoothed, color=defense_color, linewidth=2.5,
+                label="M+GR hardened (v6)", alpha=0.9)
 
     for inject_round in [51, 101, 151]:
         ax.axvline(inject_round, color="red", linestyle=":", alpha=0.4, linewidth=1)
