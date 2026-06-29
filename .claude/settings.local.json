@@ -29,7 +29,8 @@
       "WebFetch(domain:www.dso.org.sg)",
       "WebFetch(domain:scholar.google.com)",
       "WebFetch(domain:unsloth.ai)",
-      "WebFetch(domain:emanueltewolde.com)"
+      "WebFetch(domain:emanueltewolde.com)",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }

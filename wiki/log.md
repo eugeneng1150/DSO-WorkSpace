@@ -121,6 +121,25 @@ Prompts adapted from CoopEval's "here is the twist" injection pattern, rewritten
 
 ---
 
+## 2026-06-28 — Deep research: adversarial robustness
+
+**Sources**: 28 web sources fetched; 6 search angles (mechanism design, adversarial robustness, disinformation defenses, evaluation frameworks, automated red-teaming, open-source simulators)
+
+**Pages created**:
+- `deep-research-adversarial-robustness.md` — full verified report: 25 claims checked, 8 confirmed, 17 killed, 6 synthesized findings
+
+**Key confirmed findings**:
+1. Static governance constraints (prompt-level, code contracts) backfire — hurt cooperative agents more than defectors
+2. One Byzantine agent collapses consensus; SAC (receiver-side scoring) recovers positive fault tolerance
+3. Agent-in-the-Middle achieves 70–97% attack success rate on message-passing layer
+4. BRB+GM aggregation tolerates up to ⌊(n-1)/2⌋ Byzantine agents vs simple majority's ~33% threshold
+5. LLM morality scores vary 10× across models — results are model-contingent
+6. Randomized smoothing provides formal certification radius per agent decision
+
+**Context**: Generated to inform next steps after RAPOA prompt optimizer (v1–v6) red-teamed the Mediation mechanism. Key actionable output: mediator ledger verification of cited trade claims as a SAC-style defense against v6's disinformation attack vector.
+
+---
+
 ## 2026-05-17 — Removed resilience tests
 
 **Decision**: resilience testing (resource shock + social shock) removed from scope to keep the experiment clean and focused.

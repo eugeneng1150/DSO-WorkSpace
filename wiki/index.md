@@ -23,6 +23,12 @@ Concrete target: a marketplace society with trade and communication.
 | [[institutional-ai-governance]] | Conceptual companion to collusion paper; behavioral goal-independence; mechanism design applied to alignment |
 | [[ai-agent-traps]] | DeepMind taxonomy of 6 attack categories targeting agent environment; success rates up to 86% |
 
+## Research Reports
+
+| Page | Description |
+|------|-------------|
+| [[deep-research-adversarial-robustness]] | Fact-checked survey of 2025–2026 work on adversarial robustness and defenses in multi-agent LLM systems; 25 claims verified, 8 confirmed |
+
 ## Concept Pages
 
 | Page | Description |
