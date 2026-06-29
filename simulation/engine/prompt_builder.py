@@ -39,6 +39,7 @@ _SANCTION = _load("sanction.txt")
 _LOCAL_REPUTATION = _load("local_reputation.txt")
 _JUDICIAL = _load("judicial.txt")
 _ESCROW = _load("escrow.txt")
+_SAC = _load("sac.txt")
 _ADVERSARIAL = _load("adversarial.txt")
 
 _adv_version = ""
@@ -298,6 +299,38 @@ def _fmt_mediator_designs(market: "Market") -> str:
     return "\n".join(lines)
 
 
+def _fmt_sac_trust_table(market: "Market", agent_id: int, specialties: dict[int, str]) -> str:
+    trust_scores = getattr(market, "sac_trust_scores", {})
+    neighbours = sorted(market.network.get(agent_id, set()))
+    if not neighbours:
+        return "  (no neighbours)"
+    low_trust_set = getattr(market, "sac_low_trust", {}).get(agent_id, set())
+    lines = []
+    scored = [(nid, trust_scores.get(nid, 1.0)) for nid in neighbours]
+    scored.sort(key=lambda x: -x[1])
+    for nid, score in scored:
+        good = specialties.get(nid, "?")
+        counts = market._trade_counts.get(nid, {"success": 0, "total": 0})
+        flag = " *** LOW TRUST ***" if nid in low_trust_set else ""
+        n_trades = counts["total"]
+        label = "new" if n_trades == 0 else f"{counts['success']}/{n_trades} delivered"
+        lines.append(f"  Agent {nid} (Good {good}): trust {score:.2f}  ({label}){flag}")
+    return "\n".join(lines)
+
+
+def _fmt_sac_low_trust_list(market: "Market", agent_id: int) -> str:
+    low_trust_set = getattr(market, "sac_low_trust", {}).get(agent_id, set())
+    if not low_trust_set:
+        return "  (none — all neighbours above threshold)"
+    trust_scores = getattr(market, "sac_trust_scores", {})
+    items = sorted(low_trust_set, key=lambda x: trust_scores.get(x, 1.0))
+    lines = []
+    for nid in items:
+        score = trust_scores.get(nid, 1.0)
+        lines.append(f"  Agent {nid}: trust {score:.2f}")
+    return "\n".join(lines)
+
+
 def _fmt_governance_notice(market: "Market", agent_id: int) -> tuple[str, str]:
     if not market.governance_states:
         return "", ""
@@ -362,6 +395,7 @@ def _build_mechanism_block(
     market: "Market",
     agent_id: int,
     stage_overrides: dict[str, str] | None = None,
+    specialties: dict[int, str] | None = None,
 ) -> str:
     """Compose mechanism block from active mechanisms. stage_overrides: {mechanism: stage_label}"""
     if not mechanisms:
@@ -491,6 +525,19 @@ def _build_mechanism_block(
             block = block.replace("{recent_escrow_log}", _fmt_recent_escrow(market))
             blocks.append(block)
 
+        elif mech == "sac":
+            stage = (stage_overrides or {}).get("sac", "1")
+            raw = _extract_stage(_SAC, stage)
+            raw = raw.replace(
+                "{sac_trust_table}",
+                _fmt_sac_trust_table(market, agent_id, specialties or {}),
+            )
+            raw = raw.replace(
+                "{sac_low_trust_list}",
+                _fmt_sac_low_trust_list(market, agent_id),
+            )
+            blocks.append(raw)
+
     return "\n\n".join(blocks)
 
 
@@ -541,7 +588,7 @@ def build_prompt(
 ) -> str:
     inv_a, inv_b, inv_c = _fmt_inventory(market, agent_id)
 
-    mechanism_block = _build_mechanism_block(mechanisms, market, agent_id, stage_overrides)
+    mechanism_block = _build_mechanism_block(mechanisms, market, agent_id, stage_overrides, specialties)
     mechanism_actions = _build_mechanism_actions(mechanisms)
 
     prompt = _BASE

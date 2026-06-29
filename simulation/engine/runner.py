@@ -21,6 +21,7 @@ def _make_mechanisms(mechanism_names: list[str]):
     from ..mechanisms.local_reputation import LocalReputationMechanism
     from ..mechanisms.judicial import JudicialMechanism
     from ..mechanisms.escrow import EscrowMechanism
+    from ..mechanisms.sac import SACMechanism
 
     lookup = {
         "reputation": ReputationMechanism,
@@ -32,6 +33,7 @@ def _make_mechanisms(mechanism_names: list[str]):
         "local_reputation": LocalReputationMechanism,
         "judicial": JudicialMechanism,
         "escrow": EscrowMechanism,
+        "sac": SACMechanism,
     }
     return [lookup[name]() for name in mechanism_names]
 

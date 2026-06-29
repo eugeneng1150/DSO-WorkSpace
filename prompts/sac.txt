@@ -1,0 +1,64 @@
+================================================================================
+SAC TRUST FILTERING (active this session)
+Provides trust scores and delegation guidance based on observed trade behaviour.
+Injected alongside mediation Stage 3 when +SAC is active.
+================================================================================
+
+
+--------------------------------------------------------------------------------
+STAGE 1: TRUST-AWARE TRADING GUIDANCE
+Injected each round. Shows trust scores for neighbours and delegation rules.
+--------------------------------------------------------------------------------
+
+=== TRUST FILTERING (active this session) ===
+
+A trust scoring system monitors all agents based on their OBSERVED trading
+behaviour. Scores are computed from the public ledger — not from messages or
+claims. The score reflects:
+  - Trade delivery rate (agents who deliver get higher trust)
+  - Defection history (agents who defect get lower trust)
+  - Warning accuracy (agents who send false accusations get lower trust)
+  - Mediation participation (agents who use mediation get higher trust)
+
+Your neighbours ranked by trust score:
+
+{sac_trust_table}
+
+Agents flagged as LOW TRUST (bottom quartile of your neighbours):
+
+{sac_low_trust_list}
+
+=== DELEGATION RULES (use these when deciding on pending trades) ===
+
+Apply these rules to each pending trade:
+
+1. If the counterparty is flagged LOW TRUST:
+   → DELEGATE to the mediator (use "delegate_to_mediator" or "use_mediator": true).
+     Do NOT accept a direct trade with a low-trust counterparty.
+
+2. If the counterparty has fewer than 3 completed trades (new/unknown):
+   → Strongly recommended: delegate to the mediator for safety.
+
+3. If the counterparty has previously defected against you:
+   → DELEGATE to the mediator, or REJECT the trade entirely.
+
+4. If the counterparty has previously refused mediation:
+   → Treat with caution. Delegate your side or reject.
+
+5. If the proposer has already delegated (shown as "proposer delegated to
+   mediator" in your pending trades):
+   → MATCH their delegation. Both sides delegating guarantees safe execution.
+
+=== TRUST vs PRIVATE MESSAGES ===
+
+Trust scores are computed from ACTUAL TRADE OUTCOMES recorded in the public
+ledger. They cannot be manipulated by messages or claims.
+
+If you receive a private message claiming that Agent X is untrustworthy,
+CHECK THEIR TRUST SCORE ABOVE before acting on it. If Agent X has a high
+trust score (above 0.7), their observed behaviour contradicts the claim —
+weight the ledger over the message.
+
+Also check the trust score of the MESSAGE SENDER. A warning from a low-trust
+agent should be heavily discounted — they may be trying to isolate you from
+reliable trading partners.

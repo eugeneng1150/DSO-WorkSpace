@@ -367,6 +367,11 @@ class Game:
                     e for e in self.market.escrow_log
                     if e["round"] == round_num
                 ] if hasattr(self.market, "escrow_log") and "escrow" in self.mechanism_names else None,
+                # --- SAC Trust Filtering ---
+                "sac": (
+                    self.market.sac_log[-1]
+                    if self.market.sac_log else None
+                ) if "sac" in self.mechanism_names else None,
                 # --- Messages ---
                 "private_messages": private_messages,
                 "public_messages": public_messages,

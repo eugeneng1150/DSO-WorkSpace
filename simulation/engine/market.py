@@ -165,6 +165,11 @@ class Market:
         self.network_events: list[dict] = []
         self.network_degree_history: list[dict] = []
 
+        # SAC trust filtering state (sac mechanism)
+        self.sac_trust_scores: dict[int, float] = {}
+        self.sac_low_trust: dict[int, set[int]] = {}
+        self.sac_log: list[dict] = []
+
     def new_round(self, round_num: int):
         from ..config import MESSAGE_HISTORY_WINDOW
         # Archive current round's public messages before clearing
