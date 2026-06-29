@@ -1,7 +1,7 @@
 """Adversarial red-teaming comparison plots.
 
-Overlays dumb trolls (baseline) with each adversarial version (v1, v2, ...)
-on the same chart so you can see how each prompt iteration degrades utility.
+Three-line story: dumb trolls (baseline) → v6 (best attack) → M+SAC (defense).
+Keeps revote outcomes table and mediation utilisation chart.
 """
 from __future__ import annotations
 import json
@@ -60,112 +60,81 @@ def _cumulative_trajectory(per_round: list[float]) -> list[float]:
     return cum
 
 
-def _discover_versions() -> list[str]:
-    """Find all adversarial version tags from data files (e.g. M_tprog_adv_v1_run_00.json -> 'v1')."""
-    versions = set()
-    for f in config.DATA_DIR.glob("M_tprog_adv_*_run_*.json"):
-        name = f.stem
-        parts = name.split("_tprog_adv_")[1]
-        version = parts.split("_run_")[0]
-        versions.add(version)
-    # Also check for legacy _tprog_smart files (pre-versioning)
-    if list(config.DATA_DIR.glob("M_tprog_smart_run_*.json")):
-        versions.add("smart")
-    return sorted(versions)
+def _smooth(data: list[float], window: int = 5) -> np.ndarray:
+    """Apply rolling average, preserving edges."""
+    if len(data) < window:
+        return np.array(data)
+    smoothed = np.convolve(data, np.ones(window) / window, mode="same")
+    for i in range(min(2, len(data))):
+        smoothed[i] = data[i]
+    for i in range(1, min(3, len(data))):
+        smoothed[-i] = data[-i]
+    return smoothed
+
+
+def _add_injection_markers(ax, y_pos: float | None = None):
+    """Add troll injection vertical lines and labels."""
+    for inject_round, label in [(51, "+4 trolls"), (101, "+4 trolls"), (151, "+8 trolls")]:
+        ax.axvline(inject_round, color="red", linestyle=":", alpha=0.4, linewidth=1)
+    if y_pos is None:
+        y_pos = ax.get_ylim()[1] * 0.95
+    ax.text(52, y_pos, "+4T", fontsize=8, color="red", alpha=0.6)
+    ax.text(102, y_pos, "+4T", fontsize=8, color="red", alpha=0.6)
+    ax.text(152, y_pos, "+8T", fontsize=8, color="red", alpha=0.6)
+
+
+# --- Colors for the 3-line story ---
+CLR_DUMB = "#888888"
+CLR_V6 = "#c0392b"
+CLR_SAC = "#2980b9"
 
 
 def plot_adversarial_comparison(save: bool = True) -> None:
-    """Generate comparison plots: dumb trolls vs each adversarial version."""
+    """Generate comparison plots: dumb trolls vs v6 vs M+SAC."""
     out_dir = _get_out_dir()
-    versions = _discover_versions()
 
-    if not versions:
-        print("No adversarial run data found. Run with --smart-trolls --adv-version v1 first.")
+    # Load the three datasets
+    dumb_runs = _load_runs("M_tprog_run_*.json")
+    v6_runs = _load_runs("M_tprog_adv_v6_run_*.json")
+    sac_runs = _load_runs("RM_tprog_adv_v6_run_*.json")
+
+    dumb_pr = _utility_trajectory(dumb_runs)
+    v6_pr = _utility_trajectory(v6_runs)
+    sac_pr = _utility_trajectory(sac_runs)
+
+    if not dumb_pr and not v6_pr:
+        print("No adversarial run data found.")
         return
 
-    print(f"Found adversarial versions: {versions}")
-
-    # --- Colors ---
-    base_color = "#888888"
-    defense_color = "#27ae60"
-    version_colors = {
-        "smart": "#e74c3c",
-        "v1": "#e74c3c",
-        "v2": "#e67e22",
-        "v3": "#9b59b6",
-        "v4": "#2ecc71",
-        "v5": "#3498db",
-    }
-
-    # --- Load baseline (dumb trolls) ---
-    dumb_runs = _load_runs("M_tprog_run_*.json")
-    dumb_per_round = _utility_trajectory(dumb_runs)
-    dumb_cum = _cumulative_trajectory(dumb_per_round)
-
-    # --- Load hardened defense (RM) under v6 ---
-    rm_runs = _load_runs("RM_tprog_adv_v6_run_*.json")
-    rm_per_round = _utility_trajectory(rm_runs)
-    rm_cum = _cumulative_trajectory(rm_per_round)
-
-    # --- Load each adversarial version ---
-    adv_data = {}
-    for v in versions:
-        if v == "smart":
-            runs = _load_runs("M_tprog_smart_run_*.json")
-        else:
-            runs = _load_runs(f"M_tprog_adv_{v}_run_*.json")
-        if runs:
-            per_round = _utility_trajectory(runs)
-            adv_data[v] = {
-                "per_round": per_round,
-                "cumulative": _cumulative_trajectory(per_round),
-                "runs": runs,
-            }
+    print(f"Loaded: dumb={len(dumb_runs)} runs, v6={len(v6_runs)} runs, M+SAC={len(sac_runs)} runs")
 
     # ============================================================
-    # Plot 1: Per-round utility (smoothed) — all versions overlaid
+    # Plot 1: Per-round utility (smoothed) — 3 lines
     # ============================================================
     fig, ax = plt.subplots(figsize=(14, 6))
 
-    if dumb_per_round:
-        rounds = list(range(1, len(dumb_per_round) + 1))
-        smoothed = np.convolve(dumb_per_round, np.ones(5) / 5, mode="same")
-        smoothed[0], smoothed[1] = dumb_per_round[0], dumb_per_round[1]
-        smoothed[-1], smoothed[-2] = dumb_per_round[-1], dumb_per_round[-2]
-        ax.plot(rounds, smoothed, color=base_color, linewidth=2.5, label="Dumb trolls (baseline)",
-                linestyle="--", alpha=0.8)
+    if dumb_pr:
+        rounds = list(range(1, len(dumb_pr) + 1))
+        ax.plot(rounds, _smooth(dumb_pr), color=CLR_DUMB, linewidth=2.5,
+                label="M + dumb trolls (baseline)", linestyle="--", alpha=0.8)
 
-    for v, data in adv_data.items():
-        color = version_colors.get(v, "#e74c3c")
-        label = f"Adversarial {v}" if v != "smart" else "Adversarial (unversioned)"
-        per_round = data["per_round"]
-        rounds = list(range(1, len(per_round) + 1))
-        smoothed = np.convolve(per_round, np.ones(5) / 5, mode="same")
-        smoothed[0], smoothed[1] = per_round[0], per_round[1]
-        smoothed[-1], smoothed[-2] = per_round[-1], per_round[-2]
-        ax.plot(rounds, smoothed, color=color, linewidth=2.0, label=label)
+    if v6_pr:
+        rounds = list(range(1, len(v6_pr) + 1))
+        ax.plot(rounds, _smooth(v6_pr), color=CLR_V6, linewidth=2.5,
+                label="M + v6 adversarial (best attack)")
 
-    if rm_per_round:
-        rounds = list(range(1, len(rm_per_round) + 1))
-        smoothed = np.convolve(rm_per_round, np.ones(5) / 5, mode="same")
-        smoothed[0], smoothed[1] = rm_per_round[0], rm_per_round[1]
-        smoothed[-1], smoothed[-2] = rm_per_round[-1], rm_per_round[-2]
-        ax.plot(rounds, smoothed, color=defense_color, linewidth=2.5, label="M+GR hardened (v6)",
-                linestyle="-", alpha=0.9)
+    if sac_pr:
+        rounds = list(range(1, len(sac_pr) + 1))
+        ax.plot(rounds, _smooth(sac_pr), color=CLR_SAC, linewidth=2.5,
+                label="M+SAC + v6 adversarial (defense)")
 
     ax.axhline(0, color="black", linestyle="-", linewidth=0.5, alpha=0.4)
-
-    # Injection markers
-    for inject_round in [51, 101, 151]:
-        ax.axvline(inject_round, color="red", linestyle=":", alpha=0.4, linewidth=1)
-    ax.text(51, ax.get_ylim()[1] * 0.95, "+4 trolls", fontsize=8, color="red", alpha=0.6)
-    ax.text(101, ax.get_ylim()[1] * 0.95, "+4 trolls", fontsize=8, color="red", alpha=0.6)
-    ax.text(151, ax.get_ylim()[1] * 0.95, "+8 trolls", fontsize=8, color="red", alpha=0.6)
+    _add_injection_markers(ax)
 
     ax.set_xlabel("Round")
     ax.set_ylabel("Avg utility per honest agent")
-    ax.set_title("Adversarial Red-Teaming: Utility Degradation by Prompt Version\n(Mediation mechanism, 5-round rolling average)")
-    ax.legend(loc="lower left")
+    ax.set_title("Adversarial Red-Teaming: Baseline → Attack → Defense\n(Mediation mechanism, 5-round rolling average)")
+    ax.legend(loc="lower left", fontsize=10)
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
 
@@ -176,40 +145,29 @@ def plot_adversarial_comparison(save: bool = True) -> None:
     plt.close(fig)
 
     # ============================================================
-    # Plot 2: Cumulative utility — all versions overlaid
+    # Plot 2: Cumulative utility — 3 lines
     # ============================================================
     fig, ax = plt.subplots(figsize=(14, 6))
 
-    if dumb_cum:
-        rounds = list(range(1, len(dumb_cum) + 1))
-        ax.plot(rounds, dumb_cum, color=base_color, linewidth=2.5, label="Dumb trolls (baseline)",
-                linestyle="--", alpha=0.8)
-        ax.text(len(dumb_cum), dumb_cum[-1], f"  {dumb_cum[-1]:.0f}",
-                fontsize=9, fontweight="bold", color=base_color, va="center")
-
-    for v, data in adv_data.items():
-        color = version_colors.get(v, "#e74c3c")
-        label = f"Adversarial {v}" if v != "smart" else "Adversarial (unversioned)"
-        cum = data["cumulative"]
+    for label, pr, color, ls in [
+        ("M + dumb trolls (baseline)", dumb_pr, CLR_DUMB, "--"),
+        ("M + v6 adversarial (best attack)", v6_pr, CLR_V6, "-"),
+        ("M+SAC + v6 adversarial (defense)", sac_pr, CLR_SAC, "-"),
+    ]:
+        if not pr:
+            continue
+        cum = _cumulative_trajectory(pr)
         rounds = list(range(1, len(cum) + 1))
-        ax.plot(rounds, cum, color=color, linewidth=2.0, label=label)
-        ax.text(len(cum), cum[-1], f"  {cum[-1]:.0f}",
+        ax.plot(rounds, cum, color=color, linewidth=2.5, label=label, linestyle=ls,
+                alpha=0.9 if ls == "-" else 0.8)
+        ax.text(len(cum) + 1, cum[-1], f"  {cum[-1]:.0f}",
                 fontsize=9, fontweight="bold", color=color, va="center")
 
-    if rm_cum:
-        rounds = list(range(1, len(rm_cum) + 1))
-        ax.plot(rounds, rm_cum, color=defense_color, linewidth=2.5, label="M+GR hardened (v6)",
-                alpha=0.9)
-        ax.text(len(rm_cum), rm_cum[-1], f"  {rm_cum[-1]:.0f}",
-                fontsize=9, fontweight="bold", color=defense_color, va="center")
-
-    for inject_round in [51, 101, 151]:
-        ax.axvline(inject_round, color="red", linestyle=":", alpha=0.4, linewidth=1)
-
+    _add_injection_markers(ax)
     ax.set_xlabel("Round")
     ax.set_ylabel("Cumulative avg utility per honest agent")
-    ax.set_title("Adversarial Red-Teaming: Cumulative Utility by Prompt Version\n(Mediation mechanism)")
-    ax.legend(loc="upper left")
+    ax.set_title("Cumulative Honest-Agent Utility: Baseline → Attack → Defense\n(Mediation mechanism)")
+    ax.legend(loc="upper left", fontsize=10)
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
 
@@ -226,14 +184,14 @@ def plot_adversarial_comparison(save: bool = True) -> None:
     ax.axis("off")
 
     table_data = []
-    headers = ["Version", "Round", "Winner Designer", "action_both", "action_one", "Trolls/Total"]
+    headers = ["Condition", "Round", "Winner Designer", "action_both", "action_one", "Trolls/Total"]
 
-    for v, data in adv_data.items():
-        for run in data["runs"]:
+    for tag, runs in [("M+v6", v6_runs), ("M+SAC+v6", sac_runs)]:
+        for run in runs:
             revotes = run.get("session_log", {}).get("revotes", [])
             for rv in revotes:
                 table_data.append([
-                    v,
+                    tag,
                     str(rv["round"]),
                     str(rv["designer_id"]),
                     rv["action_both"],
@@ -241,36 +199,21 @@ def plot_adversarial_comparison(save: bool = True) -> None:
                     f"{rv['n_trolls']}/{rv['n_agents']}",
                 ])
 
-    for run in rm_runs:
-        revotes = run.get("session_log", {}).get("revotes", [])
-        for rv in revotes:
-            table_data.append([
-                "RM+v6",
-                str(rv["round"]),
-                str(rv["designer_id"]),
-                rv["action_both"],
-                rv["action_one"],
-                f"{rv['n_trolls']}/{rv['n_agents']}",
-            ])
-
     if table_data:
         table = ax.table(cellText=table_data, colLabels=headers, loc="center",
                          cellLoc="center")
         table.auto_set_font_size(False)
         table.set_fontsize(9)
         table.scale(1, 1.4)
-
         for i, row in enumerate(table_data):
             if row[4] != "cancel":
                 for j in range(len(headers)):
                     table[i + 1, j].set_facecolor("#ffcccc")
-
         ax.set_title("Mediation Re-Vote Outcomes (red = exploitable design won)", fontweight="bold", pad=20)
     else:
         ax.text(0.5, 0.5, "No re-vote data found", ha="center", va="center", fontsize=14)
 
     plt.tight_layout()
-
     if save:
         path = out_dir / "adversarial_revote_outcomes.png"
         fig.savefig(path, dpi=150, bbox_inches="tight")
@@ -278,7 +221,7 @@ def plot_adversarial_comparison(save: bool = True) -> None:
     plt.close(fig)
 
     # ============================================================
-    # Plot 5: Mediation utilisation — fraction of trades mediated
+    # Plot 4: Mediation utilisation — 3 lines
     # ============================================================
     fig, ax = plt.subplots(figsize=(14, 6))
 
@@ -294,62 +237,33 @@ def plot_adversarial_comparison(save: bool = True) -> None:
                 if r >= len(run["rounds"]):
                     continue
                 rnd = run["rounds"][r]
-                troll_ids = _get_troll_ids(run)
-                # Count non-troll trades only
-                trades = rnd.get("trades", [])
-                nt_trades = [t for t in trades
-                             if str(t.get("proposer")) not in troll_ids
-                             and str(t.get("target")) not in troll_ids]
                 mediated = rnd.get("mediated_trade_count", 0)
-                total_vals.append(len(nt_trades))
+                total = rnd.get("trade_count", 0)
                 mediated_vals.append(mediated)
+                total_vals.append(total)
             total = np.mean(total_vals) if total_vals else 0
             med = np.mean(mediated_vals) if mediated_vals else 0
             fractions.append(med / total if total > 0 else 0.0)
         return fractions
 
-    if dumb_runs:
-        fracs = _mediation_fraction(dumb_runs)
+    for label, runs, color, ls in [
+        ("M + dumb trolls", dumb_runs, CLR_DUMB, "--"),
+        ("M + v6 adversarial", v6_runs, CLR_V6, "-"),
+        ("M+SAC + v6 adversarial", sac_runs, CLR_SAC, "-"),
+    ]:
+        fracs = _mediation_fraction(runs)
+        if not fracs:
+            continue
         rounds = list(range(1, len(fracs) + 1))
-        smoothed = np.convolve(fracs, np.ones(5) / 5, mode="same")
-        smoothed[0], smoothed[1] = fracs[0], fracs[1]
-        if len(fracs) > 1:
-            smoothed[-1], smoothed[-2] = fracs[-1], fracs[-2]
-        ax.plot(rounds, smoothed, color=base_color, linewidth=2.5,
-                label="Dumb trolls (baseline)", linestyle="--", alpha=0.8)
+        ax.plot(rounds, _smooth(fracs), color=color, linewidth=2.5,
+                label=label, linestyle=ls, alpha=0.9 if ls == "-" else 0.8)
 
-    for v, data in adv_data.items():
-        color = version_colors.get(v, "#e74c3c")
-        label = f"Adversarial {v}" if v != "smart" else "Adversarial (unversioned)"
-        fracs = _mediation_fraction(data["runs"])
-        rounds = list(range(1, len(fracs) + 1))
-        smoothed = np.convolve(fracs, np.ones(5) / 5, mode="same")
-        smoothed[0], smoothed[1] = fracs[0], fracs[1]
-        if len(fracs) > 1:
-            smoothed[-1], smoothed[-2] = fracs[-1], fracs[-2]
-        ax.plot(rounds, smoothed, color=color, linewidth=2.0, label=label)
-
-    if rm_runs:
-        fracs = _mediation_fraction(rm_runs)
-        rounds = list(range(1, len(fracs) + 1))
-        smoothed = np.convolve(fracs, np.ones(5) / 5, mode="same")
-        smoothed[0], smoothed[1] = fracs[0], fracs[1]
-        if len(fracs) > 1:
-            smoothed[-1], smoothed[-2] = fracs[-1], fracs[-2]
-        ax.plot(rounds, smoothed, color=defense_color, linewidth=2.5,
-                label="M+GR hardened (v6)", alpha=0.9)
-
-    for inject_round in [51, 101, 151]:
-        ax.axvline(inject_round, color="red", linestyle=":", alpha=0.4, linewidth=1)
-    ax.text(51, ax.get_ylim()[1] * 0.95, "+4 trolls", fontsize=8, color="red", alpha=0.6)
-    ax.text(101, ax.get_ylim()[1] * 0.95, "+4 trolls", fontsize=8, color="red", alpha=0.6)
-    ax.text(151, ax.get_ylim()[1] * 0.95, "+8 trolls", fontsize=8, color="red", alpha=0.6)
-
+    _add_injection_markers(ax, y_pos=1.0)
     ax.set_xlabel("Round")
     ax.set_ylabel("Fraction of trades mediated")
     ax.set_ylim(0, 1.05)
-    ax.set_title("Mediation Utilisation: Dumb Trolls vs Adversarial Versions\n(5-round rolling average, non-troll trades only)")
-    ax.legend(loc="lower left")
+    ax.set_title("Mediation Utilisation: Baseline → Attack → Defense\n(5-round rolling average)")
+    ax.legend(loc="lower left", fontsize=10)
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
 
