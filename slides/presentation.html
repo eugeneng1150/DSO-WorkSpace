@@ -1477,37 +1477,175 @@ flowchart LR
         </div>
     </div>
 
-    <!-- SLIDE: The Core Tension -->
+    <!-- SLIDE: Why v6 Broke Mediation (and Why Only at 4 Trolls) -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
         <div class="label">Key Finding</div>
-        <h2>The Adversarial Dilemma</h2>
+        <h2>Why v6 Broke Mediation &mdash; and Only at 4 Trolls</h2>
         <div class="content">
-            <p style="margin-bottom:2vh; color:var(--text-secondary);">Why Mediation survives strategic adversaries:</p>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw;">
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">v6 caused a <strong>disinformation shock</strong> in Phase 2 that collapsed trade volume &mdash; then the system recovered on its own.</p>
+            <table style="width:100%; border-collapse:collapse; font-size:clamp(0.75rem,0.95vw,0.9rem); margin-bottom:1.5vh;">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--text-primary);">
+                        <th style="text-align:left; padding:0.6vh 0.6vw; font-family:'Playfair Display',serif;">Phase</th>
+                        <th style="text-align:center; padding:0.6vh 0.6vw;">v6 Utility</th>
+                        <th style="text-align:center; padding:0.6vh 0.6vw;">Dumb Utility</th>
+                        <th style="text-align:center; padding:0.6vh 0.6vw;">v6 Trades/rnd</th>
+                        <th style="text-align:center; padding:0.6vh 0.6vw;">Dumb Trades/rnd</th>
+                        <th style="text-align:center; padding:0.6vh 0.6vw;">Gap</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.5vh 0.6vw;">P1 (0T)</td>
+                        <td style="text-align:center;">7.43</td>
+                        <td style="text-align:center;">7.17</td>
+                        <td style="text-align:center;">39.1</td>
+                        <td style="text-align:center;">33.5</td>
+                        <td style="text-align:center; color:var(--green);">+0.26</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(155,44,44,0.08);">
+                        <td style="padding:0.5vh 0.6vw; font-weight:600; color:var(--red);">P2 (4T)</td>
+                        <td style="text-align:center; font-weight:700; color:var(--red);">5.25</td>
+                        <td style="text-align:center;">7.76</td>
+                        <td style="text-align:center; color:var(--red);">27.3</td>
+                        <td style="text-align:center;">38.2</td>
+                        <td style="text-align:center; font-weight:700; color:var(--red);">&minus;2.51</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.5vh 0.6vw;">P3 (8T)</td>
+                        <td style="text-align:center;">7.04</td>
+                        <td style="text-align:center;">8.05</td>
+                        <td style="text-align:center;">39.0</td>
+                        <td style="text-align:center;">44.8</td>
+                        <td style="text-align:center; color:var(--amber);">&minus;1.01</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5vh 0.6vw;">P4 (16T)</td>
+                        <td style="text-align:center;">7.27</td>
+                        <td style="text-align:center;">8.15</td>
+                        <td style="text-align:center;">38.6</td>
+                        <td style="text-align:center;">50.1</td>
+                        <td style="text-align:center; color:var(--amber);">&minus;0.88</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="callout red">
+                <p><strong>The damage is concentrated in Phase 2</strong> &mdash; 4 fresh trolls with zero defection history send ledger-anchored wedge messages. Trade volume collapses from 45 to as low as <strong>3 trades/round</strong> (R70). By Phase 3, the first 4 trolls are already known defectors and honest agents have learned to check sender history before trusting messages. More trolls = faster detection = faster recovery.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: The Disinformation Shock in Detail -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Deep Dive</div>
+        <h2>Anatomy of the Phase 2 Crash</h2>
+        <div class="content">
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">What actually happened round by round after v6 trolls entered at R51:</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5vw;">
                 <div class="card card-red">
-                    <h3>The Attacker&rsquo;s Catch-22</h3>
+                    <h3>1. Shock (R51&ndash;57)</h3>
                     <ul>
-                        <li>Trolls must <strong>defect</strong> to cause economic damage</li>
-                        <li>But defecting creates a <strong>ledger trail</strong> that honest agents use to discount troll gossip</li>
-                        <li>Disinformation works only in the <strong>first 5 rounds</strong> before the trail builds up</li>
-                        <li>After that, honest agents <strong>systematically ignore</strong> messages from known defectors</li>
+                        <li>Fresh trolls have <strong>no defection record</strong> &mdash; messages are credible</li>
+                        <li>Wedge messages cite <em>real trades</em> with fabricated motives &mdash; honest agents <strong>cannot disprove</strong> intent claims</li>
+                        <li>Trade volume drops from 45 to 11</li>
+                        <li>R57 hits <strong>&minus;1.94 utility</strong> with 0 mediated trades</li>
+                    </ul>
+                </div>
+                <div class="card card-amber">
+                    <h3>2. Oscillation (R58&ndash;75)</h3>
+                    <ul>
+                        <li>Honest agents <strong>intermittently recover</strong> but troll messages keep disrupting</li>
+                        <li>R70: only 3 trades, &minus;2.89 utility</li>
+                        <li>Mediation drops to 17&ndash;33% utilisation</li>
+                        <li>Agents learn trolls 18&ndash;21 are defectors but <strong>still processing disinformation</strong></li>
                     </ul>
                 </div>
                 <div class="card card-green">
-                    <h3>Mediation&rsquo;s Immune System</h3>
+                    <h3>3. Recovery (R76+)</h3>
                     <ul>
-                        <li><strong>Refusing mediation is itself suspicious</strong> &mdash; honest agents flag non-mediated proposals as bait</li>
-                        <li><strong>Cancel-protection</strong> neutralizes defection when honest agents delegate</li>
-                        <li><strong>Trade volume absorption</strong> &mdash; enough honest-to-honest trades to absorb troll damage</li>
-                        <li><strong>Community warnings</strong> emerge organically &mdash; agents broadcast troll detection</li>
+                        <li>Honest agents build <strong>defection-history heuristics</strong></li>
+                        <li>Agent 0, R70: <em>&ldquo;Agent 19 and 20 &mdash; both 100% defection rate&rdquo;</em></li>
+                        <li>Trade volume recovers to 35&ndash;50/round</li>
+                        <li>Mediation utilisation back to 50&ndash;60%</li>
                     </ul>
                 </div>
             </div>
-            <div class="callout" style="margin-top:2vh;">
-                <p><strong>Round 51, Agent 6 (first troll injection):</strong> <em>&ldquo;Agent 21 offered private deal but wants no mediator &mdash; be cautious.&rdquo;</em><br/>
-                By round 136, Agent 6 has a mature heuristic: <em>&ldquo;Agent 22 has 100% defection rate and is offering without mediator &mdash; risky.&rdquo;</em><br/>
-                The mediator system creates a <strong>bright-line signal</strong>: refusing mediation is detectable.</p>
+            <div class="callout" style="margin-top:1.5vh;">
+                <p><strong>Why 8/16 trolls cause less damage:</strong> By Phase 3, honest agents are already &ldquo;vaccinated&rdquo; &mdash; they learned from Phase 2 to check sender defection history before acting on messages. New trolls get a brief credibility window, but identification is faster (more defections = stronger signal). The attack has <strong>diminishing returns</strong> with each injection wave.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: Why v6 Succeeded Where v2-v5 Failed -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Comparison</div>
+        <h2>Why v6 Succeeded Where v2&ndash;v5 Failed</h2>
+        <div class="content">
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">All versions had the same hardcoded mechanics (zero production, forced defect, trade spam). The difference was purely in communication strategy.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw;">
+                <div class="card card-amber">
+                    <h3>v2&ndash;v5: Scattered Attacks</h3>
+                    <ul>
+                        <li><strong>v2</strong>: Generic false accusations &mdash; honest agents checked their own ledger and dismissed them</li>
+                        <li><strong>v3</strong>: Spoilage-hold tips + paired contradictions &mdash; prompts grew too long and were <strong>truncated</strong> by token limits</li>
+                        <li><strong>v4&ndash;v5</strong>: Consensus formulas, keystone targeting &mdash; still relied on <strong>claims agents could verify</strong> against their own records</li>
+                        <li>Trade volume stayed at 36&ndash;50/round throughout &mdash; no collapse</li>
+                    </ul>
+                </div>
+                <div class="card card-red">
+                    <h3>v6: Three Innovations</h3>
+                    <ul>
+                        <li><strong>Hub-targeting by degree</strong> &mdash; attacks the highest-connected agents, not the wealthiest. Disrupting a hub fractures the whole network</li>
+                        <li><strong>Unfalsifiable claims</strong> &mdash; fabricates <em>intent</em> and <em>selective dealing</em> over real trades, not fake events. Agents cannot check motives against their ledger</li>
+                        <li><strong>Early-window discipline</strong> &mdash; front-loads disinformation before defection history accumulates, then switches to wedge messaging only</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout blue" style="margin-top:1.5vh;">
+                <p><strong>The key shift:</strong> v2&ndash;v5 tried to make agents <em>believe lies</em> (falsifiable). v6 makes agents <em>doubt truths</em> (unfalsifiable) &mdash; &ldquo;Agent B is giving their best ratios to someone else, not you.&rdquo; You can&rsquo;t disprove a claim about someone else&rsquo;s private intentions.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: Mediation's Natural Defenses -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Analysis</div>
+        <h2>Why Mediation Still Survived</h2>
+        <div class="content">
+            <p style="margin-bottom:2vh; color:var(--text-secondary);">Despite the Phase 2 crash, mediation recovered because of three built-in defenses:</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5vw;">
+                <div class="card card-green">
+                    <h3>Defection Creates Evidence</h3>
+                    <ul>
+                        <li>Trolls must defect to cause economic damage</li>
+                        <li>Every defection is <strong>permanently recorded</strong> in the public ledger</li>
+                        <li>Honest agents learn to <strong>cross-reference</strong> gossip sender&rsquo;s defection record</li>
+                        <li>Troll credibility <strong>decays to zero</strong> within ~10 rounds of their first trade</li>
+                    </ul>
+                </div>
+                <div class="card card-green">
+                    <h3>Cancel-Protection Held</h3>
+                    <ul>
+                        <li>Trolls <strong>never captured the mediator design</strong> &mdash; <code>action_one=cancel</code> held for all 200 rounds</li>
+                        <li>This means single-delegator trades were always safe</li>
+                        <li>The mediator voting attack (v6 Step 1) was <strong>completely ineffective</strong> &mdash; honest majority always outvoted trolls</li>
+                    </ul>
+                </div>
+                <div class="card card-green">
+                    <h3>Volume Absorption</h3>
+                    <ul>
+                        <li>After recovery, honest-to-honest trade volume returns to 35&ndash;50/round</li>
+                        <li>Enough throughput to <strong>absorb troll losses</strong> as a small fraction of total trade</li>
+                        <li>Agents who avoided trolls compensated by trading more with trusted partners</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout" style="margin-top:1.5vh;">
+                <p><strong>The vulnerability is narrow:</strong> v6 can only cause real damage during the <strong>first ~25 rounds</strong> after injection, before honest agents build defection records on the new trolls. This is a one-time shock, not a sustained attack.</p>
             </div>
         </div>
     </div>
@@ -1525,15 +1663,160 @@ flowchart LR
                 </div>
                 <div class="takeaway-card tk-red">
                     <div class="tk-label">Primary Vulnerability</div>
-                    <p><strong>Disinformation</strong>, not mediator voting, is the effective attack channel. Ledger-anchored wedge messages successfully redirected honest trade flow in early rounds before defection history accumulated.</p>
+                    <p><strong>Disinformation during the credibility window</strong> is the only effective attack. v6 trolls cause a trade-volume collapse in their first ~25 rounds by sending unfalsifiable intent-based claims grounded in real trades. Once their defection history builds up, the attack is neutralised.</p>
                 </div>
                 <div class="takeaway-card tk-blue">
-                    <div class="tk-label">Natural Defense</div>
-                    <p>Honest agents <strong>organically developed immune responses</strong>: checking gossiper defection records, broadcasting troll warnings, and treating non-mediated proposals as suspicious. No prompt engineering needed.</p>
+                    <div class="tk-label">Natural Recovery</div>
+                    <p>Honest agents <strong>organically developed defenses</strong>: cross-referencing gossiper defection records, flagging non-mediated proposals as suspicious, and concentrating trade among trusted partners. No prompt engineering needed &mdash; the ledger provides the signal.</p>
                 </div>
                 <div class="takeaway-card tk-amber">
-                    <div class="tk-label">Optimizer Finding</div>
-                    <p>After 7 iterations of automated prompt evolution, the <strong>attack plateaued</strong>. The final iteration (v7) was refused by the mutator model (Claude) on ethical grounds &mdash; an unplanned but interesting signal about the limits of adversarial prompt optimisation.</p>
+                    <div class="tk-label">Paradox of Scale</div>
+                    <p><strong>More trolls = less damage per troll.</strong> At 4 trolls, disinformation is subtle and credible. At 16 trolls, the attack signal is so strong that honest agents detect and quarantine new arrivals faster. The attack has diminishing returns.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SECTION: SAC TRUST FILTERING ============ -->
+
+    <!-- SLIDE: SAC Introduction -->
+    <div class="slide slide-statement">
+        <div class="geo-decoration" style="left:-10vw; bottom:10vh; width:30vw; height:30vw; opacity:0.2;"></div>
+        <div class="content">
+            <span class="quote-mark">&ldquo;</span>
+            <h2>Can we harden Mediation against the credibility window?</h2>
+            <div style="margin-top:3vh;">
+                <p style="color:var(--text-secondary); font-size:clamp(0.95rem,1.2vw,1.1rem);">v6&rsquo;s attack works because fresh trolls have <strong>no defection history</strong> &mdash; their messages are credible by default.<br><br>
+                We implemented <strong>SAC Trust Filtering</strong> (inspired by Sender-based Acceptance Criteria from the Byzantine fault tolerance literature) to give agents a <strong>ledger-derived trust signal</strong> that outweighs unverifiable messages.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: How SAC Works -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Defense</div>
+        <h2>SAC Trust Filtering: How It Works</h2>
+        <div class="content">
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">SAC computes a <strong>deterministic trust score</strong> per agent each round, derived entirely from observed trade behaviour &mdash; not from messages or claims.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw;">
+                <div class="card card-blue">
+                    <h3>Trust Score Formula</h3>
+                    <ul>
+                        <li><strong>Base</strong> = system reputation (successful trades / total trades)</li>
+                        <li><strong>&minus;0.25 &times; defection rate</strong> &mdash; how often this agent failed to deliver</li>
+                        <li><strong>&minus;0.15 &times; false accusation rate</strong> &mdash; warnings targeting high-rep agents</li>
+                        <li><strong>+0.10 &times; mediation rate</strong> &mdash; fraction of trades going through mediator</li>
+                        <li><strong>&minus;0.10 &times; ghost rate</strong> &mdash; proposing trades without goods to deliver</li>
+                        <li>Score clamped to [0, 1]</li>
+                    </ul>
+                </div>
+                <div class="card card-green">
+                    <h3>Agent Guidance</h3>
+                    <ul>
+                        <li>Bottom 25% of each agent&rsquo;s neighbours flagged as <strong>LOW TRUST</strong></li>
+                        <li>Low-trust counterparties &rarr; <strong>always delegate to mediator</strong></li>
+                        <li>Fewer than 3 completed trades (new agents) &rarr; <strong>delegate recommended</strong></li>
+                        <li>If a private message contradicts the trust score &rarr; <strong>weight the ledger</strong>, not the message</li>
+                        <li>Check the <strong>sender&rsquo;s trust score</strong> before acting on warnings</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout blue" style="margin-top:1.5vh;">
+                <p><strong>Why this counters v6:</strong> v6&rsquo;s wedge messages succeed because agents trust unverifiable intent claims. SAC tells agents: <em>&ldquo;Agent X has a trust score of 0.95 based on their actual trade outcomes. A warning from Agent Y (trust: 0.3) claiming X is untrustworthy should be heavily discounted.&rdquo;</em> The ledger trumps gossip.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: SAC Results -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Results</div>
+        <h2>M+SAC vs v6: Stability vs Peak Performance</h2>
+        <div class="content">
+            <table style="width:100%; border-collapse:collapse; font-size:clamp(0.75rem,0.95vw,0.9rem); margin-bottom:1.5vh;">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--text-primary);">
+                        <th style="text-align:left; padding:0.8vh 0.8vw; font-family:'Playfair Display',serif;">Condition</th>
+                        <th style="text-align:center; padding:0.8vh 0.8vw; color:var(--green);">P1 (0T)</th>
+                        <th style="text-align:center; padding:0.8vh 0.8vw;">P2 (4T)</th>
+                        <th style="text-align:center; padding:0.8vh 0.8vw;">P3 (8T)</th>
+                        <th style="text-align:center; padding:0.8vh 0.8vw; color:var(--red);">P4 (16T)</th>
+                        <th style="text-align:center; padding:0.8vh 0.8vw; font-weight:600;">Overall</th>
+                        <th style="text-align:center; padding:0.8vh 0.8vw;">Gini P2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:0.8vh 0.8vw;"><strong>M</strong> (dumb trolls)</td>
+                        <td style="text-align:center;">7.17</td>
+                        <td style="text-align:center;">7.76</td>
+                        <td style="text-align:center;">8.05</td>
+                        <td style="text-align:center;">8.15</td>
+                        <td style="text-align:center; font-weight:700;">7.78</td>
+                        <td style="text-align:center;">0.300</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line); background:rgba(155,44,44,0.06);">
+                        <td style="padding:0.8vh 0.8vw;"><strong>M</strong> (v6 adversarial)</td>
+                        <td style="text-align:center;">7.43</td>
+                        <td style="text-align:center; color:var(--red); font-weight:700;">5.25</td>
+                        <td style="text-align:center;">7.04</td>
+                        <td style="text-align:center;">7.27</td>
+                        <td style="text-align:center; font-weight:700;">6.75</td>
+                        <td style="text-align:center; color:var(--red);">0.309</td>
+                    </tr>
+                    <tr style="background:rgba(43,108,176,0.06);">
+                        <td style="padding:0.8vh 0.8vw;"><strong>M+SAC</strong> (v6 adversarial)</td>
+                        <td style="text-align:center;">6.05</td>
+                        <td style="text-align:center; color:var(--green); font-weight:700;">6.41</td>
+                        <td style="text-align:center;">6.67</td>
+                        <td style="text-align:center;">7.18</td>
+                        <td style="text-align:center; font-weight:700;">6.58</td>
+                        <td style="text-align:center; color:var(--green);">0.370</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw;">
+                <div class="card card-green">
+                    <h3>What SAC Fixes</h3>
+                    <ul>
+                        <li><strong>Eliminates the Phase 2 crash</strong> &mdash; utility 6.41 vs 5.25 (M alone)</li>
+                        <li>No negative-utility rounds in any phase</li>
+                        <li><strong>Steady upward trajectory</strong> &mdash; 6.05 &rarr; 6.41 &rarr; 6.67 &rarr; 7.18</li>
+                        <li>New agents treated cautiously by default &mdash; closes the credibility window</li>
+                    </ul>
+                </div>
+                <div class="card card-amber">
+                    <h3>The Trade-off</h3>
+                    <ul>
+                        <li><strong>Lower peak performance</strong> &mdash; overall 6.58 vs 6.75 (M alone vs v6)</li>
+                        <li>Phase 1 utility 6.05 vs 7.43 &mdash; SAC&rsquo;s caution <strong>throttles early trade volume</strong></li>
+                        <li>Higher Gini (0.370 vs 0.309) &mdash; cautious agents trade with fewer partners</li>
+                        <li>SAC trades <strong>peak performance for stability</strong> &mdash; no catastrophic crash, but a lower ceiling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE: SAC Takeaway -->
+    <div class="slide slide-content">
+        <div class="vertical-line"></div>
+        <div class="label">Takeaway</div>
+        <h2>SAC: Defense Assessment</h2>
+        <div class="content">
+            <div class="takeaway-grid">
+                <div class="takeaway-card tk-green">
+                    <div class="tk-label">Success</div>
+                    <p>SAC <strong>eliminates the disinformation shock</strong>. The Phase 2 crash that defines v6&rsquo;s attack disappears entirely &mdash; the credibility window that fresh trolls exploit is closed by default caution toward new agents.</p>
+                </div>
+                <div class="takeaway-card tk-amber">
+                    <div class="tk-label">Cost</div>
+                    <p>SAC&rsquo;s blanket caution <strong>reduces trade volume</strong> even in safe conditions (28.5 vs 39.1 trades/rnd in Phase 1). The trust filter cannot distinguish between genuinely new honest agents and new trolls &mdash; it slows everyone down.</p>
+                </div>
+                <div class="takeaway-card tk-blue full-width">
+                    <div class="tk-label">Interpretation</div>
+                    <p>SAC is a <strong>variance-reduction mechanism</strong>, not a utility-maximisation mechanism. It prevents catastrophic drops at the cost of a lower baseline. Whether this trade-off is worthwhile depends on the threat model: if adversarial injection is expected, SAC&rsquo;s stability is valuable. In a purely cooperative environment, plain Mediation is better.</p>
                 </div>
             </div>
         </div>
@@ -1548,18 +1831,18 @@ flowchart LR
             <div class="timeline">
                 <div class="timeline-item">
                     <div class="phase-label">Phase 3a</div>
-                    <h4>Blue Team Defense</h4>
-                    <p>Design and implement defenses for Mediation&rsquo;s disinformation vulnerability. Candidates: reputation-weighted message filtering, requiring ledger proof for accusations, rate-limiting private messages from low-reputation agents.</p>
+                    <h4>Tune SAC Parameters</h4>
+                    <p>The current 25% bottom-quartile filter and fixed formula weights are untuned. Explore adaptive thresholds (tighten under stress, loosen in calm periods) to reduce the Phase 1 trade-volume penalty while preserving shock resistance.</p>
                 </div>
                 <div class="timeline-item">
                     <div class="phase-label">Phase 3b</div>
-                    <h4>Defense Validation</h4>
-                    <p>Re-run adversarial v6 against hardened Mediation. Measure whether utility recovers to baseline levels. Re-run optimizer to see if new attack strategies emerge against the defense.</p>
+                    <h4>Re-run Red Team</h4>
+                    <p>Re-run the RAPOA optimizer against M+SAC to see if new attack strategies emerge that circumvent trust filtering. Does the optimizer find a way around ledger-based trust?</p>
                 </div>
                 <div class="timeline-item">
                     <div class="phase-label">Phase 4</div>
                     <h4>Write-Up</h4>
-                    <p>Consolidate findings: (1) cross-mechanism comparison, (2) adversarial deep-dive on Mediation, (3) attack/defense co-evolution. Frame as: &ldquo;facilitation-based mechanisms are resilient because they create detectable signals that honest agents exploit.&rdquo;</p>
+                    <p>Consolidate: (1) cross-mechanism comparison, (2) v6 disinformation analysis, (3) SAC defense evaluation. Frame: facilitation + ledger-derived trust is the most robust design for adversarial multi-agent markets.</p>
                 </div>
             </div>
         </div>
