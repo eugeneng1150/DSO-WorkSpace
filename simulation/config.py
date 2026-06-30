@@ -87,7 +87,7 @@ OSS20B_API_KEY = "local"
 # LLM — analyst agent (Claude)
 ANALYST_ENDPOINT = "https://info-bq-mass-cohort-api-keys-finalv1.services.ai.azure.com/anthropic/"
 ANALYST_MODEL = "claude-opus-4-8-BQ-Cohort"
-MAX_RETRIES = 6       # retries per agent call (handles rate limits with 18 agents)
+MAX_RETRIES = 8       # retries per agent call (handles rate limits with 18+ agents)
 
 # Agent reasoning style: all agents use chain-of-thought (CoopEval CoTAgent pattern)
 COT_AGENT_IDS = set(range(18))   # all agents
