@@ -13,9 +13,6 @@ if TYPE_CHECKING:
     from ..engine.agent import _BaseAgent
 
 
-SAC_BOTTOM_F = 0.25  # filter bottom 25% of neighbours by trust
-
-
 def compute_trust_scores(market: "Market") -> dict[int, float]:
     """Deterministic trust score for every agent based on observed behaviour.
 
@@ -24,10 +21,10 @@ def compute_trust_scores(market: "Market") -> dict[int, float]:
       defection   = fraction of trades where this agent defected
       false_accus = fraction of this agent's warnings targeting high-rep agents (>0.7)
       mediation   = fraction of this agent's completed trades that were mediated
-      ghost       = fraction of trades where this agent couldn't deliver (auto-defect as proposer)
+      rejection   = fraction of this agent's proposals that were rejected
 
     Formula:
-      trust = base - 0.25*defection - 0.15*false_accusation + 0.10*mediation - 0.10*ghost
+      trust = base - 0.25*defection - 0.15*false_accusation + 0.10*mediation - 0.30*rejection
       clamped to [0, 1]
     """
     scores: dict[int, float] = {}
@@ -63,21 +60,20 @@ def compute_trust_scores(market: "Market") -> dict[int, float]:
         n_mediated = sum(1 for t in completed if t.status == "mediated")
         mediation_rate = n_mediated / len(completed) if completed else 0.0
 
-        # Ghost rate: proposed trades where this agent couldn't deliver
-        proposed = [
-            t for t in market.trade_history
-            if t.proposer_id == aid and t.status == "defected" and t.defected_by == aid
+        # Rejection rate: fraction of proposals by this agent that were rejected
+        all_proposals = [
+            t for t in market.trade_history if t.proposer_id == aid
         ]
-        n_proposed_total = sum(1 for t in market.trade_history if t.proposer_id == aid
-                               and t.status in ("completed", "defected", "mediated"))
-        ghost_rate = len(proposed) / n_proposed_total if n_proposed_total > 0 else 0.0
+        n_proposals = len(all_proposals)
+        n_rejected = sum(1 for t in all_proposals if t.status == "rejected")
+        rejection_rate = n_rejected / n_proposals if n_proposals > 0 else 0.0
 
         trust = (
             base
             - 0.25 * defection_rate
             - 0.15 * false_accus_rate
             + 0.10 * mediation_rate
-            - 0.10 * ghost_rate
+            - 0.30 * rejection_rate
         )
         scores[aid] = max(0.0, min(1.0, trust))
 
@@ -88,22 +84,27 @@ def identify_low_trust(
     market: "Market",
     trust_scores: dict[int, float],
     agent_id: int,
-    bottom_f: float = SAC_BOTTOM_F,
 ) -> set[int]:
     """Return the set of low-trust neighbours for a given agent.
 
-    Ranks neighbours by trust score and flags the bottom F fraction.
-    Agents with zero completed trades are also flagged as 'unknown'.
+    Flags all neighbours whose trust score falls below
+    median - 1*std of the full population's scores.
     """
+    import numpy as np
+
     neighbours = market.network.get(agent_id, set())
     if not neighbours:
         return set()
 
-    scored = [(nid, trust_scores.get(nid, 1.0)) for nid in neighbours]
-    scored.sort(key=lambda x: x[1])
+    all_scores = list(trust_scores.values())
+    if not all_scores:
+        return set()
 
-    n_filter = max(1, int(len(scored) * bottom_f))
-    low_trust = {nid for nid, _ in scored[:n_filter]}
+    median = float(np.median(all_scores))
+    std = float(np.std(all_scores))
+    threshold = median - std
+
+    low_trust = {nid for nid in neighbours if trust_scores.get(nid, 1.0) < threshold}
     return low_trust
 
 

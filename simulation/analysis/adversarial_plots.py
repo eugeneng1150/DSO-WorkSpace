@@ -83,30 +83,33 @@ def _add_injection_markers(ax, y_pos: float | None = None):
     ax.text(152, y_pos, "+8T", fontsize=8, color="red", alpha=0.6)
 
 
-# --- Colors for the 3-line story ---
+# --- Colors for the 4-line story ---
 CLR_DUMB = "#888888"
 CLR_V6 = "#c0392b"
 CLR_GR = "#2980b9"
+CLR_SAC = "#27ae60"
 
 
 def plot_adversarial_comparison(save: bool = True) -> None:
-    """Generate comparison plots: dumb trolls vs v6 vs M+GR."""
+    """Generate comparison plots: dumb trolls vs v6 vs M+GR vs M_SAC."""
     out_dir = _get_out_dir()
 
-    # Load the three datasets
+    # Load the four datasets
     dumb_runs = _load_runs("M_tprog_run_*.json")
     v6_runs = _load_runs("M_tprog_adv_v6_run_*.json")
     gr_runs = _load_runs("RM_tprog_adv_v6_run_*.json")
+    sac_runs = _load_runs("M_SAC_tprog_adv_v6_run_*.json")
 
     dumb_pr = _utility_trajectory(dumb_runs)
     v6_pr = _utility_trajectory(v6_runs)
     gr_pr = _utility_trajectory(gr_runs)
+    sac_pr = _utility_trajectory(sac_runs)
 
-    if not dumb_pr and not v6_pr:
+    if not dumb_pr and not v6_pr and not sac_pr:
         print("No adversarial run data found.")
         return
 
-    print(f"Loaded: dumb={len(dumb_runs)} runs, v6={len(v6_runs)} runs, M+GR={len(gr_runs)} runs")
+    print(f"Loaded: dumb={len(dumb_runs)} runs, v6={len(v6_runs)} runs, M+GR={len(gr_runs)} runs, M_SAC={len(sac_runs)} runs")
 
     # ============================================================
     # Plot 1: Per-round utility (smoothed) — 3 lines
@@ -127,6 +130,11 @@ def plot_adversarial_comparison(save: bool = True) -> None:
         rounds = list(range(1, len(gr_pr) + 1))
         ax.plot(rounds, _smooth(gr_pr), color=CLR_GR, linewidth=2.5,
                 label="M+GR + v6 adversarial (defense)")
+
+    if sac_pr:
+        rounds = list(range(1, len(sac_pr) + 1))
+        ax.plot(rounds, _smooth(sac_pr), color=CLR_SAC, linewidth=2.5,
+                label="M+SAC + v6 adversarial")
 
     ax.axhline(0, color="black", linestyle="-", linewidth=0.5, alpha=0.4)
     _add_injection_markers(ax)
@@ -153,6 +161,7 @@ def plot_adversarial_comparison(save: bool = True) -> None:
         ("M + dumb trolls (baseline)", dumb_pr, CLR_DUMB, "--"),
         ("M + v6 adversarial (best attack)", v6_pr, CLR_V6, "-"),
         ("M+GR + v6 adversarial (defense)", gr_pr, CLR_GR, "-"),
+        ("M+SAC + v6 adversarial", sac_pr, CLR_SAC, "-"),
     ]:
         if not pr:
             continue
@@ -186,7 +195,7 @@ def plot_adversarial_comparison(save: bool = True) -> None:
     table_data = []
     headers = ["Condition", "Round", "Winner Designer", "action_both", "action_one", "Trolls/Total"]
 
-    for tag, runs in [("M+v6", v6_runs), ("M+GR+v6", gr_runs)]:
+    for tag, runs in [("M+v6", v6_runs), ("M+GR+v6", gr_runs), ("M+SAC+v6", sac_runs)]:
         for run in runs:
             revotes = run.get("session_log", {}).get("revotes", [])
             for rv in revotes:
@@ -250,6 +259,7 @@ def plot_adversarial_comparison(save: bool = True) -> None:
         ("M + dumb trolls", dumb_runs, CLR_DUMB, "--"),
         ("M + v6 adversarial", v6_runs, CLR_V6, "-"),
         ("M+GR + v6 adversarial", gr_runs, CLR_GR, "-"),
+        ("M+SAC + v6 adversarial", sac_runs, CLR_SAC, "-"),
     ]:
         fracs = _mediation_fraction(runs)
         if not fracs:
