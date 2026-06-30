@@ -1728,12 +1728,13 @@ flowchart LR
         </div>
     </div>
 
-    <!-- SLIDE: SAC Results -->
+    <!-- SLIDE: M+GR Results -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
-        <div class="label">Results</div>
-        <h2>M+SAC vs v6: Stability vs Peak Performance</h2>
+        <div class="label">Comparison: M+GR</div>
+        <h2>M+GR vs v6: Adding Global Reputation to Mediation</h2>
         <div class="content">
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">Before SAC results are available, we tested <strong>M+GR</strong> &mdash; pairing Mediation with Global Reputation scores &mdash; as a simpler trust signal against the v6 adversarial attack.</p>
             <table style="width:100%; border-collapse:collapse; font-size:clamp(0.75rem,0.95vw,0.9rem); margin-bottom:1.5vh;">
                 <thead>
                     <tr style="border-bottom:2px solid var(--text-primary);">
@@ -1766,7 +1767,7 @@ flowchart LR
                         <td style="text-align:center; color:var(--red);">0.309</td>
                     </tr>
                     <tr style="background:rgba(43,108,176,0.06);">
-                        <td style="padding:0.8vh 0.8vw;"><strong>M+SAC</strong> (v6 adversarial)</td>
+                        <td style="padding:0.8vh 0.8vw;"><strong>M+GR</strong> (v6 adversarial)</td>
                         <td style="text-align:center;">6.05</td>
                         <td style="text-align:center; color:var(--green); font-weight:700;">6.41</td>
                         <td style="text-align:center;">6.67</td>
@@ -1778,21 +1779,21 @@ flowchart LR
             </table>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:2vw;">
                 <div class="card card-green">
-                    <h3>What SAC Fixes</h3>
+                    <h3>What M+GR Fixes</h3>
                     <ul>
-                        <li><strong>Eliminates the Phase 2 crash</strong> &mdash; utility 6.41 vs 5.25 (M alone)</li>
+                        <li><strong>Dampens the Phase 2 crash</strong> &mdash; utility 6.41 vs 5.25 (M alone)</li>
                         <li>No negative-utility rounds in any phase</li>
                         <li><strong>Steady upward trajectory</strong> &mdash; 6.05 &rarr; 6.41 &rarr; 6.67 &rarr; 7.18</li>
-                        <li>New agents treated cautiously by default &mdash; closes the credibility window</li>
+                        <li>Global reputation provides an immediate signal on new arrivals</li>
                     </ul>
                 </div>
                 <div class="card card-amber">
                     <h3>The Trade-off</h3>
                     <ul>
                         <li><strong>Lower peak performance</strong> &mdash; overall 6.58 vs 6.75 (M alone vs v6)</li>
-                        <li>Phase 1 utility 6.05 vs 7.43 &mdash; SAC&rsquo;s caution <strong>throttles early trade volume</strong></li>
-                        <li>Higher Gini (0.370 vs 0.309) &mdash; cautious agents trade with fewer partners</li>
-                        <li>SAC trades <strong>peak performance for stability</strong> &mdash; no catastrophic crash, but a lower ceiling</li>
+                        <li>Phase 1 utility 6.05 vs 7.43 &mdash; reputation caution <strong>throttles early trade volume</strong></li>
+                        <li>Higher Gini (0.370 vs 0.309) &mdash; agents concentrate trades on high-rep partners</li>
+                        <li>Global reputation is still a <strong>sender-level score</strong> &mdash; cannot evaluate a specific message</li>
                     </ul>
                 </div>
             </div>
@@ -1802,21 +1803,22 @@ flowchart LR
     <!-- SLIDE: SAC Takeaway -->
     <div class="slide slide-content">
         <div class="vertical-line"></div>
-        <div class="label">Takeaway</div>
-        <h2>SAC: Defense Assessment</h2>
+        <div class="label">Next: SAC</div>
+        <h2>SAC: What We Expect to Learn</h2>
         <div class="content">
+            <p style="margin-bottom:1.5vh; color:var(--text-secondary);">M+GR showed that adding a trust signal dampens the Phase 2 disinformation crash. SAC goes further: instead of a single global score attached to the sender, each receiver independently evaluates each message against its own trade history.</p>
             <div class="takeaway-grid">
-                <div class="takeaway-card tk-green">
-                    <div class="tk-label">Success</div>
-                    <p>SAC <strong>eliminates the disinformation shock</strong>. The Phase 2 crash that defines v6&rsquo;s attack disappears entirely &mdash; the credibility window that fresh trolls exploit is closed by default caution toward new agents.</p>
+                <div class="takeaway-card tk-blue">
+                    <div class="tk-label">Key Difference from M+GR</div>
+                    <p>GR asks <em>&ldquo;how trustworthy has this sender been?&rdquo;</em> SAC asks <em>&ldquo;does this specific message look credible given what I know?&rdquo;</em> Two receivers can score the same message differently &mdash; there is no global table a Byzantine agent can game.</p>
                 </div>
                 <div class="takeaway-card tk-amber">
-                    <div class="tk-label">Cost</div>
-                    <p>SAC&rsquo;s blanket caution <strong>reduces trade volume</strong> even in safe conditions (28.5 vs 39.1 trades/rnd in Phase 1). The trust filter cannot distinguish between genuinely new honest agents and new trolls &mdash; it slows everyone down.</p>
+                    <div class="tk-label">Open Question</div>
+                    <p>Does per-message, receiver-specific scoring outperform the sender-level GR score? We expect better resistance to the credibility window, but the cost to early trade volume is unknown until the simulation completes.</p>
                 </div>
-                <div class="takeaway-card tk-blue full-width">
-                    <div class="tk-label">Interpretation</div>
-                    <p>SAC is a <strong>variance-reduction mechanism</strong>, not a utility-maximisation mechanism. It prevents catastrophic drops at the cost of a lower baseline. Whether this trade-off is worthwhile depends on the threat model: if adversarial injection is expected, SAC&rsquo;s stability is valuable. In a purely cooperative environment, plain Mediation is better.</p>
+                <div class="takeaway-card tk-green full-width">
+                    <div class="tk-label">Status</div>
+                    <p><strong>SAC simulation currently running.</strong> Results pending. The design is implemented &mdash; the trust score formula, low-trust flagging, and ledger-vs-gossip weighting are all live. Outcomes will be compared against M, M+GR (baseline above), and the v6 adversarial attack.</p>
                 </div>
             </div>
         </div>
