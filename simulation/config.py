@@ -128,6 +128,7 @@ CONDITION_MECHANISMS = {
     "RCMG": ["reputation", "contracting", "mediation", "governance"],
     "M_SAC": ["mediation", "sac"],
     "M_SAC2": ["mediation", "sac"],
+    "M_SAC3": ["mediation", "sac"],
     "N":    ["network_rewiring"],  # removed from CONDITIONS; kept here for loading old N_run_*.json logs
     "NR":   ["network_rewiring", "local_reputation"],
     "S":    ["sanction"],

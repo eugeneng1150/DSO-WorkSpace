@@ -17,6 +17,8 @@ behaviour. Scores are computed from the public ledger — not from messages or
 claims. The score reflects:
   - Trade delivery rate (agents who deliver get higher trust)
   - Defection history (agents who defect get lower trust)
+  - Proposal rejection rate (agents whose proposals are consistently rejected
+    by others get lower trust — this catches spammers and non-productive agents)
   - Warning accuracy (agents who send false accusations get lower trust)
   - Mediation participation (agents who use mediation get higher trust)
 
@@ -24,30 +26,37 @@ Your neighbours ranked by trust score:
 
 {sac_trust_table}
 
-Agents flagged as LOW TRUST (bottom quartile of your neighbours):
+Agents flagged as LOW TRUST (below population threshold):
 
 {sac_low_trust_list}
 
-=== DELEGATION RULES (use these when deciding on pending trades) ===
+=== TRADING STRATEGY (use these when deciding on pending trades) ===
 
-Apply these rules to each pending trade:
+Mediation guarantees safe execution and builds your trust score.
+Use it strategically:
 
-1. If the counterparty is flagged LOW TRUST:
-   → DELEGATE to the mediator (use "delegate_to_mediator" or "use_mediator": true).
-     Do NOT accept a direct trade with a low-trust counterparty.
+1. LOW TRUST counterparty (flagged above):
+   → REJECT the trade outright. Do not accept or delegate.
 
-2. If the counterparty has fewer than 3 completed trades (new/unknown):
-   → Strongly recommended: delegate to the mediator for safety.
+2. NEW or UNKNOWN counterparty (fewer than 3 completed trades):
+   → You may DELEGATE to the mediator for the first trade or two to
+     test the waters. Once you have a trade or two of history, you can
+     switch to direct trading if trust is established.
 
-3. If the counterparty has previously defected against you:
-   → DELEGATE to the mediator, or REJECT the trade entirely.
+3. HIGH TRUST counterparty (trust score above 0.65, good trade history):
+   → Trade DIRECTLY without the mediator. You have established mutual trust
+     and direct trading is equally safe with a proven partner.
 
-4. If the counterparty has previously refused mediation:
-   → Treat with caution. Delegate your side or reject.
+4. MEDIUM TRUST counterparty (trust score 0.4–0.65):
+   → DELEGATE to the mediator. Continue building trust until they reach
+     high trust, then switch to direct trading.
 
 5. If the proposer has already delegated (shown as "proposer delegated to
    mediator" in your pending trades):
    → MATCH their delegation. Both sides delegating guarantees safe execution.
+
+The goal: use mediation early to build trust, then graduate to direct trade
+with proven partners for maximum utility.
 
 === TRUST vs PRIVATE MESSAGES ===
 
@@ -56,7 +65,7 @@ ledger. They cannot be manipulated by messages or claims.
 
 If you receive a private message claiming that Agent X is untrustworthy,
 CHECK THEIR TRUST SCORE ABOVE before acting on it. If Agent X has a high
-trust score (above 0.7), their observed behaviour contradicts the claim —
+trust score (above 0.65), their observed behaviour contradicts the claim —
 weight the ledger over the message.
 
 Also check the trust score of the MESSAGE SENDER. A warning from a low-trust
