@@ -1,0 +1,48 @@
+% arxiv.sty - Style file for arXiv preprints
+% Based on NIPS/NeurIPS style with modifications for arXiv
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{arxiv}[2024/01/01 arXiv preprint style]
+
+% Page layout
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+
+% Fonts
+\usepackage{times}
+
+% Line spacing
+\setstretch{1.1}
+
+% Section formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% Abstract formatting
+\renewenvironment{abstract}%
+{\centerline{\large\bfseries Abstract}\vspace{0.5ex}\begin{quote}\small}%
+{\par\end{quote}\vspace{1ex}}
+
+% Header with arXiv-style note
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small\thepage}
+\lhead{\small\textit{Preprint}}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\rhead{\small\thepage}\lhead{\small\textit{Preprint}}\renewcommand{\headrulewidth}{0pt}}
+
+% Paragraph spacing
+\setlength{\parskip}{0.5ex plus 0.2ex minus 0.1ex}
+\setlength{\parindent}{1.5em}
+
+% Compact lists
+\setlist{nosep, leftmargin=*}
+
+% Float placement
+\renewcommand{\floatpagefraction}{0.8}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.1}

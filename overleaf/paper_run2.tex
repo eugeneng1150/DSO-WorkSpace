@@ -1,7 +1,9 @@
-\documentclass[12pt, a4paper]{article}
+\documentclass{article}
 
-% --- Packages ---
-\usepackage[margin=1in]{geometry}
+% --- arxiv style packages ---
+\usepackage{arxiv}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -10,26 +12,24 @@
 \usepackage{subcaption}
 \usepackage{float}
 \usepackage{enumitem}
-\usepackage{setspace}
 \usepackage{natbib}
 \usepackage{xcolor}
-\usepackage{listings}
 \usepackage{microtype}
 \usepackage{multirow}
-
-\onehalfspacing
 
 \graphicspath{{plots/}}
 
 % --- Title block ---
-\title{\textbf{Formal Mechanisms for Market Stability in Self-Interested Agent Societies:\\
-A Marketplace Simulation Study}}
+\title{Formal Mechanisms for Market Stability in Self-Interested Agent Societies:\\
+A Marketplace Simulation Study}
 
 \author{
-  Author Name\thanks{Affiliation. \texttt{email@institution.edu}}
+  Author Name \\
+  Affiliation \\
+  \texttt{email@institution.edu}
 }
 
-\date{\today}
+\date{}
 
 % ============================================================
 \begin{document}
@@ -40,9 +40,6 @@ A Marketplace Simulation Study}}
 \begin{abstract}
 Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms --- layered on top of unrestricted communication --- are sufficient for a society of such agents to maintain market stability, and how resilient those mechanisms are to adversarial attack. We instantiate the research question as a multi-agent marketplace simulation where 18 LLM agents (DeepSeek-V3) with complementary production specialties must trade within a constrained social network to obtain utility. We conduct three experimental phases: (1)~a mechanism comparison across eight conditions under progressive troll injection over 200 rounds, identifying Mediation as the top-performing mechanism; (2)~adversarial red-teaming of Mediation using iteratively prompt-optimised LLM-driven trolls, finding that the best attack (v6) reduces honest-agent utility by 13.3\% but cannot collapse the market --- mediation enables recovery even under sustained adversarial pressure; and (3)~a smaller-model stress test (GPT-5.4-nano) to evaluate whether mechanism effectiveness transfers across model capabilities. We define \textit{adversarial robustness} as a mechanism's ability to sustain positive honest-agent utility under optimised attack, and find that Mediation is robust: it can be bent but not broken.
 \end{abstract}
-
-\tableofcontents
-\newpage
 
 % ============================================================
 \section{Introduction}
