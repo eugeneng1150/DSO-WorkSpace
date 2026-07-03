@@ -339,9 +339,15 @@ Agents may propose binding bilateral contracts via the private channel specifyin
 
 \subsection{Mediation (M)}
 
-At session start, agents propose and vote on a mediator design --- a mapping from the number of delegating parties to a mediator action (following \citet{coopeval}). A design specifies what the mediator does when both parties delegate and what it does when only one party delegates. The available mediator actions are \texttt{execute\_fair}, \texttt{execute\_split}, and \texttt{cancel}; for example, the common safe design executes the trade when both parties delegate but cancels when only one party delegates. The winning design governs all mediated trades for the session.
+Mediation adds a neutral engine-controlled party that can execute trades on behalf of agents who choose to delegate. It operates in three steps:
 
-Per round, agents then make a separate delegation choice for each trade. A proposer can set \texttt{use\_mediator: true} when proposing a trade, while an acceptor can choose \texttt{delegate\_to\_mediator} instead of ordinary acceptance. If both parties delegate, the mediator applies the two-delegator rule and neither party can defect. If only one party delegates, the mediator applies the one-delegator rule; depending on the elected design, the trade may be cancelled or executed with the non-delegating party still able to exploit the interaction. If neither party delegates, the trade proceeds through normal direct execution. Consistent with the CoopEval framework, mediation carries no utility fee --- the only ``cost'' of delegation is forgoing the option to defect, which is a cost only for agents who intend to defect. This tests whether guaranteed execution can prevent defection more effectively than punishing it after the fact.
+\begin{itemize}
+  \item \textbf{Design.} At session start, agents propose mediator designs following \citet{coopeval}. Each design specifies what the mediator should do when both parties delegate and when only one party delegates.
+  \item \textbf{Vote.} Agents vote on the proposed designs. The winning design governs all mediated trades for the session. Available mediator actions are \texttt{execute\_fair}, \texttt{execute\_split}, and \texttt{cancel}; for example, the common safe design executes when both parties delegate but cancels when only one party delegates.
+  \item \textbf{Delegate.} During each round, agents choose separately for each trade whether to use the mediator. A proposer can set \texttt{use\_mediator: true}; an acceptor can choose \texttt{delegate\_to\_mediator} instead of ordinary acceptance.
+\end{itemize}
+
+If both parties delegate, the mediator applies the two-delegator rule and neither party can defect. If only one party delegates, the mediator applies the one-delegator rule; depending on the elected design, the trade may be cancelled or executed with the non-delegating party still able to exploit the interaction. If neither party delegates, the trade proceeds through normal direct execution. Consistent with the CoopEval framework, mediation carries no utility fee --- the only ``cost'' of delegation is forgoing the option to defect, which is a cost only for agents who intend to defect. This tests whether guaranteed execution can prevent defection more effectively than punishing it after the fact.
 
 \subsection{Governance (G)}
 
@@ -362,7 +368,7 @@ Inspired by \citet{repunet}, agents can restructure their trade network each rou
 
 \subsection{Costly Sanctions (S)}
 
-Agents may anonymously spend their own utility to punish any other agent at a 1:3 cost-to-damage ratio: spending 1 utility inflicts 3 utility damage on the target. The sanction is anonymous to the target but publicly announced to all agents as a deterrence signal. This tests whether self-interested agents will voluntarily incur the cost of punishment, or free-ride on others' enforcement efforts \citep{piedrahita2025}.
+Agents may anonymously spend their own utility to punish any other agent at a 1:3 cost-to-damage ratio: spending 1 utility inflicts 3 utility damage on the target. The sanction is anonymous to the target but publicly announced to all agents as a deterrence signal. This tests whether an environment where agents can punish defectors induces greater cooperation and therefore higher utility, despite the direct cost of sanctioning \citep{piedrahita2025}.
 
 \subsection{Judicial (J)}
 
