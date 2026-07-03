@@ -210,7 +210,7 @@ The simulation runs with $N = 18$ agents (6 per good). Agents are \textit{explic
 
 \subsection{Barter Economy}
 
-Agents operate in a pure barter economy with no currency. All exchange is goods-for-goods. Defection --- taking the offered goods without delivering one's own side of the barter --- directly transfers goods from the victim to the defector, making it a strategy of resource accumulation at the victim's expense.
+Agents operate in a barter economy. All exchange is goods-for-goods. Defection --- taking the offered goods without delivering one's own side of the barter --- directly transfers goods from the victim to the defector, making it a strategy of resource accumulation at the victim's expense.
 
 \subsection{Inventory Spoilage}
 
@@ -224,7 +224,68 @@ Spoilage creates temporal urgency: agents cannot hoard goods across rounds witho
 
 \subsection{Social Network}
 
-Agents are embedded in a trade network that constrains who can interact directly. Each agent is connected to 7--9 neighbours, with at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods. The network is randomised per run but static within a run (unless the Network Rewiring mechanism is active).
+Agents are embedded in a trade network that constrains who can interact directly. Each agent is connected to 7--9 neighbours, with at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods. The network is randomised per run but static within a run (unless the Network Rewiring mechanism is active). Figure~\ref{fig:social_network} illustrates the local-neighbour constraint.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    netnodeA/.style={draw, circle, fill=gray!25, minimum size=0.58cm, font=\scriptsize\bfseries},
+    netnodeB/.style={draw, circle, fill=green!20, minimum size=0.58cm, font=\scriptsize\bfseries},
+    netnodeC/.style={draw, circle, fill=blue!15, minimum size=0.58cm, font=\scriptsize\bfseries},
+    edge/.style={gray!55, thick},
+    highlight/.style={black, very thick}
+]
+
+\node[netnodeA] (a1) at (-2.8, 1.6) {A};
+\node[netnodeA] (a2) at (-1.3, 1.8) {A};
+\node[netnodeA] (a3) at (0.2, 1.45) {A};
+\node[netnodeA] (a4) at (1.7, 1.75) {A};
+
+\node[netnodeB] (b1) at (-3.2, -0.2) {B};
+\node[netnodeB] (b2) at (-1.6, -0.65) {B};
+\node[netnodeB] (b3) at (0.0, -0.25) {B};
+\node[netnodeB] (b4) at (1.5, -0.75) {B};
+
+\node[netnodeC] (c1) at (-2.5, -2.0) {C};
+\node[netnodeC] (c2) at (-0.8, -2.15) {C};
+\node[netnodeC] (c3) at (0.9, -1.85) {C};
+\node[netnodeC] (c4) at (2.5, -2.1) {C};
+
+\draw[edge] (a1) -- (b1);
+\draw[edge] (a1) -- (b2);
+\draw[edge] (a1) -- (c1);
+\draw[edge] (a2) -- (b1);
+\draw[edge] (a2) -- (b2);
+\draw[edge] (a2) -- (c2);
+\draw[edge] (a3) -- (b2);
+\draw[edge] (a3) -- (b3);
+\draw[edge] (a3) -- (c2);
+\draw[edge] (a3) -- (c3);
+\draw[edge] (a4) -- (b3);
+\draw[edge] (a4) -- (b4);
+\draw[edge] (a4) -- (c3);
+\draw[edge] (a4) -- (c4);
+\draw[edge] (b1) -- (c1);
+\draw[edge] (b2) -- (c1);
+\draw[edge] (b2) -- (c2);
+\draw[edge] (b3) -- (c2);
+\draw[edge] (b3) -- (c3);
+\draw[edge] (b4) -- (c3);
+\draw[edge] (b4) -- (c4);
+
+\draw[highlight] (a3) -- (b2);
+\draw[highlight] (a3) -- (b3);
+\draw[highlight] (a3) -- (c2);
+\draw[highlight] (a3) -- (c3);
+
+\node[align=left, font=\scriptsize] at (4.1, 0.5)
+  {Example focal agent\\has access to both\\needed good types};
+\draw[-{Stealth[length=4pt]}, gray!70] (3.25, 0.35) -- (a3);
+
+\end{tikzpicture}
+\caption{Trade-network constraint. Agents can only communicate and trade with neighbours, but each agent is initialised with multiple neighbours from both non-specialty good types. The highlighted example shows a Good A agent connected to both Good B and Good C producers, preserving access to utility-generating trades while keeping interaction local.}
+\label{fig:social_network}
+\end{figure}
 
 \subsection{Round Structure}
 
@@ -259,23 +320,28 @@ Each mechanism is a layer added on top of the communication baseline. We test ea
 
 \subsection{Baseline: Communication Only (B)}
 
-No formal structure beyond communication. Defection is costless except through informal reputation that spreads via voluntary public broadcasts.
+No formal structure beyond communication. Defection is costless except through informal reputation that spreads via voluntary public broadcasts. This tests whether unrestricted communication alone is enough for self-interested agents to sustain cooperation.
 
 \subsection{Global Reputation (GR)}
 
-The simulation engine tracks a system reputation score for every agent using exponential decay weighting:
+The simulation engine tracks a system reputation score for every agent. Intuitively, reputation is a running trust score: recent successful trades push it upward, while recent failed trades push it downward. We implement this as:
 \[
-\text{rep}(a) = (1 - \delta) \cdot \text{rep}_{\text{prev}}(a) + \delta \cdot \mathbb{1}[\text{success}], \quad \delta = 0.1
+\begin{aligned}
+\text{new reputation} ={}& 0.9 \times \text{old reputation} \\
+&+ 0.1 \times \text{latest trade outcome}
+\end{aligned}
 \]
-This score (initialised at 1.0) is visible to all agents alongside raw trade counts. Agents also observe socially-propagated reputation via the public channel --- unverified subjective assessments broadcast by peers.
+where the latest trade outcome is 1 for a successful trade and 0 for a defection. This score (initialised at 1.0) is visible to all agents alongside raw trade counts. Agents also observe socially-propagated reputation via the public channel --- unverified subjective assessments broadcast by peers. This tests whether shared reliability information lets agents avoid defectors without adding direct enforcement.
 
 \subsection{Contracting (C)}
 
-Agents may propose binding bilateral contracts via the private channel specifying delivery terms and a breach penalty $P = 6$ utility (twice the value of one traded unit). If both parties sign, the engine enforces delivery. A breaching agent pays $P$ to the victim. Contracting proceeds through four stages per round: proposal, review/sign, execution, and breach handling.
+Agents may propose binding bilateral contracts via the private channel specifying delivery terms and a breach penalty $P = 6$ utility (twice the value of one traded unit). If both parties sign, the engine enforces delivery. A breaching agent pays $P$ to the victim. Contracting proceeds through four stages per round: proposal, review/sign, execution, and breach handling. This tests whether pre-committed penalties can make honest trade individually rational before defection occurs.
 
 \subsection{Mediation (M)}
 
-At session start, agents propose and vote on a mediator design --- a mapping from the number of delegating parties to a mediator action (following \citet{coopeval}). The winning design governs all mediated trades for the session. Per round, agents may delegate specific trades to the mediator. If both parties delegate the same trade, the mediator executes a simultaneous fair exchange that neither party can defect on. Consistent with the CoopEval framework, mediation carries no utility fee --- the only ``cost'' of delegation is forgoing the option to defect, which is a cost only for agents who intend to defect.
+At session start, agents propose and vote on a mediator design --- a mapping from the number of delegating parties to a mediator action (following \citet{coopeval}). A design specifies what the mediator does when both parties delegate and what it does when only one party delegates. The available mediator actions are \texttt{execute\_fair}, \texttt{execute\_split}, and \texttt{cancel}; for example, the common safe design executes the trade when both parties delegate but cancels when only one party delegates. The winning design governs all mediated trades for the session.
+
+Per round, agents then make a separate delegation choice for each trade. A proposer can set \texttt{use\_mediator: true} when proposing a trade, while an acceptor can choose \texttt{delegate\_to\_mediator} instead of ordinary acceptance. If both parties delegate, the mediator applies the two-delegator rule and neither party can defect. If only one party delegates, the mediator applies the one-delegator rule; depending on the elected design, the trade may be cancelled or executed with the non-delegating party still able to exploit the interaction. If neither party delegates, the trade proceeds through normal direct execution. Consistent with the CoopEval framework, mediation carries no utility fee --- the only ``cost'' of delegation is forgoing the option to defect, which is a cost only for agents who intend to defect. This tests whether guaranteed execution can prevent defection more effectively than punishing it after the fact.
 
 \subsection{Governance (G)}
 
@@ -288,7 +354,7 @@ An external, deterministic regulator monitors all market activity. Agents cannot
   \item \textbf{D4} --- Defecting on the same partner 3+ times in 5 rounds (predatory targeting)
 \end{itemize}
 
-Any signal firing triggers a Controller state machine that escalates each agent through: Active $\to$ Warning $\to$ Fined (tiers 1--3, penalties of $-2$/$-4$/$-6$ utility) $\to$ Suspended (3 rounds, no production or trading). De-escalation occurs after 2 consecutive clean rounds. This is adapted from \citet{institutional2025}.
+Any signal firing triggers a Controller state machine that escalates each agent through: Active $\to$ Warning $\to$ Fined (tiers 1--3, penalties of $-2$/$-4$/$-6$ utility) $\to$ Suspended (3 rounds, no production or trading). De-escalation occurs after 2 consecutive clean rounds. This is adapted from \citet{institutional2025}. This tests whether centralised monitoring and automatic penalties can stabilise the market without requiring agents to understand or voluntarily use the mechanism.
 
 \subsection{Network Rewiring + Reputation (NR)}
 
@@ -301,6 +367,8 @@ Agents may anonymously spend their own utility to punish any other agent at a 1:
 \subsection{Judicial (J)}
 
 Agents may file formal complaints against defectors, paying a filing fee of 1 utility. An adjudicator evaluates the complaint against the public ledger. If the defendant is found guilty, they pay a penalty of 5 utility and the victim receives compensation of 3 utility. False or invalid complaints incur an additional fine of 2 utility on the filer.
+
+This tests whether formal dispute resolution can deter defection while avoiding the second-order free-rider problem of voluntary punishment.
 
 \begin{table}[H]
 \centering
