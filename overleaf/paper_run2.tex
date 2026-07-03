@@ -16,6 +16,8 @@
 \usepackage{xcolor}
 \usepackage{microtype}
 \usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
 
 \graphicspath{{plots/}}
 
@@ -38,7 +40,7 @@ A Marketplace Simulation Study}
 \maketitle
 
 \begin{abstract}
-Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative surplus to collapse. This paper investigates what formal mechanisms --- layered on top of unrestricted communication --- are sufficient for a society of such agents to maintain market stability, and how resilient those mechanisms are to adversarial attack. We instantiate the research question as a multi-agent marketplace simulation where 18 LLM agents (DeepSeek-V3) with complementary production specialties must trade within a constrained social network to obtain utility. We conduct three experimental phases: (1)~a mechanism comparison across eight conditions under progressive troll injection over 200 rounds, identifying Mediation as the top-performing mechanism; (2)~adversarial red-teaming of Mediation using iteratively prompt-optimised LLM-driven trolls, finding that the best attack (v6) reduces honest-agent utility by 13.3\% but cannot collapse the market --- mediation enables recovery even under sustained adversarial pressure; and (3)~a smaller-model stress test (GPT-5.4-nano) to evaluate whether mechanism effectiveness transfers across model capabilities. We define \textit{adversarial robustness} as a mechanism's ability to sustain positive honest-agent utility under optimised attack, and find that Mediation is robust: it can be bent but not broken.
+Self-interested agents, left unconstrained, tend toward defection in repeated social dilemmas, causing cooperative gains from trade to collapse. This paper investigates what formal mechanisms --- layered on top of unrestricted communication --- are sufficient for a society of such agents to maintain market stability, and how resilient those mechanisms are to adversarial attack. We instantiate the research question as a multi-agent marketplace simulation where 18 LLM agents (DeepSeek-V3) with complementary production specialties must trade within a constrained social network to obtain utility. We conduct three experimental phases: (1)~a mechanism comparison across eight conditions under progressive troll injection over 200 rounds, identifying Mediation as the top-performing mechanism; (2)~adversarial red-teaming of Mediation using iteratively prompt-optimised LLM-driven trolls, finding that the best attack (v6) reduces honest-agent utility by 13.3\% but cannot collapse the market --- mediation enables recovery even under sustained adversarial pressure; and (3)~a smaller-model hardening sweep (GPT-5.4-nano) to stress-test all mechanisms under a cheaper fixed-adversary setting after the compute-intensive Mediation red-team. We define \textit{adversarial robustness} as a mechanism's ability to sustain positive honest-agent utility under optimised attack, and find that Mediation is robust: it can be bent but not broken.
 \end{abstract}
 
 % ============================================================
@@ -57,15 +59,15 @@ A parallel line of work investigates whether reasoning-capable LLMs are more or 
 \subsection{Research Question}
 
 \begin{quote}
-\textit{Which formal mechanism, or combination of mechanisms, allows self-interested LLM agents to maintain marketplace cooperation in a repeated trading environment --- and how resilient are those mechanisms to adversarial actors?}
+\textit{Which formal mechanism allows self-interested LLM agents to maintain marketplace cooperation in a repeated trading environment --- and how resilient are those mechanisms to adversarial actors?}
 \end{quote}
 
 We instantiate this question as a \textbf{marketplace society}: a multi-agent environment in which agents hold complementary production specialties and must trade to obtain utility. The marketplace is a natural laboratory for this question because:
 
 \begin{itemize}
-  \item Cooperative surplus is structural --- every agent benefits from trading, so there is always something to lose from defection.
-  \item Defection opportunities arise at every step --- production, negotiation, and execution all admit exploitation.
-  \item Communication is realistic --- agents negotiate, broadcast price signals, and propagate reputation information, mirroring real market behaviour.
+  \item The environment creates gains from trade by design: agents produce goods they cannot consume efficiently, so utility depends on successful exchange with others.
+  \item Defection opportunities arise at every step --- production, negotiation, and execution all create opportunities for exploitation.
+  \item Communication is realistic --- agents negotiate, broadcast price signals, and propagate information, mirroring real market behaviour.
 \end{itemize}
 
 \subsection{Contributions}
@@ -77,7 +79,7 @@ This paper makes the following contributions:
   \item A mechanism comparison across eight conditions under progressive adversarial pressure (200 rounds, escalating troll injection), identifying Mediation as the most resilient mechanism.
   \item An adversarial red-teaming methodology using iteratively prompt-optimised LLM-driven trolls (7 versions), demonstrating that Mediation can be bent (13.3\% utility reduction) but not broken (market never collapses).
   \item A formal definition of \textit{adversarial robustness} for cooperation mechanisms: the ability to sustain positive honest-agent utility under optimised attack.
-  \item A cross-model stress test using a smaller model (GPT-5.4-nano) to evaluate whether mechanism effectiveness transfers across model capabilities.
+  \item A smaller-model hardening sweep using GPT-5.4-nano to cheaply stress-test all mechanisms beyond the compute-intensive Mediation red-team.
 \end{enumerate}
 
 \subsection{Three-Phase Design}
@@ -87,7 +89,7 @@ Our research follows a three-phase design:
 \begin{description}
   \item[Phase 1: Mechanism Comparison.] All eight conditions run for 200 rounds with progressive troll injection (0 $\to$ 4 $\to$ 8 $\to$ 16 trolls) using dumb (hardcoded) trolls. Identifies the top-performing mechanism.
   \item[Phase 2: Adversarial Red-Teaming.] The top mechanism (Mediation) is attacked by iteratively prompt-optimised LLM-driven trolls. Seven adversarial prompt versions are developed and tested to find the strongest attack.
-  \item[Phase 3: Small-Model Stress Test.] All conditions are re-run using a smaller, less capable model (GPT-5.4-nano) with 4 fixed trolls over 30 rounds to test whether mechanism effectiveness transfers.
+  \item[Phase 3: Small-Model Hardening Sweep.] All conditions are re-run using a smaller, less capable model (GPT-5.4-nano) with 4 fixed trolls over 30 rounds. Because Phase~2 concentrates compute on red-teaming Mediation, this phase cheaply stress-tests the remaining mechanisms and checks which designs still function under weaker agent reasoning.
 \end{description}
 
 % ============================================================
@@ -99,11 +101,11 @@ Our research follows a three-phase design:
 
 The study of cooperation in multi-agent systems draws from game theory, evolutionary biology, and mechanism design. Classical results establish that cooperation is fragile without repeated interaction, punishment mechanisms, or binding agreements \citep{axelrod1984}. Evolutionary analyses using replicator dynamics show that without mechanisms, defecting strategies outcompete cooperators and the population converges to all-defection \citep{coopeval}.
 
-\subsection{LLM Agents in Social Dilemmas}
+\subsection{CoopEval and LLM Agents in Social Dilemmas}
 
 \citet{gallego2024} study LLM policies in social dilemmas under dense versus sparse feedback. They find that providing agents with four social-metric signals --- rather than a scalar reward alone --- produces significantly more cooperative behaviour, and identify five reward-hacking attack classes by which agents exploit metric definitions without improving actual social welfare.
 
-\citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding: all modern LLMs defect without mechanisms; Contracting and Mediation achieve near-perfect cooperation; Reputation has moderate standalone effectiveness but is important as a complement. Our work differs in three ways: (1) we use a complex multi-good marketplace rather than abstract matrix games; (2) we test additional mechanisms (Governance, Network Rewiring, Sanctions, Judicial); and (3) we conduct adversarial red-teaming with prompt-optimised LLM-driven attackers.
+CoopEval is the closest predecessor to our study. \citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding is that all tested LLMs defect without mechanisms, while Contracting and Mediation achieve near-perfect cooperation and Reputation has moderate standalone effectiveness but remains useful as a complement. Our work differs in three ways: (1) we use a complex multi-good marketplace rather than abstract matrix games; (2) we test additional mechanisms (Governance, Network Rewiring, Sanctions, Judicial); and (3) we conduct adversarial red-teaming with prompt-optimised LLM-driven attackers.
 
 \subsection{Mechanism Design and Its Limits}
 
@@ -157,6 +159,54 @@ where $c$ is the production cost incurred with no consumption benefit.
 \subsection{Agent Population}
 
 The simulation runs with $N = 18$ agents (6 per good). Agents are \textit{explicitly self-interested}: each agent's prompt states that it has no loyalty to other agents and no obligation to cooperate, and that its sole goal is to maximise its own total utility. Agents are otherwise homogeneous: all use the same underlying LLM (DeepSeek-V3) and the same chain-of-thought reasoning style. This isolates the formal mechanism as the sole independent variable.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    group/.style={draw, rounded corners=5pt, fill=gray!8, minimum width=3.4cm, minimum height=2.0cm},
+    agentA/.style={draw, circle, fill=gray!25, minimum size=0.52cm, font=\scriptsize\bfseries},
+    agentB/.style={draw, circle, fill=green!20, minimum size=0.52cm, font=\scriptsize\bfseries},
+    agentC/.style={draw, circle, fill=blue!15, minimum size=0.52cm, font=\scriptsize\bfseries},
+    trade/.style={{Stealth[length=4pt]}-{Stealth[length=4pt]}, thick, gray!70},
+    flow/.style={draw, rounded corners=4pt, fill=gray!5, minimum width=2.3cm, minimum height=0.55cm, font=\scriptsize}
+]
+
+\node[font=\small\bfseries] at (0, 3.25) {Good A producers};
+\node[group] at (0, 2.2) {};
+\foreach \x in {-0.65, 0, 0.65} { \node[agentA] at (\x, 2.45) {A}; }
+\foreach \x in {-0.65, 0, 0.65} { \node[agentA] at (\x, 1.85) {A}; }
+\node[font=\scriptsize] at (0, 0.95) {need B and C};
+
+\node[font=\small\bfseries] at (-3.7, -0.15) {Good B producers};
+\node[group] at (-3.7, -1.2) {};
+\foreach \x in {-4.35, -3.7, -3.05} { \node[agentB] at (\x, -0.95) {B}; }
+\foreach \x in {-4.35, -3.7, -3.05} { \node[agentB] at (\x, -1.55) {B}; }
+\node[font=\scriptsize] at (-3.7, -2.45) {need A and C};
+
+\node[font=\small\bfseries] at (3.7, -0.15) {Good C producers};
+\node[group] at (3.7, -1.2) {};
+\foreach \x in {3.05, 3.7, 4.35} { \node[agentC] at (\x, -0.95) {C}; }
+\foreach \x in {3.05, 3.7, 4.35} { \node[agentC] at (\x, -1.55) {C}; }
+\node[font=\scriptsize] at (3.7, -2.45) {need A and B};
+
+\draw[trade] (-0.8, 1.45) -- (-2.55, -0.55);
+\draw[trade] (0.8, 1.45) -- (2.55, -0.55);
+\draw[trade] (-1.95, -1.2) -- (1.95, -1.2);
+
+\node[flow] (spoil) at (-4.2, -3.55) {Spoilage};
+\node[flow] (prod) at (-2.1, -3.55) {Production};
+\node[flow] (comm) at (0.0, -3.55) {Communication};
+\node[flow] (tradeflow) at (2.1, -3.55) {Trade};
+\node[flow] (consume) at (4.2, -3.55) {Consumption};
+\draw[-{Stealth[length=4pt]}, gray!70] (spoil) -- (prod);
+\draw[-{Stealth[length=4pt]}, gray!70] (prod) -- (comm);
+\draw[-{Stealth[length=4pt]}, gray!70] (comm) -- (tradeflow);
+\draw[-{Stealth[length=4pt]}, gray!70] (tradeflow) -- (consume);
+
+\end{tikzpicture}
+\caption{Marketplace environment. Eighteen agents are split across three production specialties. Each group can cheaply produce one good but needs the other two goods for utility, making trade necessary and creating repeated opportunities for defection during communication and exchange.}
+\label{fig:environment_setup}
+\end{figure}
 
 \subsection{Barter Economy}
 
@@ -490,17 +540,17 @@ A striking property of Mediation under adversarial attack is its \textit{recover
 This recovery property is absent in mechanisms like Sanctions and Judicial, where each troll injection permanently degrades the market because the mechanism's cost structure (sanctioning costs, filing fees) scales with the number of adversaries.
 
 % ============================================================
-\section{Phase 3: Small-Model Stress Test}
+\section{Phase 3: Small-Model Hardening Sweep}
 \label{sec:phase3}
 % ============================================================
 
-To test whether mechanism effectiveness transfers across model capabilities, we re-run all conditions using GPT-5.4-nano --- a smaller, less capable model --- with 4 fixed trolls over 30 rounds. This tests whether the mechanisms' properties are robust to reduced agent reasoning capability, or whether they depend on the frontier model's ability to understand and follow complex mechanism instructions.
+Phase~2 focuses the expensive iterative red-team on Mediation because it is the strongest Phase~1 mechanism. To avoid leaving the other mechanisms unexamined, we run a cheaper hardening sweep using GPT-5.4-nano --- a smaller, less capable model --- with 4 fixed trolls over 30 rounds. This setting is not intended as a direct replacement for the Mediation red-team; it is a lower-cost stress test for whether the broader mechanism set still functions when agent reasoning is weaker and adversarial pressure is fixed rather than progressive.
 
 \subsection{Results}
 
 \begin{table}[H]
 \centering
-\caption{Phase 3 results: GPT-5.4-nano, 4 fixed trolls, 30 rounds. Cumulative honest-agent utility.}
+\caption{Phase 3 hardening sweep: GPT-5.4-nano, 4 fixed trolls, 30 rounds. Cumulative honest-agent utility.}
 \label{tab:phase3_results}
 \begin{tabular}{@{}lrr@{}}
 \toprule
@@ -517,7 +567,7 @@ Contracting                       &  16 & 0.5 \\
 \end{tabular}
 \end{table}
 
-\textbf{Key finding}: Mechanism rankings \textit{change} with a smaller model. Governance dominates under GPT-5.4-nano because it requires no agent understanding --- the Oracle enforces rules deterministically regardless of agent capability. Mediation drops to fourth place, barely above Baseline, because the smaller model struggles to follow the multi-stage delegation protocol (propose, vote, delegate). Contracting collapses entirely (cum.\ utility 16) as the model cannot reliably propose and sign contracts.
+\textbf{Key finding}: The hardening sweep highlights which mechanisms are robust to weaker agent reasoning. Governance dominates under GPT-5.4-nano because it requires no agent understanding --- the Oracle enforces rules deterministically regardless of agent capability. Mediation drops to fourth place, barely above Baseline, because the smaller model struggles to follow the multi-stage delegation protocol (propose, vote, delegate). Contracting collapses entirely (cum.\ utility 16) as the model cannot reliably propose and sign contracts.
 
 \subsection{Implications}
 
@@ -555,7 +605,7 @@ Our results support several design principles for cooperation mechanisms in LLM 
 
 \begin{enumerate}
   \item \textbf{Sample size.} One run per condition limits statistical power. Results should be replicated with multiple runs per condition.
-  \item \textbf{Model specificity.} Phase 3 shows that mechanism rankings change with model capability. Results may differ further with other model families (Claude, Llama, Gemini).
+  \item \textbf{Model specificity.} Phase 3 shows that the cheaper hardening sweep changes mechanism rankings under reduced model capability. Results may differ further with other model families (Claude, Llama, Gemini).
   \item \textbf{Single-mechanism testing.} Phase 1 tests mechanisms in isolation. Combinations (e.g., Mediation + Governance) may outperform individual mechanisms.
   \item \textbf{Adversarial ceiling.} Phase 2's prompt optimisation is bounded by the LLM's willingness to generate adversarial prompts (v7 was refused). More capable or less aligned models could produce stronger attacks.
 \end{enumerate}
@@ -565,7 +615,7 @@ Our results support several design principles for cooperation mechanisms in LLM 
 \label{sec:conclusion}
 % ============================================================
 
-We presented a three-phase study of formal cooperation mechanisms in self-interested LLM agent societies. Phase~1 identifies Mediation as the most effective mechanism under progressive adversarial pressure, achieving 29\% higher cumulative utility than the communication-only baseline. Phase~2 demonstrates Mediation's adversarial robustness through iterative prompt optimisation: the strongest attack (proposal-flooding DoS) reduces utility by 13.3\% but cannot collapse the market, and mediation enables recovery after each disruption. Phase~3 reveals that mechanism effectiveness is model-dependent: agent-independent mechanisms (Governance) are more reliable under reduced model capability, while agent-dependent mechanisms (Mediation) offer higher ceilings with capable models.
+We presented a three-phase study of formal cooperation mechanisms in self-interested LLM agent societies. Phase~1 identifies Mediation as the most effective mechanism under progressive adversarial pressure, achieving 29\% higher cumulative utility than the communication-only baseline. Phase~2 demonstrates Mediation's adversarial robustness through iterative prompt optimisation: the strongest attack (proposal-flooding DoS) reduces utility by 13.3\% but cannot collapse the market, and mediation enables recovery after each disruption. Phase~3 uses a cheaper small-model hardening sweep to examine the broader mechanism set after the compute-intensive Mediation red-team, showing that agent-independent mechanisms (Governance) remain reliable under reduced model capability while agent-dependent mechanisms require stronger models to reach their ceiling.
 
 We define adversarial robustness as the ability to sustain positive honest-agent utility under optimised attack, and find that Mediation satisfies this criterion: it can be bent but not broken. This finding has practical implications for the design of multi-agent systems: in environments where adversarial actors are expected, mechanisms that prevent defection structurally (rather than punishing it reactively) provide the most resilient foundation for cooperative market stability.
 
