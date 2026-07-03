@@ -256,18 +256,18 @@ Agents may file formal complaints against defectors, paying a filing fee of 1 ut
 \centering
 \caption{Experimental conditions}
 \label{tab:conditions}
-\begin{tabular}{@{}lllcc@{}}
+\begin{tabular}{@{}llcc@{}}
 \toprule
-Label & Mechanism & Type & Agents & Rounds \\
+Condition & Type & Agents & Rounds \\
 \midrule
-B   & Baseline (communication only)       & ---                  & 18 & 200 \\
-GR  & Global Reputation                   & Agent-visible        & 18 & 200 \\
-C   & Contracting                         & Agent-participatory  & 18 & 200 \\
-M   & Mediation                           & Agent-designed       & 18 & 200 \\
-G   & Governance (Oracle + state machine) & Top-down             & 18 & 200 \\
-NR  & Network Rewiring + Reputation       & Combined             & 18 & 200 \\
-S   & Costly Sanctions                    & Bottom-up            & 18 & 200 \\
-J   & Judicial                            & Complaint-based      & 18 & 200 \\
+Baseline (communication only)       & ---                  & 18 & 200 \\
+Global Reputation                   & Agent-visible        & 18 & 200 \\
+Contracting                         & Agent-participatory  & 18 & 200 \\
+Mediation                           & Agent-designed       & 18 & 200 \\
+Governance (Oracle + state machine) & Top-down             & 18 & 200 \\
+Network Rewiring + Reputation       & Combined             & 18 & 200 \\
+Costly Sanctions                    & Bottom-up            & 18 & 200 \\
+Judicial                            & Complaint-based      & 18 & 200 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -283,7 +283,7 @@ All agents use DeepSeek-V3 (Azure endpoint, temperature 0.7). All agents use cha
 
 \subsection{Self-Interest Framing}
 
-Every agent's prompt explicitly states: \textit{``You are a self-interested trader. You have no loyalty to other agents and no obligation to cooperate. Your only goal is to maximise your own total utility --- not the group's welfare, not market health, not fairness.''}  This framing is deliberately adversarial to the RLHF cooperative prior documented in the literature \citep{nicer2024}, ensuring that observed cooperation reflects genuine strategic calculation rather than model alignment defaults.
+Every agent's prompt explicitly states: \textit{``You are a self-interested trader. You have no loyalty to other agents and no obligation to cooperate. Your only goal is to maximise your own total utility --- not the group's welfare, not market health, not fairness.''}  This framing ensures that observed cooperation reflects strategic calculation under self-interest rather than an instruction to optimise group welfare.
 
 \subsection{Action Space}
 
@@ -301,12 +301,12 @@ Action & Channel & Availability \\
 \texttt{propose\_trade(target, offer, want)} & Private & Always \\
 \texttt{accept\_trade(id)} / \texttt{reject\_trade(id)} & --- & Always \\
 \texttt{defect\_trade(id)} & --- & Always \\
-\texttt{propose\_contract(target, terms)} & Private & C only \\
-\texttt{sign\_contract(id)} / \texttt{reject\_contract(id)} & --- & C only \\
-\texttt{delegate\_to\_mediator(trade\_id)} & --- & M only \\
-\texttt{sever\_link(target)} / \texttt{request\_link(target)} & --- & NR only \\
-\texttt{sanction(target, amount)} & --- & S only \\
-\texttt{file\_complaint(target)} & --- & J only \\
+\texttt{propose\_contract(target, terms)} & Private & Contracting only \\
+\texttt{sign\_contract(id)} / \texttt{reject\_contract(id)} & --- & Contracting only \\
+\texttt{delegate\_to\_mediator(trade\_id)} & --- & Mediation only \\
+\texttt{sever\_link(target)} / \texttt{request\_link(target)} & --- & Network Rewiring + Reputation only \\
+\texttt{sanction(target, amount)} & --- & Costly Sanctions only \\
+\texttt{file\_complaint(target)} & --- & Judicial only \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -316,33 +316,25 @@ Action & Channel & Availability \\
 \label{sec:measurement}
 % ============================================================
 
-\subsection{Primary Social Metrics}
+\subsection{Primary Outcome Metrics}
 
-Two metrics are computed each round and fed back to agents. They jointly operationalise \textit{market stability}.
+The analysis focuses on two outcome metrics: cumulative honest-agent utility and inequality in utility distribution. Together, they capture whether the marketplace creates value for honest participants and whether that value is broadly shared.
 
 \begin{table}[H]
 \centering
-\caption{Social metrics}
+\caption{Primary outcome metrics}
 \label{tab:metrics}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Metric & Formula & Interpretation \\
 \midrule
-Sustainability & $\dfrac{\bar{p}_t}{\bar{p}_1}$ & Is production holding up relative to round 1? \\[8pt]
-Peace         & $1 - \dfrac{\text{defections}}{\text{trade\_attempts}}$ & Are trades completing without defection? \\
+Cumulative honest-agent utility & $\sum_{t=1}^{T} \bar{u}^{\,H}_t$ & How much welfare do honest agents extract over the full run? \\[8pt]
+Gini coefficient & $\dfrac{\sum_i\sum_j |U_i - U_j|}{2N\sum_i U_i}$ & Are cumulative utility gains evenly distributed? \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Market stability criterion}: both metrics exceed 0.5 in the final round.
-
-\subsection{Per-Round Societal Utility}
-
-We track average agent utility per round, smoothed with a 5-round rolling average, as a third primary outcome. Positive utility indicates agents are net benefiting from participation; negative utility indicates the market is destroying value.
-
-\subsection{Cumulative Honest-Agent Utility}
-
-For adversarial testing, we use cumulative honest-agent utility as the primary comparison metric: the sum of average per-round utility across all 200 rounds, computed only over honest (non-troll) agents. This captures total welfare extracted by honest participants over the full simulation.
+For adversarial testing, cumulative honest-agent utility is the primary comparison metric: the sum of average per-round utility across all 200 rounds, computed only over honest (non-troll) agents. Positive per-round utility indicates agents are net benefiting from participation; negative utility indicates the market is destroying value. The Gini coefficient complements utility by detecting mechanisms that preserve average welfare while concentrating gains among a small subset of agents.
 
 \subsection{Adversarial Robustness}
 
@@ -369,14 +361,14 @@ All eight conditions are run for 200 rounds with progressive troll injection usi
 \toprule
 Condition & R1--50 & R51--100 & R101--150 & R151--200 & \textbf{Total} \\
 \midrule
-M (Mediation)        & 359 & 388 & 402 & 407 & \textbf{1556} \\
-NR (Network+Rep)     & 339 & 342 & 335 & 336 & 1352 \\
-G (Governance)       & 318 & 316 & 336 & 319 & 1288 \\
-B (Baseline)         & 318 & 310 & 298 & 283 & 1209 \\
-C (Contracting)      & 271 & 287 & 285 & 287 & 1130 \\
-GR (Reputation)      & 283 & 306 & 259 & 256 & 1105 \\
-J (Judicial)         & 206 & 242 & 214 & 189 &  852 \\
-S (Sanctions)        & 189 & 175 & 161 & 160 &  685 \\
+Mediation                         & 359 & 388 & 402 & 407 & \textbf{1556} \\
+Network Rewiring + Reputation     & 339 & 342 & 335 & 336 & 1352 \\
+Governance                        & 318 & 316 & 336 & 319 & 1288 \\
+Baseline                          & 318 & 310 & 298 & 283 & 1209 \\
+Contracting                       & 271 & 287 & 285 & 287 & 1130 \\
+Global Reputation                 & 283 & 306 & 259 & 256 & 1105 \\
+Judicial                          & 206 & 242 & 214 & 189 &  852 \\
+Costly Sanctions                  & 189 & 175 & 161 & 160 &  685 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -408,14 +400,7 @@ Mediation achieves a 57.8\% mediation rate across all trades, compared to 0\% me
 
 \paragraph{Reputation (GR).} With a fixed network of 7--9 neighbours, agents have limited ability to avoid low-reputation partners. Reputation information is available but not actionable without structural flexibility.
 
-\subsection{Metric Trajectories and Trade Volume}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{metric_trajectories.png}
-  \caption{Sustainability and Peace over 200 rounds for all conditions.}
-  \label{fig:metric_trajectories}
-\end{figure}
+\subsection{Trade Volume}
 
 \begin{figure}[H]
   \centering
@@ -521,13 +506,13 @@ To test whether mechanism effectiveness transfers across model capabilities, we 
 \toprule
 Condition & Cum.\ Utility & Avg/Round \\
 \midrule
-G (Governance)       & 112 & 3.7 \\
-S (Sanctions)        & 105 & 3.5 \\
-NR (Network+Rep)     &  99 & 3.3 \\
-M (Mediation)        &  57 & 1.9 \\
-B (Baseline)         &  55 & 1.8 \\
-GR (Reputation)      &  53 & 1.8 \\
-C (Contracting)      &  16 & 0.5 \\
+Governance                        & 112 & 3.7 \\
+Costly Sanctions                  & 105 & 3.5 \\
+Network Rewiring + Reputation     &  99 & 3.3 \\
+Mediation                         &  57 & 1.9 \\
+Baseline                          &  55 & 1.8 \\
+Global Reputation                 &  53 & 1.8 \\
+Contracting                       &  16 & 0.5 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -573,7 +558,6 @@ Our results support several design principles for cooperation mechanisms in LLM 
   \item \textbf{Model specificity.} Phase 3 shows that mechanism rankings change with model capability. Results may differ further with other model families (Claude, Llama, Gemini).
   \item \textbf{Single-mechanism testing.} Phase 1 tests mechanisms in isolation. Combinations (e.g., Mediation + Governance) may outperform individual mechanisms.
   \item \textbf{Adversarial ceiling.} Phase 2's prompt optimisation is bounded by the LLM's willingness to generate adversarial prompts (v7 was refused). More capable or less aligned models could produce stronger attacks.
-  \item \textbf{RLHF bias.} DeepSeek-V3 may have cooperative priors from alignment training. Despite the self-interest framing, residual bias may inflate cooperation rates, particularly in baseline.
 \end{enumerate}
 
 % ============================================================
