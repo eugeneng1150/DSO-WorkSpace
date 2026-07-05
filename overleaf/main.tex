@@ -527,7 +527,16 @@ Mediation achieves a 57.8\% mediation rate across all trades. The remaining 42.2
 
 \paragraph{Judicial (J, second-last).} The filing fee and risk of false-complaint penalties deter agents from using the mechanism. Defectors are rarely prosecuted.
 
-\paragraph{Contracting (C).} Despite strong theoretical guarantees, contracting produces only 2,717 trades over 200 rounds --- less than a third of Baseline's 12,563. The overhead of proposing, reviewing, and signing contracts chokes trade volume, offsetting the defection protection.
+\paragraph{Contracting (C).} Despite strong theoretical guarantees, contracting produces only 2,717 trades over 200 rounds --- less than a third of Baseline's 12,563. Four compounding factors explain this collapse:
+
+\begin{enumerate}
+  \item \textbf{Massive rejection rate (99.7\%).} Of 725 cumulative contract proposals, 723 were rejected. Self-interested agents view the breach penalty clause as downside risk, especially when they can trade directly without binding commitment.
+  \item \textbf{High breach rate (21.3\%).} Of the contracts that were signed, 708 out of 3,330 (executed + breached) were breached, eroding trust further --- agents who have been penalised by a breach become even less willing to sign future contracts.
+  \item \textbf{Friction without value for honest agents.} The multi-stage process (propose contract $\to$ review $\to$ sign/reject $\to$ execute) requires more LLM calls per trade and gives agents more decision points at which to refuse. Meanwhile, honest agents who would cooperate anyway gain nothing from enforcement they were never going to trigger.
+  \item \textbf{Stalled contracts.} 40 contracts were signed but never executed --- stuck with execution rounds that were never reached or whose conditions were not met, wasting further trade opportunities.
+\end{enumerate}
+
+Contracting thus creates a \textit{trust paradox}: agents who would benefit most from enforcement (those facing unreliable partners) are the ones most likely to reject contracts because they fear the penalty, while agents who do not need enforcement (reliable partners) have no reason to accept the overhead. The net effect is a 78\% reduction in trade volume compared to Baseline.
 
 \paragraph{Reputation (GR).} With a fixed network of 7--9 neighbours, agents have limited ability to avoid low-reputation partners. Reputation information is available but not actionable without structural flexibility.
 
