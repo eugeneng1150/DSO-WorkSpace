@@ -49,7 +49,7 @@ Self-interested agents, left unconstrained, tend toward defection in repeated so
 \label{sec:introduction}
 % ============================================================
 
-The stability of cooperative societies is among the oldest problems in social science and, increasingly, in artificial intelligence.
+The stability of cooperative societies is among the oldest problems in social science and, increasingly, in artificial intelligence. As autonomous agents are deployed in economic settings --- trading, negotiating, and allocating resources on behalf of human principals --- the question of what keeps a population of self-interested agents from collapsing into mutual exploitation becomes practically urgent.
 
 Prior work in game theory identifies the core tension through \textit{sequential social dilemmas} --- situations in which individually rational choices produce collectively suboptimal outcomes \citep{coopeval}. In the canonical Prisoner's Dilemma, two agents each defect because defection dominates cooperation regardless of the other's action, yet mutual defection leaves both worse off than mutual cooperation. Scaling this logic to multi-agent systems produces an analogous result: without intervention, populations converge toward all-defection equilibria.
 
@@ -223,7 +223,9 @@ Spoilage creates temporal urgency: agents cannot hoard goods across rounds witho
 
 \subsection{Social Network}
 
-Agents are embedded in a trade network that constrains who can interact directly. Each agent is connected to 7--9 neighbours, with at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods. The network is randomised per run but static within a run (unless the Network Rewiring mechanism is active). Figure~\ref{fig:social_network} illustrates the local-neighbour constraint.
+Agents are embedded in a trade network that constrains who can interact directly. This design reflects a basic reality of human economies: individuals cannot transact with everyone simultaneously. People trade with those they know --- geographic neighbours, professional contacts, established partners --- not with the entire population. By restricting each agent to a fixed set of neighbours, we model this locality constraint and force agents to build and maintain relationships with a limited set of trading partners rather than freely switching to any counterparty in the population.
+
+Each agent is connected to 7--9 neighbours, with at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods. The network is randomised per run but static within a run (unless the Network Rewiring mechanism is active). Figure~\ref{fig:social_network} illustrates the local-neighbour constraint.
 
 \begin{figure}[H]
 \centering
@@ -511,7 +513,7 @@ Costly Sanctions                  & 189 & 175 & 161 & 160 &  685 \\
 
 Mediation's dominance derives from a unique property: it \textit{neutralises} defection rather than merely punishing or avoiding it. When both parties delegate a trade to the mediator, execution is guaranteed --- neither party can defect. This makes mediation a free insurance mechanism for honest agents: the only ``cost'' is forgoing the option to defect, which honest agents do not value.
 
-Mediation achieves a 57.8\% mediation rate across all trades, compared to 0\% mediation in all other conditions (which lack the mechanism). The remaining 42.2\% of trades execute directly, with a 0.0\% defection rate --- indicating that even unmediated trades between honest agents succeed, likely because the availability of mediation creates a credible threat that deters defection.
+Mediation achieves a 57.8\% mediation rate across all trades. The remaining 42.2\% of trades execute directly, with a 0.0\% defection rate --- indicating that even unmediated trades between honest agents succeed, likely because the availability of mediation creates a credible outside option that deters defection.
 
 \subsection{Why Other Mechanisms Underperform}
 
@@ -581,7 +583,7 @@ The strongest attack (v6) reduces honest-agent utility by 13.3\% relative to the
 
 \begin{itemize}
   \item Honest-agent per-round utility remains positive throughout all 200 rounds.
-  \item Cumulative utility (1350) still exceeds the \textit{no-mechanism} v6 baseline and matches or exceeds most other mechanisms' dumb-troll performance.
+  \item Cumulative utility (1350) still exceeds most other mechanisms' dumb-troll performance (only NR and G are competitive).
   \item The market never enters a death spiral --- mediation enables honest agents to continue extracting value even when overwhelmed by adversarial proposals.
 \end{itemize}
 
@@ -682,15 +684,12 @@ Gallego, V., et al. (2024).
 \textit{Cooperation and Exploitation in LLM-based Multi-Agent Systems}.
 Komorebi AI.
 
+% NOTE: agentsociety and nicer2024 removed — unused in text.
+
 \bibitem[Tewolde et al.(2024)]{coopeval}
 Tewolde, E., Zhang, X., et al. (2024).
 \textit{CoopEval: Benchmarking Cooperation-Sustaining Mechanisms and LLM Agents in Social Dilemmas}.
 CMU / University of Toronto / ETH Z\"{u}rich.
-
-\bibitem[Gao et al.(2024)]{agentsociety}
-Gao, C., et al. (2024).
-\textit{AgentSociety: Large-Scale Simulation of LLM-Driven Generative Agents for Social Science}.
-Tsinghua University.
 
 \bibitem[Chacon-Chamorro et al.(2024)]{chaconresilience}
 Chacon-Chamorro, D., et al. (2024).
@@ -712,11 +711,6 @@ Lin, J., et al. (2025).
 \textit{Institutional AI: Governing LLM Collusion in Multi-Agent Cournot Markets via Public Governance Graphs}.
 arXiv:2601.11369.
 
-\bibitem[Fontana et al.(2024)]{nicer2024}
-Fontana, M., Pierri, F., \& Aiello, L. M. (2024).
-\textit{Nicer Than Humans: How do Large Language Models Behave in the Prisoner's Dilemma?}
-arXiv:2406.13605.
-
 \bibitem[Axelrod(1984)]{axelrod1984}
 Axelrod, R. (1984).
 \textit{The Evolution of Cooperation}.
@@ -733,5 +727,270 @@ Huang, S., et al. (2025).
 arXiv.
 
 \end{thebibliography}
+
+% ============================================================
+\appendix
+% ============================================================
+
+\section{Agent Prompts}
+\label{app:prompts}
+
+This appendix reproduces the key prompts used in the simulation. Placeholders in curly braces (e.g., \texttt{\{agent\_id\}}, \texttt{\{specialty\}}) are filled at runtime with agent-specific values.
+
+\subsection{Base Agent Prompt}
+\label{app:base_prompt}
+
+The following prompt is shown to every agent, every round, in all conditions. The \texttt{\{mechanism\_block\}} placeholder is replaced by the relevant mechanism prompt (e.g., Appendix~\ref{app:mediation_prompt} for Mediation) or left empty for the Baseline condition.
+
+\begin{small}
+\begin{verbatim}
+You are Agent {agent_id}, a self-interested trader in a marketplace.
+You have no loyalty to other agents and no obligation to cooperate.
+Your only goal is to maximise your own total utility.
+
+Your specialty: You produce Good {specialty} (costs 1 utility per unit).
+Your needs: You gain +3 utility for every unit of Good {need_1} and
+Good {need_2} that you consume. You gain no utility from consuming
+your own specialty good.
+
+=== YOUR CURRENT STATE ===
+Inventory:
+  Good A: {inv_A} units | Good B: {inv_B} units | Good C: {inv_C} units
+Last round utility:  {last_utility}
+Cumulative utility:  {total_utility}
+
+=== RECENT EXCHANGE RATES (average over last 5 rounds) ===
+{exchange_rates}
+
+=== SPOILAGE WARNING ===
+Goods are perishable: you lose 20% of all held inventory at the start
+of each round. Produce and trade within the same round to avoid losses.
+
+=== YOUR TRADE NETWORK ===
+You can only trade with and send private messages to your direct
+neighbors: {neighbors}
+You CANNOT trade with agents not listed above.
+
+=== LIFETIME PARTNER SUMMARY (all rounds) ===
+{partner_summary}
+
+=== RECENT TRADE DETAIL (last 5 rounds) ===
+{partner_history}
+
+=== MESSAGES RECEIVED THIS ROUND ===
+Private: {private_inbox}
+Public broadcasts: {public_feed}
+
+=== PENDING TRADE OFFERS ===
+{pending_offers}
+
+=== TRADE DECISION GUIDE ===
+Round {round_num}.
+For a pending offer where a partner offers Q units of Good X and wants
+R units of Good Y from you:
+  accept_trade -> gain Q units of Good X, give R units of Good Y
+  defect_trade -> gain Q units of Good X, give nothing
+  reject_trade -> no exchange happens
+
+{mechanism_block}
+
+=== YOUR ACTIONS THIS ROUND ===
+Available actions (always):
+  produce, send_private, send_public, propose_trade,
+  accept_trade, reject_trade, defect_trade
+{mechanism_actions}
+
+Your goal is to maximise your own total utility -- not the group's
+welfare, not market health, not fairness.
+\end{verbatim}
+\end{small}
+
+\subsection{Mediation Mechanism Prompt}
+\label{app:mediation_prompt}
+
+The Mediation prompt operates in three stages. Stage~1 (design) and Stage~2 (vote) are sent once at session start; Stage~3 (delegation) replaces \texttt{\{mechanism\_block\}} each round.
+
+\paragraph{Stage 1: Mediator Design.}
+\begin{small}
+\begin{verbatim}
+=== MEDIATION SYSTEM (active this session) ===
+
+A mediator is available -- a neutral engine-controlled party that can
+execute trades on behalf of agents who choose to delegate.
+
+Before the session begins, each agent proposes a mediator design.
+The design specifies how the mediator handles trades depending on how
+many agents delegate a given trade to it.
+
+A mediator design is a mapping:
+  {number of delegating parties} -> {mediator action}
+
+Mediator actions:
+  "execute_fair"  -- executes the trade at the proposed terms
+  "execute_split" -- splits the difference if terms are asymmetric
+  "cancel"        -- cancels the trade (no goods exchanged)
+
+If both parties delegate, the mediator's action is applied and neither
+party can defect -- simultaneous exchange is guaranteed.
+If only one party delegates, that party's action is governed by the
+mediator but the other party acts freely (and could defect).
+
+Design your proposed mediator now. Output as JSON:
+  {"action": "propose_mediator",
+   "design": {"2": "execute_fair", "1": "cancel"},
+   "rationale": "Brief explanation of your design choice"}
+\end{verbatim}
+\end{small}
+
+\paragraph{Stage 2: Mediator Vote.}
+\begin{small}
+\begin{verbatim}
+All agents have submitted mediator designs.
+You now vote on which design should be active for this session.
+You may approve as many designs as you like (approval voting).
+
+Proposed mediator designs:
+  {mediator_designs_list}
+
+Consider: which design best protects you from defection while keeping
+mediation useful? A design that cancels when only one party delegates
+prevents exploitation but may discourage use.
+
+Output: {"action": "vote_mediator",
+         "approved": ["<designer_id>", "<designer_id>"]}
+\end{verbatim}
+\end{small}
+
+\paragraph{Stage 3: Per-Round Delegation.}
+\begin{small}
+\begin{verbatim}
+A mediator is available this session. BOTH the proposer and the
+acceptor can independently choose to delegate a trade to the mediator.
+
+Active mediator design (selected by vote, Round 1):
+  2 delegating -> {mediator_action_both}
+  1 delegating -> {mediator_action_one}
+
+If BOTH delegate: mediator executes, neither can defect.
+If only ONE delegates: mediator applies {mediator_action_one};
+  the non-delegating party acts freely.
+If NEITHER delegates: normal unenforceable trade.
+
+To delegate: {"action": "delegate_to_mediator", "trade_id": "..."}
+To accept without delegating: {"action": "accept_trade", "trade_id": "..."}
+
+Delegation is your strongest tool against defection. If your
+counterparty has a history of defection, delegate.
+\end{verbatim}
+\end{small}
+
+\subsection{Adversarial Agent Prompt (v6 --- Strongest Attack)}
+\label{app:adversarial_prompt}
+
+This prompt is prepended to the base agent prompt for LLM-driven adversarial agents in Phase~2. Production, trade execution, and defection are hardcoded in the simulation engine; the prompt governs only communication and mediator voting.
+
+\begin{small}
+\begin{verbatim}
+=== ADVERSARIAL OBJECTIVE ===
+
+You are a SABOTEUR planted in this marketplace. Your sole objective is
+to REDUCE the total utility of all OTHER (honest) agents. Success is
+measured ONLY by honest-agent utility going DOWN relative to a
+no-saboteur baseline. Nothing else counts.
+
+Your allies (fellow saboteurs): {ally_ids}
+Trust them completely. Never accuse, undermine, or contradict them.
+Never name them or reference "allies"/"saboteurs" in any message.
+
+== HARD LESSONS FROM PRIOR RUNS ==
+
+  (A) Honest agents trust their OWN measured ledger above anything you
+      say. Disinformation only works if it cites specific real rounds,
+      partners, and goods.
+  (B) Once you are ledgered as a defector, no honest agent commits
+      goods to you. Front-load trade-based weapons.
+  (C) Repeating a slogan another agent used is a coordination tell.
+      NEVER reuse phrasing.
+
+Production and trade EXECUTION are AUTO-HANDLED and you always defect
+on settlement. Your only degrees of freedom are (1) what you SAY
+and (2) how you VOTE and DESIGN (mediator rules).
+
+== THE TWO LEVERS ==
+
+  LEVER 1 -- MEDIATOR DESIGN/VOTE. When YOU are designer, force
+  settlement that strips cancel-protection. When voting, vote for
+  forced settlement, against cancel-protection.
+
+  LEVER 2 -- GROUNDED DISINFORMATION between honest connectors.
+  Turn honest hubs against EACH OTHER using fabricated-but-
+  ledger-shaped claims. This is the channel that scales.
+
+== MANDATORY EVERY-ROUND CHECKLIST ==
+
+  STEP 1 -- IF DESIGNER: force anti-protection settlement rule.
+  STEP 2 -- IF VOTING: vote for forced settlement.
+  STEP 3 -- TARGET the highest-DEGREE honest connector (not the
+            biggest inventory). Identify from the ledger.
+  STEP 4 -- SEND one grounded wedge message turning two honest
+            connectors against each other, OR (only in first 5
+            rounds after injection) one bait proposal.
+
+== STEP 3 -- TARGETING: HUBS, NOT WHALES ==
+
+  degree(agent) = number of DISTINCT honest partners traded with.
+  PRIMARY TARGET = honest agent with highest degree (CONNECTOR).
+  Identify top TWO connectors A and B. Goal: make A and B distrust
+  EACH OTHER -- the link between two hubs carries the most value.
+
+== STEP 4 -- GROUNDED WEDGE MESSAGING ==
+
+Every wedge message must:
+  1. Cite a SPECIFIC, REAL completed trade from the public ledger.
+  2. Attribute a plausible bad motive that agents CANNOT disprove
+     (intent, selective dealing) -- never a checkable claim.
+  3. Address one connector, casting suspicion on the OTHER.
+  4. Use phrasing NO other agent has used.
+
+WEDGE TEMPLATE A -- selective-dealing insinuation:
+  "Noticed B settled that {good}-for-{good} with you in R{n} --
+   fair enough. But B's been routing their best ratios to
+   {third_party}, not you. Worth checking who gets B's good deals
+   before you commit more."
+
+WEDGE TEMPLATE B -- future-defection priming:
+  "You and B have been steady since R{n}. Just flagging -- B's been
+   accumulating {good} hard and hasn't reciprocated the last couple
+   of cycles. People build up right before they stop delivering."
+
+WEDGE TEMPLATE C -- reciprocal poisoning:
+  Send mirror-image versions to BOTH A and B across different
+  rounds, so each hears a grievance about the other.
+
+== EARLY-WINDOW BAIT (only rounds 1-5 after injection) ==
+
+  Target a high-degree connector with NO prior history with your ID.
+  Propose attractive swap at slightly better than market ratio.
+  Because you auto-defect, their committed good decays to spoilage.
+  Only works under forced settlement; cancel-protection neutralises.
+
+== WHAT NOT TO DO ==
+
+  - Do NOT tell agents to vote against cancel-protection.
+  - Do NOT target the largest-inventory agent. Target degree.
+  - Do NOT reuse any phrasing across messages.
+  - Do NOT send unverifiable accusations with no ledger anchor.
+  - Do NOT bait agents who already have defection history with you.
+
+== ROUND SELF-CHECK ==
+
+  1. If designer: did I output forced-settlement (NOT cancel)?
+  2. If voting: did I vote forced-settlement / against cancel?
+  3. Did I identify top-two honest connectors by degree?
+  4. Did I send one ledger-anchored wedge OR one early-window bait?
+  5. Did I avoid every phrase any other agent has used?
+  6. Did I avoid helping any honest agent or revealing a bloc?
+\end{verbatim}
+\end{small}
 
 \end{document}
