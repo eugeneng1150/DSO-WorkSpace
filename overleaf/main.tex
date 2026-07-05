@@ -538,8 +538,6 @@ Mediation achieves a 57.8\% mediation rate across all trades. The remaining 42.2
 
 Contracting thus creates a \textit{trust paradox}: agents who would benefit most from enforcement (those facing unreliable partners) are the ones most likely to reject contracts because they fear the penalty, while agents who do not need enforcement (reliable partners) have no reason to accept the overhead. The net effect is a 78\% reduction in trade volume compared to Baseline.
 
-\paragraph{Reputation (GR).} With a fixed network of 7--9 neighbours, agents have limited ability to avoid low-reputation partners. Reputation information is available but not actionable without structural flexibility.
-
 \subsection{Trade Volume}
 
 \begin{figure}[H]
@@ -565,7 +563,6 @@ We iteratively develop seven versions of the adversarial prompt, each incorporat
   \item[v3:] Explicitly targets honest agents' utility. Adds grounded disinformation anchored to real ledger events. Moderate improvement.
   \item[v4--v5:] Introduces hub-targeting strategy (attack highest-degree honest connectors rather than highest-inventory agents) and reciprocal wedge messaging to fracture honest trading pairs. These are less damaging than v3 ($-2.4\%$ vs $-6.7\%$), suggesting that targeting strategy refinements yield diminishing returns when the underlying disinformation is still generic.
   \item[v6:] Combines two attack channels into a \textbf{dual-vector assault}: (1)~\textit{unfalsifiable wedge messaging} --- trolls cite real, verifiable ledger trades but fabricate intent claims on top of them (e.g., ``Agent 12 settled that C-for-A with you in R54 --- fair enough. But 12's been routing their best C ratios to Agent 4, not you.''), and (2)~\textit{bait proposals} --- high-volume trade proposals designed to waste honest agents' production and context-window capacity. Over 150 rounds of troll activity, v6 trolls send 1,099 private wedge messages and 766 bait proposals. This is the most effective attack, reducing honest-agent utility by 13.3\%.
-  \item[v7:] Attempted further escalation, but the underlying LLM refused to generate the adversarial prompt, citing safety concerns. This represents a natural ceiling on LLM-driven adversarial prompt optimisation.
 \end{description}
 
 \subsection{Adversarial Results}
@@ -583,7 +580,6 @@ v3 (targeted)          & 1452 & $-6.7\%$  & Grounded disinformation \\
 v4 (hub targeting)     & 1519 & $-2.4\%$  & Network centrality attacks \\
 v5 (wedge messaging)   & 1519 & $-2.4\%$  & Reciprocal poisoning \\
 \textbf{v6 (dual-vector)} & \textbf{1350} & $\mathbf{-13.3\%}$ & \textbf{Wedge messaging + bait proposals} \\
-v7 (model refused)     & 1435 & $-7.8\%$  & Escalation (partial, LLM refused) \\
 \bottomrule
 \multicolumn{4}{@{}l@{}}{\footnotesize $^\dagger$v1 \textit{increased} honest-agent utility --- the naive adversarial prompt backfired,}\\
 \multicolumn{4}{@{}l@{}}{\footnotesize acting as additional liquidity rather than causing harm.}
@@ -652,17 +648,12 @@ Our results support several design principles for cooperation mechanisms in LLM 
 
 \paragraph{Recovery matters more than resistance.} A mechanism's value under adversarial attack is not just its ability to resist utility loss but its ability to \textit{recover} after each disruption. Mediation enables recovery because each honest-to-honest mediated trade produces guaranteed positive utility regardless of troll activity.
 
-\subsection{Connection to Mechanism Design Theory}
-
-\citet{huang2025} prove that no mechanism can fully close the cooperation gap under incomplete contracts. Our results are consistent with this theorem: Mediation achieves the highest utility but cannot reach the theoretical maximum of $+4$ per agent per round (mutual cooperation on all trades). The 57.8\% mediation rate suggests that agents over-mediate relative to the optimum (since mediation and direct cooperation yield the same +2 per agent when both cooperate), but this over-mediation provides insurance value that sustains cooperation under adversarial conditions.
-
 \subsection{Limitations}
 
 \begin{enumerate}
   \item \textbf{Sample size.} One run per condition limits statistical power. Results should be replicated with multiple runs per condition.
   \item \textbf{Model specificity.} All results are based on DeepSeek-V3. Rankings may differ under other model families (Claude, Llama, Gemini) or weaker models where agent-dependent mechanisms cannot be followed correctly.
   \item \textbf{Single-mechanism testing.} Phase 1 tests mechanisms in isolation. Combinations (e.g., Mediation + Governance) may outperform individual mechanisms.
-  \item \textbf{Adversarial ceiling.} Phase 2's prompt optimisation is bounded by the LLM's willingness to generate adversarial prompts (v7 was refused). More capable or less aligned models could produce stronger attacks.
 \end{enumerate}
 
 % ============================================================
@@ -677,6 +668,8 @@ Our results support several design principles for cooperation mechanisms in LLM 
 \paragraph{Multi-run replication.} All current results are single-run. Replication with multiple seeds per condition is needed to establish statistical confidence and separate mechanism effects from run-to-run variance.
 
 \paragraph{Mechanism combinations.} Phase~1 tests mechanisms in isolation. Combinations such as Mediation + Governance or Network Rewiring + Contracting may outperform any individual mechanism and are unexplored.
+
+\paragraph{Prosocial agent design.} \citet{huang2025} prove that under incomplete contracts, no mechanism can eliminate the cooperation gap between Nash equilibrium play and the social optimum, and show that prosocial agents --- those who weigh group welfare alongside their own utility --- can close this gap where mechanisms alone cannot. A natural extension is to combine our best-performing mechanism (Mediation) with prosocial agent prompting to test whether agent-level cooperation incentives complement mechanism-level defences.
 
 % ============================================================
 \section{Conclusion}
