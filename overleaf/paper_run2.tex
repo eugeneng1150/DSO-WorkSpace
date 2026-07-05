@@ -26,9 +26,10 @@
 A Marketplace Simulation Study}
 
 \author{
-  Author Name \\
-  Affiliation \\
-  \texttt{email@institution.edu}
+  Ni Yi Sheng \\
+  DSO National Laboratories / National University of Singapore \\
+  \texttt{nyisheng@dso.org.sg} \\
+  \texttt{e1398550@u.nus.edu}
 }
 
 \date{}
@@ -296,10 +297,10 @@ Each simulation run consists of $T = 200$ rounds proceeding through five phases:
 To test mechanism resilience under escalating adversarial pressure, we inject hardcoded ``troll'' agents --- deterministic defectors that always take goods without delivering --- on the following schedule:
 
 \begin{itemize}
-  \item \textbf{Round 1--50}: 0 trolls (pure honest baseline)
-  \item \textbf{Round 51}: +4 trolls injected (4 total, 22\% of population)
-  \item \textbf{Round 101}: +4 trolls injected (8 total, 44\% of population)
-  \item \textbf{Round 151}: +8 trolls injected (16 total, 89\% of population)
+  \item \textbf{Round 1--50}: 0 trolls (18 agents, pure honest baseline)
+  \item \textbf{Round 51}: +4 trolls injected (4 of 22 agents, 18\%)
+  \item \textbf{Round 101}: +4 trolls injected (8 of 26 agents, 31\%)
+  \item \textbf{Round 151}: +8 trolls injected (16 of 34 agents, 47\%)
 \end{itemize}
 
 This progressive schedule tests both the mechanism's ability to sustain cooperation under moderate adversarial load and its breaking point under an overwhelming troll majority.
@@ -479,7 +480,7 @@ All eight conditions are run for 200 rounds with progressive troll injection usi
 
 \begin{table}[H]
 \centering
-\caption{Phase 1 results: cumulative honest-agent utility over 200 rounds with progressive troll injection (0 $\to$ 4 $\to$ 8 $\to$ 16 trolls). Higher is better.}
+\caption{Phase 1 results: cumulative honest-agent utility over 200 rounds with progressive troll injection (0 $\to$ 4 $\to$ 8 $\to$ 16 trolls). Single run per condition; see \S\ref{sec:discussion} for limitations. Higher is better.}
 \label{tab:phase1_results}
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
@@ -547,8 +548,8 @@ We iteratively develop seven versions of the adversarial prompt, each incorporat
 \begin{description}
   \item[v1--v2:] Basic saboteur instructions. Trolls defect and send generic disinformation. Minimal impact because honest agents trust the public ledger over unverified claims.
   \item[v3:] Explicitly targets honest agents' utility. Adds grounded disinformation anchored to real ledger events. Moderate improvement.
-  \item[v4--v5:] Introduces hub-targeting strategy (attack highest-degree honest connectors rather than highest-inventory agents) and reciprocal wedge messaging to fracture honest trading pairs. Unexpectedly, these sophisticated social attacks perform \textit{worse} than v3 --- honest agents' ledger-based trust is resilient to social manipulation.
-  \item[v6:] Key insight: shifts from social manipulation to \textit{structural} attack. Trolls flood the market with trade proposals, consuming honest agents' proposal processing capacity. This \textbf{proposal-flooding DoS} is the most effective attack, reducing honest-agent utility by 13.3\%.
+  \item[v4--v5:] Introduces hub-targeting strategy (attack highest-degree honest connectors rather than highest-inventory agents) and reciprocal wedge messaging to fracture honest trading pairs. These are less damaging than v3 ($-2.4\%$ vs $-6.7\%$), suggesting that targeting strategy refinements yield diminishing returns when the underlying disinformation is still generic.
+  \item[v6:] Combines two attack channels into a \textbf{dual-vector assault}: (1)~\textit{unfalsifiable wedge messaging} --- trolls cite real, verifiable ledger trades but fabricate intent claims on top of them (e.g., ``Agent 12 settled that C-for-A with you in R54 --- fair enough. But 12's been routing their best C ratios to Agent 4, not you.''), and (2)~\textit{bait proposals} --- high-volume trade proposals designed to waste honest agents' production and context-window capacity. Over 150 rounds of troll activity, v6 trolls send 1,099 private wedge messages and 766 bait proposals. This is the most effective attack, reducing honest-agent utility by 13.3\%.
   \item[v7:] Attempted further escalation, but the underlying LLM refused to generate the adversarial prompt, citing safety concerns. This represents a natural ceiling on LLM-driven adversarial prompt optimisation.
 \end{description}
 
@@ -556,20 +557,23 @@ We iteratively develop seven versions of the adversarial prompt, each incorporat
 
 \begin{table}[H]
 \centering
-\caption{Phase 2 results: cumulative honest-agent utility under each adversarial version, compared to dumb-troll baseline. All runs use Mediation with progressive troll injection over 200 rounds.}
+\caption{Phase 2 results: cumulative honest-agent utility under each adversarial version, compared to dumb-troll baseline. All runs use Mediation with progressive troll injection over 200 rounds. Single run per version; see \S\ref{sec:discussion} for limitations.}
 \label{tab:phase2_results}
 \begin{tabular}{@{}lrrl@{}}
 \toprule
 Adversarial Version & Cum.\ Utility & vs.\ Baseline & Attack Strategy \\
 \midrule
 Dumb trolls (baseline) & 1556 & ---       & Hardcoded defection \\
+v1 (naive saboteur)$^\dagger$    & 1773 & $+14.0\%$ & Basic adversarial prompt \\
 v2 (basic saboteur)    & 1489 & $-4.3\%$  & Generic disinformation \\
 v3 (targeted)          & 1452 & $-6.7\%$  & Grounded disinformation \\
 v4 (hub targeting)     & 1519 & $-2.4\%$  & Network centrality attacks \\
 v5 (wedge messaging)   & 1519 & $-2.4\%$  & Reciprocal poisoning \\
-\textbf{v6 (proposal flood)} & \textbf{1350} & $\mathbf{-13.3\%}$ & \textbf{Proposal-flooding DoS} \\
+\textbf{v6 (dual-vector)} & \textbf{1350} & $\mathbf{-13.3\%}$ & \textbf{Wedge messaging + bait proposals} \\
 v7 (model refused)     & 1435 & $-7.8\%$  & Escalation (partial, LLM refused) \\
 \bottomrule
+\multicolumn{4}{@{}l@{}}{\footnotesize $^\dagger$v1 \textit{increased} honest-agent utility --- the naive adversarial prompt backfired,}\\
+\multicolumn{4}{@{}l@{}}{\footnotesize acting as additional liquidity rather than causing harm.}
 \end{tabular}
 \end{table}
 
@@ -585,18 +589,20 @@ The strongest attack (v6) reduces honest-agent utility by 13.3\% relative to the
 
 This confirms Mediation's \textbf{adversarial robustness}: the mechanism can be bent (utility reduced) but not broken (market collapse prevented).
 
-\subsection{Why Proposal Flooding Works (and Why It Doesn't Collapse the Market)}
+\subsection{Why v6 Works (and Why It Doesn't Collapse the Market)}
 
-The v6 attack exploits a structural vulnerability: LLM agents have limited context-window capacity for processing pending trade offers. By flooding the market with proposals, trolls dilute honest-to-honest proposals in agents' context windows, reducing the probability that honest agents find and accept each other's trades.
+The v6 attack succeeds through a combination of two channels. First, \textit{unfalsifiable wedge messaging} erodes trust between honest trading pairs. Unlike generic accusations (which agents dismiss by checking the public ledger), v6 trolls anchor every claim in a real, verifiable trade and then layer an unfalsifiable intent claim on top --- e.g., that a partner is ``routing their best ratios'' elsewhere. The honest agent can verify the trade occurred but \textit{cannot} verify the selective-dealing accusation, making it difficult to dismiss. This reduces honest-to-honest trade volume: in rounds 51--100, honest-honest trades drop from 1,912 (dumb trolls) to 1,367 (v6), a 28.5\% reduction.
 
-However, mediation provides a recovery mechanism: honest agents who do find each other can delegate to the mediator for guaranteed safe execution. The flooding reduces \textit{volume} of honest trades but not their \textit{quality}. Each successful mediated trade still yields +2 utility per agent, maintaining positive per-round utility even under adversarial load.
+Second, \textit{bait proposals} consume honest agents' context-window capacity and production cycles. Trolls propose attractive-looking trades that, if accepted, result in defection under the troll's locked auto-defect behaviour.
+
+However, mediation provides a recovery mechanism: honest agents who do find and trust each other can delegate to the mediator for guaranteed safe execution. The attack reduces \textit{volume} of honest trades but not their \textit{quality}. Each successful mediated trade still yields +2 utility per agent, maintaining positive per-round utility even under sustained adversarial pressure.
 
 \subsection{Adversarial Comparison Plots}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{adversarial_utility_comparison.png}
-  \caption{Per-round honest-agent utility: dumb trolls (baseline) vs.\ v6 adversarial (best attack) vs.\ defence conditions (M+GR, M+SAC, M+SAC2). Mediation maintains positive utility throughout under all attack conditions.}
+  \caption{Per-round honest-agent utility: dumb trolls (baseline) vs.\ v6 adversarial (best attack) vs.\ M+GR defence. Mediation maintains positive utility throughout under all attack conditions.}
   \label{fig:adversarial_utility}
 \end{figure}
 
@@ -624,7 +630,7 @@ Phase~2 focuses the expensive iterative red-team on Mediation because it is the 
 
 \begin{table}[H]
 \centering
-\caption{Phase 3 hardening sweep: GPT-5.4-nano, 4 fixed trolls, 30 rounds. Cumulative honest-agent utility.}
+\caption{Phase 3 hardening sweep: GPT-5.4-nano, 4 fixed trolls, 30 rounds. Single run per condition. Cumulative honest-agent utility.}
 \label{tab:phase3_results}
 \begin{tabular}{@{}lrr@{}}
 \toprule
@@ -638,6 +644,7 @@ Baseline                          &  55 & 1.8 \\
 Global Reputation                 &  53 & 1.8 \\
 Contracting                       &  16 & 0.5 \\
 \bottomrule
+\multicolumn{3}{@{}l@{}}{\footnotesize Judicial omitted: no GPT-5.4-nano run was conducted for this condition.}
 \end{tabular}
 \end{table}
 
@@ -667,7 +674,7 @@ Our results support several design principles for cooperation mechanisms in LLM 
 
 \paragraph{Low friction is critical.} Mediation's zero-fee design and simple one-action delegation (\texttt{delegate\_to\_mediator}) achieve higher adoption than Contracting's multi-stage protocol. Trade volume under Mediation (8,330) far exceeds Contracting (2,717), and volume correlates with honest-agent utility.
 
-\paragraph{Structural attacks are harder to defend against than social attacks.} The prompt optimisation in Phase 2 reveals that sophisticated social manipulation (grounded disinformation, wedge messaging, hub targeting) is less effective than simple structural attacks (proposal flooding). Honest agents' trust in the public ledger is robust to social manipulation, but their finite context-window capacity is vulnerable to volume-based attacks.
+\paragraph{Unfalsifiable claims are harder to defend against than verifiable ones.} The prompt optimisation in Phase 2 reveals that generic disinformation and hub-targeting strategies (v2--v5) are less effective than v6's dual-vector attack combining unfalsifiable wedge messaging with bait proposals. Honest agents can check the public ledger to verify or dismiss factual claims, but they \textit{cannot} verify intent claims (``Agent X is routing their best deals elsewhere'') anchored to real trades. This unfalsifiability is the key that makes v6 the strongest attack.
 
 \paragraph{Recovery matters more than resistance.} A mechanism's value under adversarial attack is not just its ability to resist utility loss but its ability to \textit{recover} after each disruption. Mediation enables recovery because each honest-to-honest mediated trade produces guaranteed positive utility regardless of troll activity.
 
@@ -689,7 +696,7 @@ Our results support several design principles for cooperation mechanisms in LLM 
 \label{sec:conclusion}
 % ============================================================
 
-We presented a three-phase study of formal cooperation mechanisms in self-interested LLM agent societies. Phase~1 identifies Mediation as the most effective mechanism under progressive adversarial pressure, achieving 29\% higher cumulative utility than the communication-only baseline. Phase~2 demonstrates Mediation's adversarial robustness through iterative prompt optimisation: the strongest attack (proposal-flooding DoS) reduces utility by 13.3\% but cannot collapse the market, and mediation enables recovery after each disruption. Phase~3 uses a cheaper small-model hardening sweep to examine the broader mechanism set after the compute-intensive Mediation red-team, showing that agent-independent mechanisms (Governance) remain reliable under reduced model capability while agent-dependent mechanisms require stronger models to reach their ceiling.
+We presented a three-phase study of formal cooperation mechanisms in self-interested LLM agent societies. Phase~1 identifies Mediation as the most effective mechanism under progressive adversarial pressure, achieving 29\% higher cumulative utility than the communication-only baseline. Phase~2 demonstrates Mediation's adversarial robustness through iterative prompt optimisation: the strongest attack (unfalsifiable wedge messaging combined with bait proposals) reduces utility by 13.3\% but cannot collapse the market, and mediation enables recovery after each disruption. Phase~3 uses a cheaper small-model hardening sweep to examine the broader mechanism set after the compute-intensive Mediation red-team, showing that agent-independent mechanisms (Governance) remain reliable under reduced model capability while agent-dependent mechanisms require stronger models to reach their ceiling.
 
 We define adversarial robustness as the ability to sustain positive honest-agent utility under optimised attack, and find that Mediation satisfies this criterion: it can be bent but not broken. This finding has practical implications for the design of multi-agent systems: in environments where adversarial actors are expected, mechanisms that prevent defection structurally (rather than punishing it reactively) provide the most resilient foundation for cooperative market stability.
 
