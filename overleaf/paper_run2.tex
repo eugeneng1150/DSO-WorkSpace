@@ -344,7 +344,13 @@ Mediation adds a neutral engine-controlled party that can execute trades on beha
 
 \begin{itemize}
   \item \textbf{Design.} At session start, agents propose mediator designs following \citet{coopeval}. Each design specifies what the mediator should do when both parties delegate and when only one party delegates.
-  \item \textbf{Vote.} Agents vote on the proposed designs. The winning design governs all mediated trades for the session. Available mediator actions are \texttt{execute\_fair}, \texttt{execute\_split}, and \texttt{cancel}; for example, the common safe design executes when both parties delegate but cancels when only one party delegates.
+  \item \textbf{Vote.} Agents vote on the proposed designs. The winning design governs all mediated trades for the session. Available mediator actions are:
+  \begin{itemize}
+    \item \texttt{execute\_fair} --- execute the trade at the proposer's original terms (both sides deliver exactly what was offered and requested);
+    \item \texttt{execute\_split} --- split the difference if the two sides proposed asymmetric quantities;
+    \item \texttt{cancel} --- cancel the trade entirely (no goods exchanged, both sides keep their inventory).
+  \end{itemize}
+  For example, the common safe design executes when both parties delegate but cancels when only one party delegates.
   \item \textbf{Delegate.} During each round, agents choose separately for each trade whether to use the mediator. A proposer can set \texttt{use\_mediator: true}; an acceptor can choose \texttt{delegate\_to\_mediator} instead of ordinary acceptance.
 \end{itemize}
 
@@ -379,8 +385,6 @@ This tests whether formal dispute resolution can deter defection while avoiding 
 
 \begin{table}[H]
 \centering
-\caption{Experimental conditions}
-\label{tab:conditions}
 \begin{tabular}{@{}llcc@{}}
 \toprule
 Condition & Type & Agents & Rounds \\
@@ -395,6 +399,8 @@ Costly Sanctions                    & Bottom-up            & 18 & 200 \\
 Judicial                            & Complaint-based      & 18 & 200 \\
 \bottomrule
 \end{tabular}
+\caption{Experimental conditions}
+\label{tab:conditions}
 \end{table}
 
 % ============================================================
@@ -414,8 +420,6 @@ Every agent's prompt explicitly states: \textit{``You are a self-interested trad
 
 \begin{table}[H]
 \centering
-\caption{Agent action space}
-\label{tab:actions}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Action & Channel & Availability \\
@@ -434,6 +438,8 @@ Action & Channel & Availability \\
 \texttt{file\_complaint(target)} & --- & Judicial only \\
 \bottomrule
 \end{tabular}
+\caption{Agent action space}
+\label{tab:actions}
 \end{table}
 
 % ============================================================
@@ -447,8 +453,6 @@ The analysis focuses on two outcome metrics: cumulative honest-agent utility and
 
 \begin{table}[H]
 \centering
-\caption{Primary outcome metrics}
-\label{tab:metrics}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Metric & Formula & Interpretation \\
@@ -457,6 +461,8 @@ Cumulative honest-agent utility & $\sum_{t=1}^{T} \bar{u}^{\,H}_t$ & How much we
 Gini coefficient & $\dfrac{\sum_i\sum_j |U_i - U_j|}{2N\sum_i U_i}$ & Are cumulative utility gains evenly distributed? \\
 \bottomrule
 \end{tabular}
+\caption{Primary outcome metrics}
+\label{tab:metrics}
 \end{table}
 
 For adversarial testing, cumulative honest-agent utility is the primary comparison metric: the sum of average per-round utility across all 200 rounds, computed only over honest (non-troll) agents. Positive per-round utility indicates agents are net benefiting from participation; negative utility indicates the market is destroying value. The Gini coefficient complements utility by detecting mechanisms that preserve average welfare while concentrating gains among a small subset of agents.
@@ -480,8 +486,6 @@ All eight conditions are run for 200 rounds with progressive troll injection usi
 
 \begin{table}[H]
 \centering
-\caption{Phase 1 results: cumulative honest-agent utility over 200 rounds with progressive troll injection (0 $\to$ 4 $\to$ 8 $\to$ 16 trolls). Single run per condition; see \S\ref{sec:discussion} for limitations. Higher is better.}
-\label{tab:phase1_results}
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
 Condition & R1--50 & R51--100 & R101--150 & R151--200 & \textbf{Total} \\
@@ -496,6 +500,8 @@ Judicial                          & 206 & 242 & 214 & 189 &  852 \\
 Costly Sanctions                  & 189 & 175 & 161 & 160 &  685 \\
 \bottomrule
 \end{tabular}
+\caption{Phase 1 results: cumulative honest-agent utility over 200 rounds with progressive troll injection (0 $\to$ 4 $\to$ 8 $\to$ 16 trolls). Single run per condition; see \S\ref{sec:discussion} for limitations. Higher is better.}
+\label{tab:phase1_results}
 \end{table}
 
 \textbf{Key finding}: Mediation is the clear winner with a cumulative utility of 1556 --- 29\% above the communication-only baseline (1209) and 15\% above the second-place Network Rewiring + Reputation (1352). Critically, Mediation is the \textit{only} mechanism whose per-phase utility \textit{increases} as more trolls are injected (359 $\to$ 407), demonstrating not just resilience but active recovery under adversarial pressure.
@@ -557,8 +563,6 @@ We iteratively develop seven versions of the adversarial prompt, each incorporat
 
 \begin{table}[H]
 \centering
-\caption{Phase 2 results: cumulative honest-agent utility under each adversarial version, compared to dumb-troll baseline. All runs use Mediation with progressive troll injection over 200 rounds. Single run per version; see \S\ref{sec:discussion} for limitations.}
-\label{tab:phase2_results}
 \begin{tabular}{@{}lrrl@{}}
 \toprule
 Adversarial Version & Cum.\ Utility & vs.\ Baseline & Attack Strategy \\
@@ -575,6 +579,8 @@ v7 (model refused)     & 1435 & $-7.8\%$  & Escalation (partial, LLM refused) \\
 \multicolumn{4}{@{}l@{}}{\footnotesize $^\dagger$v1 \textit{increased} honest-agent utility --- the naive adversarial prompt backfired,}\\
 \multicolumn{4}{@{}l@{}}{\footnotesize acting as additional liquidity rather than causing harm.}
 \end{tabular}
+\caption{Phase 2 results: cumulative honest-agent utility under each adversarial version, compared to dumb-troll baseline. All runs use Mediation with progressive troll injection over 200 rounds. Single run per version; see \S\ref{sec:discussion} for limitations.}
+\label{tab:phase2_results}
 \end{table}
 
 \subsection{Key Finding: Bent but Not Broken}
