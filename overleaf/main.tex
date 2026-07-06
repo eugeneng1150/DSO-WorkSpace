@@ -304,6 +304,13 @@ The simulation runs with $N = 18$ agents (6 per production specialty) over $T = 
 
 Each agent is an LLM-driven decision-maker that perceives the marketplace through structured observations, reasons about strategy using chain-of-thought, and acts through a fixed set of structured actions with execution feedback. All agents use DeepSeek-V3 (Azure endpoint, temperature 0.7) and are \textit{explicitly self-interested}: each agent's prompt states that it has no loyalty to other agents and no obligation to cooperate, and that its sole goal is to maximise its own total utility. This framing ensures that observed cooperation reflects strategic calculation rather than an instruction to optimise group welfare. All agents are otherwise homogeneous, isolating the formal mechanism as the sole independent variable.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{plots/Trade Progress Chat.jpg}
+  \caption{A single trade interaction between two agents. The sequence proceeds through communication, trade proposal, decision policy, execution, memory update, and consumption. Core actions (accept, reject, defect) are always available; mechanism-specific actions are injected when the corresponding mechanism is active.}
+  \label{fig:trade-interaction}
+\end{figure}
+
 \subsection{Perception}
 
 Each round, agents receive a structured observation comprising the following textual representations:
