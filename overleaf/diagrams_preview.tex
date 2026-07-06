@@ -24,74 +24,67 @@
 % ── DIAGRAM 1: Agent Trade Interaction (Chat Style) ──
 \begin{adjustbox}{max width=\textwidth, max height=0.9\textheight, keepaspectratio}
 \begin{tikzpicture}[
-    bubble left/.style={draw, rounded corners=8pt, fill=honest!10, text width=6.5cm, font=\small, align=left, thick, inner sep=8pt},
-    bubble right/.style={draw, rounded corners=8pt, fill=produce!10, text width=6.5cm, font=\small, align=left, thick, inner sep=8pt},
-    system/.style={draw, rounded corners=6pt, fill=gray!8, text width=10cm, font=\scriptsize\itshape, align=center, thick, dashed, inner sep=6pt},
-    agent label/.style={font=\scriptsize\bfseries, #1},
+    bubble left/.style={draw, rounded corners=8pt, fill=honest!10, text width=8cm, font=\small, align=left, thick, inner sep=8pt},
+    bubble right/.style={draw, rounded corners=8pt, fill=produce!10, text width=8cm, font=\small, align=left, thick, inner sep=8pt},
+    system/.style={draw, rounded corners=6pt, fill=gray!8, text width=12cm, font=\scriptsize\itshape, align=center, thick, dashed, inner sep=6pt},
     timestamp/.style={font=\tiny, gray},
+    vgap/.style={node distance=8pt},
 ]
 
 % Title
-\node[font=\large\bfseries] at (5.5, 16.5) {Trade Interaction Between Two Agents};
-
-% Chat container
-\draw[thick, rounded corners=10pt, fill=white] (-0.5, -0.5) rectangle (11.5, 15.8);
+\node[font=\large\bfseries] (title) at (7, 0) {Trade Interaction Between Two Agents};
 
 % Agent headers
-\node[draw, rounded corners=5pt, fill=honest!15, minimum width=3cm, font=\small\bfseries, inner sep=5pt] at (2.5, 15.2) {Agent 3 (Produces A)};
-\node[draw, rounded corners=5pt, fill=produce!15, minimum width=3cm, font=\small\bfseries, inner sep=5pt] at (8.5, 15.2) {Agent 7 (Produces B)};
+\node[draw, rounded corners=5pt, fill=honest!15, font=\small\bfseries, inner sep=5pt, below left=12pt and 4cm of title] (hdrA) {Agent 3 (Produces A)};
+\node[draw, rounded corners=5pt, fill=produce!15, font=\small\bfseries, inner sep=5pt, below right=12pt and 4cm of title] (hdrB) {Agent 7 (Produces B)};
 
 % System: Round start
-\node[system] (sys1) at (5.5, 14) {Round 42 --- Communication Phase begins. Agent 3 and Agent 7 are neighbors.};
+\node[system, below=14pt of title] (sys1) {Round 42 --- Communication Phase begins. Agent 3 and Agent 7 are neighbors.};
 
 % Agent 3 message (left-aligned)
-\node[bubble left, anchor=north west] (m1) at (0.2, 13.2) {
-    \textbf{Agent 3:} Hi Agent 7, I have surplus Good A from production. I need Good B for consumption. Would you be interested in trading 2 units of A for 2 units of B?
+\node[bubble left, anchor=north west, below=10pt of sys1.south west] (m1) {
+    \textbf{Agent 3:} I have surplus Good A. I need Good B for consumption. Would you trade 2A for 2B?
 };
-\node[timestamp, below left=1pt and 0pt of m1.south east] {Round 42, Comm};
 
 % Agent 7 message (right-aligned)
-\node[bubble right, anchor=north east] (m2) at (10.8, 10.8) {
-    \textbf{Agent 7:} That sounds fair. I have 3 units of B and need A for consumption. I'll accept a 2-for-2 trade. Based on our past trades, you've always delivered --- let's do it.
+\node[bubble right, anchor=north east, below=10pt of m1.south east] (m2) {
+    \textbf{Agent 7:} That sounds fair. I have 3B and need A. You've always delivered in our past trades --- let's do it.
 };
-\node[timestamp, below right=1pt and 0pt of m2.south west] {Round 42, Comm};
 
 % System: Trade phase
-\node[system] (sys2) at (5.5, 8.6) {Trade Phase --- Agent 3 proposes: Give 2$\times$A, Receive 2$\times$B to Agent 7};
+\node[system, below=10pt of m2.south -| sys1] (sys2) {Trade Phase --- Agent 3 proposes: Give 2$\times$A, Receive 2$\times$B to Agent 7};
 
-% Agent 7 decision (right-aligned)
-\node[bubble right, anchor=north east] (m3) at (10.8, 7.8) {
-    \textbf{Agent 7} \textit{(internal reasoning):} Agent 3 delivered in our last 3 trades, 0 defections in 4 lifetime trades. I'll accept and deliver my goods honestly.
+% Agent 7 reasoning (right-aligned)
+\node[bubble right, anchor=north east, below=10pt of sys2.south east] (m3) {
+    \textbf{Agent 7} \textit{(reasoning):} 0 defections in 4 lifetime trades. Accept and deliver honestly.
 };
-\node[timestamp, below right=1pt and 0pt of m3.south west] {Round 42, Trade};
 
 % Action space
-\node[draw, rounded corners=6pt, fill=trade!5, minimum width=10cm, inner sep=6pt, thick] (actions) at (5.5, 5.9) {
+\node[draw, rounded corners=6pt, fill=trade!5, inner sep=6pt, thick, below=10pt of m3.south -| sys1] (actions) {
     \begin{tabular}{cccc}
     \tikz\node[draw, rounded corners=4pt, fill=produce!20, font=\scriptsize\bfseries, inner sep=4pt, thick]{Accept \checkmark}; &
     \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Reject}; &
     \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Defect}; &
-    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Delegate to Mediator}; \\
-    {\tiny both deliver} & {\tiny no exchange} & {\tiny take, don't give} & {\tiny if mechanism active}
+    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Delegate}; \\
+    {\tiny both deliver} & {\tiny no exchange} & {\tiny take, don't give} & {\tiny mediator executes}
     \end{tabular}
 };
 \node[font=\scriptsize\bfseries, above=1pt of actions.north west, anchor=south west] {Action Space:};
 
 % System: Resolution
-\node[system] (sys3) at (5.5, 4.5) {Trade executed: Agent 3 delivers 2$\times$A $\rightarrow$ Agent 7. Agent 7 delivers 2$\times$B $\rightarrow$ Agent 3.};
+\node[system, below=10pt of actions] (sys3) {Trade executed: Agent 3 delivers 2$\times$A $\rightarrow$ Agent 7. Agent 7 delivers 2$\times$B $\rightarrow$ Agent 3.};
 
-% Agent 3 post-trade (left-aligned)
-\node[bubble left, anchor=north west] (m4) at (0.2, 3.7) {
-    \textbf{Agent 3} \textit{(memory update):} Agent 7 cooperated again. Lifetime: 4 trades, 0 defections. Reliable partner.
+% Agent 3 memory update (left-aligned)
+\node[bubble left, anchor=north west, below=10pt of sys3.south west] (m4) {
+    \textbf{Agent 3} \textit{(memory update):} Agent 7 cooperated. Lifetime: 5 trades, 0 defections.
 };
-\node[timestamp, below left=1pt and 0pt of m4.south east] {Round 42, End};
 
-% System: Utility
-\node[system] (sys4) at (5.5, 1.8) {Consumption: Agent 3 consumes 2$\times$B (+6 utility). Agent 7 consumes 2$\times$A (+6 utility).};
+% System: Consumption
+\node[system, below=10pt of m4.south -| sys1] (sys4) {Consumption: Agent 3 consumes 2$\times$B (+6 utility). Agent 7 consumes 2$\times$A (+6 utility).};
 
-% Outcome summary bar
-\node[draw, rounded corners=6pt, fill=produce!10, minimum width=10cm, minimum height=1cm, font=\small, align=center, thick] at (5.5, 0.4)
-    {\textbf{Outcome:} Mutual cooperation. Both agents gain +6 utility this round.};
+% Outcome bar
+\node[draw, rounded corners=6pt, fill=produce!10, minimum width=12cm, font=\small, align=center, thick, inner sep=6pt, below=10pt of sys4] (outcome)
+    {\textbf{Outcome:} Mutual cooperation. Both agents gain +6 utility.};
 
 \end{tikzpicture}%
 \end{adjustbox}
