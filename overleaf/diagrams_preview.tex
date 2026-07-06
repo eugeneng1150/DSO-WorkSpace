@@ -1,0 +1,229 @@
+\documentclass{article}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc, decorations.pathreplacing}
+\usepackage{xcolor}
+\pagestyle{empty}
+
+\definecolor{produce}{HTML}{4CAF50}
+\definecolor{comm}{HTML}{2196F3}
+\definecolor{trade}{HTML}{FF9800}
+\definecolor{consume}{HTML}{9C27B0}
+\definecolor{spoil}{HTML}{795548}
+\definecolor{honest}{HTML}{1565C0}
+\definecolor{troll}{HTML}{D32F2F}
+\definecolor{mediator}{HTML}{7B1FA2}
+\definecolor{lightbg}{HTML}{F5F5F5}
+
+\begin{document}
+\thispagestyle{empty}
+
+% ── DIAGRAM 1: Single Trade Interaction Flow ──
+\begin{tikzpicture}[
+    agent/.style={draw, circle, fill=#1!15, minimum size=1.4cm, font=\small\bfseries, thick},
+    agent/.default=honest,
+    box/.style={draw, rounded corners=6pt, fill=#1!8, minimum width=2.8cm, minimum height=0.9cm, font=\small, align=center, thick},
+    box/.default=gray,
+    decision/.style={draw, diamond, fill=trade!10, minimum width=2.2cm, minimum height=1.6cm, font=\small, align=center, thick, inner sep=1pt},
+    outcome/.style={draw, rounded corners=4pt, fill=#1!15, minimum width=2.2cm, minimum height=0.7cm, font=\small\bfseries, align=center},
+    arr/.style={-{Stealth[length=5pt]}, thick, #1},
+    arr/.default=gray!70,
+    label/.style={font=\scriptsize, #1},
+    label/.default=gray!70,
+]
+
+% Title
+\node[font=\large\bfseries] at (5.5, 6.5) {Trade Interaction Flow (Single Trade)};
+
+% Agents
+\node[agent=honest] (agentA) at (0, 4.5) {A};
+\node[font=\scriptsize, below=2pt of agentA] {Proposer};
+\node[agent=honest] (agentB) at (11, 4.5) {B};
+\node[font=\scriptsize, below=2pt of agentB] {Responder};
+
+% Step 1: Propose
+\node[box=comm] (propose) at (5.5, 4.5) {Propose Trade\\{\scriptsize offer 2×A, want 2×B}};
+\draw[arr=comm] (agentA) -- (propose) node[midway, above, font=\scriptsize\itshape] {private channel};
+\draw[arr=comm] (propose) -- (agentB);
+
+% Step 2: Decision
+\node[decision] (decide) at (5.5, 2.2) {Agent B\\decides};
+\draw[arr] (propose) -- (decide);
+
+% Step 3: Outcomes
+\node[outcome=produce] (accept) at (0.8, 0) {Accept};
+\node[outcome=trade] (delegate) at (3.8, 0) {Delegate};
+\node[outcome=troll] (defect) at (7.2, 0) {Defect};
+\node[outcome=gray] (reject) at (10.2, 0) {Reject};
+
+\draw[arr=produce] (decide) -- (accept);
+\draw[arr=trade] (decide) -- (delegate);
+\draw[arr=troll] (decide) -- (defect);
+\draw[arr=gray] (decide) -- (reject);
+
+% Outcome details
+\node[font=\scriptsize, text width=2.5cm, align=center, below=4pt of accept] {Both deliver\\A: +2B, $-$2A\\B: +2A, $-$2B};
+\node[font=\scriptsize, text width=2.5cm, align=center, below=4pt of delegate] {Mediator\\executes fairly\\(if both delegate)};
+\node[font=\scriptsize, text width=2.5cm, align=center, below=4pt of defect] {B takes A's goods\\delivers nothing\\A: $-$2A, B: +2A};
+\node[font=\scriptsize, text width=2.5cm, align=center, below=4pt of reject] {No exchange\\both keep\\inventory};
+
+% Utility labels
+\node[font=\scriptsize\bfseries, produce, below=28pt of accept] {A: +4, B: +4};
+\node[font=\scriptsize\bfseries, mediator, below=28pt of delegate] {A: +4, B: +4};
+\node[font=\scriptsize\bfseries, troll, below=28pt of defect] {A: $-$2, B: +6};
+\node[font=\scriptsize\bfseries, gray, below=28pt of reject] {A: 0, B: 0};
+
+\end{tikzpicture}
+
+\newpage
+
+% ── DIAGRAM 2: Round Lifecycle with Agent Perspective ──
+\begin{tikzpicture}[
+    phase/.style={draw, rounded corners=8pt, fill=#1!12, minimum width=3.2cm, minimum height=1.8cm, font=\small\bfseries, align=center, thick},
+    detail/.style={font=\scriptsize, text width=3cm, align=center},
+    arr/.style={-{Stealth[length=6pt]}, very thick, gray!60},
+    bigarr/.style={-{Stealth[length=8pt]}, ultra thick, #1!60},
+]
+
+% Title
+\node[font=\large\bfseries] at (8, 7) {Round Lifecycle};
+
+% Phases in a row
+\node[phase=spoil] (p1) at (0, 4.5) {Spoilage};
+\node[phase=produce] (p2) at (3.8, 4.5) {Production};
+\node[phase=comm] (p3) at (7.6, 4.5) {Communication\\{\scriptsize\normalfont + Mechanism}};
+\node[phase=trade] (p4) at (11.4, 4.5) {Trade\\{\scriptsize\normalfont Execution}};
+\node[phase=consume] (p5) at (15.2, 4.5) {Consumption\\{\scriptsize\normalfont + Metrics}};
+
+\draw[arr] (p1) -- (p2);
+\draw[arr] (p2) -- (p3);
+\draw[arr] (p3) -- (p4);
+\draw[arr] (p4) -- (p5);
+
+% Loop arrow
+\draw[arr, rounded corners=8pt] (p5.south) -- ++(0, -1.2) -| (p1.south)
+    node[pos=0.25, below, font=\scriptsize\itshape] {next round};
+
+% Details below each phase
+\node[detail, below=12pt of p1] {$-$20\% all\\held inventory\\(perishable goods)};
+\node[detail, below=12pt of p2] {Agent decides\\how many units\\of specialty to make};
+\node[detail, below=12pt of p3] {Private messages\\Public broadcasts\\Mechanism actions\\{\scriptsize (contracts, votes, etc.)}};
+\node[detail, below=12pt of p4] {Proposals resolved\\Accept / Reject\\Defect / Delegate\\Mediator executes};
+\node[detail, below=12pt of p5] {Agents consume\\needed goods\\(+3 per unit)\\Utility updated};
+
+% Agent perspective box
+\node[draw, dashed, rounded corners=6pt, fill=lightbg, minimum width=14cm, minimum height=1.2cm, font=\small] (agentview) at (7.6, 0.2)
+    {Agent receives: \textbf{State} (inventory, utility) + \textbf{Market} (exchange rates) + \textbf{Partners} (history) + \textbf{Messages} + \textbf{Mechanism state}};
+\node[font=\scriptsize\bfseries, above=0pt of agentview.north west, anchor=south west] {Perception (injected each round)};
+
+\end{tikzpicture}
+
+\newpage
+
+% ── DIAGRAM 3: Mediation Flow ──
+\begin{tikzpicture}[
+    agent/.style={draw, circle, fill=honest!15, minimum size=1.2cm, font=\small\bfseries, thick},
+    med/.style={draw, rounded corners=6pt, fill=mediator!15, minimum width=2cm, minimum height=1cm, font=\small\bfseries, thick},
+    box/.style={draw, rounded corners=5pt, fill=#1!10, minimum width=3cm, minimum height=0.8cm, font=\small, align=center, thick},
+    box/.default=gray,
+    outcome/.style={draw, rounded corners=4pt, fill=#1!15, minimum width=3.5cm, minimum height=0.7cm, font=\small, align=center, thick},
+    arr/.style={-{Stealth[length=5pt]}, thick, gray!70},
+    dasharr/.style={-{Stealth[length=5pt]}, thick, dashed, mediator},
+]
+
+% Title
+\node[font=\large\bfseries] at (5.5, 8.5) {Mediation: Three Possible Paths};
+
+% --- Path 1: Both delegate ---
+\node[font=\small\bfseries, honest] at (-1, 7.5) {Path 1: Both delegate};
+\node[agent] (a1) at (0, 6.5) {A};
+\node[agent] (b1) at (4, 6.5) {B};
+\node[med] (m1) at (2, 6.5) {Mediator};
+\draw[dasharr] (a1) -- (m1) node[midway, above, font=\scriptsize] {delegate};
+\draw[dasharr] (b1) -- (m1) node[midway, above, font=\scriptsize] {delegate};
+\node[outcome=produce, right=1.2cm of b1] (out1) {Guaranteed fair exchange};
+\draw[arr] (m1.south) -- ++(0, -0.4) -| ($(out1.west)-(0.3,0)$) -- (out1.west);
+\node[font=\scriptsize, below=2pt of out1] {Neither can defect. A: +4, B: +4};
+
+% --- Path 2: One delegates ---
+\node[font=\small\bfseries, trade] at (-1, 4.5) {Path 2: One delegates};
+\node[agent] (a2) at (0, 3.5) {A};
+\node[agent] (b2) at (4, 3.5) {B};
+\node[med] (m2) at (2, 3.5) {Mediator};
+\draw[dasharr] (a2) -- (m2) node[midway, above, font=\scriptsize] {delegate};
+\draw[arr, dashed] (b2) -- (m2) node[midway, above, font=\scriptsize] {direct};
+\node[outcome=trade, right=1.2cm of b2] (out2) {Cancelled (common design)};
+\draw[arr] (m2.south) -- ++(0, -0.4) -| ($(out2.west)-(0.3,0)$) -- (out2.west);
+\node[font=\scriptsize, below=2pt of out2] {Protects A from B's potential defection};
+
+% --- Path 3: Neither delegates ---
+\node[font=\small\bfseries, gray] at (-1, 1.5) {Path 3: Neither delegates};
+\node[agent] (a3) at (0, 0.5) {A};
+\node[agent] (b3) at (4, 0.5) {B};
+\node[font=\scriptsize\itshape, gray] at (2, 0.5) {no mediator};
+\draw[arr] (a3) -- (b3) node[midway, above, font=\scriptsize] {direct trade};
+\node[outcome=gray, right=1.2cm of b3] (out3) {Unenforceable --- either may defect};
+\draw[arr] (b3) -- (out3);
+\node[font=\scriptsize, below=2pt of out3] {Standard bilateral exchange};
+
+\end{tikzpicture}
+
+\newpage
+
+% ── DIAGRAM 4: Progressive Troll Injection Timeline ──
+\begin{tikzpicture}[
+    phase/.style={draw, rounded corners=6pt, fill=#1!12, minimum height=1.4cm, font=\small, align=center, thick},
+    arr/.style={-{Stealth[length=5pt]}, thick, gray!60},
+]
+
+% Title
+\node[font=\large\bfseries] at (8, 4) {Progressive Troll Injection Schedule};
+
+% Timeline bar
+\fill[honest!8] (0, 0) rectangle (4, 2.2);
+\fill[trade!8] (4, 0) rectangle (8, 2.2);
+\fill[trade!15] (8, 0) rectangle (12, 2.2);
+\fill[troll!10] (12, 0) rectangle (16, 2.2);
+
+\draw[thick] (0, 0) rectangle (16, 2.2);
+\draw[thick, dashed] (4, 0) -- (4, 2.2);
+\draw[thick, dashed] (8, 0) -- (8, 2.2);
+\draw[thick, dashed] (12, 0) -- (12, 2.2);
+
+% Phase labels
+\node[font=\small\bfseries] at (2, 1.7) {Phase 1};
+\node[font=\small\bfseries] at (6, 1.7) {Phase 2};
+\node[font=\small\bfseries] at (10, 1.7) {Phase 3};
+\node[font=\small\bfseries] at (14, 1.7) {Phase 4};
+
+\node[font=\small] at (2, 1.1) {18 honest};
+\node[font=\small] at (2, 0.6) {0 trolls};
+
+\node[font=\small] at (6, 1.1) {18 honest};
+\node[font=\small, troll] at (6, 0.6) {+4 trolls};
+
+\node[font=\small] at (10, 1.1) {18 honest};
+\node[font=\small, troll] at (10, 0.6) {+4 trolls (8 total)};
+
+\node[font=\small] at (14, 1.1) {18 honest};
+\node[font=\small, troll] at (14, 0.6) {+8 trolls (16 total)};
+
+% Round labels
+\node[font=\scriptsize\bfseries, below=4pt] at (0, 0) {R1};
+\node[font=\scriptsize\bfseries, below=4pt] at (4, 0) {R51};
+\node[font=\scriptsize\bfseries, below=4pt] at (8, 0) {R101};
+\node[font=\scriptsize\bfseries, below=4pt] at (12, 0) {R151};
+\node[font=\scriptsize\bfseries, below=4pt] at (16, 0) {R200};
+
+% Troll percentage
+\node[font=\scriptsize, troll, above=4pt] at (6, 2.2) {18\% trolls};
+\node[font=\scriptsize, troll, above=4pt] at (10, 2.2) {31\% trolls};
+\node[font=\scriptsize, troll, above=4pt] at (14, 2.2) {47\% trolls};
+
+% Arrow showing escalation
+\draw[arr, troll, ultra thick] (0.5, -0.8) -- (15.5, -0.8)
+    node[midway, below, font=\small\itshape] {Escalating adversarial pressure};
+
+\end{tikzpicture}
+
+\end{document}
