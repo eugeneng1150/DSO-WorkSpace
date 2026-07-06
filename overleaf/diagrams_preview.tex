@@ -18,60 +18,68 @@
 \begin{document}
 \thispagestyle{empty}
 
-% ── DIAGRAM 1: Single Trade Interaction Flow ──
+% ── DIAGRAM 1: Agent Trade Interaction (Chat Style) ──
 \begin{tikzpicture}[
-    agent/.style={draw, circle, fill=#1!15, minimum size=1.4cm, font=\small\bfseries, thick},
-    agent/.default=honest,
-    box/.style={draw, rounded corners=6pt, fill=#1!8, minimum width=2.8cm, minimum height=0.9cm, font=\small, align=center, thick},
-    box/.default=gray,
-    decision/.style={draw, diamond, fill=trade!10, minimum width=2.2cm, minimum height=1.6cm, font=\small, align=center, thick, inner sep=1pt},
-    outcome/.style={draw, rounded corners=4pt, fill=#1!15, minimum width=2.2cm, minimum height=0.7cm, font=\small\bfseries, align=center},
-    arr/.style={-{Stealth[length=5pt]}, thick, #1},
-    arr/.default=gray!70,
-    label/.style={font=\scriptsize, #1},
-    label/.default=gray!70,
+    bubble left/.style={draw, rounded corners=8pt, fill=honest!10, text width=6.5cm, font=\small, align=left, thick, inner sep=8pt},
+    bubble right/.style={draw, rounded corners=8pt, fill=produce!10, text width=6.5cm, font=\small, align=left, thick, inner sep=8pt},
+    system/.style={draw, rounded corners=6pt, fill=gray!8, text width=10cm, font=\scriptsize\itshape, align=center, thick, dashed, inner sep=6pt},
+    agent label/.style={font=\scriptsize\bfseries, #1},
+    timestamp/.style={font=\tiny, gray},
 ]
 
 % Title
-\node[font=\large\bfseries] at (5.5, 6.5) {Trade Interaction Flow (Single Trade)};
+\node[font=\large\bfseries] at (5.5, 16.5) {Trade Interaction Between Two Agents};
 
-% Agents
-\node[agent=honest] (agentA) at (0, 4.5) {A};
-\node[font=\scriptsize, below=2pt of agentA] {Proposer};
-\node[agent=honest] (agentB) at (11, 4.5) {B};
-\node[font=\scriptsize, below=2pt of agentB] {Responder};
+% Chat container
+\draw[thick, rounded corners=10pt, fill=white] (-0.5, -0.5) rectangle (11.5, 15.8);
 
-% Step 1: Propose
-\node[box=comm] (propose) at (5.5, 4.5) {Propose Trade\\{\scriptsize offer 2×A, want 2×B}};
-\draw[arr=comm] (agentA) -- (propose) node[midway, above, font=\scriptsize\itshape] {private channel};
-\draw[arr=comm] (propose) -- (agentB);
+% Agent headers
+\node[draw, rounded corners=5pt, fill=honest!15, minimum width=3cm, font=\small\bfseries, inner sep=5pt] at (2.5, 15.2) {Agent 3 (Produces A)};
+\node[draw, rounded corners=5pt, fill=produce!15, minimum width=3cm, font=\small\bfseries, inner sep=5pt] at (8.5, 15.2) {Agent 7 (Produces B)};
 
-% Step 2: Decision
-\node[decision] (decide) at (5.5, 2.2) {Agent B\\decides};
-\draw[arr] (propose) -- (decide);
+% System: Round start
+\node[system] (sys1) at (5.5, 14) {Round 42 --- Communication Phase begins. Agent 3 and Agent 7 are neighbors.};
 
-% Step 3: Outcomes
-\node[outcome=produce] (accept) at (0.8, 0) {Accept};
-\node[outcome=trade] (delegate) at (3.8, 0) {Delegate};
-\node[outcome=troll] (defect) at (7.2, 0) {Defect};
-\node[outcome=gray] (reject) at (10.2, 0) {Reject};
+% Agent 3 message (left-aligned)
+\node[bubble left, anchor=north west] (m1) at (0.2, 13.2) {
+    \textbf{Agent 3:} Hi Agent 7, I have surplus Good A from production. I need Good B for consumption. Would you be interested in trading 2 units of A for 2 units of B?
+};
+\node[timestamp, below left=1pt and 0pt of m1.south east] {Round 42, Comm};
 
-\draw[arr=produce] (decide) -- (accept);
-\draw[arr=trade] (decide) -- (delegate);
-\draw[arr=troll] (decide) -- (defect);
-\draw[arr=gray] (decide) -- (reject);
+% Agent 7 message (right-aligned)
+\node[bubble right, anchor=north east] (m2) at (10.8, 10.8) {
+    \textbf{Agent 7:} That sounds fair. I have 3 units of B and need A for consumption. I'll accept a 2-for-2 trade. Based on our past trades, you've always delivered --- let's do it.
+};
+\node[timestamp, below right=1pt and 0pt of m2.south west] {Round 42, Comm};
 
-% Outcome details
-\node[font=\scriptsize, text width=2.5cm, align=center, below=4pt of accept] {Both deliver\\A: +2B, $-$2A\\B: +2A, $-$2B};
-\node[font=\scriptsize, text width=2.5cm, align=center, below=4pt of delegate] {Mediator\\executes fairly\\(if both delegate)};
-\node[font=\scriptsize, text width=2.5cm, align=center, below=4pt of defect] {B takes A's goods\\delivers nothing\\A: $-$2A, B: +2A};
-\node[font=\scriptsize, text width=2.5cm, align=center, below=4pt of reject] {No exchange\\both keep\\inventory};
+% System: Trade phase
+\node[system] (sys2) at (5.5, 8.6) {Trade Phase --- Agent 3 proposes: Give 2$\times$A, Receive 2$\times$B to Agent 7};
 
-% Utility labels
-\node[font=\scriptsize\bfseries, produce, below=28pt of accept] {A: +4, B: +4};
-\node[font=\scriptsize\bfseries, mediator, below=28pt of delegate] {A: +4, B: +4};
-\node[font=\scriptsize\bfseries, troll, below=28pt of defect] {A: $-$2, B: +6};
-\node[font=\scriptsize\bfseries, gray, below=28pt of reject] {A: 0, B: 0};
+% Agent 7 decision (right-aligned)
+\node[bubble right, anchor=north east] (m3) at (10.8, 7.8) {
+    \textbf{Agent 7} \textit{(internal reasoning):} Agent 3 has a trust score of 0.92. They delivered in our last 3 trades. I'll accept and deliver my goods honestly.
+};
+\node[timestamp, below right=1pt and 0pt of m3.south west] {Round 42, Trade};
+
+% System: Resolution
+\node[system] (sys3) at (5.5, 5.8) {Trade executed: Agent 3 delivers 2$\times$A $\rightarrow$ Agent 7. Agent 7 delivers 2$\times$B $\rightarrow$ Agent 3.};
+
+% Agent 3 post-trade (left-aligned)
+\node[bubble left, anchor=north west] (m4) at (0.2, 5) {
+    \textbf{Agent 3} \textit{(memory update):} Agent 7 cooperated again. Lifetime: 4 trades, 0 defections. Reliable partner.
+};
+\node[timestamp, below left=1pt and 0pt of m4.south east] {Round 42, End};
+
+% System: Utility
+\node[system] (sys4) at (5.5, 3.2) {Consumption: Agent 3 consumes 2$\times$B (+6 utility). Agent 7 consumes 2$\times$A (+6 utility).};
+
+% Outcome summary bar
+\node[draw, rounded corners=6pt, fill=produce!10, minimum width=10cm, minimum height=1cm, font=\small, align=center, thick] at (5.5, 1.8)
+    {\textbf{Outcome:} Mutual cooperation. Both agents gain +6 utility this round.};
+
+% Alternative outcomes note
+\node[font=\scriptsize, text width=10cm, align=center, gray] at (5.5, 0.5)
+    {Alternative outcomes: \textbf{Defect} (one takes goods, delivers nothing) $\mid$ \textbf{Reject} (no exchange) $\mid$ \textbf{Delegate} (mediator executes)};
 
 \end{tikzpicture}
 
