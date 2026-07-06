@@ -231,36 +231,36 @@
 % ── DIAGRAM 5: Mechanism Taxonomy ──
 \begin{tikzpicture}[
     cat/.style={draw, rounded corners=8pt, fill=#1!12, minimum width=4.2cm, minimum height=0.9cm, font=\small\bfseries, align=center, thick},
-    mech/.style={draw, rounded corners=5pt, fill=#1!8, minimum width=3.6cm, minimum height=1.6cm, font=\small, align=center, thick},
-    baseline/.style={draw, rounded corners=5pt, fill=gray!8, minimum width=3.6cm, minimum height=1.2cm, font=\small, align=center, thick, dashed},
+    mech/.style={draw, rounded corners=5pt, fill=#1!8, minimum width=3.2cm, minimum height=1.5cm, font=\small, align=center, thick},
+    baseline/.style={draw, rounded corners=5pt, fill=gray!8, minimum width=3.2cm, minimum height=1.2cm, font=\small, align=center, thick, dashed},
     arr/.style={-{Stealth[length=5pt]}, thick, gray!50},
     catarr/.style={-{Stealth[length=5pt]}, very thick, #1!50},
 ]
 
 % Title
-\node[font=\large\bfseries] at (7.5, 9.5) {Mechanism Design Space};
+\node[font=\large\bfseries] at (9, 10.5) {Mechanism Design Space};
 
 % Top-level: Research question
-\node[draw, rounded corners=8pt, fill=lightbg, minimum width=12cm, minimum height=1cm, font=\small\itshape, align=center, thick] (rq) at (7.5, 8.2)
+\node[draw, rounded corners=8pt, fill=lightbg, minimum width=14cm, minimum height=1cm, font=\small\itshape, align=center, thick] (rq) at (9, 9.2)
     {Which formal mechanism sustains cooperation among self-interested agents?};
 
 % Category headers
-\node[cat=produce] (prev) at (1.8, 6.2) {Prevention};
-\node[cat=troll] (pun) at (7.5, 6.2) {Punishment};
-\node[cat=comm] (info) at (13.2, 6.2) {Information};
+\node[cat=produce] (prev) at (2, 7.2) {Prevention};
+\node[cat=troll] (pun) at (9, 7.2) {Punishment};
+\node[cat=comm] (info) at (16, 7.2) {Information};
 
 \draw[catarr=gray] (rq.south) -- ++(0, -0.4) -| (prev.north);
 \draw[catarr=gray] (rq.south) -- (pun.north);
 \draw[catarr=gray] (rq.south) -- ++(0, -0.4) -| (info.north);
 
 % Prevention mechanisms
-\node[mech=produce] (med) at (0, 3.8) {
+\node[mech=produce] (med) at (0.3, 4.8) {
     \textbf{Mediation (M)}\\[2pt]
     {\scriptsize Neutral third party}\\
     {\scriptsize guarantees execution}\\
     {\scriptsize if both delegate}
 };
-\node[mech=produce] (con) at (3.6, 3.8) {
+\node[mech=produce] (con) at (3.7, 4.8) {
     \textbf{Contracting (C)}\\[2pt]
     {\scriptsize Binding agreements}\\
     {\scriptsize with breach penalties}\\
@@ -271,19 +271,19 @@
 \draw[arr] (prev.south) -- ++(0, -0.3) -| (con.north);
 
 % Punishment mechanisms
-\node[mech=troll] (gov) at (5.7, 3.8) {
+\node[mech=troll] (gov) at (7, 4.8) {
     \textbf{Governance (G)}\\[2pt]
     {\scriptsize Top-down Oracle}\\
     {\scriptsize monitors + fines}\\
     {\scriptsize escalating penalties}
 };
-\node[mech=troll] (san) at (9.3, 3.8) {
+\node[mech=troll] (san) at (11, 4.8) {
     \textbf{Sanctions (S)}\\[2pt]
     {\scriptsize Agents spend utility}\\
     {\scriptsize to punish others}\\
     {\scriptsize 1:3 cost-to-damage}
 };
-\node[mech=troll] (jud) at (7.5, 1.6) {
+\node[mech=troll] (jud) at (9, 2.6) {
     \textbf{Judicial (J)}\\[2pt]
     {\scriptsize File complaints}\\
     {\scriptsize adjudicator rules}\\
@@ -295,13 +295,13 @@
 \draw[arr] (pun.south) -- (jud.north);
 
 % Information mechanisms
-\node[mech=comm] (rep) at (11.4, 3.8) {
+\node[mech=comm] (rep) at (14.3, 4.8) {
     \textbf{Reputation (GR)}\\[2pt]
     {\scriptsize System trust scores}\\
     {\scriptsize visible to all agents}\\
     {\scriptsize EMA of trade outcomes}
 };
-\node[mech=comm] (nr) at (15, 3.8) {
+\node[mech=comm] (nr) at (17.7, 4.8) {
     \textbf{Net.\ Rewiring (NR)}\\[2pt]
     {\scriptsize Sever links to}\\
     {\scriptsize defectors, connect}\\
@@ -312,7 +312,7 @@
 \draw[arr] (info.south) -- ++(0, -0.3) -| (nr.north);
 
 % Baseline
-\node[baseline] (base) at (13.2, 1.6) {
+\node[baseline] (base) at (15, 2.6) {
     \textbf{Baseline (B)}\\[2pt]
     {\scriptsize Communication only}\\
     {\scriptsize No formal mechanism}
@@ -320,12 +320,12 @@
 \node[font=\scriptsize\itshape, gray, below=2pt of base] {control condition};
 
 % Result annotations
-\node[draw, rounded corners=4pt, fill=produce!15, font=\scriptsize\bfseries, produce, inner sep=4pt] at (0, 2.2) {Winner: 1556};
-\node[draw, rounded corners=4pt, fill=troll!10, font=\scriptsize\bfseries, troll, inner sep=4pt] at (9.3, 2.2) {Last: 685};
+\node[draw, rounded corners=4pt, fill=produce!15, font=\scriptsize\bfseries, produce, inner sep=4pt] at (0.3, 3.2) {\#1: 1556};
+\node[draw, rounded corners=4pt, fill=troll!10, font=\scriptsize\bfseries, troll, inner sep=4pt] at (11, 3.2) {Last: 685};
 
 % Key insight box
-\node[draw, rounded corners=6pt, fill=produce!5, minimum width=10cm, minimum height=0.8cm, font=\small, align=center, thick] at (5, -0.2)
-    {\textbf{Key finding:} Prevention $>$ Information $>$ Punishment};
+\node[draw, rounded corners=6pt, fill=produce!5, minimum width=14cm, minimum height=0.8cm, font=\small, align=center, thick] at (9, 0.8)
+    {\textbf{Key finding:} Low-friction voluntary mechanisms (Mediation, Governance) outperform coercive ones (Contracting, Sanctions)};
 
 \end{tikzpicture}
 
