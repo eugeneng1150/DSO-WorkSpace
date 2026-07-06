@@ -24,66 +24,79 @@
 % ── DIAGRAM 1: Agent Trade Interaction (Chat Style) ──
 \begin{adjustbox}{max width=\textwidth, max height=0.9\textheight, keepaspectratio}
 \begin{tikzpicture}[
-    bubble left/.style={draw, rounded corners=8pt, fill=honest!10, text width=8cm, font=\small, align=left, thick, inner sep=8pt},
-    bubble right/.style={draw, rounded corners=8pt, fill=produce!10, text width=8cm, font=\small, align=left, thick, inner sep=8pt},
-    system/.style={draw, rounded corners=6pt, fill=gray!8, text width=12cm, font=\scriptsize\itshape, align=center, thick, dashed, inner sep=6pt},
-    timestamp/.style={font=\tiny, gray},
-    vgap/.style={node distance=8pt},
+    bubble left/.style={draw, rounded corners=8pt, fill=honest!10, text width=7cm, font=\footnotesize, align=left, thick, inner sep=6pt, anchor=north},
+    bubble right/.style={draw, rounded corners=8pt, fill=produce!10, text width=7cm, font=\footnotesize, align=left, thick, inner sep=6pt, anchor=north},
+    sysbox/.style={draw, rounded corners=6pt, fill=gray!8, font=\footnotesize\itshape, align=center, thick, dashed, inner sep=5pt, anchor=north, text width=11cm},
+    phaselabel/.style={font=\scriptsize\bfseries\sffamily, fill=white, inner sep=2pt},
 ]
 
+% Center x-coordinate
+\def\cx{6}
+\def\lx{1.5}
+\def\rx{10.5}
+
 % Title
-\node[font=\large\bfseries] (title) at (7, 0) {Trade Interaction Between Two Agents};
+\node[font=\large\bfseries, anchor=north] (title) at (\cx, 0) {Trade Interaction Between Two Agents};
 
-% Agent headers
-\node[draw, rounded corners=5pt, fill=honest!15, font=\small\bfseries, inner sep=5pt, below left=12pt and 4cm of title] (hdrA) {Agent 3 (Produces A)};
-\node[draw, rounded corners=5pt, fill=produce!15, font=\small\bfseries, inner sep=5pt, below right=12pt and 4cm of title] (hdrB) {Agent 7 (Produces B)};
+% Agent headers side by side
+\node[draw, rounded corners=5pt, fill=honest!15, font=\footnotesize\bfseries, inner sep=4pt, anchor=north] (hdrA) at (\lx+1.5, -0.7) {Agent 3 (Produces A)};
+\node[draw, rounded corners=5pt, fill=produce!15, font=\footnotesize\bfseries, inner sep=4pt, anchor=north] (hdrB) at (\rx-1.5, -0.7) {Agent 7 (Produces B)};
 
-% System: Round start
-\node[system, below=14pt of title] (sys1) {Round 42 --- Communication Phase begins. Agent 3 and Agent 7 are neighbors.};
+% ── Communication Phase ──
+\node[phaselabel] at (-0.2, -1.5) {Communication};
+\draw[gray!40, thick] (-0.2, -1.7) -- (12.2, -1.7);
 
-% Agent 3 message (left-aligned)
-\node[bubble left, anchor=north west, below=10pt of sys1.south west] (m1) {
-    \textbf{Agent 3:} I have surplus Good A. I need Good B for consumption. Would you trade 2A for 2B?
+\node[sysbox] (sys1) at (\cx, -2.0) {Agent 3 and Agent 7 are neighbors.};
+
+\node[bubble left] (m1) at (\lx, -2.9) {
+    \textbf{Agent 3:} I have surplus Good A and need Good B. Trade 2A for 2B?
 };
 
-% Agent 7 message (right-aligned)
-\node[bubble right, anchor=north east, below=10pt of m1.south east] (m2) {
-    \textbf{Agent 7:} That sounds fair. I have 3B and need A. You've always delivered in our past trades --- let's do it.
+\node[bubble right] (m2) at (\rx, -4.4) {
+    \textbf{Agent 7:} Fair deal. You've always delivered. Let's do it.
 };
 
-% System: Trade phase
-\node[system, below=10pt of m2.south -| sys1] (sys2) {Trade Phase --- Agent 3 proposes: Give 2$\times$A, Receive 2$\times$B to Agent 7};
+% ── Trade Phase ──
+\node[phaselabel] at (-0.2, -5.7) {Trade};
+\draw[gray!40, thick] (-0.2, -5.9) -- (12.2, -5.9);
 
-% Agent 7 reasoning (right-aligned)
-\node[bubble right, anchor=north east, below=10pt of sys2.south east] (m3) {
-    \textbf{Agent 7} \textit{(reasoning):} 0 defections in 4 lifetime trades. Accept and deliver honestly.
+\node[sysbox] (sys2) at (\cx, -6.2) {Agent 3 proposes: Give 2$\times$A, Receive 2$\times$B};
+
+\node[bubble right] (m3) at (\rx, -7.1) {
+    \textbf{Agent 7} \textit{(reasoning):} 0 defections in 4 lifetime trades. Accept.
 };
 
 % Action space
-\node[draw, rounded corners=6pt, fill=trade!5, inner sep=6pt, thick, below=10pt of m3.south -| sys1] (actions) {
-    \begin{tabular}{cccc}
-    \tikz\node[draw, rounded corners=4pt, fill=produce!20, font=\scriptsize\bfseries, inner sep=4pt, thick]{Accept \checkmark}; &
-    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Reject}; &
-    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Defect}; &
-    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Delegate}; \\
-    {\tiny both deliver} & {\tiny no exchange} & {\tiny take, don't give} & {\tiny mediator executes}
+\node[draw, rounded corners=6pt, fill=trade!5, inner sep=5pt, thick, anchor=north] (actions) at (\cx, -8.4) {
+    \begin{tabular}{ccc}
+    \tikz\node[draw, rounded corners=4pt, fill=produce!20, font=\scriptsize\bfseries, inner sep=3pt, thick]{Accept \checkmark}; &
+    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=3pt]{Reject}; &
+    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=3pt]{Defect}; \\
+    {\tiny both deliver} & {\tiny no exchange} & {\tiny take, don't give} \\[2pt]
+    \multicolumn{3}{c}{\tiny\itshape + mechanism-specific actions (delegate, contract, sanction, \ldots)}
     \end{tabular}
 };
-\node[font=\scriptsize\bfseries, above=1pt of actions.north west, anchor=south west] {Action Space:};
+\node[font=\scriptsize\bfseries, above=1pt of actions.north west, anchor=south west] {Decision Policy:};
 
-% System: Resolution
-\node[system, below=10pt of actions] (sys3) {Trade executed: Agent 3 delivers 2$\times$A $\rightarrow$ Agent 7. Agent 7 delivers 2$\times$B $\rightarrow$ Agent 3.};
+% ── Execution ──
+\node[phaselabel] at (-0.2, -10.2) {Execution};
+\draw[gray!40, thick] (-0.2, -10.4) -- (12.2, -10.4);
 
-% Agent 3 memory update (left-aligned)
-\node[bubble left, anchor=north west, below=10pt of sys3.south west] (m4) {
-    \textbf{Agent 3} \textit{(memory update):} Agent 7 cooperated. Lifetime: 5 trades, 0 defections.
+\node[sysbox] (sys3) at (\cx, -10.7) {Agent 3 delivers 2$\times$A $\rightarrow$ Agent 7. \quad Agent 7 delivers 2$\times$B $\rightarrow$ Agent 3.};
+
+% Memory update
+\node[bubble left] (m4) at (\lx, -11.6) {
+    \textbf{Agent 3} \textit{(memory):} Agent 7 cooperated. 5 trades, 0 defections.
 };
 
-% System: Consumption
-\node[system, below=10pt of m4.south -| sys1] (sys4) {Consumption: Agent 3 consumes 2$\times$B (+6 utility). Agent 7 consumes 2$\times$A (+6 utility).};
+% ── Consumption ──
+\node[phaselabel] at (-0.2, -12.9) {Consumption};
+\draw[gray!40, thick] (-0.2, -13.1) -- (12.2, -13.1);
+
+\node[sysbox] (sys4) at (\cx, -13.4) {Agent 3 consumes 2$\times$B (+6 utility). Agent 7 consumes 2$\times$A (+6 utility).};
 
 % Outcome bar
-\node[draw, rounded corners=6pt, fill=produce!10, minimum width=12cm, font=\small, align=center, thick, inner sep=6pt, below=10pt of sys4] (outcome)
+\node[draw, rounded corners=6pt, fill=produce!10, font=\footnotesize, align=center, thick, inner sep=5pt, anchor=north, minimum width=11cm] (outcome) at (\cx, -14.3)
     {\textbf{Outcome:} Mutual cooperation. Both agents gain +6 utility.};
 
 \end{tikzpicture}%
