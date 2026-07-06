@@ -4,6 +4,7 @@
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc, decorations.pathreplacing}
 \usepackage{xcolor}
 \usepackage{amssymb}
+\usepackage{graphicx}
 \pagestyle{empty}
 
 \definecolor{produce}{HTML}{4CAF50}
@@ -20,6 +21,7 @@
 \thispagestyle{empty}
 
 % ── DIAGRAM 1: Agent Trade Interaction (Chat Style) ──
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     bubble left/.style={draw, rounded corners=8pt, fill=honest!10, text width=6.5cm, font=\small, align=left, thick, inner sep=8pt},
     bubble right/.style={draw, rounded corners=8pt, fill=produce!10, text width=6.5cm, font=\small, align=left, thick, inner sep=8pt},
@@ -90,11 +92,13 @@
 \node[draw, rounded corners=6pt, fill=produce!10, minimum width=10cm, minimum height=1cm, font=\small, align=center, thick] at (5.5, 0.4)
     {\textbf{Outcome:} Mutual cooperation. Both agents gain +6 utility this round.};
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end resizebox
 
 \newpage
 
 % ── DIAGRAM 2: Round Lifecycle with Agent Perspective ──
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     phase/.style={draw, rounded corners=8pt, fill=#1!12, minimum width=3.2cm, minimum height=1.8cm, font=\small\bfseries, align=center, thick},
     detail/.style={font=\scriptsize, text width=3cm, align=center},
@@ -133,11 +137,13 @@
     {Agent receives: \textbf{State} (inventory, utility) + \textbf{Market} (exchange rates) + \textbf{Partners} (history) + \textbf{Messages} + \textbf{Mechanism state}};
 \node[font=\scriptsize\bfseries, above=0pt of agentview.north west, anchor=south west] {Perception (injected each round)};
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end resizebox
 
 \newpage
 
 % ── DIAGRAM 3: Mediation Flow ──
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     agent/.style={draw, circle, fill=honest!15, minimum size=1.2cm, font=\small\bfseries, thick},
     med/.style={draw, rounded corners=6pt, fill=mediator!15, minimum width=2cm, minimum height=1cm, font=\small\bfseries, thick},
@@ -183,11 +189,13 @@
 \draw[arr] (b3) -- (out3);
 \node[font=\scriptsize, below=2pt of out3] {Standard bilateral exchange};
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end resizebox
 
 \newpage
 
 % ── DIAGRAM 4: Progressive Troll Injection Timeline ──
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     phase/.style={draw, rounded corners=6pt, fill=#1!12, minimum height=1.4cm, font=\small, align=center, thick},
     arr/.style={-{Stealth[length=5pt]}, thick, gray!60},
@@ -241,11 +249,13 @@
 \draw[arr, troll, ultra thick] (0.5, -0.8) -- (15.5, -0.8)
     node[midway, below, font=\small\itshape] {Escalating adversarial pressure};
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end resizebox
 
 \newpage
 
 % ── DIAGRAM 5: Mechanism Taxonomy ──
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     cat/.style={draw, rounded corners=8pt, fill=#1!12, minimum width=4.2cm, minimum height=0.9cm, font=\small\bfseries, align=center, thick},
     mech/.style={draw, rounded corners=5pt, fill=#1!8, minimum width=3.2cm, minimum height=1.5cm, font=\small, align=center, thick},
@@ -344,6 +354,7 @@
 \node[draw, rounded corners=6pt, fill=produce!5, minimum width=14cm, minimum height=0.8cm, font=\small, align=center, thick] at (9, 0.8)
     {\textbf{Key finding:} Low-friction voluntary mechanisms (Mediation, Governance) outperform coercive ones (Contracting, Sanctions)};
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}% end resizebox
 
 \end{document}
