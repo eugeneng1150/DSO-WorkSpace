@@ -260,19 +260,19 @@ The simulation runs with $N = 18$ agents (6 per production specialty) over $T = 
     flow/.style={draw, rounded corners=4pt, fill=gray!5, minimum width=2.3cm, minimum height=0.55cm, font=\scriptsize}
 ]
 
-\node[font=\small\bfseries] at (0, 3.25) {Good A producers};
+\node[font=\small\bfseries] at (0, 3.6) {Good A producers};
 \node[group] at (0, 2.2) {};
 \foreach \x in {-0.65, 0, 0.65} { \node[agentA] at (\x, 2.45) {A}; }
 \foreach \x in {-0.65, 0, 0.65} { \node[agentA] at (\x, 1.85) {A}; }
 \node[font=\scriptsize] at (0, 0.95) {need B and C};
 
-\node[font=\small\bfseries] at (-3.7, -0.15) {Good B producers};
+\node[font=\small\bfseries] at (-3.7, 0.2) {Good B producers};
 \node[group] at (-3.7, -1.2) {};
 \foreach \x in {-4.35, -3.7, -3.05} { \node[agentB] at (\x, -0.95) {B}; }
 \foreach \x in {-4.35, -3.7, -3.05} { \node[agentB] at (\x, -1.55) {B}; }
 \node[font=\scriptsize] at (-3.7, -2.45) {need A and C};
 
-\node[font=\small\bfseries] at (3.7, -0.15) {Good C producers};
+\node[font=\small\bfseries] at (3.7, 0.2) {Good C producers};
 \node[group] at (3.7, -1.2) {};
 \foreach \x in {3.05, 3.7, 4.35} { \node[agentC] at (\x, -0.95) {C}; }
 \foreach \x in {3.05, 3.7, 4.35} { \node[agentC] at (\x, -1.55) {C}; }
@@ -282,18 +282,8 @@ The simulation runs with $N = 18$ agents (6 per production specialty) over $T = 
 \draw[trade] (0.8, 1.45) -- (2.55, -0.55);
 \draw[trade] (-1.95, -1.2) -- (1.95, -1.2);
 
-\node[flow] (spoil) at (-4.2, -3.55) {Spoilage};
-\node[flow] (prod) at (-2.1, -3.55) {Production};
-\node[flow] (comm) at (0.0, -3.55) {Communication};
-\node[flow] (tradeflow) at (2.1, -3.55) {Trade};
-\node[flow] (consume) at (4.2, -3.55) {Consumption};
-\draw[-{Stealth[length=4pt]}, gray!70] (spoil) -- (prod);
-\draw[-{Stealth[length=4pt]}, gray!70] (prod) -- (comm);
-\draw[-{Stealth[length=4pt]}, gray!70] (comm) -- (tradeflow);
-\draw[-{Stealth[length=4pt]}, gray!70] (tradeflow) -- (consume);
-
 \end{tikzpicture}
-\caption{Marketplace environment. Eighteen agents are split across three production specialties. Each group can cheaply produce one good but needs the other two goods for utility, making trade necessary and creating repeated opportunities for defection during communication and exchange. The bottom row shows the five-phase round structure.}
+\caption{Marketplace environment. Eighteen agents are split across three production specialties. Each group can cheaply produce one good but needs the other two goods for utility, making trade necessary and creating repeated opportunities for defection during communication and exchange.}
 \label{fig:environment_setup}
 \end{figure}
 
