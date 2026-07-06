@@ -286,6 +286,7 @@ def plot_trade_volume(save: bool = True) -> None:
             trade_counts, _ = _non_troll_trade_stats(runs)
             rounds = list(range(1, len(trade_counts) + 1))
             ax.plot(rounds, trade_counts, color=COLORS[condition], linewidth=1.8)
+            ax.fill_between(rounds, trade_counts, alpha=0.15, color=COLORS[condition])
 
             schedule = _get_troll_schedule(runs)
             if schedule:
@@ -673,6 +674,10 @@ def plot_utility_trajectories(save: bool = True) -> None:
             rounds = list(range(1, n_rounds + 1))
             ax.plot(rounds, smoothed, color=COLORS[condition], linewidth=2.0, label="3-round avg")
             ax.axhline(0, color="black", linestyle="--", linewidth=0.8, alpha=0.6)
+            ax.fill_between(rounds, smoothed, 0,
+                            where=[v >= 0 for v in smoothed], alpha=0.12, color="green")
+            ax.fill_between(rounds, smoothed, 0,
+                            where=[v < 0 for v in smoothed], alpha=0.12, color="red")
 
             total_util = sum(raw)
             ax.text(0.97, 0.97, f"Total: {total_util:.0f}", transform=ax.transAxes,
@@ -694,7 +699,7 @@ def plot_utility_trajectories(save: bool = True) -> None:
     for ax in axes[:, 0]:
         ax.set_ylabel("Avg utility per agent")
 
-    fig.suptitle("Average Per-Round Utility by Condition (3-round rolling average)",
+    fig.suptitle("Average Per-Round Utility by Condition (3-round rolling average)\nGreen = net positive, Red = net negative",
                  fontsize=13, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.93])
     _maybe_save(fig, "utility_trajectories.png", save)
