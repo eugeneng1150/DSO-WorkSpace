@@ -5,6 +5,7 @@
 \usepackage{xcolor}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage[export]{adjustbox}
 \pagestyle{empty}
 
 \definecolor{produce}{HTML}{4CAF50}
@@ -21,7 +22,7 @@
 \thispagestyle{empty}
 
 % ── DIAGRAM 1: Agent Trade Interaction (Chat Style) ──
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth, max height=0.9\textheight, keepaspectratio}
 \begin{tikzpicture}[
     bubble left/.style={draw, rounded corners=8pt, fill=honest!10, text width=6.5cm, font=\small, align=left, thick, inner sep=8pt},
     bubble right/.style={draw, rounded corners=8pt, fill=produce!10, text width=6.5cm, font=\small, align=left, thick, inner sep=8pt},
@@ -93,12 +94,12 @@
     {\textbf{Outcome:} Mutual cooperation. Both agents gain +6 utility this round.};
 
 \end{tikzpicture}%
-}% end resizebox
+\end{adjustbox}
 
 \newpage
 
 % ── DIAGRAM 2: Round Lifecycle with Agent Perspective ──
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth, max height=0.9\textheight, keepaspectratio}
 \begin{tikzpicture}[
     phase/.style={draw, rounded corners=8pt, fill=#1!12, minimum width=3.2cm, minimum height=1.8cm, font=\small\bfseries, align=center, thick},
     detail/.style={font=\scriptsize, text width=3cm, align=center},
@@ -138,12 +139,12 @@
 \node[font=\scriptsize\bfseries, above=0pt of agentview.north west, anchor=south west] {Perception (injected each round)};
 
 \end{tikzpicture}%
-}% end resizebox
+\end{adjustbox}
 
 \newpage
 
 % ── DIAGRAM 3: Mediation Flow ──
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth, max height=0.9\textheight, keepaspectratio}
 \begin{tikzpicture}[
     agent/.style={draw, circle, fill=honest!15, minimum size=1.2cm, font=\small\bfseries, thick},
     med/.style={draw, rounded corners=6pt, fill=mediator!15, minimum width=2cm, minimum height=1cm, font=\small\bfseries, thick},
@@ -190,12 +191,12 @@
 \node[font=\scriptsize, below=2pt of out3] {Standard bilateral exchange};
 
 \end{tikzpicture}%
-}% end resizebox
+\end{adjustbox}
 
 \newpage
 
 % ── DIAGRAM 4: Progressive Troll Injection Timeline ──
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth, max height=0.9\textheight, keepaspectratio}
 \begin{tikzpicture}[
     phase/.style={draw, rounded corners=6pt, fill=#1!12, minimum height=1.4cm, font=\small, align=center, thick},
     arr/.style={-{Stealth[length=5pt]}, thick, gray!60},
@@ -250,12 +251,12 @@
     node[midway, below, font=\small\itshape] {Escalating adversarial pressure};
 
 \end{tikzpicture}%
-}% end resizebox
+\end{adjustbox}
 
 \newpage
 
 % ── DIAGRAM 5: Mechanism Taxonomy ──
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth, max height=0.9\textheight, keepaspectratio}
 \begin{tikzpicture}[
     cat/.style={draw, rounded corners=8pt, fill=#1!12, minimum width=4.2cm, minimum height=0.9cm, font=\small\bfseries, align=center, thick},
     mech/.style={draw, rounded corners=5pt, fill=#1!8, minimum width=3.2cm, minimum height=1.5cm, font=\small, align=center, thick},
@@ -355,6 +356,6 @@
     {\textbf{Key finding:} Low-friction voluntary mechanisms (Mediation, Governance) outperform coercive ones (Contracting, Sanctions)};
 
 \end{tikzpicture}%
-}% end resizebox
+\end{adjustbox}
 
 \end{document}
