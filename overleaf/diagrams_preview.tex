@@ -61,25 +61,33 @@
 };
 \node[timestamp, below right=1pt and 0pt of m3.south west] {Round 42, Trade};
 
+% Action space
+\node[draw, rounded corners=6pt, fill=trade!5, minimum width=10cm, inner sep=6pt, thick] (actions) at (5.5, 5.9) {
+    \begin{tabular}{cccc}
+    \tikz\node[draw, rounded corners=4pt, fill=produce!20, font=\scriptsize\bfseries, inner sep=4pt, thick]{Accept \checkmark}; &
+    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Reject}; &
+    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Defect}; &
+    \tikz\node[draw, rounded corners=4pt, fill=gray!8, font=\scriptsize, inner sep=4pt]{Delegate to Mediator}; \\
+    {\tiny both deliver} & {\tiny no exchange} & {\tiny take, don't give} & {\tiny if mechanism active}
+    \end{tabular}
+};
+\node[font=\scriptsize\bfseries, above=1pt of actions.north west, anchor=south west] {Action Space:};
+
 % System: Resolution
-\node[system] (sys3) at (5.5, 5.8) {Trade executed: Agent 3 delivers 2$\times$A $\rightarrow$ Agent 7. Agent 7 delivers 2$\times$B $\rightarrow$ Agent 3.};
+\node[system] (sys3) at (5.5, 4.5) {Trade executed: Agent 3 delivers 2$\times$A $\rightarrow$ Agent 7. Agent 7 delivers 2$\times$B $\rightarrow$ Agent 3.};
 
 % Agent 3 post-trade (left-aligned)
-\node[bubble left, anchor=north west] (m4) at (0.2, 5) {
+\node[bubble left, anchor=north west] (m4) at (0.2, 3.7) {
     \textbf{Agent 3} \textit{(memory update):} Agent 7 cooperated again. Lifetime: 4 trades, 0 defections. Reliable partner.
 };
 \node[timestamp, below left=1pt and 0pt of m4.south east] {Round 42, End};
 
 % System: Utility
-\node[system] (sys4) at (5.5, 3.2) {Consumption: Agent 3 consumes 2$\times$B (+6 utility). Agent 7 consumes 2$\times$A (+6 utility).};
+\node[system] (sys4) at (5.5, 1.8) {Consumption: Agent 3 consumes 2$\times$B (+6 utility). Agent 7 consumes 2$\times$A (+6 utility).};
 
 % Outcome summary bar
-\node[draw, rounded corners=6pt, fill=produce!10, minimum width=10cm, minimum height=1cm, font=\small, align=center, thick] at (5.5, 1.8)
+\node[draw, rounded corners=6pt, fill=produce!10, minimum width=10cm, minimum height=1cm, font=\small, align=center, thick] at (5.5, 0.4)
     {\textbf{Outcome:} Mutual cooperation. Both agents gain +6 utility this round.};
-
-% Alternative outcomes note
-\node[font=\scriptsize, text width=10cm, align=center, gray] at (5.5, 0.5)
-    {Alternative outcomes: \textbf{Defect} (one takes goods, delivers nothing) $\mid$ \textbf{Reject} (no exchange) $\mid$ \textbf{Delegate} (mediator executes)};
 
 \end{tikzpicture}
 
