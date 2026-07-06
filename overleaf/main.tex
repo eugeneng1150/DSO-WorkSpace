@@ -127,21 +127,23 @@ CoopEval is the closest predecessor to our study. \citet{coopeval} benchmark fou
 \citet{chaconresilience} provide a formal definition of cooperative resilience and a four-stage measurement framework: pre-disruption baseline, disruption impact, adaptation, and recovery. They find that RL agents handle resource shocks better, while LLM agents handle social shocks (e.g., adversarial infiltration) better. Their operationalisation of cooperative stability informs our social metrics design and adversarial testing methodology.
 
 % ============================================================
-\section{Environment Setup}
+\section{Marketplace Environment}
 \label{sec:environment}
 % ============================================================
 
-\subsection{Goods and Comparative Advantage}
+We design the marketplace as a closed economy in which agents participate in an economic chain of \textit{production}, \textit{trade}, and \textit{consumption}. This chain creates structural interdependence: no agent can generate utility in isolation, making repeated exchange the sole path to welfare. The environment is parameterised to produce a clear social dilemma at every link in the chain --- agents must cooperate to create value, but defection is always a tempting short-term strategy.
 
-The marketplace contains $K = 3$ distinct goods: $A$, $B$, and $C$. Each agent holds one \textit{production specialty}: they can produce their specialty good at low cost but cannot produce others.
+\subsection{Economic Chain: Production, Trade, and Consumption}
 
-\begin{itemize}
-  \item \textbf{Production cost}: 1 utility per unit produced (specialty only).
-  \item \textbf{Consumption utility}: $+3$ utility per unit of a \textit{needed} good consumed.
-  \item \textbf{Needed goods}: all goods except an agent's specialty.
-\end{itemize}
+The marketplace contains $K = 3$ distinct goods: $A$, $B$, and $C$. Each agent holds one \textit{production specialty} and can produce only that good. The economic chain proceeds as follows:
 
-This creates structural \textit{comparative advantage}: every agent gains more from trading than from autarky. An agent who produces 2 units, trades each for one unit of a needed good, and consumes both earns:
+\paragraph{Production.} Each round, agents decide how many units of their specialty good to produce. Production is costly: each unit costs 1 utility to produce, regardless of the good type.
+
+\paragraph{Trade.} Agents exchange goods through bilateral barter --- goods-for-goods, with no currency. A proposer offers some quantity of one good and requests some quantity of another. The counterparty may accept (both sides deliver), reject (no exchange), or \textit{defect} (take the offered goods without delivering their own side). Defection directly transfers goods from the victim to the defector, making it a strategy of resource accumulation at the victim's expense.
+
+\paragraph{Consumption.} At the end of each round, agents consume goods they \textit{need} --- all goods except their own specialty. Each unit of a needed good consumed yields $+3$ utility.
+
+This chain creates structural \textit{comparative advantage}: every agent gains more from trading than from autarky. An agent who produces 2 units, trades each for one unit of a needed good, and consumes both earns:
 
 \[
 \text{Net utility per round} = \underbrace{3 + 3}_{\text{consume 1 unit of each needed good}} - \underbrace{2 \times 1}_{\text{production cost}} = +4
@@ -155,9 +157,36 @@ With no trading, an agent produces goods it cannot consume:
 
 where $c$ is the production cost incurred with no consumption benefit.
 
-\subsection{Agent Population}
+\subsection{Perishable Goods and Temporal Urgency}
 
-The simulation runs with $N = 18$ agents (6 per good). Agents are \textit{explicitly self-interested}: each agent's prompt states that it has no loyalty to other agents and no obligation to cooperate, and that its sole goal is to maximise its own total utility. Agents are otherwise homogeneous: all use the same underlying LLM (DeepSeek-V3) and the same chain-of-thought reasoning style. This isolates the formal mechanism as the sole independent variable.
+Goods are perishable: at the start of each round (from round 2 onward), all held inventory decays by 20\%. Formally, for each agent $a$ and good $g$:
+
+\[
+I_{a,g}^{t} \leftarrow \lfloor I_{a,g}^{t-1} \times (1 - \psi) \rfloor, \quad \psi = 0.2
+\]
+
+Spoilage creates temporal urgency: agents cannot hoard goods across rounds without loss, so they are pressured to produce and trade within the same round. This prevents agents from accumulating large inventories as insurance against defection, forcing them to engage in the social dilemma repeatedly rather than withdrawing from the market. This is motivated by \citet{chen2018perishable}.
+
+\subsection{Social Network and Locality Constraints}
+
+Agents are embedded in a trade network that constrains who can interact directly. This design reflects a basic reality of human economies: individuals cannot transact with everyone simultaneously. People trade with those they know --- geographic neighbours, professional contacts, established partners --- not with the entire population. By restricting each agent to a fixed set of neighbours, we model this locality constraint and force agents to build and maintain relationships with a limited set of trading partners rather than freely switching to any counterparty in the population.
+
+Each agent is connected to 7--9 neighbours, with at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods. The network is randomised per run but static within a run (unless the Network Rewiring mechanism is active).
+
+\subsection{Communication Channels}
+
+Communication is \textbf{always enabled} across all experimental conditions. Two channels operate simultaneously:
+
+\begin{itemize}
+  \item \textbf{Private channel}: bilateral messages between neighbours only. Used for trade negotiation, price signalling, and (potentially deceptive) information sharing.
+  \item \textbf{Public broadcast}: messages visible to all agents, with attributed sender identity. Used for market-wide announcements and warnings.
+\end{itemize}
+
+This creates a second-order dilemma: a victim of defection must decide whether to broadcast a warning, benefiting the market at personal risk of retaliation. Communication is necessary for coordination but insufficient for enforcement --- natural language promises are cheap and unverifiable.
+
+\subsection{Agent Population and Round Structure}
+
+The simulation runs with $N = 18$ agents (6 per production specialty) over $T = 200$ rounds. Each round proceeds through five phases in sequence: (1)~spoilage, (2)~production, (3)~communication and mechanism actions, (4)~trade execution, and (5)~consumption and metric update. Figure~\ref{fig:environment_setup} illustrates the population structure and round flow.
 
 \begin{figure}[H]
 \centering
@@ -203,114 +232,85 @@ The simulation runs with $N = 18$ agents (6 per good). Agents are \textit{explic
 \draw[-{Stealth[length=4pt]}, gray!70] (tradeflow) -- (consume);
 
 \end{tikzpicture}
-\caption{Marketplace environment. Eighteen agents are split across three production specialties. Each group can cheaply produce one good but needs the other two goods for utility, making trade necessary and creating repeated opportunities for defection during communication and exchange.}
+\caption{Marketplace environment. Eighteen agents are split across three production specialties. Each group can cheaply produce one good but needs the other two goods for utility, making trade necessary and creating repeated opportunities for defection during communication and exchange. The bottom row shows the five-phase round structure.}
 \label{fig:environment_setup}
 \end{figure}
 
-\subsection{Barter Economy}
+% ============================================================
+\section{Agent Framework}
+\label{sec:agents}
+% ============================================================
 
-Agents operate in a barter economy. All exchange is goods-for-goods. Defection --- taking the offered goods without delivering one's own side of the barter --- directly transfers goods from the victim to the defector, making it a strategy of resource accumulation at the victim's expense.
+Each agent is an LLM-driven decision-maker that perceives the marketplace through structured observations, reasons about strategy using chain-of-thought, and acts through a fixed set of structured actions with execution feedback. All agents use DeepSeek-V3 (Azure endpoint, temperature 0.7) and are \textit{explicitly self-interested}: each agent's prompt states that it has no loyalty to other agents and no obligation to cooperate, and that its sole goal is to maximise its own total utility. This framing ensures that observed cooperation reflects strategic calculation rather than an instruction to optimise group welfare. All agents are otherwise homogeneous, isolating the formal mechanism as the sole independent variable.
 
-\subsection{Inventory Spoilage}
+\subsection{Perception}
 
-Goods are perishable: at the start of each round (from round 2 onward), all held inventory decays by 20\%. Formally, for each agent $a$ and good $g$:
-
-\[
-I_{a,g}^{t} \leftarrow \lfloor I_{a,g}^{t-1} \times (1 - \psi) \rfloor, \quad \psi = 0.2
-\]
-
-Spoilage creates temporal urgency: agents cannot hoard goods across rounds without loss, so they are pressured to produce and sell within the same round. This is motivated by \citet{chen2018perishable}.
-
-\subsection{Social Network}
-
-Agents are embedded in a trade network that constrains who can interact directly. This design reflects a basic reality of human economies: individuals cannot transact with everyone simultaneously. People trade with those they know --- geographic neighbours, professional contacts, established partners --- not with the entire population. By restricting each agent to a fixed set of neighbours, we model this locality constraint and force agents to build and maintain relationships with a limited set of trading partners rather than freely switching to any counterparty in the population.
-
-Each agent is connected to 7--9 neighbours, with at least 3 neighbours producing each of the other two goods, ensuring robust access to both needed goods. The network is randomised per run but static within a run (unless the Network Rewiring mechanism is active). Figure~\ref{fig:social_network} illustrates the local-neighbour constraint.
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    netnodeA/.style={draw, circle, fill=gray!25, minimum size=0.58cm, font=\scriptsize\bfseries},
-    netnodeB/.style={draw, circle, fill=green!20, minimum size=0.58cm, font=\scriptsize\bfseries},
-    netnodeC/.style={draw, circle, fill=blue!15, minimum size=0.58cm, font=\scriptsize\bfseries},
-    edge/.style={gray!55, thick},
-    highlight/.style={black, very thick}
-]
-
-\node[netnodeA] (a1) at (-2.8, 1.6) {A};
-\node[netnodeA] (a2) at (-1.3, 1.8) {A};
-\node[netnodeA] (a3) at (0.2, 1.45) {A};
-\node[netnodeA] (a4) at (1.7, 1.75) {A};
-
-\node[netnodeB] (b1) at (-3.2, -0.2) {B};
-\node[netnodeB] (b2) at (-1.6, -0.65) {B};
-\node[netnodeB] (b3) at (0.0, -0.25) {B};
-\node[netnodeB] (b4) at (1.5, -0.75) {B};
-
-\node[netnodeC] (c1) at (-2.5, -2.0) {C};
-\node[netnodeC] (c2) at (-0.8, -2.15) {C};
-\node[netnodeC] (c3) at (0.9, -1.85) {C};
-\node[netnodeC] (c4) at (2.5, -2.1) {C};
-
-\draw[edge] (a1) -- (b1);
-\draw[edge] (a1) -- (b2);
-\draw[edge] (a1) -- (c1);
-\draw[edge] (a2) -- (b1);
-\draw[edge] (a2) -- (b2);
-\draw[edge] (a2) -- (c2);
-\draw[edge] (a3) -- (b2);
-\draw[edge] (a3) -- (b3);
-\draw[edge] (a3) -- (c2);
-\draw[edge] (a3) -- (c3);
-\draw[edge] (a4) -- (b3);
-\draw[edge] (a4) -- (b4);
-\draw[edge] (a4) -- (c3);
-\draw[edge] (a4) -- (c4);
-\draw[edge] (b1) -- (c1);
-\draw[edge] (b2) -- (c1);
-\draw[edge] (b2) -- (c2);
-\draw[edge] (b3) -- (c2);
-\draw[edge] (b3) -- (c3);
-\draw[edge] (b4) -- (c3);
-\draw[edge] (b4) -- (c4);
-
-\draw[highlight] (a3) -- (b2);
-\draw[highlight] (a3) -- (b3);
-\draw[highlight] (a3) -- (c2);
-\draw[highlight] (a3) -- (c3);
-
-\node[align=left, font=\scriptsize] at (4.1, 0.5)
-  {Example focal agent\\has access to both\\needed good types};
-\draw[-{Stealth[length=4pt]}, gray!70] (3.25, 0.35) -- (a3);
-
-\end{tikzpicture}
-\caption{Trade-network constraint. Agents can only communicate and trade with neighbours, but each agent is initialised with multiple neighbours from both non-specialty good types. The highlighted example shows a Good A agent connected to both Good B and Good C producers, preserving access to utility-generating trades while keeping interaction local.}
-\label{fig:social_network}
-\end{figure}
-
-\subsection{Round Structure}
-
-Each simulation run consists of $T = 200$ rounds proceeding through five phases: (1) spoilage, (2) production, (3) communication and mechanism actions, (4) trade execution, and (5) consumption and metric update.
-
-\subsection{Progressive Troll Injection}
-
-To test mechanism resilience under escalating adversarial pressure, we inject hardcoded ``troll'' agents --- deterministic defectors that always take goods without delivering --- on the following schedule:
+Each round, agents receive a structured observation comprising the following textual representations:
 
 \begin{itemize}
-  \item \textbf{Round 1--50}: 0 trolls (18 agents, pure honest baseline)
-  \item \textbf{Round 51}: +4 trolls injected (4 of 22 agents, 18\%)
-  \item \textbf{Round 101}: +4 trolls injected (8 of 26 agents, 31\%)
-  \item \textbf{Round 151}: +8 trolls injected (16 of 34 agents, 47\%)
+  \item \textbf{Agent state}: current inventory per good, last-round utility, and cumulative utility.
+  \item \textbf{Market signals}: average exchange rates over the last 5 rounds across all good pairs, providing a sense of prevailing market prices.
+  \item \textbf{Trade network}: the agent's current list of neighbours (the only agents it can trade with or message privately).
+  \item \textbf{Partner history}: a lifetime summary of all trading partners (total trades, defections, cooperation rate) and a detailed breakdown of the last 5 rounds of trade with each partner.
+  \item \textbf{Messages}: private messages received from neighbours and public broadcasts from all agents this round.
+  \item \textbf{Pending offers}: trade proposals awaiting the agent's response, including the proposer's identity, offered good and quantity, and requested good and quantity.
+  \item \textbf{Mechanism state}: when a formal mechanism is active, additional context is injected --- e.g., reputation scores (GR), pending contracts (C), mediator design and delegation options (M), governance warnings (G), or sanctioning history (S).
 \end{itemize}
 
-This progressive schedule tests both the mechanism's ability to sustain cooperation under moderate adversarial load and its breaking point under an overwhelming troll majority.
+This perception design gives agents rich but \textit{local} information: they see their own state, their neighbours' behaviour, and market-wide signals, but they cannot observe other agents' inventories, private negotiations, or strategic reasoning. Information asymmetry is a deliberate feature that creates opportunities for both cooperation and exploitation.
 
-% ============================================================
-\section{Communication Protocol}
-\label{sec:communication}
-% ============================================================
+\subsection{Structured Actions with Execution Feedback}
 
-Communication is \textbf{always enabled} across all experimental conditions. Two channels operate simultaneously: a private channel (bilateral, neighbours only) and a public broadcast channel (all agents). Public messages are attributed --- sender identity is always visible. This creates a second-order dilemma: a victim of defection must decide whether to broadcast a warning, benefiting the market at personal risk of retaliation.
+Rather than operating in a raw action space, agents select from well-defined structured actions with clear semantics. Each action is a JSON object specifying the action type and its parameters. The simulation engine validates and executes each action, returning success or failure with an explanation. For example, an agent attempting to produce a good it does not specialise in receives a failure message explaining the constraint.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+Action & Channel & Availability \\
+\midrule
+\texttt{produce(good, quantity)} & --- & Always \\
+\texttt{send\_private(target, text)} & Private & Always \\
+\texttt{send\_public(text)} & Public & Always \\
+\texttt{propose\_trade(target, offer, want)} & Private & Always \\
+\texttt{accept\_trade(id)} / \texttt{reject\_trade(id)} & --- & Always \\
+\texttt{defect\_trade(id)} & --- & Always \\
+\texttt{propose\_contract(target, terms)} & Private & Contracting only \\
+\texttt{sign\_contract(id)} / \texttt{reject\_contract(id)} & --- & Contracting only \\
+\texttt{delegate\_to\_mediator(trade\_id)} & --- & Mediation only \\
+\texttt{sever\_link(target)} / \texttt{request\_link(target)} & --- & NR only \\
+\texttt{sanction(target, amount)} & --- & Costly Sanctions only \\
+\texttt{file\_complaint(target)} & --- & Judicial only \\
+\bottomrule
+\end{tabular}
+\caption{Agent action space. Core actions (top) are always available; mechanism-specific actions (bottom) are injected only when the corresponding mechanism is active.}
+\label{tab:actions}
+\end{table}
+
+This structured action design bridges the LLM's reasoning capabilities with the simulation's low-level execution requirements. The agent reasons in natural language about \textit{what} to do (``I should trade my Good A for Good B with Agent 7'') and expresses its decision as a structured JSON action that the engine can validate and execute deterministically.
+
+\subsection{Chain-of-Thought Reasoning}
+
+All agents use chain-of-thought (CoT) reasoning, matching the CoTAgent pattern from \citet{coopeval}. Before outputting actions, each agent writes structured reasoning inside \texttt{<reasoning>} tags covering three dimensions:
+
+\begin{enumerate}
+  \item \textbf{Situation assessment}: What is my current inventory? What do I need? What are the prevailing exchange rates?
+  \item \textbf{Trust assessment}: Which partners have been reliable? Who has defected? What do the messages and reputation scores tell me?
+  \item \textbf{Round strategy}: How much should I produce? Who should I trade with? Should I use the mechanism (mediate, contract, sanction)?
+\end{enumerate}
+
+This explicit reasoning step forces agents to integrate their observations before acting, producing interpretable decision traces that can be analysed post-hoc.
+
+\subsection{Partner Memory}
+
+Agents maintain two levels of partner memory that persist across rounds:
+
+\begin{itemize}
+  \item \textbf{Lifetime summary}: for every agent the focal agent has ever traded with, a running record of total trades completed, total defections (by either side), and the overall cooperation rate. This provides a long-term trust signal.
+  \item \textbf{Recent detail}: a sliding window of the last 5 rounds of trade history with each partner, showing exact goods exchanged, quantities, and outcomes. This captures recent behavioural shifts that the lifetime average might smooth over.
+\end{itemize}
+
+Together, these memory layers allow agents to distinguish between partners who have always been reliable, partners who were reliable but recently began defecting, and newcomers with no history --- a distinction that becomes critical when adversarial agents are injected mid-simulation.
 
 % ============================================================
 \section{Formal Mechanisms}
@@ -332,11 +332,11 @@ The simulation engine tracks a system reputation score for every agent. Intuitiv
 &+ 0.1 \times \text{latest trade outcome}
 \end{aligned}
 \]
-where the latest trade outcome is 1 for a successful trade and 0 for a defection. This score (initialised at 1.0) is visible to all agents alongside raw trade counts. Agents also observe socially-propagated reputation via the public channel --- unverified subjective assessments broadcast by peers. This tests whether shared reliability information lets agents avoid defectors without adding direct enforcement.
+where the latest trade outcome is 1 for a successful trade and 0 for a defection. This score (initialised at 1.0) is visible to all agents alongside raw trade counts. Agents also observe socially-propagated reputation via the public channel --- unverified subjective assessments broadcast by peers.
 
 \subsection{Contracting (C)}
 
-Agents may propose binding bilateral contracts via the private channel specifying delivery terms and a breach penalty $P = 6$ utility (twice the value of one traded unit). If both parties sign, the engine enforces delivery. A breaching agent pays $P$ to the victim. Contracting proceeds through four stages per round: proposal, review/sign, execution, and breach handling. This tests whether pre-committed penalties can make honest trade individually rational before defection occurs.
+Agents may propose binding bilateral contracts via the private channel specifying delivery terms and a breach penalty $P = 6$ utility (twice the value of one traded unit). If both parties sign, the engine enforces delivery. A breaching agent pays $P$ to the victim. Contracting proceeds through four stages per round: proposal, review/sign, execution, and breach handling.
 
 \subsection{Mediation (M)}
 
@@ -350,15 +350,14 @@ Mediation adds a neutral engine-controlled party that can execute trades on beha
     \item \texttt{execute\_split} --- split the difference if the two sides proposed asymmetric quantities;
     \item \texttt{cancel} --- cancel the trade entirely (no goods exchanged, both sides keep their inventory).
   \end{itemize}
-  For example, the common safe design executes when both parties delegate but cancels when only one party delegates.
-  \item \textbf{Delegate.} During each round, agents choose separately for each trade whether to use the mediator. A proposer can set \texttt{use\_mediator: true}; an acceptor can choose \texttt{delegate\_to\_mediator} instead of ordinary acceptance.
+  \item \textbf{Delegate.} During each round, agents choose separately for each trade whether to use the mediator. If both parties delegate, the mediator applies the two-delegator rule and neither party can defect. If only one party delegates, the one-delegator rule applies. If neither delegates, normal direct execution occurs.
 \end{itemize}
 
-If both parties delegate, the mediator applies the two-delegator rule and neither party can defect. If only one party delegates, the mediator applies the one-delegator rule; depending on the elected design, the trade may be cancelled or executed with the non-delegating party still able to exploit the interaction. If neither party delegates, the trade proceeds through normal direct execution. Consistent with the CoopEval framework, mediation carries no utility fee --- the only ``cost'' of delegation is forgoing the option to defect, which is a cost only for agents who intend to defect. This tests whether guaranteed execution can prevent defection more effectively than punishing it after the fact.
+Consistent with the CoopEval framework, mediation carries no utility fee --- the only ``cost'' of delegation is forgoing the option to defect, which is a cost only for agents who intend to defect.
 
 \subsection{Governance (G)}
 
-An external, deterministic regulator monitors all market activity. Agents cannot opt out or influence its rules. An Oracle evaluates four signals per agent per round using a 5-round rolling window:
+An external, deterministic regulator monitors all market activity. An Oracle evaluates four signals per agent per round using a 5-round rolling window:
 
 \begin{itemize}
   \item \textbf{D1} --- Defection rate $>40\%$ of trades in the last 5 rounds
@@ -367,21 +366,19 @@ An external, deterministic regulator monitors all market activity. Agents cannot
   \item \textbf{D4} --- Defecting on the same partner 3+ times in 5 rounds (predatory targeting)
 \end{itemize}
 
-Any signal firing triggers a Controller state machine that escalates each agent through: Active $\to$ Warning $\to$ Fined (tiers 1--3, penalties of $-2$/$-4$/$-6$ utility) $\to$ Suspended (3 rounds, no production or trading). De-escalation occurs after 2 consecutive clean rounds. This is adapted from \citet{institutional2025}. This tests whether centralised monitoring and automatic penalties can stabilise the market without requiring agents to understand or voluntarily use the mechanism.
+Any signal firing triggers a Controller state machine that escalates each agent through: Active $\to$ Warning $\to$ Fined (tiers 1--3, penalties of $-2$/$-4$/$-6$ utility) $\to$ Suspended (3 rounds, no production or trading). De-escalation occurs after 2 consecutive clean rounds. Adapted from \citet{institutional2025}.
 
 \subsection{Network Rewiring + Reputation (NR)}
 
-Inspired by \citet{repunet}, agents can restructure their trade network each round by severing links to defectors and requesting new links to cooperators. Combined with public system reputation scores, agents can preferentially connect to high-reputation partners. This tests whether structural isolation of defectors improves market outcomes.
+Inspired by \citet{repunet}, agents can restructure their trade network each round by severing links to defectors and requesting new links to cooperators. Combined with public system reputation scores, agents can preferentially connect to high-reputation partners.
 
 \subsection{Costly Sanctions (S)}
 
-Agents may anonymously spend their own utility to punish any other agent at a 1:3 cost-to-damage ratio: spending 1 utility inflicts 3 utility damage on the target. The sanction is anonymous to the target but publicly announced to all agents as a deterrence signal. This tests whether an environment where agents can punish defectors induces greater cooperation and therefore higher utility, despite the direct cost of sanctioning \citep{piedrahita2025}.
+Agents may anonymously spend their own utility to punish any other agent at a 1:3 cost-to-damage ratio: spending 1 utility inflicts 3 utility damage on the target. The sanction is anonymous to the target but publicly announced to all agents as a deterrence signal \citep{piedrahita2025}.
 
 \subsection{Judicial (J)}
 
 Agents may file formal complaints against defectors, paying a filing fee of 1 utility. An adjudicator evaluates the complaint against the public ledger. If the defendant is found guilty, they pay a penalty of 5 utility and the victim receives compensation of 3 utility. False or invalid complaints incur an additional fine of 2 utility on the filer.
-
-This tests whether formal dispute resolution can deter defection while avoiding the second-order free-rider problem of voluntary punishment.
 
 \begin{table}[H]
 \centering
@@ -401,45 +398,6 @@ Judicial                            & Complaint-based      & 18 & 200 \\
 \end{tabular}
 \caption{Experimental conditions}
 \label{tab:conditions}
-\end{table}
-
-% ============================================================
-\section{Agent Architecture}
-\label{sec:agents}
-% ============================================================
-
-\subsection{LLM and Reasoning Style}
-
-All agents use DeepSeek-V3 (Azure endpoint, temperature 0.7). All agents use chain-of-thought (CoT) reasoning, matching the CoTAgent pattern from \citet{coopeval}. Before outputting actions, each agent writes structured reasoning inside \texttt{<reasoning>} tags covering: (1) current situation, (2) trust assessment, and (3) round strategy.
-
-\subsection{Self-Interest Framing}
-
-Every agent's prompt explicitly states: \textit{``You are a self-interested trader. You have no loyalty to other agents and no obligation to cooperate. Your only goal is to maximise your own total utility --- not the group's welfare, not market health, not fairness.''}  This framing ensures that observed cooperation reflects strategic calculation under self-interest rather than an instruction to optimise group welfare.
-
-\subsection{Action Space}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lll@{}}
-\toprule
-Action & Channel & Availability \\
-\midrule
-\texttt{produce(good, quantity)} & --- & Always \\
-\texttt{send\_private(target, text)} & Private & Always \\
-\texttt{send\_public(text)} & Public & Always \\
-\texttt{propose\_trade(target, offer, want)} & Private & Always \\
-\texttt{accept\_trade(id)} / \texttt{reject\_trade(id)} & --- & Always \\
-\texttt{defect\_trade(id)} & --- & Always \\
-\texttt{propose\_contract(target, terms)} & Private & Contracting only \\
-\texttt{sign\_contract(id)} / \texttt{reject\_contract(id)} & --- & Contracting only \\
-\texttt{delegate\_to\_mediator(trade\_id)} & --- & Mediation only \\
-\texttt{sever\_link(target)} / \texttt{request\_link(target)} & --- & Network Rewiring + Reputation only \\
-\texttt{sanction(target, amount)} & --- & Costly Sanctions only \\
-\texttt{file\_complaint(target)} & --- & Judicial only \\
-\bottomrule
-\end{tabular}
-\caption{Agent action space}
-\label{tab:actions}
 \end{table}
 
 % ============================================================
@@ -480,7 +438,14 @@ A mechanism is \textbf{adversarially robust} if it sustains positive cumulative 
 \label{sec:phase1}
 % ============================================================
 
-All eight conditions are run for 200 rounds with progressive troll injection using DeepSeek-V3. Trolls are hardcoded deterministic defectors (``dumb trolls'') that always defect on settlement, produce goods only to bait trades, and never cooperate.
+All eight conditions are run for 200 rounds with progressive troll injection using DeepSeek-V3. Trolls are hardcoded deterministic defectors (``dumb trolls'') that always defect on settlement, produce goods only to bait trades, and never cooperate. Trolls are injected on the following schedule to test mechanism resilience under escalating adversarial pressure:
+
+\begin{itemize}
+  \item \textbf{Round 1--50}: 0 trolls (18 agents, pure honest baseline)
+  \item \textbf{Round 51}: +4 trolls injected (4 of 22 agents, 18\%)
+  \item \textbf{Round 101}: +4 trolls injected (8 of 26 agents, 31\%)
+  \item \textbf{Round 151}: +8 trolls injected (16 of 34 agents, 47\%)
+\end{itemize}
 
 \subsection{Cumulative Utility Rankings}
 
