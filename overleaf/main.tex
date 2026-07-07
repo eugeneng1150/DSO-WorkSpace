@@ -131,7 +131,7 @@ CoopEval is the closest predecessor to our study. \citet{coopeval} benchmark fou
 \label{sec:environment}
 % ============================================================
 
-We design the marketplace as a closed economy in which agents participate in an economic chain of \textit{production}, \textit{trade}, and \textit{consumption}. This chain creates structural interdependence: no agent can generate utility in isolation, making repeated exchange the sole path to welfare. The environment is parameterised to produce a clear social dilemma at every link in the chain --- agents must cooperate to create value, but defection is always a tempting short-term strategy.
+We design the marketplace as a closed economy in which agents participate in an economic chain of \textit{production}, \textit{trade}, and \textit{consumption}. This chain creates structural interdependence: no agent can generate utility in isolation, making repeated exchange the sole path to welfare. The environment is parameterised to produce a clear social dilemma --- agents must cooperate to create value, but defection is always a tempting short-term strategy.
 
 \subsection{Economic Chain: Production, Trade, and Consumption}
 
@@ -540,7 +540,7 @@ Costly Sanctions                  & 189 & 175 & 161 & 160 &  685 \\
 
 \subsection{Why Mediation Wins}
 
-Mediation's dominance derives from a unique property: it \textit{neutralises} defection rather than merely punishing or avoiding it. When both parties delegate a trade to the mediator, execution is guaranteed --- neither party can defect. This makes mediation a free insurance mechanism for honest agents: the only ``cost'' is forgoing the option to defect, which honest agents do not value.
+When both parties delegate a trade to the mediator, execution is guaranteed --- neither party can defect. This makes mediation a free insurance mechanism for honest agents.
 
 Mediation achieves a 57.8\% mediation rate across all trades. The remaining 42.2\% of trades execute directly, with a 0.0\% defection rate --- indicating that even unmediated trades between honest agents succeed, likely because the availability of mediation creates a credible outside option that deters defection.
 
@@ -550,13 +550,12 @@ Mediation achieves a 57.8\% mediation rate across all trades. The remaining 42.2
 
 \paragraph{Judicial (J, second-last).} The filing fee and risk of false-complaint penalties deter agents from using the mechanism. Defectors are rarely prosecuted.
 
-\paragraph{Contracting (C).} Despite strong theoretical guarantees, contracting produces only 2,717 trades over 200 rounds --- less than a third of Baseline's 12,563. Four compounding factors explain this collapse:
+\paragraph{Contracting (C).} Despite strong theoretical guarantees, contracting produces only 2,717 trades over 200 rounds --- less than a third of Baseline's 12,563. Three compounding factors explain this collapse:
 
 \begin{enumerate}
-  \item \textbf{Massive rejection rate (99.7\%).} Of 725 cumulative contract proposals, 723 were rejected. Self-interested agents view the breach penalty clause as downside risk, especially when they can trade directly without binding commitment.
-  \item \textbf{High breach rate (21.3\%).} Of the contracts that were signed, 708 out of 3,330 (executed + breached) were breached, eroding trust further --- agents who have been penalised by a breach become even less willing to sign future contracts.
+  \item \textbf{High non-completion rate.} Of 4,817 unique contracts created over 200 rounds, 723 were rejected and 725 expired without a response. Self-interested agents view the breach penalty clause as downside risk, especially when they can trade directly without binding commitment.
+  \item \textbf{High breach rate (21.3\%).} Of the 3,330 contracts that reached execution (signed and due), 708 were breached, eroding trust further --- agents who have been penalised by a breach become even less willing to sign future contracts.
   \item \textbf{Friction without value for honest agents.} The multi-stage process (propose contract $\to$ review $\to$ sign/reject $\to$ execute) requires more LLM calls per trade and gives agents more decision points at which to refuse. Meanwhile, honest agents who would cooperate anyway gain nothing from enforcement they were never going to trigger.
-  \item \textbf{Stalled contracts.} 40 contracts were signed but never executed --- stuck with execution rounds that were never reached or whose conditions were not met, wasting further trade opportunities.
 \end{enumerate}
 
 Contracting thus creates a \textit{trust paradox}: agents who would benefit most from enforcement (those facing unreliable partners) are the ones most likely to reject contracts because they fear the penalty, while agents who do not need enforcement (reliable partners) have no reason to accept the overhead. The net effect is a 78\% reduction in trade volume compared to Baseline.
