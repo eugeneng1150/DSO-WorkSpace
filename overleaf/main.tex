@@ -583,7 +583,7 @@ We iteratively develop seven versions of the adversarial prompt, each incorporat
 \begin{description}
   \item[v1--v2:] Basic saboteur instructions. Trolls defect and send generic disinformation. Minimal impact because honest agents trust the public ledger over unverified claims.
   \item[v3:] Explicitly targets honest agents' utility. Adds grounded disinformation anchored to real ledger events. Moderate improvement.
-  \item[v4--v5:] Introduces hub-targeting strategy (attack highest-degree honest connectors rather than highest-inventory agents) and reciprocal wedge messaging to fracture honest trading pairs. These are less damaging than v3 ($-2.4\%$ vs $-6.7\%$), suggesting that targeting strategy refinements yield diminishing returns when the underlying disinformation is still generic.
+  \item[v4--v5:] Introduces hub-targeting strategy (attack highest-degree honest connectors rather than highest-inventory agents) and sends lies to both sides of a trading pair to fracture them. These are less damaging than v3 ($-2.4\%$ vs $-6.7\%$), suggesting that targeting strategy refinements yield diminishing returns when the underlying disinformation is still generic.
   \item[v6:] Combines two attack channels into a \textbf{dual-vector assault}: (1)~\textit{unfalsifiable wedge messaging} --- trolls cite real, verifiable ledger trades but fabricate intent claims on top of them (e.g., ``Agent 12 settled that C-for-A with you in R54 --- fair enough. But 12's been routing their best C ratios to Agent 4, not you.''), and (2)~\textit{bait proposals} --- high-volume trade proposals designed to waste honest agents' production and context-window capacity. Over 150 rounds of troll activity, v6 trolls send 1,099 private wedge messages and 766 bait proposals. This is the most effective attack, reducing honest-agent utility by 13.3\%.
 \end{description}
 
@@ -600,7 +600,7 @@ v1 (naive saboteur)$^\dagger$    & 1773 & $+14.0\%$ & Basic adversarial prompt \
 v2 (basic saboteur)    & 1489 & $-4.3\%$  & Generic disinformation \\
 v3 (targeted)          & 1452 & $-6.7\%$  & Grounded disinformation \\
 v4 (hub targeting)     & 1519 & $-2.4\%$  & Network centrality attacks \\
-v5 (wedge messaging)   & 1519 & $-2.4\%$  & Reciprocal poisoning \\
+v5 (wedge messaging)   & 1519 & $-2.4\%$  & Lies to both sides of a pair \\
 \textbf{v6 (dual-vector)} & \textbf{1350} & $\mathbf{-13.3\%}$ & \textbf{Wedge messaging + bait proposals} \\
 \bottomrule
 \multicolumn{4}{@{}l@{}}{\footnotesize $^\dagger$v1 \textit{increased} honest-agent utility --- the naive adversarial prompt backfired,}\\
@@ -662,7 +662,7 @@ This recovery property is absent in mechanisms like Sanctions and Judicial, wher
 
 Our results support several design principles for cooperation mechanisms in LLM agent societies:
 
-\paragraph{Prevention over punishment.} Mediation (prevention of defection via guaranteed execution) outperforms Sanctions and Judicial (punishment after defection). This is consistent with \citet{coopeval}'s finding that Contracting and Mediation are most effective, and extends it to adversarial settings.
+\paragraph{Prevention over punishment.} Mediation (prevention of defection via guaranteed execution) outperforms Sanctions and Judicial (punishment after defection). While \citet{coopeval} find that both Contracting and Mediation are effective, our results show that only Mediation sustains this advantage --- Contracting collapses under the friction of its multi-stage protocol (\S\ref{sec:results}). This distinction sharpens in adversarial settings, where Mediation's guaranteed execution provides resilience that Contracting's penalty-based enforcement cannot match.
 
 \paragraph{Low friction is critical.} Mediation's zero-fee design and simple one-action delegation (\texttt{delegate\_to\_mediator}) achieve higher adoption than Contracting's multi-stage protocol. Trade volume under Mediation (8,330) far exceeds Contracting (2,717), and volume correlates with honest-agent utility.
 
