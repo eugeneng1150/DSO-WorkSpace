@@ -102,9 +102,9 @@ The study of cooperation in multi-agent systems draws from game theory, evolutio
 
 \subsection{CoopEval and LLM Agents in Social Dilemmas}
 
-\citet{gallego2024} study LLM policies in social dilemmas under dense versus sparse feedback. They find that providing agents with four social-metric signals --- rather than a scalar reward alone --- produces significantly more cooperative behaviour, and identify five reward-hacking attack classes by which agents exploit metric definitions without improving actual social welfare.
+\citet{gallego2024} study LLM policies in social dilemmas under dense versus sparse feedback. They find that providing agents with four social-metric signals --- rather than a scalar reward alone --- produces significantly more cooperative behaviour, and identify two reward-hacking attack classes (state manipulation and dynamics bypass) by which agents exploit metric definitions without improving actual social welfare.
 
-CoopEval is the closest predecessor to our study. \citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding is that all tested LLMs defect without mechanisms, while Contracting and Mediation achieve near-perfect cooperation and Reputation has moderate standalone effectiveness but remains useful as a complement. Our work differs in three ways: (1) we use a complex multi-good marketplace rather than abstract matrix games; (2) we test additional mechanisms (Governance, Network Rewiring, Sanctions, Judicial); and (3) we conduct adversarial red-teaming with prompt-optimised LLM-driven attackers.
+CoopEval is the closest predecessor to our study. \citet{coopeval} benchmark four cooperation mechanisms (Repetition, Reputation, Contracting, Mediation) across four social dilemmas and six LLM families. Their central finding is that all tested LLMs defect without mechanisms, while Contracting and Mediation are the most effective at sustaining cooperation. Our work differs in three ways: (1) we use a complex multi-good marketplace rather than abstract matrix games; (2) we test additional mechanisms (Governance, Network Rewiring, Sanctions, Judicial); and (3) we conduct adversarial red-teaming with prompt-optimised LLM-driven attackers.
 
 \subsection{Mechanism Design and Its Limits}
 
@@ -116,7 +116,7 @@ CoopEval is the closest predecessor to our study. \citet{coopeval} benchmark fou
 
 \subsection{Costly Punishment and Sanctioning}
 
-\citet{piedrahita2025} study costly sanctioning institutions in public goods games across traditional and reasoning LLMs. Traditional LLMs sustain approximately 90\% contribution rates; reasoning models (o1, o3 series) average only 40\%, explicitly reasoning toward free-riding. Our S condition tests whether agents will voluntarily pay utility to punish defectors, or free-ride on others' sanctioning efforts.
+\citet{piedrahita2025} study costly sanctioning institutions in public goods games across traditional and reasoning LLMs. Traditional LLMs sustain contribution rates of 69--94\%; reasoning models (o1, o3 series) range from 27--63\%, explicitly reasoning toward free-riding. Our S condition tests whether agents will voluntarily pay utility to punish defectors, or free-ride on others' sanctioning efforts.
 
 \subsection{Top-Down Governance}
 
@@ -718,8 +718,8 @@ We define adversarial robustness as the ability to sustain positive honest-agent
 \bibliographystyle{plainnat}
 \begin{thebibliography}{99}
 
-\bibitem[Gallego et al.(2024)]{gallego2024}
-Gallego, V., et al. (2024).
+\bibitem[Gallego et al.(2026)]{gallego2024}
+Gallego, V., et al. (2026).
 \textit{Cooperation and Exploitation in LLM-based Multi-Agent Systems}.
 Komorebi AI.
 
