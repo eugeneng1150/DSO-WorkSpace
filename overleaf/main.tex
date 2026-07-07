@@ -529,6 +529,15 @@ Costly Sanctions                  & 189 & 175 & 161 & 160 &  685 \\
 
 \textbf{Key finding}: Mediation is the clear winner with a cumulative utility of 1556 --- 29\% above the communication-only baseline (1209) and 15\% above the second-place Network Rewiring + Reputation (1352). Critically, Mediation is the \textit{only} mechanism whose per-phase utility \textit{increases} as more trolls are injected (359 $\to$ 407), demonstrating not just resilience but active recovery under adversarial pressure.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{utility_distribution.png}
+  \caption{Distribution of cumulative honest-agent utility by mechanism over 200 rounds with progressive troll injection. Diamonds indicate means; Gini coefficients are shown below each label. Mediation achieves the highest mean utility but moderate inequality (Gini = 0.221), while Governance achieves the most equal distribution (Gini = 0.068) at lower total welfare.}
+  \label{fig:utility_distribution}
+\end{figure}
+
+Figure~\ref{fig:utility_distribution} reveals a utility--equality tradeoff across mechanisms. Mediation produces the highest total welfare but with moderate inequality (Gini = 0.221), as some agents benefit disproportionately from mediated trades. Governance, by contrast, achieves the lowest Gini (0.068) through its enforcement of uniform behaviour, but at 17\% lower mean utility. We select Mediation for Phase~2 hardening based on total utility, as our primary objective is market stability under adversarial pressure rather than distributional equality.
+
 \subsection{Mechanism Trajectories}
 
 \begin{figure}[H]
