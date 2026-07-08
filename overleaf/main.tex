@@ -89,7 +89,7 @@ This paper makes the following contributions:
 \begin{enumerate}
   \item A concrete simulation environment implementing a marketplace social dilemma with comparative advantage, a barter economy, a constrained social network, and a natural defection surface.
   \item A mechanism comparison across eight conditions under progressive adversarial pressure (200 rounds, escalating troll injection), identifying Mediation as the most resilient mechanism.
-  \item An adversarial red-teaming methodology using iteratively prompt-optimised LLM-driven trolls (7 versions), demonstrating that Mediation can be bent (13.3\% utility reduction) but not broken (market never collapses).
+  \item An adversarial red-teaming methodology using iteratively prompt-optimised LLM-driven trolls (6 versions), demonstrating that Mediation can be bent (13.3\% utility reduction) but not broken (market never collapses).
   \item A formal definition of \textit{adversarial robustness} for cooperation mechanisms: the ability to sustain positive honest-agent utility under optimised attack.
 \end{enumerate}
 
@@ -99,7 +99,7 @@ Our research follows a two-phase design:
 
 \begin{description}
   \item[Phase 1: Mechanism Comparison.] All eight conditions run for 200 rounds with progressive troll injection (0 $\to$ 4 $\to$ 8 $\to$ 16 trolls) using dumb (hardcoded) trolls. Identifies the top-performing mechanism.
-  \item[Phase 2: Adversarial Red-Teaming.] The top mechanism (Mediation) is attacked by iteratively prompt-optimised LLM-driven trolls. Seven adversarial prompt versions are developed and tested to find the strongest attack.
+  \item[Phase 2: Adversarial Red-Teaming.] The top mechanism (Mediation) is attacked by iteratively prompt-optimised LLM-driven trolls. Six adversarial prompt versions are developed and tested to find the strongest attack.
 \end{description}
 
 % ============================================================
@@ -307,7 +307,7 @@ Each agent is an LLM-driven decision-maker that perceives the marketplace throug
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.75\linewidth]{Trade Progress Chat.jpg}
+  \includegraphics[width=0.75\linewidth]{Trade_Progress_Chat.jpg}
   \caption{A single trade interaction between two agents. The sequence proceeds through communication, trade proposal, decision policy, execution, memory update, and consumption. Core actions (accept, reject, defect) are always available; mechanism-specific actions are injected when the corresponding mechanism is active.}
   \label{fig:trade-interaction}
 \end{figure}
@@ -437,7 +437,7 @@ An external, deterministic regulator monitors all market activity. An Oracle eva
 
 Any signal firing triggers a Controller state machine that escalates each agent through: Active $\to$ Warning $\to$ Fined (tiers 1--3, penalties of $-2$/$-4$/$-6$ utility) $\to$ Suspended (3 rounds, no production or trading). De-escalation occurs after 2 consecutive clean rounds. Adapted from \citet{institutional2025}.
 
-\subsection{Network Rewiring + Reputation (NR)}
+\subsection{Network Rewiring (NR)}
 
 Inspired by \citet{repunet}, agents can restructure their trade network each round by severing links to defectors and requesting new links to cooperators. Combined with public system reputation scores, agents can preferentially connect to high-reputation partners.
 
@@ -460,7 +460,7 @@ Global Reputation                   & Agent-visible        & 18 & 200 \\
 Contracting                         & Agent-participatory  & 18 & 200 \\
 Mediation                           & Agent-designed       & 18 & 200 \\
 Governance (Oracle + state machine) & Top-down             & 18 & 200 \\
-Network Rewiring + Reputation       & Combined             & 18 & 200 \\
+Network Rewiring       & Combined             & 18 & 200 \\
 Costly Sanctions                    & Bottom-up            & 18 & 200 \\
 Judicial                            & Complaint-based      & 18 & 200 \\
 \bottomrule
@@ -525,7 +525,7 @@ All eight conditions are run for 200 rounds with progressive troll injection usi
 Condition & R1--50 & R51--100 & R101--150 & R151--200 & \textbf{Total} \\
 \midrule
 Mediation                         & 359 & 388 & 402 & 407 & \textbf{1556} \\
-Network Rewiring + Reputation     & 339 & 342 & 335 & 336 & 1352 \\
+Network Rewiring     & 339 & 342 & 335 & 336 & 1352 \\
 Governance                        & 318 & 316 & 336 & 319 & 1288 \\
 Baseline                          & 318 & 310 & 298 & 283 & 1209 \\
 Contracting                       & 271 & 287 & 285 & 287 & 1130 \\
@@ -538,7 +538,7 @@ Costly Sanctions                  & 189 & 175 & 161 & 160 &  685 \\
 \label{tab:phase1_results}
 \end{table}
 
-\textbf{Key finding}: Mediation is the clear winner with a cumulative utility of 1556 --- 29\% above the communication-only baseline (1209) and 15\% above the second-place Network Rewiring + Reputation (1352). Critically, Mediation is the \textit{only} mechanism whose per-phase utility \textit{increases} as more trolls are injected (359 $\to$ 407), demonstrating not just resilience but active recovery under adversarial pressure.
+\textbf{Key finding}: Mediation is the clear winner with a cumulative utility of 1556 --- 29\% above the communication-only baseline (1209) and 15\% above the second-place Network Rewiring (1352). Critically, Mediation is the \textit{only} mechanism whose per-phase utility \textit{increases} as more trolls are injected (359 $\to$ 407), demonstrating not just resilience but active recovery under adversarial pressure.
 
 \begin{figure}[H]
   \centering
@@ -547,7 +547,7 @@ Costly Sanctions                  & 189 & 175 & 161 & 160 &  685 \\
   \label{fig:utility_distribution}
 \end{figure}
 
-Figure~\ref{fig:utility_distribution} reveals a utility--equality tradeoff across mechanisms. Mediation produces the highest total welfare but with moderate inequality (Gini = 0.221), as some agents benefit disproportionately from mediated trades. Governance, by contrast, achieves the lowest Gini (0.068) through its enforcement of uniform behaviour, but at 17\% lower mean utility. We select Mediation for Phase~2 hardening based on total utility, as our primary objective is market stability under adversarial pressure rather than distributional equality.
+Figure~\ref{fig:utility_distribution} reveals a utility--equality tradeoff across mechanisms. Mediation produces the highest total welfare but with moderate inequality (Gini = 0.221), as some agents benefit disproportionately from mediated trades. Governance, by contrast, achieves the lowest Gini (0.068) through its enforcement of uniform behaviour, but at 17\% lower mean utility. We select Mediation for Phase~2 hardening based on total utility, as our primary objective is market stability under adversarial pressure.
 
 \subsection{Mechanism Trajectories}
 
@@ -578,8 +578,6 @@ Mediation achieves a 57.8\% mediation rate across all trades. The remaining 42.2
   \item \textbf{Friction without value for honest agents.} The multi-stage process (propose contract $\to$ review $\to$ sign/reject $\to$ execute) requires more LLM calls per trade and gives agents more decision points at which to refuse. Meanwhile, honest agents who would cooperate anyway gain nothing from enforcement they were never going to trigger.
 \end{enumerate}
 
-Contracting thus creates a \textit{trust paradox}: agents who would benefit most from enforcement (those facing unreliable partners) are the ones most likely to reject contracts because they fear the penalty, while agents who do not need enforcement (reliable partners) have no reason to accept the overhead. The net effect is a 78\% reduction in trade volume compared to Baseline.
-
 \subsection{Trade Volume}
 
 \begin{figure}[H]
@@ -598,7 +596,7 @@ Having identified Mediation as the top mechanism, we now attempt to break it usi
 
 \subsection{Adversarial Prompt Optimisation}
 
-We iteratively develop seven versions of the adversarial prompt, each incorporating lessons from the previous version's failure modes:
+We iteratively develop six versions of the adversarial prompt, each incorporating lessons from the previous version's failure modes:
 
 \begin{description}
   \item[v1--v2:] Basic saboteur instructions. Trolls defect and send generic disinformation. Minimal impact because honest agents trust the public ledger over unverified claims.
@@ -705,8 +703,6 @@ Our results support several design principles for cooperation mechanisms in LLM 
 
 \paragraph{Small-model hardening sweep.} Phase~2 concentrates the compute-intensive red-team on Mediation. A natural next step is to re-run all eight conditions using a smaller, less capable model with fixed trolls over shorter horizons, to cheaply stress-test the broader mechanism set and identify which designs remain functional under weaker agent reasoning.
 
-\paragraph{SAC Trust Filtering.} The v6 adversarial attack exploits the credibility window: fresh trolls have no defection history and their messages are trusted by default. We are currently evaluating Sender-based Acceptance Criteria (SAC) trust filtering --- a per-agent, ledger-derived trust score that weights observed trade outcomes over unverifiable private messages --- as a hardening layer on Mediation.
-
 \paragraph{Multi-run replication.} All current results are single-run. Replication with multiple seeds per condition is needed to establish statistical confidence and separate mechanism effects from run-to-run variance.
 
 \paragraph{Mechanism combinations.} Phase~1 tests mechanisms in isolation. Combinations such as Mediation + Governance or Network Rewiring + Contracting may outperform any individual mechanism and are unexplored.
@@ -729,52 +725,50 @@ We define adversarial robustness as the ability to sustain positive honest-agent
 \bibliographystyle{plainnat}
 \begin{thebibliography}{99}
 
-\bibitem[Gallego(2026)]{gallego2024}
-Gallego, V. (2026).
-\textit{Cooperation and Exploitation in LLM Policy Synthesis for Sequential Social Dilemmas}.
-Komorebi AI. arXiv:2603.19453.
-
-% NOTE: agentsociety and nicer2024 removed — unused in text.
-
-\bibitem[Tewolde et al.(2026)]{coopeval}
-Tewolde, E., Zhang, X., Guzman Piedrahita, D., Conitzer, V., \& Jin, Z. (2026).
-\textit{CoopEval: Benchmarking Cooperation-Sustaining Mechanisms and LLM Agents in Social Dilemmas}.
-Preprint, April 2026.
-
-\bibitem[Chacon-Chamorro et al.(2024)]{chaconresilience}
-Chacon-Chamorro, M., et al. (2024).
-\textit{Cooperative Resilience in Artificial Intelligence Multiagent Systems}.
-arXiv:2409.13187.
-
-\bibitem[Fu et al.(2025)]{repunet}
-Fu, W., Ren, S., Zou, X., Shen, C., Cai, Y., Chu, C., Wang, Z., \& Hu, S. (2025).
-\textit{Reputation as a Solution to Cooperation Collapse in LLM-based Multi-Agent Systems}.
-arXiv:2505.05029.
-
-\bibitem[Guzman Piedrahita et al.(2025)]{piedrahita2025}
-Guzman Piedrahita, D., Yang, Y., Sachan, M., Ramponi, G., Sch\"{o}lkopf, B., \& Jin, Z. (2025).
-\textit{Corrupted by Reasoning: Reasoning Language Models Become Free-Riders in Public Goods Games}.
-COLM 2025. arXiv:2506.23276.
+\bibitem[Axelrod(1984)]{axelrod1984}
+Axelrod, R. (1984).
+\textit{The Evolution of Cooperation}.
+Basic Books.
 
 \bibitem[Bracale Syrnikov et al.(2026)]{institutional2025}
 Bracale Syrnikov, M., Pierucci, F., Galisai, M., Prandi, M., Bisconti, P., Giarrusso, F., Sorokoletova, O., Suriani, V., \& Nardi, D. (2026).
 \textit{Institutional AI: Governing LLM Collusion in Multi-Agent Cournot Markets via Public Governance Graphs}.
 arXiv:2601.11369.
 
-\bibitem[Axelrod(1984)]{axelrod1984}
-Axelrod, R. (1984).
-\textit{The Evolution of Cooperation}.
-Basic Books.
+\bibitem[Chacon-Chamorro et al.(2024)]{chaconresilience}
+Chacon-Chamorro, M., et al. (2024).
+\textit{Cooperative Resilience in Artificial Intelligence Multiagent Systems}.
+arXiv:2409.13187.
 
 \bibitem[Chen et al.(2018)]{chen2018perishable}
 Chen, W., Liu, H., \& Xu, D. (2018).
 \textit{Dynamic Pricing Strategies for Perishable Product in a Competitive Multi-Agent Retailers Market}.
 Journal of Artificial Societies and Social Simulation, 21(2), Article 12.
 
+\bibitem[Fu et al.(2025)]{repunet}
+Fu, W., Ren, S., Zou, X., Shen, C., Cai, Y., Chu, C., Wang, Z., \& Hu, S. (2025).
+\textit{Reputation as a Solution to Cooperation Collapse in LLM-based Multi-Agent Systems}.
+arXiv:2505.05029.
+
+\bibitem[Gallego(2026)]{gallego2024}
+Gallego, V. (2026).
+\textit{Cooperation and Exploitation in LLM Policy Synthesis for Sequential Social Dilemmas}.
+Komorebi AI. arXiv:2603.19453.
+
+\bibitem[Guzman Piedrahita et al.(2025)]{piedrahita2025}
+Guzman Piedrahita, D., Yang, Y., Sachan, M., Ramponi, G., Sch\"{o}lkopf, B., \& Jin, Z. (2025).
+\textit{Corrupted by Reasoning: Reasoning Language Models Become Free-Riders in Public Goods Games}.
+COLM 2025. arXiv:2506.23276.
+
 \bibitem[Huang et al.(2026)]{huang2025}
 Huang, X. A., Tharas, C., Marro, S., Truong, V. Q., Sch\"{o}lkopf, B., La Malfa, E., \& Jin, Z. (2026).
 \textit{Mechanism Design Is Not Enough: Prosocial Agents for Cooperative AI}.
 arXiv:2506.08426.
+
+\bibitem[Tewolde et al.(2026)]{coopeval}
+Tewolde, E., Zhang, X., Guzman Piedrahita, D., Conitzer, V., \& Jin, Z. (2026).
+\textit{CoopEval: Benchmarking Cooperation-Sustaining Mechanisms and LLM Agents in Social Dilemmas}.
+Preprint, April 2026.
 
 \end{thebibliography}
 
