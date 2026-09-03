@@ -1,8 +1,10 @@
 # DSO-WorkSpace
 
-> **Work in progress** — this is an ongoing research project. Results, conditions, and implementation details are actively evolving.
+Implementation and experimental framework for the research paper **"Formal Mechanisms for Market Stability in Self-Interested Agent Societies: A Marketplace Simulation Study."**
 
-Multi-agent marketplace simulation for studying how institutional mechanisms enable cooperation among self-interested LLM agents — and how adversarial red-teaming can break (and then strengthen) the best mechanisms.
+**Paper:** [arXiv:2607.08652](https://arxiv.org/abs/2607.08652)
+
+This project studies how institutional mechanisms enable cooperation among self-interested LLM agents in a multi-agent marketplace, and how resilient those mechanisms remain under adversarial attack.
 
 ## Research Question
 
@@ -91,6 +93,18 @@ LLM-driven adversarial agents (`AdversarialAgent`) that reason strategically abo
 - `false_accusation_rate` — false negative mentions / total negative mentions
 - `warning_accuracy` — accurate warnings / total warnings
 
+## Key Findings
+
+The experiments were conducted in two phases:
+
+1. **Mechanism comparison:** Eight institutional mechanisms were evaluated under progressively increasing adversarial pressure. **Mediation emerged as the strongest-performing mechanism** for sustaining cooperation.
+
+2. **Adversarial red-teaming:** Mediation was then attacked using strategically reasoning LLM-driven adversarial agents with iteratively optimised prompts. The strongest attack reduced honest-agent utility by **13.3%**, but was unable to collapse the market.
+
+Overall, the experiments show that Mediation remains robust under sustained adversarial pressure: **it can be bent, but not broken.**
+
+For the full experimental methodology, results, and analysis, see the [paper](https://arxiv.org/abs/2607.08652).
+
 ## Usage
 
 ```bash
@@ -112,58 +126,3 @@ python3 -m simulation.main --plot-adversarial --model deepseek-v3
 
 # Run LLM analyst report
 python3 -m simulation.main --analyse --progressive-trolls --model deepseek-v3
-```
-
-Logs are saved to `simulation/data/runs/<model>/` — one folder per model backend.
-
-## Project Structure
-
-```
-simulation/
-├── main.py                  # CLI entry point
-├── config.py                # All parameters and condition definitions
-├── engine/
-│   ├── agent.py             # CoTAgent, TrollAgent, AdversarialAgent, LLM client
-│   ├── game.py              # Round loop, phase orchestration, troll injection
-│   ├── market.py            # Market state, trade history, gossip buffer
-│   ├── prompt_builder.py    # Assembles per-agent prompts (+ adversarial preamble)
-│   └── runner.py            # Runs N repetitions, saves JSON logs
-├── mechanisms/
-│   ├── reputation.py        # GR — system-computed reputation scores
-│   ├── contracting.py       # C — propose/sign/enforce contracts
-│   ├── mediation.py         # M — design/vote/delegate mediator (+ re-vote)
-│   ├── governance.py        # G — Oracle (D1, D4) + state machine
-│   ├── network_rewiring.py  # NR — sever/request trade links
-│   ├── local_reputation.py  # NR — gossip channel (10-round history)
-│   ├── sanction.py          # S — costly anonymous punishment
-│   └── judicial.py          # J — court system with filing/fines
-├── metrics/
-│   └── social.py            # sustainability, peace, gini, intermediate vars
-├── analysis/
-│   ├── analyst.py           # LLM analyst report from run logs
-│   ├── adversarial_plots.py # Adversarial version comparison charts
-│   └── plots.py             # All matplotlib visualisations
-├── scripts/
-│   └── recompute_warnings.py # Recompute warning metrics on existing logs
-└── data/
-    ├── runs/                # JSON logs per condition/run/model
-    └── plots/               # Generated figures
-
-prompts/                     # Prompt templates (base + per-mechanism + adversarial versions)
-slides/                      # Presentation (presentation.html)
-wiki/                        # Research knowledge base
-```
-
-## Research Design
-
-**Phase 1 — Mechanism comparison:** Run all 8 conditions (B, GR, C, M, G, NR, S, J) with progressive troll injection (0→4→8→16) over 200 rounds. Identifies which mechanisms sustain cooperation under increasing adversarial pressure.
-
-**Phase 2 — Adversarial red-teaming (GAN-inspired):** Take the best mechanism (Mediation) and attack it with LLM-driven smart trolls. Iterative loop:
-1. **Red team:** Smart trolls attempt to break the mechanism (discover exploits via LLM reasoning)
-2. **Observe:** Compare utility degradation against dumb troll baseline
-3. **Blue team:** Strengthen the mechanism design to defend against discovered exploits
-4. **Repeat:** Iterate with refined adversarial prompts (v1, v2, v3, ...) until the mechanism is robust
-
-## Environment
-
-Requires `AZURE_OPENAI_API_KEY` environment variable for Azure-hosted models.
